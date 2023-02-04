@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>10</LangVersion>
+		<Version>1.2.0</Version>
+		<Authors>Sandro Hanea</Authors>
+		<Description>Cross-platform dotnet bindings for Whisper.</Description>
+		<PackageProjectUrl>https://github.com/sandrohanea/whisper.net</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/sandrohanea/whisper.net</RepositoryUrl>
+		<RepositoryType>GIT</RepositoryType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
+		<None Include="..\readme.md" Pack="true" PackagePath=""/>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Content Include="runtimes\linux-x64\whisper.so">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes\osx-x64\whisper.dylib">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes\win-x64\whisper.dll">
+			<Pack>true</Pack>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+</Project>

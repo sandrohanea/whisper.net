@@ -1,0 +1,514 @@
+﻿using Whisper.net.ModelLoader;
+using Whisper.net.SamplingStrategy;
+
+namespace Whisper.net;
+
+/// <summary>
+/// Builder for <see cref="WhisperProcessor"/>.
+/// </summary>
+public class WhisperProcessorBuilder
+{
+    private readonly WhisperProcessorOptions whisperProcessorOptions;
+
+    private WhisperProcessorBuilder()
+    {
+        whisperProcessorOptions = new WhisperProcessorOptions();
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <returns></returns>
+    public static WhisperProcessorBuilder Create()
+    {
+        return new WhisperProcessorBuilder();
+    }
+
+    /// <summary>
+    /// Configures the processor to use a model from a file.
+    /// </summary>
+    /// <param name="path">The path to the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public WhisperProcessorBuilder WithFileModel(string path)
+    {
+        whisperProcessorOptions.ModelLoader = new WhisperProcessorModelFileLoader(path);
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use a model from a buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer where the model can be found.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public WhisperProcessorBuilder WithBufferedModel(byte[] buffer)
+    {
+        whisperProcessorOptions.ModelLoader = new WhisperProcessorModelBufferLoader(buffer);
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use the specified number of threads.
+    /// </summary>
+    /// <param name="threads">The number of threads to be used during encoding and decoding.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the same number as the hardware threads that the underlying hardware can support concurrently is used.
+    /// </remarks>
+    public WhisperProcessorBuilder WithThreads(int threads)
+    {
+        whisperProcessorOptions.Threads = threads;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with the max number of tokens to be used from the previous text as prompt for the decoder.
+    /// </summary>
+    /// <param name="maxLastTextTokens">The max number of tokens to be used.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, a number of 16384 tokens is used.
+    /// </remarks>
+    public WhisperProcessorBuilder WithMaxLastTextTokens(int maxLastTextTokens)
+    {
+        whisperProcessorOptions.MaxLastTextTokens = maxLastTextTokens;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with the start time in the audio from which it starts the processing.
+    /// </summary>
+    /// <param name="offset">Offset in the audio.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processing is happening from the beggining.
+    /// </remarks>
+    public WhisperProcessorBuilder WithOffset(TimeSpan offset)
+    {
+        whisperProcessorOptions.Offset = offset;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with the duration of the audio to be processed.
+    /// </summary>
+    /// <param name="duration">Duration to be processed</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processing is happening for the entire input.
+    /// </remarks>
+    public WhisperProcessorBuilder WithDuration(TimeSpan duration)
+    {
+        whisperProcessorOptions.Duration = duration;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to translate the text to English.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will just transcribe it.
+    /// </remarks>
+    public WhisperProcessorBuilder WithTranslate()
+    {
+        whisperProcessorOptions.Translate = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to not use past transformation (if any) as the initial prompt for a newer processing. 
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor use part transformations as initial prompt for newer processings.
+    /// </remarks>
+    public WhisperProcessorBuilder WithNoContext()
+    {
+        whisperProcessorOptions.NoContext = true;
+        return this;
+    }
+
+
+    /// <summary>
+    /// Configures the processor to force a single segment as output instead of multiple. 
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will return multiple segments (if they are recognized).
+    /// </remarks>
+    public WhisperProcessorBuilder WithSingleSegment()
+    {
+        whisperProcessorOptions.SingleSegment = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to print special tokens (e.g. <SOT>, <EOT>, <BEG>, etc.)
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will not print special tokens.
+    /// </remarks>
+    public WhisperProcessorBuilder WithPrintSpecialTokens()
+    {
+        whisperProcessorOptions.PrintSpecialTokens = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to print progress information.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will not print progress information.
+    /// </remarks>
+    public WhisperProcessorBuilder WithPrintProgress()
+    {
+        whisperProcessorOptions.PrintProgress = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to print results to stdout.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will not print results to stdout.
+    /// </remarks>
+    public WhisperProcessorBuilder WithPrintResults()
+    {
+        whisperProcessorOptions.PrintResults = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to print timestamps for each segment to stdout.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// This option is available only if <seealso cref="WithPrintResults"/> is configured.
+    /// If not specified, the processor will print also timestamps.
+    /// </remarks>
+    public WhisperProcessorBuilder WithPrintTimestamps(bool printTimestamps = true)
+    {
+        whisperProcessorOptions.PrintTimestamps = printTimestamps;
+        return this;
+    }
+
+    /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to use token-level timestamps.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will not use token timestamps.
+    /// </remarks>
+    public WhisperProcessorBuilder WithTokenTimestamps()
+    {
+        whisperProcessorOptions.UseTokenTimestamps = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use the secified probability threshold for token timestamps.
+    /// </summary>
+    /// <param name="tokenTimestampsThreshold">Probability threshold to be used for token-level timestamps.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is 0.01f.
+    /// This option have effect only together with <seealso cref="WithTokenTimestamps"/>
+    /// </remarks>
+    public WhisperProcessorBuilder WithTokenTimestampsThreshold(float tokenTimestampsThreshold)
+    {
+        whisperProcessorOptions.TokenTimestampsThreshold = tokenTimestampsThreshold;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use the secified SUM probability threshold for token timestamps.
+    /// </summary>
+    /// <param name="tokenTimestampsThreshold">Probability SUM threshold to be used for token-level timestamps.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is 0.01f.
+    /// This option have effect only together with <seealso cref="WithTokenTimestamps"/>
+    /// </remarks>
+    public WhisperProcessorBuilder WithTokenTimestampsSumThreshold(float tokenTimestampsSumThreshold)
+    {
+        whisperProcessorOptions.TokenTimestampsSumThreshold = tokenTimestampsSumThreshold;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use a maximum segment length.
+    /// </summary>
+    /// <param name="maxSegmentLength">The maximum segment length to be used</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified no max segment length will be appplied.
+    /// </remarks>
+    public WhisperProcessorBuilder WithMaxSegmentLength(int maxSegmentLength)
+    {
+        whisperProcessorOptions.MaxSegmentLength = maxSegmentLength;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to use a maximum tokens per segment.
+    /// </summary>
+    /// <param name="maxTokensPerSegment">The maximum number of tokens to be used</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified no max number of tokens will be appplied.
+    /// </remarks>
+    public WhisperProcessorBuilder WithMaxTokensPerSegment(int maxTokensPerSegment)
+    {
+        whisperProcessorOptions.MaxTokensPerSegment = maxTokensPerSegment;
+        return this;
+    }
+
+    /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to speed up the audio 2x for faster recognition.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Quality might be degraded while performance might be improved.
+    /// </remarks>
+    public WhisperProcessorBuilder WithSpeedUp2x()
+    {
+        whisperProcessorOptions.SpeedUp2x = true;
+        return this;
+    }
+
+    /// <summary>
+    ///  [EXPERIMENTAL] Configures the processor to override the audio context size.
+    /// </summary>
+    /// <param name="audioContextSize">Audio context size to be overriden</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Quality might be degraded while performance might be improved.
+    /// </remarks>
+    public WhisperProcessorBuilder WithAudioContextSize(int audioContextSize)
+    {
+        whisperProcessorOptions.AudioContextSize = audioContextSize;
+        return this;
+    }
+
+    /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to use an initial prompt, which will be prepended to any existing text context.
+    /// </summary>
+    /// <param name="prompt">The prompt to be used.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithPrompt(string prompt)
+    {
+        whisperProcessorOptions.Prompt = prompt;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with the language to be used for detection.
+    /// </summary>
+    /// <param name="language">The language (2 letters) to be used.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is "en". 
+    /// Example: "en", "ro"
+    /// </remarks>
+    public WhisperProcessorBuilder WithLanguage(string language)
+    {
+        whisperProcessorOptions.Language = language;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor to auto-detect the language based on initial samples.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Note: Processing time will slightly increase.
+    /// </remarks>
+    public WhisperProcessorBuilder WithLanguageDetection()
+    {
+        whisperProcessorOptions.Language = string.Empty;
+        return this;
+    }
+
+    /// <summary>
+    /// Confiugres the processor to NOT suppress blank outputs.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, blanks are automatically suppressed.
+    /// </remarks>
+    public WhisperProcessorBuilder WithoutSuppressBlank()
+    {
+        whisperProcessorOptions.SuppressBlank = false;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the temparature for the processor.
+    /// </summary>
+    /// <param name="temperature">The temperature value to be used</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, default value is: 0.2f.
+    /// More details: https://ai.stackexchange.com/questions/32477/what-is-the-temperature-in-the-gpt-models/32478#32478
+    /// </remarks>
+    public WhisperProcessorBuilder WithTemperature(float temperature)
+    {
+        whisperProcessorOptions.Temperature = temperature;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with a value indicating that the initial timestamp cannot be later than this.
+    /// </summary>
+    /// <param name="maxInitialTs">The initial max timestamp.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, default value is: 1f.
+    /// </remarks>
+    public WhisperProcessorBuilder WithMaxInitialTs(float maxInitialTs)
+    {
+        whisperProcessorOptions.MaxInitialTs = maxInitialTs;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with a value indicating the length penalty (alpha).
+    /// </summary>
+    /// <param name="lengthPenalty">The initial max timestamp.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If not specified, the processor will use simple length normalization by default.
+    /// More information about the length penalty can be found here: https://arxiv.org/abs/1609.08144.
+    /// </remarks>
+    public WhisperProcessorBuilder WithLengthPenalty(float lengthPenalty)
+    {
+        whisperProcessorOptions.LengthPenalty = lengthPenalty;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with a temperature to increase when falling back.
+    /// </summary>
+    /// <param name="temperature">The temperature to increase when falling back.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Falling back can happen when the decoding fails to meet either of the thresholds in: <seealso cref="WithEntropyThreshhold(float)"/>, <seealso cref="WithLogProbThreshhold(float)"/> or <seealso cref="WithNoSpeechThreshhold(float)"/>.
+    /// Default value is 0.2f.
+    /// </remarks>
+    public WhisperProcessorBuilder WithTemperatureInc(float temperature)
+    {
+        whisperProcessorOptions.TemperatureInc = temperature;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with the entropy threshold for falling back.
+    /// </summary>
+    /// <param name="entropyThreshhold">The entropy threshhold</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is 2.4f.
+    /// </remarks>
+    public WhisperProcessorBuilder WithEntropyThreshhold(float entropyThreshhold)
+    {
+        whisperProcessorOptions.EntropyThreshhold = entropyThreshhold;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the processor with a average log probability threshold over sampled tokens.
+    /// </summary>
+    /// <param name="logProbThreshhold">The average log probability threshold.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is -1.0f.
+    /// </remarks>
+    public WhisperProcessorBuilder WithLogProbThreshhold(float logProbThreshhold)
+    {
+        whisperProcessorOptions.LogProbThreshhold = logProbThreshhold;
+        return this;
+    }
+
+    /// <summary>
+    /// [EXPERIMENTAL] Configures the processor with a no_speech probability.
+    /// </summary>
+    /// <param name="noSpeechThreshhold">The no_speech probability</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// Default value is 0.6f.
+    /// Note: Not implemented in native code.
+    /// </remarks>
+    public WhisperProcessorBuilder WithNoSpeechThreshhold(float noSpeechThreshhold)
+    {
+        whisperProcessorOptions.NoSpeechThreshhold = noSpeechThreshhold;
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a <seealso cref="OnSegmentEventHandler"/> which will be called everytime a new segment is detected.
+    /// </summary>
+    /// <param name="segmentEventHandler">The event handler to be added.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithSegmentEventHandler(OnSegmentEventHandler segmentEventHandler)
+    {
+        whisperProcessorOptions.OnSegmentEventHandlers.Add(segmentEventHandler);
+        return this;
+    }
+
+    /// <summary>
+    /// Adds a <seealso cref="OnEncoderBeginEventHandler"/> which will be called when encoder will begin.
+    /// </summary>
+    /// <param name="segmentEventHandler">The event handler to be added.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithEncoderBeginHandler(OnEncoderBeginEventHandler encoderBeginEventHandler)
+    {
+        whisperProcessorOptions.OnEncoderBeginEventHandlers.Add(encoderBeginEventHandler);
+        return this;
+    }
+
+    /// <summary>
+    /// Configuresthe processor to use the Greedy Sampling strategy.
+    /// </summary>
+    /// <returns>A new <seealso cref="GreedySamplingStrategyBuilder"/> for configuring the <seealso cref="GreedySamplingStrategy"/></returns>
+    public IWhisperSamplingStrategyBuilder WithGreedySamplingStrategy()
+    {
+        var greedySamplingStrategy = new GreedySamplingStrategy();
+        whisperProcessorOptions.SamplingStrategy = greedySamplingStrategy;
+        return new GreedySamplingStrategyBuilder(this, greedySamplingStrategy);
+    }
+
+    /// <summary>
+    /// Configures the processor to use the Beam Search Sampling Strategy.
+    /// </summary>
+    /// <returns>A new <seealso cref="BeamSearchSamplingStrategyBuilder"/> for configuring the <seealso cref="BeamSearchSamplingStrategy"/></returns>
+    public IWhisperSamplingStrategyBuilder WithBeamSearchSamplingStrategy()
+    {
+        var beamSearchSamplingStrategy = new BeamSearchSamplingStrategy();
+        whisperProcessorOptions.SamplingStrategy = beamSearchSamplingStrategy;
+        return new BeamSearchSamplingStrategyBuilder(this, beamSearchSamplingStrategy);
+    }
+
+    /// <summary>
+    /// Builds the processor.
+    /// </summary>
+    /// <returns>The <seealso cref="WhisperProcessor"/> build with these configs.</returns>
+    /// <exception cref="InvalidOperationException">If not model is conigured using <seealso cref="WithFileModel(string)"/> or <seealso cref="WithBufferedModel(byte[])"/>, InvalidOperationException is thrown.</exception>
+    public WhisperProcessor Build()
+    {
+        if (whisperProcessorOptions.ModelLoader == null)
+        {
+            throw new InvalidOperationException("Model loader is not set. Please, use WithFileModel or WithBufferedModel methods to set model loader.");
+        }
+
+        return new WhisperProcessor(whisperProcessorOptions);
+    }
+}
