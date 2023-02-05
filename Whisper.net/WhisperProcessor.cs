@@ -60,8 +60,13 @@ namespace Whisper.net
             }
             whisperParams = newParams;
         }
-
         public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
+        {
+            var (language, _) = DetectLanguageWithProbability(samples, speedUp);
+            return language;
+        }
+        
+        public unsafe (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
         {
             var probs = new float[NativeMethods.whisper_lang_max_id()];
 
@@ -83,12 +88,12 @@ namespace Whisper.net
                 var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
                 {
-                    return null;
+                    return (null, 0f);
                 }
                 var languagePtr = NativeMethods.whisper_lang_str(langId);
                 var language = Marshal.PtrToStringAnsi(languagePtr);
                 Marshal.FreeHGlobal(languagePtr);
-                return language;
+                return (language, probs[langId]);
             }
         }
 
