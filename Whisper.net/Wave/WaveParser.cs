@@ -1,6 +1,6 @@
 ﻿namespace Whisper.net.Wave;
 
-internal class WaveParser
+public sealed class WaveParser
 {
     private readonly Stream waveStream;
     private readonly ushort channels;

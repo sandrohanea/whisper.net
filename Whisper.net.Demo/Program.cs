@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using Whisper.net;
 using Whisper.net.Ggml;
+using Whisper.net.Wave;
 
 var modelName = "ggml-base.bin";
 if (!File.Exists(modelName))
@@ -12,9 +13,13 @@ if (!File.Exists(modelName))
     await modelStream.CopyToAsync(fileWriter);
 }
 
+var bufferedModel = File.ReadAllBytes(modelName);
+
 using var processor = WhisperProcessorBuilder.Create()
     .WithSegmentEventHandler(OnNewSegment)
-    .WithFileModel("ggml-base.bin")
+    .WithBeamSearchSamplingStrategy()
+    .ParentBuilder
+    .WithBufferedModel(bufferedModel)
     .WithTranslate()
     .WithLanguage("auto")
     .Build();
@@ -25,4 +30,12 @@ void OnNewSegment(object sender, OnSegmentEventArgs e)
 }
 
 using var fileStream = File.OpenRead("rom.wav");
-processor.Process(fileStream);
+
+var wave = new WaveParser(fileStream);
+
+var samples = wave.GetAvgSamples();
+
+var language = processor.DetectLanguage(samples);
+processor.ChangeLanguage(language);
+
+processor.Process(samples);

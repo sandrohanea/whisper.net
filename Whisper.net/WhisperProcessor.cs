@@ -1,9 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using System.Text;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
 using Whisper.net.Wave;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Whisper.net
 {
@@ -17,8 +15,13 @@ namespace Whisper.net
             return NativeLibraryLoader.LoadNativeLibrary();
         }, true);
 
-        private readonly IntPtr currentWhisperContext;
+        private IntPtr currentWhisperContext;
         private readonly WhisperProcessorOptions options;
+        private WhisperFullParams whisperParams;
+        private IntPtr? language;
+        private IntPtr? initialPrompt;
+        private WhisperNewSegmentCallback? newSegmentCallback;
+        private WhisperEncoderBeginCallback? wisperEncoderBeginCallback;
 
         internal WhisperProcessor(WhisperProcessorOptions options)
         {
@@ -27,8 +30,74 @@ namespace Whisper.net
                 throw new Exception("Failed to load native whisper library.");
             }
 
-            currentWhisperContext = options.ModelLoader!.LoadNativeContext();
             this.options = options;
+        }
+
+        internal void Initialize()
+        {
+            currentWhisperContext = options.ModelLoader!.LoadNativeContext();
+            whisperParams = GetWhisperParams();
+        }
+
+        public void ChangeLanguage(string? newLanguage)
+        {
+            var oldLanguage = language;
+
+            var newParams = whisperParams;
+            if (string.IsNullOrEmpty(newLanguage))
+            {
+                newParams.Language = IntPtr.Zero;
+            }
+            else
+            {
+                language = Marshal.StringToHGlobalAnsi(newLanguage);
+                newParams.Language = language.Value;
+            }
+
+            if (oldLanguage.HasValue)
+            {
+                Marshal.FreeHGlobal(oldLanguage.Value);
+            }
+            whisperParams = newParams;
+        }
+
+        public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
+        {
+            var probs = new float[NativeMethods.whisper_lang_max_id()];
+
+            fixed (float* pData = probs)
+            {
+                fixed (float* pSamples = samples)
+                {
+                    if (speedUp)
+                    {
+
+                        // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
+                        NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                    }
+                    else
+                    {
+                        NativeMethods.whisper_pcm_to_mel(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                    }
+                }
+                var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, 0, whisperParams.Threads, (IntPtr)pData);
+                if (langId == -1)
+                {
+                    return null;
+                }
+                var languagePtr = NativeMethods.whisper_lang_str(langId);
+                var language = Marshal.PtrToStringAnsi(languagePtr);
+                Marshal.FreeHGlobal(languagePtr);
+                return language;
+            }
+        }
+
+        public unsafe void Process(float[] samples)
+        {
+            fixed (float* pData = samples)
+            {
+                NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+            }
         }
 
         public void Process(Stream waveStream)
@@ -37,31 +106,11 @@ namespace Whisper.net
 
             var samples = waveParser.GetAvgSamples();
 
-            var (whisperParams, unmanagedHGlobals) = GetWhisperFullParams();
-
-            try
-            {
-                unsafe
-                {
-                    fixed (float* pData = samples)
-                    {
-                        NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
-                    }
-                }
-            }
-            finally
-            {
-                foreach (var unmanagedHGlobal in unmanagedHGlobals)
-                {
-                    Marshal.FreeHGlobal(unmanagedHGlobal);
-                }
-            }
+            Process(samples);
         }
 
-        private (WhisperFullParams, List<IntPtr>) GetWhisperFullParams()
+        private WhisperFullParams GetWhisperParams()
         {
-            var unmanagedHGlobals = new List<IntPtr>();
-
             var strategy = options.SamplingStrategy.GetNativeStrategy();
             var whisperParams = NativeMethods.whisper_full_default_params(strategy);
 
@@ -157,28 +206,27 @@ namespace Whisper.net
                 var tokenMaxLength = options.Prompt!.Length + 1;
 
                 var promptTextPtr = Marshal.StringToHGlobalAnsi(options.Prompt);
-                unmanagedHGlobals.Add(promptTextPtr);
 
-                var promptTokens = Marshal.AllocHGlobal(tokenMaxLength);
-                unmanagedHGlobals.Add(promptTokens);
+                initialPrompt = Marshal.AllocHGlobal(tokenMaxLength);
 
-                var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, promptTextPtr, promptTokens, tokenMaxLength);
+                var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, promptTextPtr, initialPrompt.Value, tokenMaxLength);
+
+                Marshal.FreeHGlobal(promptTextPtr);
 
                 if (tokens == -1)
                 {
                     throw new ApplicationException("Cannot tokenize prompt text.");
                 }
 
-                whisperParams.PromptTokens = promptTokens;
+                whisperParams.PromptTokens = initialPrompt.Value;
                 whisperParams.PromptNTokens = tokens;
             }
             //TODO: Fix prompt
 
             if (options.Language != null)
             {
-                var languagePtr = Marshal.StringToHGlobalAnsi(options.Language);
-                unmanagedHGlobals.Add(languagePtr);
-                whisperParams.Language = languagePtr;
+                language = Marshal.StringToHGlobalAnsi(options.Language);
+                whisperParams.Language = language.Value;
             }
 
             if (options.SuppressBlank.HasValue)
@@ -241,10 +289,14 @@ namespace Whisper.net
                 }
             }
 
-            whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(new WhisperNewSegmentCallback(OnNewSegment));
-            whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(new WhisperEncoderBeginCallback(OnEncoderBegin));
+            // Store the delegates so they won't be GC before the processor.
+            newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
+            wisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
 
-            return (whisperParams, unmanagedHGlobals);
+            whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
+            whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(wisperEncoderBeginCallback);
+
+            return whisperParams;
         }
 
         private bool OnEncoderBegin(IntPtr ctx, IntPtr user_data)
@@ -278,6 +330,16 @@ namespace Whisper.net
         public void Dispose()
         {
             NativeMethods.whisper_free(currentWhisperContext);
+            if (language.HasValue)
+            {
+                Marshal.FreeHGlobal(language.Value);
+            }
+
+            if (initialPrompt.HasValue)
+            {
+                Marshal.FreeHGlobal(initialPrompt.Value);
+            }
+
             options.ModelLoader!.Dispose();
         }
     }

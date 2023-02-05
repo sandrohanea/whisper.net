@@ -509,6 +509,8 @@ public class WhisperProcessorBuilder
             throw new InvalidOperationException("Model loader is not set. Please, use WithFileModel or WithBufferedModel methods to set model loader.");
         }
 
-        return new WhisperProcessor(whisperProcessorOptions);
+        var processor = new WhisperProcessor(whisperProcessorOptions);
+        processor.Initialize();
+        return processor;
     }
 }

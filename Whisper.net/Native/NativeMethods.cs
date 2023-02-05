@@ -12,7 +12,7 @@ namespace Whisper.net.Native
 
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer", CharSet = CharSet.Ansi)]
         public static extern IntPtr whisper_init_from_buffer_x32(IntPtr buffer, int buffer_size);
-        
+
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern void whisper_free(IntPtr context);
 
@@ -27,7 +27,7 @@ namespace Whisper.net.Native
 
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern long whisper_full_get_segment_t0(IntPtr context, int index);
-        
+
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern long whisper_full_get_segment_t1(IntPtr context, int index);
 
@@ -36,5 +36,20 @@ namespace Whisper.net.Native
 
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern int whisper_tokenize(IntPtr context, IntPtr text, IntPtr tokens, int nMaxTokens);
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int whisper_lang_max_id();
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int whisper_lang_auto_detect(IntPtr context, int offset_ms, int n_threads, IntPtr lang_probs);
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int whisper_pcm_to_mel(IntPtr context, IntPtr samples, int nSamples, int nThreads);
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int whisper_pcm_to_mel_phase_vocoder(IntPtr context, IntPtr samples, int nSamples, int nThreads);
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern IntPtr whisper_lang_str(int lang_id);
     }
 }
