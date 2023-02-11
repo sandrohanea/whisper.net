@@ -44,11 +44,6 @@ void LanguageIdentification(Options opt)
        .WithBufferedModel(bufferedModel)
        .WithLanguage(opt.Language);
 
-    if (opt.Command == "translate")
-    {
-        builder.WithTranslate();
-    }
-
     using var processor = builder.Build();
 
     using var fileStream = File.OpenRead(opt.FileName);
@@ -58,7 +53,7 @@ void LanguageIdentification(Options opt)
     var samples = wave.GetAvgSamples();
 
     var language = processor.DetectLanguage(samples, speedUp: true);
-    Console.WriteLine("Language is" + language);
+    Console.WriteLine("Language is " + language);
 }
 
 void FullDetection(Options opt)

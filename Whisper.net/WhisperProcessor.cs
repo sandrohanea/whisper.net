@@ -22,6 +22,7 @@ namespace Whisper.net
         private IntPtr? initialPrompt;
         private WhisperNewSegmentCallback? newSegmentCallback;
         private WhisperEncoderBeginCallback? whisperEncoderBeginCallback;
+        private int segmentIndex;
 
         internal WhisperProcessor(WhisperProcessorOptions options)
         {
@@ -76,7 +77,6 @@ namespace Whisper.net
                 {
                     if (speedUp)
                     {
-
                         // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
                         NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                     }
@@ -98,6 +98,7 @@ namespace Whisper.net
         
         public unsafe void Process(float[] samples)
         {
+            segmentIndex = 0;
             fixed (float* pData = samples)
             {
                 NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
@@ -341,17 +342,18 @@ namespace Whisper.net
         {
             var segments = NativeMethods.whisper_full_n_segments(ctx);
 
-            for (var i = 0; i < segments; i++)
+            while (segmentIndex < segments)
             {
-                var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(ctx, i) * 10);
-                var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(ctx, i) * 10);
-                var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(ctx, i));
+                var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(ctx, segmentIndex) * 10);
+                var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(ctx, segmentIndex) * 10);
+                var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(ctx, segmentIndex));
                 var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
 
                 for (var handlerIndex = 0; handlerIndex < options.OnSegmentEventHandlers.Count; handlerIndex++)
                 {
                     options.OnSegmentEventHandlers[handlerIndex]?.Invoke(this, eventHandlerArgs);
                 }
+                segmentIndex++;
             }
         }
         
