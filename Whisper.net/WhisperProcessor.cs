@@ -92,17 +92,34 @@ namespace Whisper.net
                 }
                 var languagePtr = NativeMethods.whisper_lang_str(langId);
                 var language = Marshal.PtrToStringAnsi(languagePtr);
-                Marshal.FreeHGlobal(languagePtr);
                 return (language, probs[langId]);
             }
         }
-
+        
         public unsafe void Process(float[] samples)
         {
             fixed (float* pData = samples)
             {
                 NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
             }
+        }
+
+
+        /// <summary>
+        /// Returns the auto-detected language from the last call to Process
+        /// </summary>
+        /// <returns></returns>
+        public string? GetAutodetectedLanguage()
+        {
+            var detectedLanguageId = NativeMethods.whisper_full_lang_id(currentWhisperContext);
+            if (detectedLanguageId == -1)
+            {
+                return null;
+            }
+            
+            var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
+            var language = Marshal.PtrToStringAnsi(languagePtr);
+            return language;
         }
 
         public void Process(Stream waveStream)
@@ -337,7 +354,7 @@ namespace Whisper.net
                 }
             }
         }
-
+        
         public void Dispose()
         {
             NativeMethods.whisper_free(currentWhisperContext);
