@@ -38,6 +38,8 @@ internal sealed class WhisperProcessorOptions
 
     public int? MaxSegmentLength { get; set; }
 
+    public bool? SplitOnWord { get; set; }
+
     public int? MaxTokensPerSegment { get; set; }
 
     public bool? SpeedUp2x { get; set; }
@@ -57,11 +59,11 @@ internal sealed class WhisperProcessorOptions
 
     public float? TemperatureInc { get; set; }
 
-    public float? EntropyThreshhold { get; set; }
+    public float? EntropyThreshold { get; set; }
 
-    public float? LogProbThreshhold { get; set; }
+    public float? LogProbThreshold { get; set; }
 
-    public float? NoSpeechThreshhold { get; set; }
+    public float? NoSpeechThreshold { get; set; }
     
     public List<OnSegmentEventHandler> OnSegmentEventHandlers { get; set; } = new();
 

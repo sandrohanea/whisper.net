@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Whisper.net.Demo": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
