@@ -20,6 +20,7 @@ namespace Whisper.net
         private WhisperFullParams whisperParams;
         private IntPtr? language;
         private IntPtr? initialPrompt;
+        private IntPtr? initialPromptText;
         private WhisperNewSegmentCallback? newSegmentCallback;
         private WhisperEncoderBeginCallback? whisperEncoderBeginCallback;
         private int segmentIndex;
@@ -234,13 +235,10 @@ namespace Whisper.net
             {
                 var tokenMaxLength = options.Prompt!.Length + 1;
 
-                var promptTextPtr = Marshal.StringToHGlobalAnsi(options.Prompt);
-
+                initialPromptText = Marshal.StringToHGlobalAnsi(options.Prompt);
                 initialPrompt = Marshal.AllocHGlobal(tokenMaxLength);
 
-                var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, promptTextPtr, initialPrompt.Value, tokenMaxLength);
-
-                Marshal.FreeHGlobal(promptTextPtr);
+                var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, initialPromptText.Value, initialPrompt.Value, tokenMaxLength);
 
                 if (tokens == -1)
                 {
@@ -250,7 +248,6 @@ namespace Whisper.net
                 whisperParams.PromptTokens = initialPrompt.Value;
                 whisperParams.PromptNTokens = tokens;
             }
-            //TODO: Fix prompt
 
             if (options.Language != null)
             {
@@ -368,6 +365,11 @@ namespace Whisper.net
             if (initialPrompt.HasValue)
             {
                 Marshal.FreeHGlobal(initialPrompt.Value);
+            }
+
+            if (initialPromptText.HasValue)
+            {
+                Marshal.FreeHGlobal(initialPromptText.Value);
             }
 
             options.ModelLoader!.Dispose();
