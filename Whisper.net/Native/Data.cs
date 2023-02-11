@@ -4,7 +4,7 @@ namespace Whisper.net.Native;
 
 internal enum WhisperSamplingStrategy
 {
-    StrategyGreedy,      // GreefyDecoder
+    StrategyGreedy,      // GreedyDecoder
     StrategyBeamSearch, // BeamSearchDecoder
 }
 
@@ -81,6 +81,8 @@ internal struct WhisperFullParams
     // max segment length in characters
     public int MaxSegmentLength;
 
+    public byte SplitOnWord;
+
     // max tokens per segment (0 = no limit)
     public int MaxTokensPerSegment;
 
@@ -118,12 +120,12 @@ internal struct WhisperFullParams
     // ref: https://github.com/openai/whisper/blob/f82bc59f5ea234d4b97fb2860842ed38519f7e65/whisper/transcribe.py#L274-L278
     public float TemperatureInc;
 
-    public float EntropyThreshhold;
+    public float EntropyThreshold;
 
-    public float LogProbThreshhold;
+    public float LogProbThreshold;
 
     // Note: not implemented yet.
-    public float NoSpeechThreshhold;
+    public float NoSpeechThreshold;
 
     public WhisperParamGreedy WhisperParamGreedy;
 

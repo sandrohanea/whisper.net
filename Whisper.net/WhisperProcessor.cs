@@ -21,7 +21,7 @@ namespace Whisper.net
         private IntPtr? language;
         private IntPtr? initialPrompt;
         private WhisperNewSegmentCallback? newSegmentCallback;
-        private WhisperEncoderBeginCallback? wisperEncoderBeginCallback;
+        private WhisperEncoderBeginCallback? whisperEncoderBeginCallback;
 
         internal WhisperProcessor(WhisperProcessorOptions options)
         {
@@ -191,6 +191,12 @@ namespace Whisper.net
                 whisperParams.MaxSegmentLength = options.MaxSegmentLength.Value;
             }
 
+
+            if (options.SplitOnWord.HasValue)
+            {
+                whisperParams.SplitOnWord = options.SplitOnWord.Value ? trueByte : falseByte;
+            }
+
             if (options.MaxTokensPerSegment.HasValue)
             {
                 whisperParams.MaxTokensPerSegment = options.MaxTokensPerSegment.Value;
@@ -259,19 +265,19 @@ namespace Whisper.net
                 whisperParams.TemperatureInc = options.TemperatureInc.Value;
             }
 
-            if (options.EntropyThreshhold.HasValue)
+            if (options.EntropyThreshold.HasValue)
             {
-                whisperParams.EntropyThreshhold = options.EntropyThreshhold.Value;
+                whisperParams.EntropyThreshold = options.EntropyThreshold.Value;
             }
 
-            if (options.LogProbThreshhold.HasValue)
+            if (options.LogProbThreshold.HasValue)
             {
-                whisperParams.LogProbThreshhold = options.LogProbThreshhold.Value;
+                whisperParams.LogProbThreshold = options.LogProbThreshold.Value;
             }
 
-            if (options.NoSpeechThreshhold.HasValue)
+            if (options.NoSpeechThreshold.HasValue)
             {
-                whisperParams.NoSpeechThreshhold = options.NoSpeechThreshhold.Value;
+                whisperParams.NoSpeechThreshold = options.NoSpeechThreshold.Value;
             }
 
             if (options.SamplingStrategy is GreedySamplingStrategy greedySamplingStrategy)
@@ -296,10 +302,10 @@ namespace Whisper.net
 
             // Store the delegates so they won't be GC before the processor.
             newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
-            wisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
+            whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
 
             whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
-            whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(wisperEncoderBeginCallback);
+            whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
 
             return whisperParams;
         }

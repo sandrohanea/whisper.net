@@ -51,5 +51,8 @@ namespace Whisper.net.Native
 
         [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern IntPtr whisper_lang_str(int lang_id);
+
+        [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int whisper_full_lang_id(IntPtr context);
     }
 }

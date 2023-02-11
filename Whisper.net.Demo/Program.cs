@@ -24,7 +24,7 @@ using var processor = WhisperProcessorBuilder.Create()
     .WithLanguage("auto")
     .Build();
 
-void OnNewSegment(object sender, OnSegmentEventArgs e)
+static void OnNewSegment(object sender, OnSegmentEventArgs e)
 {
     Console.WriteLine($"CSSS {e.Start} ==> {e.End} : {e.Segment}");
 }
