@@ -1,6 +1,4 @@
-﻿// © Microsoft Corporation. All rights reserved.
-
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace Whisper.net.Native.LibraryLoader;
 

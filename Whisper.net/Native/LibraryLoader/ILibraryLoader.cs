@@ -1,6 +1,4 @@
-﻿// © Microsoft Corporation. All rights reserved.
-
-namespace Whisper.net.Native.LibraryLoader;
+﻿namespace Whisper.net.Native.LibraryLoader;
 
 internal interface ILibraryLoader
 {
