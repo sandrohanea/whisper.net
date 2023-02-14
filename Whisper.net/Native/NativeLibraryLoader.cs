@@ -28,20 +28,13 @@ namespace Whisper.net.Native
                 throw new FileNotFoundException($"Native Library not found in path {path}.");
             }
 
-            ILibraryLoader libraryLoader;
-
-            switch (platform)
+            ILibraryLoader libraryLoader = platform switch 
             {
-                case "win":
-                    libraryLoader = new WindowsLibraryLoader();
-                    break;
-                case "linux":
-                case "osx":
-                    libraryLoader = new PosixLibraryLoader();
-                    break;
-                default:
-                    throw new PlatformNotSupportedException($"Currently {platform} platform is not supported");
-            }
+                "win" => new WindowsLibraryLoader(),
+                "osx" => new MacOsLibraryLoader(),
+                "linux" => new LinuxLibraryLoader(),
+                _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
+            };
 
             // open with rtls lazy flag
             var result = libraryLoader.OpenLibrary(path, 0x00001);

@@ -2,7 +2,7 @@
 
 namespace Whisper.net.Native.LibraryLoader;
 
-internal class PosixLibraryLoader : ILibraryLoader
+internal class LinuxLibraryLoader : ILibraryLoader
 {
 	[DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
 	public static extern IntPtr NativeOpenLibraryLibdl(string filename, int flags);
