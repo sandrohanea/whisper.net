@@ -6,29 +6,21 @@ namespace Whisper.net.Native.LibraryLoader;
 
 internal class PosixLibraryLoader : ILibraryLoader
 {
-	[DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto)]
-	public static extern IntPtr dlopen(string filename, int flags);
+	[DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
+	public static extern IntPtr OpenLibdl(string filename, int flags);
+
+	[DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
+	public static extern IntPtr OpenLibdl2 (string filename, int flags);
 
 	public IntPtr OpenLibrary(string filename, int flags)
 	{
 		try
 		{
-			return PosixLibraryLoader2.dlopen(filename, flags);
+			return OpenLibdl(filename, flags);
 		}
 		catch
 		{
-			return dlopen(filename, flags);
-		}
-	}
-
-	private class PosixLibraryLoader2 : ILibraryLoader
-	{
-		[DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto)]
-		public static extern IntPtr dlopen(string filename, int flags);
-
-		public IntPtr OpenLibrary(string filename, int flags)
-		{
-			return dlopen(filename, flags);
+			return OpenLibdl2(filename, flags);
 		}
 	}
 }
