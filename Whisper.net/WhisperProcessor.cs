@@ -10,10 +10,6 @@ namespace Whisper.net
         private const byte trueByte = 1;
         private const byte falseByte = 0;
 
-        private static readonly Lazy<bool> libraryLoaded = new(() =>
-        {
-            return NativeLibraryLoader.LoadNativeLibrary();
-        }, true);
 
         private IntPtr currentWhisperContext;
         private readonly WhisperProcessorOptions options;
@@ -27,18 +23,9 @@ namespace Whisper.net
 
         internal WhisperProcessor(WhisperProcessorOptions options)
         {
-            if (!libraryLoaded.Value)
-            {
-                throw new Exception("Failed to load native whisper library.");
-            }
-
             this.options = options;
-        }
-
-        internal void Initialize()
-        {
-            currentWhisperContext = options.ModelLoader!.LoadNativeContext();
-            whisperParams = GetWhisperParams();
+            this.currentWhisperContext = options.ContextHandle;
+            this.whisperParams = GetWhisperParams();
         }
 
         public void ChangeLanguage(string? newLanguage)
@@ -360,7 +347,6 @@ namespace Whisper.net
 
         public void Dispose()
         {
-            NativeMethods.whisper_free(currentWhisperContext);
             if (language.HasValue)
             {
                 Marshal.FreeHGlobal(language.Value);
@@ -375,8 +361,6 @@ namespace Whisper.net
             {
                 Marshal.FreeHGlobal(initialPromptText.Value);
             }
-
-            options.ModelLoader!.Dispose();
         }
     }
 }

@@ -46,7 +46,9 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
 
 ```csharp
 
-    using var processor = WhisperProcessorBuilder.Create()
+    using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
+
+    using var processor = whisperFactory.CreateBuilder()
         .WithSegmentEventHandler(OnNewSegment)
         .WithFileModel("ggml-base.bin")
         .WithTranslate()

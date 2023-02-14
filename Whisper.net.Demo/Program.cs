@@ -40,8 +40,10 @@ void LanguageIdentification(Options opt)
 {
     var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
-    var builder = WhisperProcessorBuilder.Create()
-       .WithBufferedModel(bufferedModel)
+    // Same factory can be used by multiple taks to create processors.
+    using var factory = WhisperFactory.FromBuffer(bufferedModel);
+
+    var builder = factory.CreateBuilder()
        .WithLanguage(opt.Language);
 
     using var processor = builder.Build();
@@ -58,8 +60,10 @@ void LanguageIdentification(Options opt)
 
 void FullDetection(Options opt)
 {
-    var builder = WhisperProcessorBuilder.Create()
-       .WithFileModel(opt.ModelName)
+    // Same factory can be used by multiple taks to create processors.
+    using var factory = WhisperFactory.FromPath(opt.ModelName);
+
+    var builder = factory.CreateBuilder()
        .WithSegmentEventHandler(OnNewSegment)
        .WithLanguage(opt.Language);
 

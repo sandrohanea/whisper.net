@@ -6,7 +6,8 @@ namespace Whisper.net;
 internal sealed class WhisperProcessorOptions
 {
     public IWhisperSamplingStrategy SamplingStrategy { get; set; } = new GreedySamplingStrategy();
-    public IWhisperProcessorModelLoader? ModelLoader { get; set; }
+
+    public IntPtr ContextHandle { get; set; }
 
     public int? Threads { get; set; }
 
