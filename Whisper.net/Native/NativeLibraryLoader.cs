@@ -25,7 +25,7 @@ namespace Whisper.net.Native
             var path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
             if (!File.Exists(path))
             {
-                return false;
+                throw new FileNotFoundException($"Native Library not found in path {path}.");
             }
 
             ILibraryLoader libraryLoader;
