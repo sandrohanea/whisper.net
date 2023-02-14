@@ -16,7 +16,7 @@ internal class PosixLibraryLoader : ILibraryLoader
 		{
 			return NativeOpenLibraryLibdl2(filename, flags);
 		}
-		catch
+		catch (DllNotFoundException)
 		{
 			return NativeOpenLibraryLibdl(filename, flags);
 		}
