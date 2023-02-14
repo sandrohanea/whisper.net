@@ -1,8 +1,24 @@
 {
   "profiles": {
-    "Whisper.net.Demo": {
+    "Demo Romanian Detected": {
       "commandName": "Project",
-      "nativeDebugging": true
+      "nativeDebugging": true,
+      "commandLineArgs": "-f rom.wav"
+    },
+    "Demo Romanian Provided": {
+      "commandName": "Project",
+      "nativeDebugging": true,
+      "commandLineArgs": "-f rom.wav -l ro"
+    },
+    "Demo English Detected": {
+      "commandName": "Project",
+      "nativeDebugging": true,
+      "commandLineArgs": "-f kennedy.wav"
+    },
+    "Demo English TinyEn Provided": {
+      "commandName": "Project",
+      "nativeDebugging": true,
+      "commandLineArgs": "-f kennedy.wav -g TinyEn -m tiny-en.bin -l en"
     }
   }
 }

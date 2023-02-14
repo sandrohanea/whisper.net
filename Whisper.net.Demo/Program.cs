@@ -58,7 +58,6 @@ void LanguageIdentification(Options opt)
 
 void FullDetection(Options opt)
 {
-
     var builder = WhisperProcessorBuilder.Create()
        .WithFileModel(opt.ModelName)
        .WithSegmentEventHandler(OnNewSegment)
@@ -77,9 +76,7 @@ void FullDetection(Options opt)
     }
 
     using var fileStream = File.OpenRead(opt.FileName);
-    processor.Process(fileStream);
-    var language = processor.GetAutodetectedLanguage();
-    Console.WriteLine("Language was " + language);
+    var processResult = processor.Process(fileStream);
 }
 
 public class Options
@@ -87,7 +84,7 @@ public class Options
     [Option('t', "command", Required = false, HelpText = "Command to run (lang-detect, transcribe or translate)", Default = "transcribe")]
     public string Command { get; set; }
 
-    [Option('f', "file", Required = false, HelpText = "File to process", Default = "1min.wav")]
+    [Option('f', "file", Required = false, HelpText = "File to process", Default = "kennedy.wav")]
     public string FileName { get; set; }
 
     [Option('l', "lang", Required = false, HelpText = "Language", Default = "auto")]

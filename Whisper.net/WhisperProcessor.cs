@@ -67,70 +67,61 @@ namespace Whisper.net
             var (language, _) = DetectLanguageWithProbability(samples, speedUp);
             return language;
         }
-        
+
         public unsafe (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
         {
             var probs = new float[NativeMethods.whisper_lang_max_id()];
 
             fixed (float* pData = probs)
             {
-                fixed (float* pSamples = samples)
+                var state = NativeMethods.whisper_init_state(currentWhisperContext);
+                try
                 {
-                    if (speedUp)
+                    fixed (float* pSamples = samples)
                     {
-                        // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
-                        NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        if (speedUp)
+                        {
+                            // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
+                            NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        }
+                        else
+                        {
+                            NativeMethods.whisper_pcm_to_mel(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        }
                     }
-                    else
+                    var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
+                    if (langId == -1)
                     {
-                        NativeMethods.whisper_pcm_to_mel(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        return (null, 0f);
                     }
+                    var languagePtr = NativeMethods.whisper_lang_str(langId);
+                    var language = Marshal.PtrToStringAnsi(languagePtr);
+                    return (language, probs[langId]);
                 }
-                var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, 0, whisperParams.Threads, (IntPtr)pData);
-                if (langId == -1)
+                finally
                 {
-                    return (null, 0f);
+                    NativeMethods.whisper_free_state(state);
                 }
-                var languagePtr = NativeMethods.whisper_lang_str(langId);
-                var language = Marshal.PtrToStringAnsi(languagePtr);
-                return (language, probs[langId]);
             }
         }
-        
-        public unsafe void Process(float[] samples)
+
+        public unsafe WhisperProcessResult Process(float[] samples)
         {
             segmentIndex = 0;
             fixed (float* pData = samples)
             {
                 NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+                return new WhisperProcessResult();
             }
         }
 
-
-        /// <summary>
-        /// Returns the auto-detected language from the last call to Process
-        /// </summary>
-        /// <returns></returns>
-        public string? GetAutodetectedLanguage()
-        {
-            var detectedLanguageId = NativeMethods.whisper_full_lang_id(currentWhisperContext);
-            if (detectedLanguageId == -1)
-            {
-                return null;
-            }
-            
-            var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
-            var language = Marshal.PtrToStringAnsi(languagePtr);
-            return language;
-        }
-
-        public void Process(Stream waveStream)
+        public WhisperProcessResult Process(Stream waveStream)
         {
             var waveParser = new WaveParser(waveStream);
 
             var samples = waveParser.GetAvgSamples();
 
-            Process(samples);
+            return Process(samples);
         }
 
         private WhisperFullParams GetWhisperParams()
@@ -325,7 +316,20 @@ namespace Whisper.net
             return whisperParams;
         }
 
-        private bool OnEncoderBegin(IntPtr ctx, IntPtr user_data)
+        private string? GetAutodetectedLanguage(IntPtr state)
+        {
+            var detectedLanguageId = NativeMethods.whisper_full_lang_id(state);
+            if (detectedLanguageId == -1)
+            {
+                return null;
+            }
+
+            var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
+            var language = Marshal.PtrToStringAnsi(languagePtr);
+            return language;
+        }
+
+        private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
         {
             var encoderBeginArgs = new OnEncoderBeginEventArgs();
             for (var handlerIndex = 0; handlerIndex < options.OnEncoderBeginEventHandlers.Count; handlerIndex++)
@@ -335,15 +339,15 @@ namespace Whisper.net
             return true;
         }
 
-        private void OnNewSegment(IntPtr ctx, int n_new, IntPtr user_data)
+        private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
         {
-            var segments = NativeMethods.whisper_full_n_segments(ctx);
+            var segments = NativeMethods.whisper_full_n_segments(state);
 
             while (segmentIndex < segments)
             {
-                var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(ctx, segmentIndex) * 10);
-                var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(ctx, segmentIndex) * 10);
-                var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(ctx, segmentIndex));
+                var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
+                var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
+                var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
                 var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
 
                 for (var handlerIndex = 0; handlerIndex < options.OnSegmentEventHandlers.Count; handlerIndex++)
@@ -353,7 +357,7 @@ namespace Whisper.net
                 segmentIndex++;
             }
         }
-        
+
         public void Dispose()
         {
             NativeMethods.whisper_free(currentWhisperContext);

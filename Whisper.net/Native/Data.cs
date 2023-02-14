@@ -25,10 +25,10 @@ internal struct WhisperParamBeamSearch
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate void WhisperNewSegmentCallback(IntPtr ctx, int n_new, IntPtr user_data);
+internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr user_data);
+internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, IntPtr user_data);
 
 
 [StructLayout(LayoutKind.Sequential)]
