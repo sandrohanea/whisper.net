@@ -378,9 +378,9 @@ namespace Whisper.net
         private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
         {
             var encoderBeginArgs = new OnEncoderBeginEventArgs();
-            for (var handlerIndex = 0; handlerIndex < options.OnEncoderBeginEventHandlers.Count; handlerIndex++)
+            foreach (OnEncoderBeginEventHandler handler in options.OnEncoderBeginEventHandlers)
             {
-                options.OnEncoderBeginEventHandlers[handlerIndex]?.Invoke(this, encoderBeginArgs);
+                handler?.Invoke(this, encoderBeginArgs);
             }
             return true;
         }
