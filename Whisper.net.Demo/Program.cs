@@ -75,7 +75,7 @@ async Task FullDetection(Options opt)
     using var processor = builder.Build();
 
     using var fileStream = File.OpenRead(opt.FileName);
-    var processResult = processor.ProcessAsync(fileStream, CancellationToken.None);
+    var processResult = await processor.ProcessAsync(fileStream, CancellationToken.None);
 
     //Console.WriteLine($"Language {processResult.Language}");
     await foreach (var segment in processResult)

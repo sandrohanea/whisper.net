@@ -110,10 +110,10 @@ namespace Whisper.net
             }
         }
 
-        public IAsyncEnumerable<OnSegmentEventArgs> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
+        public async Task<IAsyncEnumerable<OnSegmentEventArgs>> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
         {
             var waveParser = new WaveParser(waveStream);
-            var samples = waveParser.GetAvgSamples();
+            var samples = await waveParser.GetAvgSamplesAsync(cancellationToken);
             return ProcessAsync(samples, cancellationToken);
         }
 
