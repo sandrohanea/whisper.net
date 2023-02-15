@@ -115,27 +115,36 @@ public sealed class WaveParser
     /// <returns></returns>
     public async Task<float[]> GetAvgSamplesAsync(CancellationToken cancellationToken)
     {
+        if (channels == 0)
+        {
+            throw new InvalidOperationException("Channel count is set to 0");
+        }
+
         var samplesCount = GetSamplesCount();
         var samples = new float[samplesCount];
 
         byte[] buffer = new byte[4096];
 
-        for (int sampleIndex = 0; sampleIndex < samplesCount; sampleIndex++)
-        {
-            int bytesRead = await waveStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+        int sampleIndex = 0;
+        int bytesRead;
 
-            for (int i = 0; i < bytesRead; i += 2)
+        do
+        {
+            bytesRead = await waveStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+
+            for (int i = 0; i < bytesRead;)
             {
                 long sampleSum = 0;
 
                 for (var currentChannel = 0; currentChannel < channels; currentChannel++)
                 {
-                    sampleSum += buffer[i] << 8 | buffer[i + 1];
+                    sampleSum += BitConverter.ToInt16(buffer, i);
+                    i += 2;
                 }
 
-                samples[i] = sampleSum / 4f / 32768.0f;
+                samples[sampleIndex++] = sampleSum / (float)channels / 32768.0f;
             }
-        }
+        } while (bytesRead > 0);
 
         return samples;
     }
@@ -149,11 +158,10 @@ public sealed class WaveParser
         var reader = GetDataReader();
 		var samplesCount = GetSamplesCount();
         var samples = new float[samplesCount];
-        long sampleSum;
 
         for (int i = 0; i < samplesCount; i++)
         {
-            sampleSum = 0;
+            long sampleSum = 0;
             for (var currentChannel = 0; currentChannel < channels; currentChannel++)
             {
                 sampleSum += reader.ReadInt16();

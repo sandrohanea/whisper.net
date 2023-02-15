@@ -165,7 +165,6 @@ namespace Whisper.net
                 fixed (float* pData = samples)
                 {
                     NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
-                    Console.WriteLine("Finished");
                 }
             });
         }
@@ -395,17 +394,16 @@ namespace Whisper.net
                 var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
                 var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
 
-                if (string.IsNullOrEmpty(textAnsi))
+                if (!string.IsNullOrEmpty(textAnsi))
                 {
-                    continue;
+                    var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
+
+                    foreach (OnSegmentEventHandler handler in options.OnSegmentEventHandlers)
+                    {
+                        handler?.Invoke(this, eventHandlerArgs);
+                    }
                 }
 
-                var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
-
-                foreach (OnSegmentEventHandler handler in options.OnSegmentEventHandlers)
-                {
-                    handler?.Invoke(this, eventHandlerArgs);
-                }
                 segmentIndex++;
             }
         }
