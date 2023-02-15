@@ -2,6 +2,8 @@
 {
     public class WhisperProcessResult
     {
-        public string? Language { get; set; }
+        public IEnumerable<OnSegmentEventArgs> Segments { get; internal set; }
+
+        public string? Language { get; internal set; }
     }
 }

@@ -21,6 +21,10 @@
 		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
 		<None Include="..\readme.md" Pack="true" PackagePath=""/>
 	</ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
+  </ItemGroup>
 	
 	<ItemGroup>
 		<Content Include="runtimes\linux-x64\whisper.so">
