@@ -110,21 +110,21 @@ namespace Whisper.net
             }
         }
 
-        public async Task<IAsyncEnumerable<OnSegmentEventArgs>> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
+        public async Task<IAsyncEnumerable<SegmentData>> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
         {
             var waveParser = new WaveParser(waveStream);
             var samples = await waveParser.GetAvgSamplesAsync(cancellationToken);
             return ProcessAsync(samples, cancellationToken);
         }
 
-        private async IAsyncEnumerable<OnSegmentEventArgs> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             ManualResetEventSlim manualResetEventSlim = new();
-            var buffer = new ConcurrentQueue<OnSegmentEventArgs>();
+            var buffer = new ConcurrentQueue<SegmentData>();
 
             void OnSegmentHandler(object sender, OnSegmentEventArgs @event)
             {
-                buffer.Enqueue(@event);
+                buffer.Enqueue(new SegmentData(@event.Segment, @event.Start, @event.End));
                 manualResetEventSlim.Set();
             }
 
@@ -142,7 +142,7 @@ namespace Whisper.net
                         manualResetEventSlim.Reset();
                     }
 
-                    if (buffer.Count > 0 && buffer.TryDequeue(out OnSegmentEventArgs evt))
+                    if (buffer.Count > 0 && buffer.TryDequeue(out SegmentData evt))
                     {
                         yield return evt;
                     }
@@ -394,6 +394,12 @@ namespace Whisper.net
                 var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
                 var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
                 var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
+
+                if (string.IsNullOrEmpty(textAnsi))
+                {
+                    continue;
+                }
+
                 var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
 
                 foreach (OnSegmentEventHandler handler in options.OnSegmentEventHandlers)
