@@ -119,13 +119,13 @@ namespace Whisper.net
 
         private async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            ManualResetEventSlim manualResetEventSlim = new();
+            AsyncAutoResetEvent resetEvent = new();
             var buffer = new ConcurrentQueue<SegmentData>();
 
             void OnSegmentHandler(object sender, OnSegmentEventArgs @event)
             {
                 buffer.Enqueue(new SegmentData(@event.Segment, @event.Start, @event.End));
-                manualResetEventSlim.Set();
+                resetEvent.Set();
             }
 
             options.OnSegmentEventHandlers.Add(OnSegmentHandler);
@@ -133,13 +133,13 @@ namespace Whisper.net
             try
             {
                 Task whisperTask = ProcessInternalAsync(samples);
+                _ = whisperTask.ContinueWith(_ => resetEvent.Set(), cancellationToken);
 
                 while (!whisperTask.IsCompleted || buffer.Count > 0)
                 {
                     if (buffer.Count == 0)
                     {
-                        await manualResetEventSlim.WaitHandle.AsValueTask(options.Timeout, cancellationToken).ConfigureAwait(false);
-                        manualResetEventSlim.Reset();
+                        await resetEvent.WaitAsync().ConfigureAwait(false);
                     }
 
                     if (buffer.Count > 0 && buffer.TryDequeue(out SegmentData evt))

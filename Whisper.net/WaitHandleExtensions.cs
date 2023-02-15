@@ -1,43 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Whisper.net
+﻿namespace Whisper.net
 {
-	internal static class WaitHandleExtensions
+	public class AsyncAutoResetEvent
 	{
-		public static ValueTask AsValueTask(this WaitHandle handle, TimeSpan timeout, CancellationToken token)
+		private static readonly Task Completed = Task.FromResult(true);
+		private TaskCompletionSource<bool>? waitTcs;
+		private bool isSignaled;
+
+		public Task WaitAsync()
 		{
-			// Handle synchronous cases.
-			var alreadySignalled = handle.WaitOne(0);
-			if (alreadySignalled || timeout == TimeSpan.Zero)
-				return new ValueTask();
-
-			token.ThrowIfCancellationRequested();
-
-			return new ValueTask(HandleAsync(handle, timeout, token));
-		}
-
-		private static async Task<bool> HandleAsync(WaitHandle handle, TimeSpan timeout, CancellationToken token)
-		{
-			var tcs = new TaskCompletionSource<bool>();
-			using (new ThreadPoolRegistration(handle, timeout, tcs))
-			using (token.Register(state => ((TaskCompletionSource<bool>)state).TrySetCanceled(), tcs, useSynchronizationContext: false))
-				return await tcs.Task.ConfigureAwait(false);
-		}
-
-		private sealed class ThreadPoolRegistration : IDisposable
-		{
-			private readonly RegisteredWaitHandle registeredWaitHandle;
-
-			public ThreadPoolRegistration(WaitHandle handle, TimeSpan timeout, TaskCompletionSource<bool> tcs)
+			lock (this)
 			{
-				registeredWaitHandle = ThreadPool.RegisterWaitForSingleObject(handle,
-					(state, timedOut) => ((TaskCompletionSource<bool>)state).TrySetResult(!timedOut), tcs,
-					timeout, executeOnlyOnce: true);
+				if (isSignaled)
+				{
+					isSignaled = false;
+					return Completed;
+				}
+				else
+				{
+					var tcs = new TaskCompletionSource<bool>();
+					waitTcs = tcs;
+					return tcs.Task;
+				}
+			}
+		}
+
+
+		public void Set()
+		{
+			TaskCompletionSource<bool>? toRelease = null;
+			lock (this)
+			{
+				if (waitTcs != null)
+				{
+					toRelease = waitTcs;
+					waitTcs = null;
+				}
+				else
+				{
+					isSignaled = true;
+				}
 			}
 
-			void IDisposable.Dispose() => registeredWaitHandle.Unregister(null);
+			toRelease?.SetResult(true);
 		}
 	}
 }
