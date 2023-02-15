@@ -120,11 +120,11 @@ namespace Whisper.net
         private async IAsyncEnumerable<OnSegmentEventArgs> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             ManualResetEventSlim manualResetEventSlim = new();
-            var buffer = new ConcurrentBag<OnSegmentEventArgs>();
+            var buffer = new ConcurrentQueue<OnSegmentEventArgs>();
 
             void OnSegmentHandler(object sender, OnSegmentEventArgs @event)
             {
-                buffer.Add(@event);
+                buffer.Enqueue(@event);
                 manualResetEventSlim.Set();
             }
 
@@ -139,9 +139,10 @@ namespace Whisper.net
                     if (buffer.Count == 0)
                     {
                         await manualResetEventSlim.WaitHandle.AsValueTask(options.Timeout, cancellationToken).ConfigureAwait(false);
+                        manualResetEventSlim.Reset();
                     }
 
-                    if (buffer.Count > 0 && buffer.TryTake(out OnSegmentEventArgs evt))
+                    if (buffer.Count > 0 && buffer.TryDequeue(out OnSegmentEventArgs evt))
                     {
                         yield return evt;
                     }
