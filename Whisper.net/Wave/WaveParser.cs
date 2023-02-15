@@ -113,22 +113,64 @@ public sealed class WaveParser
     /// Returns the average samples from all channels.
     /// </summary>
     /// <returns></returns>
+    public async Task<float[]> GetAvgSamplesAsync(CancellationToken cancellationToken)
+    {
+        if (channels == 0)
+        {
+            throw new InvalidOperationException("Channel count is set to 0");
+        }
+
+        var samplesCount = GetSamplesCount();
+        var samples = new float[samplesCount];
+
+        byte[] buffer = new byte[4096];
+
+        int sampleIndex = 0;
+        int bytesRead;
+
+        do
+        {
+            bytesRead = await waveStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+
+            for (int i = 0; i < bytesRead;)
+            {
+                long sampleSum = 0;
+
+                for (var currentChannel = 0; currentChannel < channels; currentChannel++)
+                {
+                    sampleSum += BitConverter.ToInt16(buffer, i);
+                    i += 2;
+                }
+
+                samples[sampleIndex++] = sampleSum / (float)channels / 32768.0f;
+            }
+        } while (bytesRead > 0);
+
+        return samples;
+    }
+
+    /// <summary>
+    /// Returns the average samples from all channels.
+    /// </summary>
+    /// <returns></returns>
     public float[] GetAvgSamples()
     {
         var reader = GetDataReader();
         var samplesCount = GetSamplesCount();
         var samples = new float[samplesCount];
-        long sampleSum;
 
         for (int i = 0; i < samplesCount; i++)
         {
-            sampleSum = 0;
+            long sampleSum = 0;
+
             for (var currentChannel = 0; currentChannel < channels; currentChannel++)
             {
                 sampleSum += reader.ReadInt16();
             }
+
             samples[i] = (sampleSum / 4) / 32768.0f;
         }
+
         return samples;
     }
 

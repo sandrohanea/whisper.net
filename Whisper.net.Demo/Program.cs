@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Whisper.net;
@@ -28,7 +29,7 @@ async Task Demo(Options opt)
             break;
         case "transcribe":
         case "translate":
-            FullDetection(opt);
+            await FullDetection(opt);
             break;
         default:
             Console.WriteLine("Unknown command");
@@ -58,14 +59,13 @@ void LanguageIdentification(Options opt)
     Console.WriteLine("Language is " + language);
 }
 
-void FullDetection(Options opt)
+async Task FullDetection(Options opt)
 {
     // Same factory can be used by multiple taks to create processors.
     using var factory = WhisperFactory.FromPath(opt.ModelName);
 
     var builder = factory.CreateBuilder()
-       .WithSegmentEventHandler(OnNewSegment)
-       .WithLanguage(opt.Language);
+        .WithLanguage(opt.Language);
 
     if (opt.Command == "translate")
     {
@@ -74,13 +74,13 @@ void FullDetection(Options opt)
 
     using var processor = builder.Build();
 
-    static void OnNewSegment(object sender, OnSegmentEventArgs e)
-    {
-        Console.WriteLine($"New Segment: {e.Start} ==> {e.End} : {e.Segment}");
-    }
-
     using var fileStream = File.OpenRead(opt.FileName);
-    var processResult = processor.Process(fileStream);
+    var processResult = await processor.ProcessAsync(fileStream, CancellationToken.None);
+
+    await foreach (var segment in processResult)
+    {
+        Console.WriteLine($"New Segment: {segment.Start} ==> {segment.End} : {segment.Segment}");
+    }
 }
 
 public class Options

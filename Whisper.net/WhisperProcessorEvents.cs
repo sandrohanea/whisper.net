@@ -11,14 +11,14 @@ public class OnEncoderBeginEventArgs : EventArgs
 
 public class OnSegmentEventArgs : EventArgs
 {
-    public OnSegmentEventArgs(string? segment, TimeSpan start, TimeSpan end)
+    public OnSegmentEventArgs(string segment, TimeSpan start, TimeSpan end)
     {
         Segment = segment;
         Start = start;
         End = end;
     }
 
-    public string? Segment { get; }
+    public string Segment { get; }
     
     public TimeSpan Start { get; }
     

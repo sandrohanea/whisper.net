@@ -17,6 +17,8 @@ internal sealed class WhisperProcessorOptions
 
     public TimeSpan? Duration { get; set; }
 
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
+
     public bool? Translate { get; set; }
 
     public bool? NoContext { get; set; }

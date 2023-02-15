@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
 using Whisper.net.Wave;
@@ -9,7 +11,6 @@ namespace Whisper.net
     {
         private const byte trueByte = 1;
         private const byte falseByte = 0;
-
 
         private IntPtr currentWhisperContext;
         private readonly WhisperProcessorOptions options;
@@ -92,23 +93,80 @@ namespace Whisper.net
             }
         }
 
-        public unsafe WhisperProcessResult Process(float[] samples)
-        {
-            segmentIndex = 0;
-            fixed (float* pData = samples)
-            {
-                NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
-                return new WhisperProcessResult();
-            }
-        }
-
-        public WhisperProcessResult Process(Stream waveStream)
+        public void Process(Stream waveStream)
         {
             var waveParser = new WaveParser(waveStream);
 
             var samples = waveParser.GetAvgSamples();
 
-            return Process(samples);
+            Process(samples);
+        }
+
+        public unsafe void Process(float[] samples)
+        {
+            fixed (float* pData = samples)
+            {
+                NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+            }
+        }
+
+        public async Task<IAsyncEnumerable<SegmentData>> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
+        {
+            var waveParser = new WaveParser(waveStream);
+            var samples = await waveParser.GetAvgSamplesAsync(cancellationToken);
+            return ProcessAsync(samples, cancellationToken);
+        }
+
+        private async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            AsyncAutoResetEvent resetEvent = new();
+            var buffer = new ConcurrentQueue<SegmentData>();
+
+            void OnSegmentHandler(object sender, OnSegmentEventArgs @event)
+            {
+                buffer.Enqueue(new SegmentData(@event.Segment, @event.Start, @event.End));
+                resetEvent.Set();
+            }
+
+            options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+
+            try
+            {
+                Task whisperTask = ProcessInternalAsync(samples);
+                _ = whisperTask.ContinueWith(_ => resetEvent.Set(), cancellationToken);
+
+                while (!whisperTask.IsCompleted || buffer.Count > 0)
+                {
+                    if (buffer.Count == 0)
+                    {
+                        await resetEvent.WaitAsync().ConfigureAwait(false);
+                    }
+
+                    if (buffer.Count > 0 && buffer.TryDequeue(out SegmentData evt))
+                    {
+                        yield return evt;
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
+                await whisperTask.ConfigureAwait(false);
+            }
+            finally
+            {
+                options.OnSegmentEventHandlers.Remove(OnSegmentHandler);
+            }
+        }
+
+        private unsafe Task ProcessInternalAsync(float[] samples)
+        {
+            return Task.Run(() =>
+            {
+                fixed (float* pData = samples)
+                {
+                    NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+                }
+            });
         }
 
         private WhisperFullParams GetWhisperParams()
@@ -319,9 +377,9 @@ namespace Whisper.net
         private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
         {
             var encoderBeginArgs = new OnEncoderBeginEventArgs();
-            for (var handlerIndex = 0; handlerIndex < options.OnEncoderBeginEventHandlers.Count; handlerIndex++)
+            foreach (OnEncoderBeginEventHandler handler in options.OnEncoderBeginEventHandlers)
             {
-                options.OnEncoderBeginEventHandlers[handlerIndex]?.Invoke(this, encoderBeginArgs);
+                handler?.Invoke(this, encoderBeginArgs);
             }
             return true;
         }
@@ -335,12 +393,17 @@ namespace Whisper.net
                 var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
                 var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
                 var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
-                var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
 
-                for (var handlerIndex = 0; handlerIndex < options.OnSegmentEventHandlers.Count; handlerIndex++)
+                if (!string.IsNullOrEmpty(textAnsi))
                 {
-                    options.OnSegmentEventHandlers[handlerIndex]?.Invoke(this, eventHandlerArgs);
+                    var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
+
+                    foreach (OnSegmentEventHandler handler in options.OnSegmentEventHandlers)
+                    {
+                        handler?.Invoke(this, eventHandlerArgs);
+                    }
                 }
+
                 segmentIndex++;
             }
         }
