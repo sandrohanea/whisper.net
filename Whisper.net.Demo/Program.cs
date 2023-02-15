@@ -77,7 +77,6 @@ async Task FullDetection(Options opt)
     using var fileStream = File.OpenRead(opt.FileName);
     var processResult = await processor.ProcessAsync(fileStream, CancellationToken.None);
 
-    //Console.WriteLine($"Language {processResult.Language}");
     await foreach (var segment in processResult)
     {
         Console.WriteLine($"New Segment: {segment.Start} ==> {segment.End} : {segment.Segment}");
