@@ -1,4 +1,6 @@
-﻿using Whisper.net.Internals.ModelLoader;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.Internals.ModelLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net;
@@ -93,5 +95,6 @@ public sealed class WhisperFactory : IDisposable
             NativeMethods.whisper_free(contextLazy.Value);
         }
         loader.Dispose();
+        wasDisposed = true;
     }
 }

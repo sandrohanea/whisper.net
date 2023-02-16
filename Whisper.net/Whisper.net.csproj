@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>10</LangVersion>
@@ -22,9 +22,9 @@
 		<None Include="..\readme.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<Content Include="runtimes\linux-x64\whisper.so">

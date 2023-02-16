@@ -1,4 +1,6 @@
-﻿using Whisper.net.SamplingStrategy;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
@@ -98,7 +100,6 @@ public class WhisperProcessorBuilder
         whisperProcessorOptions.NoContext = true;
         return this;
     }
-
 
     /// <summary>
     /// Configures the processor to force a single segment as output instead of multiple. 

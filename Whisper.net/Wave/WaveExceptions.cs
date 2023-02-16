@@ -1,4 +1,6 @@
-﻿namespace Whisper.net.Wave;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+namespace Whisper.net.Wave;
 
 public class CorruptedWaveException : Exception
 {

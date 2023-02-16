@@ -1,4 +1,6 @@
-﻿using Whisper.net.SamplingStrategy;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
@@ -29,7 +31,7 @@ internal sealed class WhisperProcessorOptions
     public bool? PrintResults { get; set; }
 
     public bool? PrintTimestamps { get; set; }
-    
+
     public bool? UseTokenTimestamps { get; set; }
 
     public float? TokenTimestampsThreshold { get; set; }
@@ -64,7 +66,7 @@ internal sealed class WhisperProcessorOptions
     public float? LogProbThreshold { get; set; }
 
     public float? NoSpeechThreshold { get; set; }
-    
+
     public List<OnSegmentEventHandler> OnSegmentEventHandlers { get; set; } = new();
 
     public List<OnEncoderBeginEventHandler> OnEncoderBeginEventHandlers { get; set; } = new();

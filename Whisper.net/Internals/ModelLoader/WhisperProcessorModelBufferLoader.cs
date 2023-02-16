@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using System.Runtime.InteropServices;
 using Whisper.net.Native;
 
 namespace Whisper.net.Internals.ModelLoader;

@@ -1,4 +1,5 @@
-﻿
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
 using System;
 using System.IO;
 using System.Threading;
@@ -7,7 +8,6 @@ using CommandLine;
 using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;
-
 
 await Parser.Default.ParseArguments<Options>(args)
     .WithParsedAsync(Demo);
