@@ -29,4 +29,4 @@ jobs:
     - name: Test
       run: |
         dotnet test ./Whisper.net.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-        coverlet ./**/bin/**/Tests.dll --format opencover --output ./TestResults/coverage.opencover.xml
+        coverlet ./**/bin/**/*Tests.dll --format opencover --output ./TestResults/coverage.opencover.xml
