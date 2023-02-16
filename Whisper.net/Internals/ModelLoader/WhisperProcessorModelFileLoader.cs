@@ -1,10 +1,12 @@
-﻿using Whisper.net.Native;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-namespace Whisper.net.ModelLoader;
+using Whisper.net.Native;
+
+namespace Whisper.net.Internals.ModelLoader;
 
 internal sealed class WhisperProcessorModelFileLoader : IWhisperProcessorModelLoader
 {
-    private string pathModel;
+    private readonly string pathModel;
 
     public WhisperProcessorModelFileLoader(string pathModel)
     {

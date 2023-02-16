@@ -1,26 +1,28 @@
-﻿namespace Whisper.net;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-public delegate void OnSegmentEventHandler(object sender, OnSegmentEventArgs e);
+namespace Whisper.net;
 
-public delegate void OnEncoderBeginEventHandler(object sender, OnEncoderBeginEventArgs e);
+public delegate void OnSegmentEventHandler(SegmentData e);
 
-public class OnEncoderBeginEventArgs : EventArgs
+public delegate bool OnEncoderBeginEventHandler(EncoderBeginData e);
+
+public class EncoderBeginData
 {
-      
+
 }
 
-public class OnSegmentEventArgs : EventArgs
+public class SegmentData
 {
-    public OnSegmentEventArgs(string? segment, TimeSpan start, TimeSpan end)
+    public SegmentData(string text, TimeSpan start, TimeSpan end)
     {
-        Segment = segment;
+        Text = text;
         Start = start;
         End = end;
     }
 
-    public string? Segment { get; }
-    
+    public string Text { get; }
+
     public TimeSpan Start { get; }
-    
+
     public TimeSpan End { get; }
 }

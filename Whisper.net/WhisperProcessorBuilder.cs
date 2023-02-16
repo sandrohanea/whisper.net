@@ -1,4 +1,5 @@
-﻿using Whisper.net.ModelLoader;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
 using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
@@ -10,46 +11,12 @@ public class WhisperProcessorBuilder
 {
     private readonly WhisperProcessorOptions whisperProcessorOptions;
 
-    private WhisperProcessorBuilder()
+    internal WhisperProcessorBuilder(IntPtr context)
     {
-        whisperProcessorOptions = new WhisperProcessorOptions();
-    }
-
-    /// <summary>
-    /// Creates a new instance of <see cref="WhisperProcessorBuilder"/>.
-    /// </summary>
-    /// <returns></returns>
-    public static WhisperProcessorBuilder Create()
-    {
-        return new WhisperProcessorBuilder();
-    }
-
-    /// <summary>
-    /// Configures the processor to use a model from a file.
-    /// </summary>
-    /// <param name="path">The path to the model.</param>
-    /// <returns>An instance to the same builder.</returns>
-    /// <remarks>
-    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
-    /// </remarks>
-    public WhisperProcessorBuilder WithFileModel(string path)
-    {
-        whisperProcessorOptions.ModelLoader = new WhisperProcessorModelFileLoader(path);
-        return this;
-    }
-
-    /// <summary>
-    /// Configures the processor to use a model from a buffer.
-    /// </summary>
-    /// <param name="buffer">The buffer where the model can be found.</param>
-    /// <returns>An instance to the same builder.</returns>
-    /// <remarks>
-    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
-    /// </remarks>
-    public WhisperProcessorBuilder WithBufferedModel(byte[] buffer)
-    {
-        whisperProcessorOptions.ModelLoader = new WhisperProcessorModelBufferLoader(buffer);
-        return this;
+        whisperProcessorOptions = new WhisperProcessorOptions()
+        {
+            ContextHandle = context
+        };
     }
 
     /// <summary>
@@ -133,7 +100,6 @@ public class WhisperProcessorBuilder
         whisperProcessorOptions.NoContext = true;
         return this;
     }
-
 
     /// <summary>
     /// Configures the processor to force a single segment as output instead of multiple. 
@@ -518,13 +484,6 @@ public class WhisperProcessorBuilder
     /// <exception cref="InvalidOperationException">If not model is configured using <seealso cref="WithFileModel(string)"/> or <seealso cref="WithBufferedModel(byte[])"/>, InvalidOperationException is thrown.</exception>
     public WhisperProcessor Build()
     {
-        if (whisperProcessorOptions.ModelLoader == null)
-        {
-            throw new InvalidOperationException("Model loader is not set. Please, use WithFileModel or WithBufferedModel methods to set model loader.");
-        }
-
-        var processor = new WhisperProcessor(whisperProcessorOptions);
-        processor.Initialize();
-        return processor;
+        return new WhisperProcessor(whisperProcessorOptions);
     }
 }

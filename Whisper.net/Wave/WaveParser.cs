@@ -1,4 +1,6 @@
-﻿namespace Whisper.net.Wave;
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+namespace Whisper.net.Wave;
 
 public sealed class WaveParser
 {
@@ -8,7 +10,6 @@ public sealed class WaveParser
     private readonly ushort bitsPerSample;
     private readonly uint dataChunkSize;
     private readonly long dataChunkPosition;
-    private readonly long streamLength;
 
     public WaveParser(Stream waveStream)
     {
@@ -22,16 +23,7 @@ public sealed class WaveParser
         }
 
         // Read FileSize
-        var fileSize = reader.ReadInt32();
-
-        if (fileSize > 0)
-        {
-            streamLength = fileSize;
-        }
-        else
-        {
-            streamLength = waveStream.Length;
-        }
+        _ = reader.ReadInt32();
 
         // Read Wave and Fmt tags
         var wave = reader.ReadChars(8);
@@ -59,8 +51,12 @@ public sealed class WaveParser
         {
             throw new NotSupportedWaveException("Only 16KHz sample rate is supported.");
         }
-        var averageBytesRate = reader.ReadUInt32();
-        var blockAllign = reader.ReadUInt16();
+
+        //Average bytes rate
+        _ = reader.ReadUInt32();
+
+        // Block allign
+        _ = reader.ReadUInt16();
 
         bitsPerSample = reader.ReadUInt16();
         if (bitsPerSample != 16)
@@ -113,22 +109,64 @@ public sealed class WaveParser
     /// Returns the average samples from all channels.
     /// </summary>
     /// <returns></returns>
+    public async Task<float[]> GetAvgSamplesAsync(CancellationToken cancellationToken)
+    {
+        if (channels == 0)
+        {
+            throw new InvalidOperationException("Channel count is set to 0");
+        }
+
+        var samplesCount = GetSamplesCount();
+        var samples = new float[samplesCount];
+
+        var buffer = new byte[4096];
+
+        var sampleIndex = 0;
+        int bytesRead;
+
+        do
+        {
+            bytesRead = await waveStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+
+            for (var i = 0; i < bytesRead;)
+            {
+                long sampleSum = 0;
+
+                for (var currentChannel = 0; currentChannel < channels; currentChannel++)
+                {
+                    sampleSum += BitConverter.ToInt16(buffer, i);
+                    i += 2;
+                }
+
+                samples[sampleIndex++] = sampleSum / (float)channels / 32768.0f;
+            }
+        } while (bytesRead > 0);
+
+        return samples;
+    }
+
+    /// <summary>
+    /// Returns the average samples from all channels.
+    /// </summary>
+    /// <returns></returns>
     public float[] GetAvgSamples()
     {
         var reader = GetDataReader();
         var samplesCount = GetSamplesCount();
         var samples = new float[samplesCount];
-        long sampleSum;
 
-        for (int i = 0; i < samplesCount; i++)
+        for (var i = 0; i < samplesCount; i++)
         {
-            sampleSum = 0;
+            var sampleSum = 0L;
+
             for (var currentChannel = 0; currentChannel < channels; currentChannel++)
             {
                 sampleSum += reader.ReadInt16();
             }
+
             samples[i] = (sampleSum / 4) / 32768.0f;
         }
+
         return samples;
     }
 
@@ -138,7 +176,7 @@ public sealed class WaveParser
         var samplesCount = GetSamplesCount();
         var samples = new float[samplesCount];
 
-        for (int i = 0; i < samplesCount; i++)
+        for (var i = 0; i < samplesCount; i++)
         {
             for (var currentChannel = 0; currentChannel < channels; currentChannel++)
             {
@@ -154,7 +192,7 @@ public sealed class WaveParser
         }
         return samples;
     }
-    
+
     private BinaryReader GetDataReader()
     {
         var reader = new BinaryReader(waveStream);

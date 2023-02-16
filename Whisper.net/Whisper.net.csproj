@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>10</LangVersion>
-		<Version>1.2.0</Version>
+		<Version>1.2.1</Version>
+		<PackageVersion>1.2.1-preview3</PackageVersion>
 		<Authors>Sandro Hanea</Authors>
 		<Description>Cross-platform dotnet bindings for Whisper.</Description>
 		<PackageProjectUrl>https://github.com/sandrohanea/whisper.net</PackageProjectUrl>
@@ -17,8 +18,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
-		<None Include="..\readme.md" Pack="true" PackagePath=""/>
+		<None Include="..\LICENSE" Pack="true" PackagePath="" />
+		<None Include="..\readme.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup>

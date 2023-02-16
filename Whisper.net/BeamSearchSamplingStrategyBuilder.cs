@@ -1,4 +1,6 @@
-﻿using Whisper.net.SamplingStrategy;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
@@ -7,7 +9,7 @@ namespace Whisper.net;
 /// </summary>
 public class BeamSearchSamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
 {
-    private BeamSearchSamplingStrategy beamSearchSamplingStrategy;
+    private readonly BeamSearchSamplingStrategy beamSearchSamplingStrategy;
 
     internal BeamSearchSamplingStrategyBuilder(WhisperProcessorBuilder whisperProcessorBuilder, BeamSearchSamplingStrategy beamSearchSamplingStrategy)
     {
