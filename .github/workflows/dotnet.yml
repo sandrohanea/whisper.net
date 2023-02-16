@@ -20,13 +20,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-    - name: Install Coverlet
-      run:  dotnet tool install --global coverlet.console
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
     - name: Build
       run: dotnet build ./Whisper.net.sln --no-restore -warnaserror 
     - name: Test
       run: |
-        dotnet test ./Whisper.net.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-        coverlet ./**/bin/**/*Tests.dll --format opencover --output ./TestResults/coverage.opencover.xml
+        dotnet test ./Whisper.net.sln --no-build
