@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,10 +11,10 @@ using Whisper.net.Demo;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;
 
-const int bufferSeconds = 1;
-const int bufferMilliseconds = bufferSeconds * 1000;
-const int maxSlidingBufferSize = 60 / bufferSeconds;
-List<float[]> slidingBuffer = new(bufferMilliseconds);
+const int audioSampleLengthS = 1;
+const int audioSampleLengthMs = audioSampleLengthS * 1000;
+const int totalBufferLength = 30 / audioSampleLengthS;
+List<float[]> slidingBuffer = new(totalBufferLength + 1);
 
 await Parser.Default
     .ParseArguments<Options>(args)
@@ -110,7 +110,7 @@ void FullDetectionFromInputDevice(WhisperProcessor processor)
     {
         DeviceNumber = 0, // indicates which microphone to use
         WaveFormat = new WaveFormat(rate: 16000, bits: 16, channels: 1), // must be supported by the microphone
-        BufferMilliseconds = bufferMilliseconds
+        BufferMilliseconds = audioSampleLengthMs
     };
     waveIn.DataAvailable += WaveInDataAvailable;
     waveIn.StartRecording();
@@ -128,7 +128,7 @@ void FullDetectionFromInputDevice(WhisperProcessor processor)
         {
             slidingBuffer.Add(samples);
 
-            if (slidingBuffer.Count > maxSlidingBufferSize)
+            if (slidingBuffer.Count > totalBufferLength)
             {
                 slidingBuffer.RemoveAt(0);
             }
