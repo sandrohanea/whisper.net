@@ -1,15 +1,15 @@
 ﻿namespace Whisper.net;
 
-public delegate void OnSegmentEventHandler(object sender, OnSegmentEventArgs e);
+public delegate void OnSegmentEventHandler(OnSegmentEventArgs e);
 
-public delegate void OnEncoderBeginEventHandler(object sender, OnEncoderBeginEventArgs e);
+public delegate bool OnEncoderBeginEventHandler(OnEncoderBeginEventArgs e);
 
-public class OnEncoderBeginEventArgs : EventArgs
+public class OnEncoderBeginEventArgs
 {
       
 }
 
-public class OnSegmentEventArgs : EventArgs
+public class OnSegmentEventArgs
 {
     public OnSegmentEventArgs(string segment, TimeSpan start, TimeSpan end)
     {

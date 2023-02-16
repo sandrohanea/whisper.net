@@ -1,6 +1,6 @@
 ﻿using Whisper.net.Native;
 
-namespace Whisper.net.ModelLoader;
+namespace Whisper.net.Internals.ModelLoader;
 
 internal sealed class WhisperProcessorModelFileLoader : IWhisperProcessorModelLoader
 {

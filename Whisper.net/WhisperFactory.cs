@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Whisper.net.ModelLoader;
+﻿using Whisper.net.Internals.ModelLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net;

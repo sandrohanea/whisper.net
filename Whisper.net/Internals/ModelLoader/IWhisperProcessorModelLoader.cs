@@ -1,4 +1,4 @@
-﻿namespace Whisper.net.ModelLoader;
+﻿namespace Whisper.net.Internals.ModelLoader;
 
 internal interface IWhisperProcessorModelLoader : IDisposable
 {

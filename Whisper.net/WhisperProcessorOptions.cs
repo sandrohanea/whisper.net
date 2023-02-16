@@ -1,5 +1,4 @@
-﻿using Whisper.net.ModelLoader;
-using Whisper.net.SamplingStrategy;
+﻿using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
@@ -16,8 +15,6 @@ internal sealed class WhisperProcessorOptions
     public TimeSpan? Offset { get; set; }
 
     public TimeSpan? Duration { get; set; }
-
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(1);
 
     public bool? Translate { get; set; }
 

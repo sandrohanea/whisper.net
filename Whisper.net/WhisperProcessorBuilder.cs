@@ -1,5 +1,4 @@
-﻿using Whisper.net.ModelLoader;
-using Whisper.net.SamplingStrategy;
+﻿using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
