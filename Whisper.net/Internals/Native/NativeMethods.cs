@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
 
@@ -38,6 +38,12 @@ internal static class NativeMethods
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_full_get_segment_text(IntPtr state, int index);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern int whisper_full_n_tokens(IntPtr state, int index);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern float whisper_full_get_token_p(IntPtr state, int segmentIndex, int tokenIndex);
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int whisper_tokenize(IntPtr context, IntPtr text, IntPtr tokens, int nMaxTokens);

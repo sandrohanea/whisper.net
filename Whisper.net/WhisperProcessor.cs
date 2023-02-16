@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
@@ -409,10 +409,35 @@ public sealed class WhisperProcessor : IDisposable
             var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
             var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
             var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
+            float minimumProbability = 0;
+            float maximumProbability = 0;
+            double sumProbability = 0;
+            var numberOfTokens = NativeMethods.whisper_full_n_tokens(state, segmentIndex);
+
+            for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
+            {
+                var tokenProbability = NativeMethods.whisper_full_get_token_p(state, segmentIndex, tokenIndex);
+                sumProbability += tokenProbability;
+                if (tokenIndex == 0)
+                {
+                    minimumProbability = tokenProbability;
+                    maximumProbability = tokenProbability;
+                    continue;
+                }
+                if (tokenProbability < minimumProbability)
+                {
+                    minimumProbability = tokenProbability;
+                }
+
+                if (tokenProbability > maximumProbability)
+                {
+                    maximumProbability = tokenProbability;
+                }
+            }
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1);
+                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens));
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {
