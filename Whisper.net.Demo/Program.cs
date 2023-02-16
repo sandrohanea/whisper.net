@@ -110,7 +110,7 @@ void FullDetectionFromInputDevice(WhisperProcessor processor)
 	WaveInEvent waveIn = new()
 	{
 		DeviceNumber = 0, // indicates which microphone to use
-		WaveFormat = new WaveFormat(rate: 16000, bits: 16, channels: 1),
+		WaveFormat = new WaveFormat(rate: 16000, bits: 16, channels: 1), // must be supported by the microphone
 		BufferMilliseconds = bufferMilliseconds
 	};
 	waveIn.DataAvailable += WaveInDataAvailable;
