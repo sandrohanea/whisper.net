@@ -28,5 +28,5 @@ jobs:
       run: dotnet build ./Whisper.net.sln --no-restore -warnaserror 
     - name: Test
       run: |
-        dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        dotnet test ./Whisper.net.sln --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
         coverlet ./tests/**/bin/**/net5.0/*.dll --format opencover --output ./TestResults/coverage.opencover.xml
