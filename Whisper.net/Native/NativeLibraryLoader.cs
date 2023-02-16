@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Whisper.net.Native.LibraryLoader;
 
 namespace Whisper.net.Native
 {
@@ -27,24 +28,24 @@ namespace Whisper.net.Native
                 return false;
             }
 
-            if (platform == "win")
+            ILibraryLoader libraryLoader;
+
+            switch (platform)
             {
-                return LoadLibrary(path) != IntPtr.Zero;
-            }
-            if (platform == "linux" || platform == "osx")
-            {
-                // open with rtls lazy flag
-                var result = dlopen(path, 0x00001);
-                return result != IntPtr.Zero;
+                case "win":
+                    libraryLoader = new WindowsLibraryLoader();
+                    break;
+                case "linux":
+                case "osx":
+                    libraryLoader = new PosixLibraryLoader();
+                    break;
+                default:
+                    throw new PlatformNotSupportedException($"Currently {platform} platform is not supported");
             }
 
-            throw new PlatformNotSupportedException("Currently the platform is not supported");
+            // open with rtls lazy flag
+            var result = libraryLoader.OpenLibrary(path, 0x00001);
+            return result != IntPtr.Zero;
         }
-
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpFileName);
-
-        [DllImport("libdl", ExactSpelling = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr dlopen(string filename, int flags);
     }
 }
