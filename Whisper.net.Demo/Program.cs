@@ -73,8 +73,7 @@ void FullDetection(Options opt)
 	var builder = WhisperProcessorBuilder.Create()
 	   .WithFileModel(opt.ModelName)
 	   .WithSegmentEventHandler(OnNewSegment)
-	   .WithLanguage(opt.Language)
-	   .WithLanguageDetection();
+	   .WithLanguage(opt.Language);
 
 	if (opt.Command == WhisperCommand.Translate)
 	{

@@ -1,7 +1,7 @@
 # Whisper.net
 Open-Source Whisper.net
 
-Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp] (https://github.com/ggerganov/whisper.cpp)
+Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp).
 
 	
 ## Getting started
