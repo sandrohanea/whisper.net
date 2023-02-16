@@ -7,7 +7,7 @@ namespace Whisper.net;
 /// </summary>
 public class BeamSearchSamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
 {
-    private BeamSearchSamplingStrategy beamSearchSamplingStrategy;
+    private readonly BeamSearchSamplingStrategy beamSearchSamplingStrategy;
 
     internal BeamSearchSamplingStrategyBuilder(WhisperProcessorBuilder whisperProcessorBuilder, BeamSearchSamplingStrategy beamSearchSamplingStrategy)
     {
