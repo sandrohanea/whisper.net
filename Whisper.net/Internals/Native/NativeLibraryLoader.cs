@@ -18,8 +18,6 @@ internal static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        Console.WriteLine(platform);
-
         var assemblySearchPath = string.IsNullOrEmpty(AppDomain.CurrentDomain.RelativeSearchPath)
                 ? Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location)!
                 : AppDomain.CurrentDomain.RelativeSearchPath;

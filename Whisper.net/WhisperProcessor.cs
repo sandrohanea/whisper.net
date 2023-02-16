@@ -114,21 +114,24 @@ public sealed class WhisperProcessor : IDisposable
         }
     }
 
-    public async Task<IAsyncEnumerable<SegmentData>> ProcessAsync(Stream waveStream, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(Stream waveStream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var waveParser = new WaveParser(waveStream);
         var samples = await waveParser.GetAvgSamplesAsync(cancellationToken);
-        return ProcessAsync(samples, cancellationToken);
+        await foreach (var segmentData in ProcessAsync(samples, cancellationToken))
+        {
+            yield return segmentData;
+        }
     }
 
-    public async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var resetEvent = new AsyncAutoResetEvent();
         var buffer = new ConcurrentQueue<SegmentData>();
 
-        void OnSegmentHandler(OnSegmentEventArgs eventArgs)
+        void OnSegmentHandler(SegmentData segmentData)
         {
-            buffer!.Enqueue(new SegmentData(eventArgs.Segment, eventArgs.Start, eventArgs.End));
+            buffer!.Enqueue(segmentData);
             resetEvent!.Set();
         }
 
@@ -141,17 +144,18 @@ public sealed class WhisperProcessor : IDisposable
 
             while (!whisperTask.IsCompleted || buffer.Count > 0)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (buffer.Count == 0)
                 {
-                    await resetEvent.WaitAsync().ConfigureAwait(false);
+                    await Task.WhenAny(whisperTask, resetEvent.WaitAsync())
+                        .ConfigureAwait(false);
                 }
 
                 while (buffer.Count > 0 && buffer.TryDequeue(out var segmentData))
                 {
                     yield return segmentData;
                 }
-
-                cancellationToken.ThrowIfCancellationRequested();
             }
 
             await whisperTask.ConfigureAwait(false);
@@ -384,7 +388,7 @@ public sealed class WhisperProcessor : IDisposable
 
     private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
     {
-        var encoderBeginArgs = new OnEncoderBeginEventArgs();
+        var encoderBeginArgs = new EncoderBeginData();
         foreach (var handler in options.OnEncoderBeginEventHandlers)
         {
             var shouldContinue = handler.Invoke(encoderBeginArgs);
@@ -408,7 +412,7 @@ public sealed class WhisperProcessor : IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
+                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {
