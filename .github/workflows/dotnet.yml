@@ -23,9 +23,9 @@ jobs:
     - name: Install Coverlet
       run:  dotnet tool install --global coverlet.console
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./Whisper.net.sln
     - name: Build
-      run: dotnet build --no-restore -warnaserror 
+      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror 
     - name: Test
       run: |
         dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
