@@ -134,7 +134,6 @@ public class WhisperProcessorBuilder
         return this;
     }
 
-
     /// <summary>
     /// Configures the processor to force a single segment as output instead of multiple. 
     /// </summary>
