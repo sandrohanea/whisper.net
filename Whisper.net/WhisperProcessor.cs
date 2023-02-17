@@ -400,6 +400,23 @@ public sealed class WhisperProcessor : IDisposable
         return true;
     }
 
+    public static string StringFromNativeUtf8(IntPtr nativeUtf8)
+    {
+#if NETSTANDARD2_1_OR_GREATER
+        return Marshal.PtrToStringUTF8(nativeUtf8);
+#else
+        var len = 0;
+        while (Marshal.ReadByte(nativeUtf8, len) != 0)
+        {
+            ++len;
+        }
+
+        var buffer = new byte[len];
+        Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
+        return System.Text.Encoding.UTF8.GetString(buffer);
+#endif
+    }
+
     private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
     {
         var segments = NativeMethods.whisper_full_n_segments(state);
@@ -408,7 +425,9 @@ public sealed class WhisperProcessor : IDisposable
         {
             var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
             var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
-            var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
+
+            var textAnsi = StringFromNativeUtf8(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
+
             float minimumProbability = 0;
             float maximumProbability = 0;
             double sumProbability = 0;
