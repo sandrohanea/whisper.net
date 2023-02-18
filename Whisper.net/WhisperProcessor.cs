@@ -17,12 +17,11 @@ public sealed class WhisperProcessor : IDisposable
 
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
+    private readonly List<GCHandle> gcHandles = new();
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPrompt;
     private IntPtr? initialPromptText;
-    private WhisperNewSegmentCallback? newSegmentCallback;
-    private WhisperEncoderBeginCallback? whisperEncoderBeginCallback;
     private int segmentIndex;
 
     internal WhisperProcessor(WhisperProcessorOptions options)
@@ -186,6 +185,11 @@ public sealed class WhisperProcessor : IDisposable
         if (initialPromptText.HasValue)
         {
             Marshal.FreeHGlobal(initialPromptText.Value);
+        }
+
+        foreach (var gcHandle in gcHandles)
+        {
+            gcHandle.Free();
         }
     }
 
@@ -381,10 +385,12 @@ public sealed class WhisperProcessor : IDisposable
             }
         }
 
-        // Store the delegates so they won't be GC before the processor.
-        newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
-        whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
+        var newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
+        var whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
 
+        // Creates GCHandles for the delegates so they won't be GC before the processor.
+        gcHandles.Add(GCHandle.Alloc(newSegmentCallback));
+        gcHandles.Add(GCHandle.Alloc(whisperEncoderBeginCallback));
         whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
         whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
 
