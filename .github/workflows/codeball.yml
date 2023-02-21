@@ -19,3 +19,4 @@ jobs:
           labelPullRequestsWhenReviewNeeded: "true"
           failJobsWhenReviewNeeded: "false"
           codeSuggestionsFromComments: "true"
+          approvePullRequests: "false"
