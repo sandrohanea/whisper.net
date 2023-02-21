@@ -73,14 +73,14 @@ public sealed class WhisperProcessor : IDisposable
                     if (speedUp)
                     {
                         // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
-                        NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        NativeMethods.whisper_pcm_to_mel_phase_vocoder_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                     }
                     else
                     {
-                        NativeMethods.whisper_pcm_to_mel(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                     }
                 }
-                var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
+                var langId = NativeMethods.whisper_lang_auto_detect_with_state(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
                 {
                     return (null, 0f);
@@ -109,7 +109,15 @@ public sealed class WhisperProcessor : IDisposable
     {
         fixed (float* pData = samples)
         {
-            NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            try
+            {
+                NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+            }
+            finally
+            {
+                NativeMethods.whisper_free_state(state);
+            }
         }
     }
 
@@ -199,7 +207,15 @@ public sealed class WhisperProcessor : IDisposable
         {
             fixed (float* pData = samples)
             {
-                NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
+                var state = NativeMethods.whisper_init_state(currentWhisperContext);
+                try
+                {
+                    NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                }
+                finally
+                {
+                    NativeMethods.whisper_free_state(state);
+                }
             }
         });
     }
@@ -426,22 +442,22 @@ public sealed class WhisperProcessor : IDisposable
 
     private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
     {
-        var segments = NativeMethods.whisper_full_n_segments(state);
+        var segments = NativeMethods.whisper_full_n_segments_from_state(state);
 
         while (segmentIndex < segments)
         {
-            var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(state, segmentIndex) * 10);
-            var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(state, segmentIndex) * 10);
-            var textAnsi = StringFromNativeUtf8(NativeMethods.whisper_full_get_segment_text(state, segmentIndex));
+            var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1_from_state(state, segmentIndex) * 10);
+            var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0_from_state(state, segmentIndex) * 10);
+            var textAnsi = StringFromNativeUtf8(NativeMethods.whisper_full_get_segment_text_from_state(state, segmentIndex));
 
             float minimumProbability = 0;
             float maximumProbability = 0;
             double sumProbability = 0;
-            var numberOfTokens = NativeMethods.whisper_full_n_tokens(state, segmentIndex);
+            var numberOfTokens = NativeMethods.whisper_full_n_tokens_from_state(state, segmentIndex);
 
             for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
             {
-                var tokenProbability = NativeMethods.whisper_full_get_token_p(state, segmentIndex, tokenIndex);
+                var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(ctx, state, segmentIndex, tokenIndex);
                 sumProbability += tokenProbability;
                 if (tokenIndex == 0)
                 {

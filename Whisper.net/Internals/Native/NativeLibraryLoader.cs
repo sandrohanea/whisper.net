@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
 using Whisper.net.Native.LibraryLoader;
@@ -9,7 +9,15 @@ internal static class NativeLibraryLoader
 {
     internal static bool LoadNativeLibrary()
     {
-        var architecture = Environment.Is64BitProcess ? "x64" : "x86";
+        var architecture = RuntimeInformation.OSArchitecture switch
+        {
+            Architecture.X64 => "x64",
+            Architecture.X86 => "x86",
+            Architecture.Arm => "arm",
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
+        };
+
         var (platform, extension) = Environment.OSVersion.Platform switch
         {
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => ("win", "dll"),
@@ -25,7 +33,7 @@ internal static class NativeLibraryLoader
         var path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Native Library not found in path {path}.");
+            throw new FileNotFoundException($"Native Library not found in path {path}. Probably it is not supported yet.");
         }
 
         ILibraryLoader libraryLoader = platform switch

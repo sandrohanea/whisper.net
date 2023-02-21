@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
 
@@ -31,6 +31,9 @@ internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, IntPtr user_data);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr tokens, int tokens_count, IntPtr logits,  IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperFullParams
@@ -106,6 +109,9 @@ internal struct WhisperFullParams
     // common decoding parameters:
     public byte SuppressBlank;
 
+    // suppress non-speech tokens (e.g. `,`, `.`, etc.)
+    public byte SupressNonSpeechTokens;
+
     // common decoding parameters:
     // ref: https://github.com/openai/whisper/blob/f82bc59f5ea234d4b97fb2860842ed38519f7e65/whisper/decoding.py#L89
     public float Temperature;
@@ -138,6 +144,10 @@ internal struct WhisperFullParams
     public IntPtr OnEncoderBegin;
 
     public IntPtr OnEncoderBeginUserData;
+
+    public IntPtr LogitsFilterCallback;
+
+    public IntPtr LogitsFilterCallbackData;
 }
 
 [StructLayout(LayoutKind.Sequential)]
