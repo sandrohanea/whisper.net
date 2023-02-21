@@ -27,7 +27,9 @@ jobs:
         - os: windows-latest
           arch: amd64
           configuration: Release
-          if: matrix.os == 'windows-latest' || matrix.os == '{os: windows-2019, vm-image: windows-latest}'
+        - os: windows-latest
+          arch: arm64
+          configuration: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v2
