@@ -13,7 +13,7 @@ To install Whisper.net, run the following command in the [Package Manager Consol
 or simply add a package reference in your csproj:
 
 ```
-        <PackageReference Include="Whisper.net" Version="1.2.0" />
+    <PackageReference Include="Whisper.net" Version="1.2.1" />
 ```
 
 ## Versioning
@@ -46,7 +46,9 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
 
 ```csharp
 
-    using var processor = WhisperProcessorBuilder.Create()
+    using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
+
+    using var processor = whisperFactory.CreateBuilder()
         .WithSegmentEventHandler(OnNewSegment)
         .WithFileModel("ggml-base.bin")
         .WithTranslate()
@@ -70,3 +72,16 @@ You can find the documentation and code samples here: [https://github.com/sandro
 
 MIT Licence
 [https://github.com/sandrohanea/whisper.net/blob/main/LICENSE](https://github.com/sandrohanea/whisper.net/blob/main/LICENSE)
+
+## Supported platforms
+
+Whisper.net is supported on the following platforms:
+- Windows x86
+- Windows x64
+- Windows ARM64
+- Windows ARM
+- Linux x64
+- Linux ARM64
+- Linux ARM
+- macOS x64
+- macOS ARM64 (Apple Silicon)

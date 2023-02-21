@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using System.Runtime.InteropServices;
 
 namespace Whisper.net.Native;
 
@@ -19,17 +21,19 @@ internal struct WhisperParamGreedy
 internal struct WhisperParamBeamSearch
 {
     public int BeamSize;
-    
+
     // Note: not implemented, ref: https://arxiv.org/pdf/2204.05424.pdf
     public float Patience;
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate void WhisperNewSegmentCallback(IntPtr ctx, int n_new, IntPtr user_data);
+internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr user_data);
+internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, IntPtr user_data);
 
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr tokens, int tokens_count, IntPtr logits,  IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperFullParams
@@ -46,18 +50,18 @@ internal struct WhisperFullParams
 
     // audio duration to process in ms
     public int DurationMs;
-    
+
     public byte Translate;
-    
+
     // Do not use past transcription (if any) as prompt for the decoder
     public byte NoContext;
-    
+
     //force single segment output (useful for streaming)
     public byte SingleSegment;
-    
+
     // print special tokens (e.g. <SOT>, <EOT>, <BEG>, etc.)
     public byte PrintSpecialTokens;
-    
+
     //print progress information
     public byte PrintProgress;
 
@@ -66,7 +70,6 @@ internal struct WhisperFullParams
 
     // print timestamps for each text segment when printing real-time
     public byte PrintTimestamps;
-
 
     // [EXPERIMENTAL] token-level timestamps
     // enable token-level timestamps
@@ -106,6 +109,9 @@ internal struct WhisperFullParams
     // common decoding parameters:
     public byte SuppressBlank;
 
+    // suppress non-speech tokens (e.g. `,`, `.`, etc.)
+    public byte SupressNonSpeechTokens;
+
     // common decoding parameters:
     // ref: https://github.com/openai/whisper/blob/f82bc59f5ea234d4b97fb2860842ed38519f7e65/whisper/decoding.py#L89
     public float Temperature;
@@ -130,14 +136,18 @@ internal struct WhisperFullParams
     public WhisperParamGreedy WhisperParamGreedy;
 
     public WhisperParamBeamSearch WhisperParamBeamSearch;
-    
+
     public IntPtr OnNewSegment;
 
     public IntPtr OnNewSegmentUserData;
-    
+
     public IntPtr OnEncoderBegin;
 
     public IntPtr OnEncoderBeginUserData;
+
+    public IntPtr LogitsFilterCallback;
+
+    public IntPtr LogitsFilterCallbackData;
 }
 
 [StructLayout(LayoutKind.Sequential)]

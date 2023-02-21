@@ -1,12 +1,13 @@
-﻿
+﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;
-
 
 await Parser.Default.ParseArguments<Options>(args)
     .WithParsedAsync(Demo);
@@ -28,7 +29,7 @@ async Task Demo(Options opt)
             break;
         case "transcribe":
         case "translate":
-            FullDetection(opt);
+            await FullDetection(opt);
             break;
         default:
             Console.WriteLine("Unknown command");
@@ -40,8 +41,10 @@ void LanguageIdentification(Options opt)
 {
     var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
-    var builder = WhisperProcessorBuilder.Create()
-       .WithBufferedModel(bufferedModel)
+    // Same factory can be used by multiple taks to create processors.
+    using var factory = WhisperFactory.FromBuffer(bufferedModel);
+
+    var builder = factory.CreateBuilder()
        .WithLanguage(opt.Language);
 
     using var processor = builder.Build();
@@ -56,13 +59,13 @@ void LanguageIdentification(Options opt)
     Console.WriteLine("Language is " + language);
 }
 
-void FullDetection(Options opt)
+async Task FullDetection(Options opt)
 {
+    // Same factory can be used by multiple taks to create processors.
+    using var factory = WhisperFactory.FromPath(opt.ModelName);
 
-    var builder = WhisperProcessorBuilder.Create()
-       .WithFileModel(opt.ModelName)
-       .WithSegmentEventHandler(OnNewSegment)
-       .WithLanguage(opt.Language);
+    var builder = factory.CreateBuilder()
+        .WithLanguage(opt.Language);
 
     if (opt.Command == "translate")
     {
@@ -71,15 +74,12 @@ void FullDetection(Options opt)
 
     using var processor = builder.Build();
 
-    static void OnNewSegment(object sender, OnSegmentEventArgs e)
-    {
-        Console.WriteLine($"New Segment: {e.Start} ==> {e.End} : {e.Segment}");
-    }
-
     using var fileStream = File.OpenRead(opt.FileName);
-    processor.Process(fileStream);
-    var language = processor.GetAutodetectedLanguage();
-    Console.WriteLine("Language was " + language);
+
+    await foreach (var segment in processor.ProcessAsync(fileStream, CancellationToken.None))
+    {
+        Console.WriteLine($"New Segment: {segment.Start} ==> {segment.End} : {segment.Text}");
+    }
 }
 
 public class Options
@@ -87,7 +87,7 @@ public class Options
     [Option('t', "command", Required = false, HelpText = "Command to run (lang-detect, transcribe or translate)", Default = "transcribe")]
     public string Command { get; set; }
 
-    [Option('f', "file", Required = false, HelpText = "File to process", Default = "1min.wav")]
+    [Option('f', "file", Required = false, HelpText = "File to process", Default = "kennedy.wav")]
     public string FileName { get; set; }
 
     [Option('l', "lang", Required = false, HelpText = "Language", Default = "auto")]

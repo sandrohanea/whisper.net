@@ -1,7 +1,9 @@
-﻿using System.Runtime.InteropServices;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using System.Runtime.InteropServices;
 using Whisper.net.Native;
 
-namespace Whisper.net.ModelLoader;
+namespace Whisper.net.Internals.ModelLoader;
 
 internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
 {
@@ -25,7 +27,7 @@ internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
         {
             return NativeMethods.whisper_init_from_buffer_x64(pinnedBuffer.AddrOfPinnedObject(), buffer.Length);
         }
-        
+
         return NativeMethods.whisper_init_from_buffer_x32(pinnedBuffer.AddrOfPinnedObject(), buffer.Length);
     }
 }

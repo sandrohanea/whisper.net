@@ -1,92 +1,86 @@
-﻿using System.Runtime.InteropServices;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Whisper.net.Internals;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
 using Whisper.net.Wave;
 
-namespace Whisper.net
+namespace Whisper.net;
+
+public sealed class WhisperProcessor : IDisposable
 {
-    public sealed class WhisperProcessor : IDisposable
+    private const byte trueByte = 1;
+    private const byte falseByte = 0;
+
+    private readonly IntPtr currentWhisperContext;
+    private readonly WhisperProcessorOptions options;
+    private readonly List<GCHandle> gcHandles = new();
+    private WhisperFullParams whisperParams;
+    private IntPtr? language;
+    private IntPtr? initialPrompt;
+    private IntPtr? initialPromptText;
+    private int segmentIndex;
+
+    internal WhisperProcessor(WhisperProcessorOptions options)
     {
-        private const byte trueByte = 1;
-        private const byte falseByte = 0;
+        this.options = options;
+        currentWhisperContext = options.ContextHandle;
+        whisperParams = GetWhisperParams();
+    }
 
-        private static readonly Lazy<bool> libraryLoaded = new(() =>
+    public void ChangeLanguage(string? newLanguage)
+    {
+        var oldLanguage = language;
+
+        var newParams = whisperParams;
+        if (string.IsNullOrEmpty(newLanguage))
         {
-            return NativeLibraryLoader.LoadNativeLibrary();
-        }, true);
-
-        private IntPtr currentWhisperContext;
-        private readonly WhisperProcessorOptions options;
-        private WhisperFullParams whisperParams;
-        private IntPtr? language;
-        private IntPtr? initialPrompt;
-        private IntPtr? initialPromptText;
-        private WhisperNewSegmentCallback? newSegmentCallback;
-        private WhisperEncoderBeginCallback? whisperEncoderBeginCallback;
-        private int segmentIndex;
-
-        internal WhisperProcessor(WhisperProcessorOptions options)
+            newParams.Language = IntPtr.Zero;
+        }
+        else
         {
-            if (!libraryLoaded.Value)
-            {
-                throw new Exception("Failed to load native whisper library.");
-            }
-
-            this.options = options;
+            language = Marshal.StringToHGlobalAnsi(newLanguage);
+            newParams.Language = language.Value;
         }
 
-        internal void Initialize()
+        if (oldLanguage.HasValue)
         {
-            currentWhisperContext = options.ModelLoader!.LoadNativeContext();
-            whisperParams = GetWhisperParams();
+            Marshal.FreeHGlobal(oldLanguage.Value);
         }
+        whisperParams = newParams;
+    }
 
-        public void ChangeLanguage(string? newLanguage)
+    public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
+    {
+        var (language, _) = DetectLanguageWithProbability(samples, speedUp);
+        return language;
+    }
+
+    public unsafe (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
+    {
+        var probs = new float[NativeMethods.whisper_lang_max_id()];
+
+        fixed (float* pData = probs)
         {
-            var oldLanguage = language;
-
-            var newParams = whisperParams;
-            if (string.IsNullOrEmpty(newLanguage))
-            {
-                newParams.Language = IntPtr.Zero;
-            }
-            else
-            {
-                language = Marshal.StringToHGlobalAnsi(newLanguage);
-                newParams.Language = language.Value;
-            }
-
-            if (oldLanguage.HasValue)
-            {
-                Marshal.FreeHGlobal(oldLanguage.Value);
-            }
-            whisperParams = newParams;
-        }
-        public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
-        {
-            var (language, _) = DetectLanguageWithProbability(samples, speedUp);
-            return language;
-        }
-        
-        public unsafe (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
-        {
-            var probs = new float[NativeMethods.whisper_lang_max_id()];
-
-            fixed (float* pData = probs)
+            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            try
             {
                 fixed (float* pSamples = samples)
                 {
                     if (speedUp)
                     {
                         // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
-                        NativeMethods.whisper_pcm_to_mel_phase_vocoder(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        NativeMethods.whisper_pcm_to_mel_phase_vocoder_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                     }
                     else
                     {
-                        NativeMethods.whisper_pcm_to_mel(currentWhisperContext, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                        NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                     }
                 }
-                var langId = NativeMethods.whisper_lang_auto_detect(currentWhisperContext, 0, whisperParams.Threads, (IntPtr)pData);
+                var langId = NativeMethods.whisper_lang_auto_detect_with_state(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
                 {
                     return (null, 0f);
@@ -95,284 +89,423 @@ namespace Whisper.net
                 var language = Marshal.PtrToStringAnsi(languagePtr);
                 return (language, probs[langId]);
             }
+            finally
+            {
+                NativeMethods.whisper_free_state(state);
+            }
         }
-        
-        public unsafe void Process(float[] samples)
+    }
+
+    public void Process(Stream waveStream)
+    {
+        var waveParser = new WaveParser(waveStream);
+
+        var samples = waveParser.GetAvgSamples();
+
+        Process(samples);
+    }
+
+    public unsafe void Process(float[] samples)
+    {
+        fixed (float* pData = samples)
         {
-            segmentIndex = 0;
+            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            try
+            {
+                NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+            }
+            finally
+            {
+                NativeMethods.whisper_free_state(state);
+            }
+        }
+    }
+
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(Stream waveStream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var waveParser = new WaveParser(waveStream);
+        var samples = await waveParser.GetAvgSamplesAsync(cancellationToken);
+        await foreach (var segmentData in ProcessAsync(samples, cancellationToken))
+        {
+            yield return segmentData;
+        }
+    }
+
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var resetEvent = new AsyncAutoResetEvent();
+        var buffer = new ConcurrentQueue<SegmentData>();
+
+        void OnSegmentHandler(SegmentData segmentData)
+        {
+            buffer!.Enqueue(segmentData);
+            resetEvent!.Set();
+        }
+
+        options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+
+        try
+        {
+            var whisperTask = ProcessInternalAsync(samples)
+                .ContinueWith(_ => resetEvent.Set(), cancellationToken);
+
+            while (!whisperTask.IsCompleted || buffer.Count > 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (buffer.Count == 0)
+                {
+                    await Task.WhenAny(whisperTask, resetEvent.WaitAsync())
+                        .ConfigureAwait(false);
+                }
+
+                while (buffer.Count > 0 && buffer.TryDequeue(out var segmentData))
+                {
+                    yield return segmentData;
+                }
+            }
+
+            await whisperTask.ConfigureAwait(false);
+
+            while (buffer.TryDequeue(out var segmentData))
+            {
+                yield return segmentData;
+            }
+        }
+        finally
+        {
+            options.OnSegmentEventHandlers.Remove(OnSegmentHandler);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (language.HasValue)
+        {
+            Marshal.FreeHGlobal(language.Value);
+        }
+
+        if (initialPrompt.HasValue)
+        {
+            Marshal.FreeHGlobal(initialPrompt.Value);
+        }
+
+        if (initialPromptText.HasValue)
+        {
+            Marshal.FreeHGlobal(initialPromptText.Value);
+        }
+
+        foreach (var gcHandle in gcHandles)
+        {
+            gcHandle.Free();
+        }
+    }
+
+    private unsafe Task ProcessInternalAsync(float[] samples)
+    {
+        return Task.Run(() =>
+        {
             fixed (float* pData = samples)
             {
-                NativeMethods.whisper_full(currentWhisperContext, whisperParams, (IntPtr)pData, samples.Length);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the auto-detected language from the last call to Process
-        /// </summary>
-        /// <returns></returns>
-        public string? GetAutodetectedLanguage()
-        {
-            var detectedLanguageId = NativeMethods.whisper_full_lang_id(currentWhisperContext);
-            if (detectedLanguageId == -1)
-            {
-                return null;
-            }
-            
-            var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
-            var language = Marshal.PtrToStringAnsi(languagePtr);
-            return language;
-        }
-
-        public void Process(Stream waveStream)
-        {
-            var waveParser = new WaveParser(waveStream);
-
-            var samples = waveParser.GetAvgSamples();
-
-            Process(samples);
-        }
-
-        private WhisperFullParams GetWhisperParams()
-        {
-            var strategy = options.SamplingStrategy.GetNativeStrategy();
-            var whisperParams = NativeMethods.whisper_full_default_params(strategy);
-
-            whisperParams.Strategy = strategy;
-
-            if (options.Threads.HasValue)
-            {
-                whisperParams.Threads = options.Threads.Value;
-            }
-
-            if (options.MaxLastTextTokens.HasValue)
-            {
-                whisperParams.MaxLastTextTokens = options.MaxLastTextTokens.Value;
-            }
-
-            if (options.Offset.HasValue)
-            {
-                whisperParams.OffsetMs = (int)options.Offset.Value.TotalMilliseconds;
-            }
-
-            if (options.Duration.HasValue)
-            {
-                whisperParams.DurationMs = (int)options.Duration.Value.TotalMilliseconds;
-            }
-
-            if (options.Translate.HasValue)
-            {
-                whisperParams.Translate = options.Translate.Value ? trueByte : falseByte;
-            }
-
-            if (options.NoContext.HasValue)
-            {
-                whisperParams.NoContext = options.NoContext.Value ? trueByte : falseByte;
-            }
-
-            if (options.SingleSegment.HasValue)
-            {
-                whisperParams.SingleSegment = options.SingleSegment.Value ? trueByte : falseByte;
-            }
-
-            if (options.PrintSpecialTokens.HasValue)
-            {
-                whisperParams.PrintSpecialTokens = options.PrintSpecialTokens.Value ? trueByte : falseByte;
-            }
-
-            if (options.PrintProgress.HasValue)
-            {
-                whisperParams.PrintProgress = options.PrintProgress.Value ? trueByte : falseByte;
-            }
-
-            if (options.PrintResults.HasValue)
-            {
-                whisperParams.PrintResults = options.PrintResults.Value ? trueByte : falseByte;
-            }
-
-            if (options.UseTokenTimestamps.HasValue)
-            {
-                whisperParams.UseTokenTimestamps = options.UseTokenTimestamps.Value ? trueByte : falseByte;
-            }
-
-            if (options.TokenTimestampsThreshold.HasValue)
-            {
-                whisperParams.TokenTimestampsThreshold = options.TokenTimestampsThreshold.Value;
-            }
-
-            if (options.TokenTimestampsSumThreshold.HasValue)
-            {
-                whisperParams.TokenTimestampsSumThreshold = options.TokenTimestampsSumThreshold.Value;
-            }
-
-            if (options.MaxSegmentLength.HasValue)
-            {
-                whisperParams.MaxSegmentLength = options.MaxSegmentLength.Value;
-            }
-
-
-            if (options.SplitOnWord.HasValue)
-            {
-                whisperParams.SplitOnWord = options.SplitOnWord.Value ? trueByte : falseByte;
-            }
-
-            if (options.MaxTokensPerSegment.HasValue)
-            {
-                whisperParams.MaxTokensPerSegment = options.MaxTokensPerSegment.Value;
-            }
-
-            if (options.SpeedUp2x.HasValue)
-            {
-                whisperParams.SpeedUp2x = options.SpeedUp2x.Value ? trueByte : falseByte;
-            }
-
-            if (options.AudioContextSize.HasValue)
-            {
-                whisperParams.AudioContextSize = options.AudioContextSize.Value;
-            }
-
-            if (!string.IsNullOrEmpty(options.Prompt))
-            {
-                var tokenMaxLength = options.Prompt!.Length + 1;
-
-                initialPromptText = Marshal.StringToHGlobalAnsi(options.Prompt);
-                initialPrompt = Marshal.AllocHGlobal(tokenMaxLength);
-
-                var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, initialPromptText.Value, initialPrompt.Value, tokenMaxLength);
-
-                if (tokens == -1)
+                var state = NativeMethods.whisper_init_state(currentWhisperContext);
+                try
                 {
-                    throw new ApplicationException("Cannot tokenize prompt text.");
+                    NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
                 }
-
-                whisperParams.PromptTokens = initialPrompt.Value;
-                whisperParams.PromptNTokens = tokens;
-            }
-
-            if (options.Language != null)
-            {
-                language = Marshal.StringToHGlobalAnsi(options.Language);
-                whisperParams.Language = language.Value;
-            }
-
-            if (options.SuppressBlank.HasValue)
-            {
-                whisperParams.SuppressBlank = options.SuppressBlank.Value ? trueByte : falseByte;
-            }
-
-            if (options.Temperature.HasValue)
-            {
-                whisperParams.Temperature = options.Temperature.Value;
-            }
-
-            if (options.MaxInitialTs.HasValue)
-            {
-                whisperParams.MaxInitialTs = options.MaxInitialTs.Value;
-            }
-
-            if (options.LengthPenalty.HasValue)
-            {
-                whisperParams.LengthPenalty = options.LengthPenalty.Value;
-            }
-
-            if (options.TemperatureInc.HasValue)
-            {
-                whisperParams.TemperatureInc = options.TemperatureInc.Value;
-            }
-
-            if (options.EntropyThreshold.HasValue)
-            {
-                whisperParams.EntropyThreshold = options.EntropyThreshold.Value;
-            }
-
-            if (options.LogProbThreshold.HasValue)
-            {
-                whisperParams.LogProbThreshold = options.LogProbThreshold.Value;
-            }
-
-            if (options.NoSpeechThreshold.HasValue)
-            {
-                whisperParams.NoSpeechThreshold = options.NoSpeechThreshold.Value;
-            }
-
-            if (options.SamplingStrategy is GreedySamplingStrategy greedySamplingStrategy)
-            {
-                if (greedySamplingStrategy.BestOf.HasValue)
+                finally
                 {
-                    whisperParams.WhisperParamGreedy.BestOf = greedySamplingStrategy.BestOf.Value;
+                    NativeMethods.whisper_free_state(state);
                 }
             }
-            if (options.SamplingStrategy is BeamSearchSamplingStrategy beamSamplingStrategy)
+        });
+    }
+
+    private WhisperFullParams GetWhisperParams()
+    {
+        var strategy = options.SamplingStrategy.GetNativeStrategy();
+        var whisperParams = NativeMethods.whisper_full_default_params(strategy);
+
+        whisperParams.Strategy = strategy;
+
+        if (options.Threads.HasValue)
+        {
+            whisperParams.Threads = options.Threads.Value;
+        }
+
+        if (options.MaxLastTextTokens.HasValue)
+        {
+            whisperParams.MaxLastTextTokens = options.MaxLastTextTokens.Value;
+        }
+
+        if (options.Offset.HasValue)
+        {
+            whisperParams.OffsetMs = (int)options.Offset.Value.TotalMilliseconds;
+        }
+
+        if (options.Duration.HasValue)
+        {
+            whisperParams.DurationMs = (int)options.Duration.Value.TotalMilliseconds;
+        }
+
+        if (options.Translate.HasValue)
+        {
+            whisperParams.Translate = options.Translate.Value ? trueByte : falseByte;
+        }
+
+        if (options.NoContext.HasValue)
+        {
+            whisperParams.NoContext = options.NoContext.Value ? trueByte : falseByte;
+        }
+
+        if (options.SingleSegment.HasValue)
+        {
+            whisperParams.SingleSegment = options.SingleSegment.Value ? trueByte : falseByte;
+        }
+
+        if (options.PrintSpecialTokens.HasValue)
+        {
+            whisperParams.PrintSpecialTokens = options.PrintSpecialTokens.Value ? trueByte : falseByte;
+        }
+
+        if (options.PrintProgress.HasValue)
+        {
+            whisperParams.PrintProgress = options.PrintProgress.Value ? trueByte : falseByte;
+        }
+
+        if (options.PrintResults.HasValue)
+        {
+            whisperParams.PrintResults = options.PrintResults.Value ? trueByte : falseByte;
+        }
+
+        if (options.UseTokenTimestamps.HasValue)
+        {
+            whisperParams.UseTokenTimestamps = options.UseTokenTimestamps.Value ? trueByte : falseByte;
+        }
+
+        if (options.TokenTimestampsThreshold.HasValue)
+        {
+            whisperParams.TokenTimestampsThreshold = options.TokenTimestampsThreshold.Value;
+        }
+
+        if (options.TokenTimestampsSumThreshold.HasValue)
+        {
+            whisperParams.TokenTimestampsSumThreshold = options.TokenTimestampsSumThreshold.Value;
+        }
+
+        if (options.MaxSegmentLength.HasValue)
+        {
+            whisperParams.MaxSegmentLength = options.MaxSegmentLength.Value;
+        }
+
+        if (options.SplitOnWord.HasValue)
+        {
+            whisperParams.SplitOnWord = options.SplitOnWord.Value ? trueByte : falseByte;
+        }
+
+        if (options.MaxTokensPerSegment.HasValue)
+        {
+            whisperParams.MaxTokensPerSegment = options.MaxTokensPerSegment.Value;
+        }
+
+        if (options.SpeedUp2x.HasValue)
+        {
+            whisperParams.SpeedUp2x = options.SpeedUp2x.Value ? trueByte : falseByte;
+        }
+
+        if (options.AudioContextSize.HasValue)
+        {
+            whisperParams.AudioContextSize = options.AudioContextSize.Value;
+        }
+
+        if (!string.IsNullOrEmpty(options.Prompt))
+        {
+            var tokenMaxLength = options.Prompt!.Length + 1;
+
+            initialPromptText = Marshal.StringToHGlobalAnsi(options.Prompt);
+            initialPrompt = Marshal.AllocHGlobal(tokenMaxLength);
+
+            var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, initialPromptText.Value, initialPrompt.Value, tokenMaxLength);
+
+            if (tokens == -1)
             {
-                if (beamSamplingStrategy.BeamSize.HasValue)
+                throw new ApplicationException("Cannot tokenize prompt text.");
+            }
+
+            whisperParams.PromptTokens = initialPrompt.Value;
+            whisperParams.PromptNTokens = tokens;
+        }
+
+        if (options.Language != null)
+        {
+            language = Marshal.StringToHGlobalAnsi(options.Language);
+            whisperParams.Language = language.Value;
+        }
+
+        if (options.SuppressBlank.HasValue)
+        {
+            whisperParams.SuppressBlank = options.SuppressBlank.Value ? trueByte : falseByte;
+        }
+
+        if (options.Temperature.HasValue)
+        {
+            whisperParams.Temperature = options.Temperature.Value;
+        }
+
+        if (options.MaxInitialTs.HasValue)
+        {
+            whisperParams.MaxInitialTs = options.MaxInitialTs.Value;
+        }
+
+        if (options.LengthPenalty.HasValue)
+        {
+            whisperParams.LengthPenalty = options.LengthPenalty.Value;
+        }
+
+        if (options.TemperatureInc.HasValue)
+        {
+            whisperParams.TemperatureInc = options.TemperatureInc.Value;
+        }
+
+        if (options.EntropyThreshold.HasValue)
+        {
+            whisperParams.EntropyThreshold = options.EntropyThreshold.Value;
+        }
+
+        if (options.LogProbThreshold.HasValue)
+        {
+            whisperParams.LogProbThreshold = options.LogProbThreshold.Value;
+        }
+
+        if (options.NoSpeechThreshold.HasValue)
+        {
+            whisperParams.NoSpeechThreshold = options.NoSpeechThreshold.Value;
+        }
+
+        if (options.SamplingStrategy is GreedySamplingStrategy greedySamplingStrategy)
+        {
+            if (greedySamplingStrategy.BestOf.HasValue)
+            {
+                whisperParams.WhisperParamGreedy.BestOf = greedySamplingStrategy.BestOf.Value;
+            }
+        }
+        if (options.SamplingStrategy is BeamSearchSamplingStrategy beamSamplingStrategy)
+        {
+            if (beamSamplingStrategy.BeamSize.HasValue)
+            {
+                whisperParams.WhisperParamBeamSearch.BeamSize = beamSamplingStrategy.BeamSize.Value;
+            }
+
+            if (beamSamplingStrategy.Patience.HasValue)
+            {
+                whisperParams.WhisperParamBeamSearch.Patience = beamSamplingStrategy.Patience.Value;
+            }
+        }
+
+        var newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
+        var whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
+
+        // Creates GCHandles for the delegates so they won't be GC before the processor.
+        gcHandles.Add(GCHandle.Alloc(newSegmentCallback));
+        gcHandles.Add(GCHandle.Alloc(whisperEncoderBeginCallback));
+        whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
+        whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
+
+        return whisperParams;
+    }
+
+    private string? GetAutodetectedLanguage(IntPtr state)
+    {
+        var detectedLanguageId = NativeMethods.whisper_full_lang_id(state);
+        if (detectedLanguageId == -1)
+        {
+            return null;
+        }
+
+        var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
+        var language = Marshal.PtrToStringAnsi(languagePtr);
+        return language;
+    }
+
+    private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
+    {
+        var encoderBeginArgs = new EncoderBeginData();
+        foreach (var handler in options.OnEncoderBeginEventHandlers)
+        {
+            var shouldContinue = handler.Invoke(encoderBeginArgs);
+            if (!shouldContinue)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
+    {
+        var segments = NativeMethods.whisper_full_n_segments_from_state(state);
+
+        while (segmentIndex < segments)
+        {
+            var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1_from_state(state, segmentIndex) * 10);
+            var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0_from_state(state, segmentIndex) * 10);
+            var textAnsi = StringFromNativeUtf8(NativeMethods.whisper_full_get_segment_text_from_state(state, segmentIndex));
+
+            float minimumProbability = 0;
+            float maximumProbability = 0;
+            double sumProbability = 0;
+            var numberOfTokens = NativeMethods.whisper_full_n_tokens_from_state(state, segmentIndex);
+
+            for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
+            {
+                var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(ctx, state, segmentIndex, tokenIndex);
+                sumProbability += tokenProbability;
+                if (tokenIndex == 0)
                 {
-                    whisperParams.WhisperParamBeamSearch.BeamSize = beamSamplingStrategy.BeamSize.Value;
+                    minimumProbability = tokenProbability;
+                    maximumProbability = tokenProbability;
+                    continue;
+                }
+                if (tokenProbability < minimumProbability)
+                {
+                    minimumProbability = tokenProbability;
                 }
 
-                if (beamSamplingStrategy.Patience.HasValue)
+                if (tokenProbability > maximumProbability)
                 {
-                    whisperParams.WhisperParamBeamSearch.Patience = beamSamplingStrategy.Patience.Value;
+                    maximumProbability = tokenProbability;
                 }
             }
 
-            // Store the delegates so they won't be GC before the processor.
-            newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
-            whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
-
-            whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
-            whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
-
-            return whisperParams;
-        }
-
-        private bool OnEncoderBegin(IntPtr ctx, IntPtr user_data)
-        {
-            var encoderBeginArgs = new OnEncoderBeginEventArgs();
-            for (var handlerIndex = 0; handlerIndex < options.OnEncoderBeginEventHandlers.Count; handlerIndex++)
+            if (!string.IsNullOrEmpty(textAnsi))
             {
-                options.OnEncoderBeginEventHandlers[handlerIndex]?.Invoke(this, encoderBeginArgs);
-            }
-            return true;
-        }
+                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens));
 
-        private void OnNewSegment(IntPtr ctx, int n_new, IntPtr user_data)
-        {
-            var segments = NativeMethods.whisper_full_n_segments(ctx);
-
-            while (segmentIndex < segments)
-            {
-                var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1(ctx, segmentIndex) * 10);
-                var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0(ctx, segmentIndex) * 10);
-                var textAnsi = Marshal.PtrToStringAnsi(NativeMethods.whisper_full_get_segment_text(ctx, segmentIndex));
-                var eventHandlerArgs = new OnSegmentEventArgs(textAnsi, t0, t1);
-
-                for (var handlerIndex = 0; handlerIndex < options.OnSegmentEventHandlers.Count; handlerIndex++)
+                foreach (var handler in options.OnSegmentEventHandlers)
                 {
-                    options.OnSegmentEventHandlers[handlerIndex]?.Invoke(this, eventHandlerArgs);
+                    handler?.Invoke(eventHandlerArgs);
                 }
-                segmentIndex++;
             }
+
+            segmentIndex++;
         }
-        
-        public void Dispose()
+    }
+
+    private static string StringFromNativeUtf8(IntPtr nativeUtf8)
+    {
+
+#if NETSTANDARD2_1_OR_GREATER
+        return Marshal.PtrToStringUTF8(nativeUtf8);
+#else
+        var len = 0;
+
+        while (Marshal.ReadByte(nativeUtf8, len) != 0)
         {
-            NativeMethods.whisper_free(currentWhisperContext);
-            if (language.HasValue)
-            {
-                Marshal.FreeHGlobal(language.Value);
-            }
-
-            if (initialPrompt.HasValue)
-            {
-                Marshal.FreeHGlobal(initialPrompt.Value);
-            }
-
-            if (initialPromptText.HasValue)
-            {
-                Marshal.FreeHGlobal(initialPromptText.Value);
-            }
-
-            options.ModelLoader!.Dispose();
+            len++;
         }
+
+        var buffer = new byte[len];
+        Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
+        return System.Text.Encoding.UTF8.GetString(buffer);
+#endif
     }
 }

@@ -1,4 +1,6 @@
-﻿using Whisper.net.SamplingStrategy;
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 

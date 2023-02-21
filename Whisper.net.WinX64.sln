@@ -7,12 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net.Demo", "Whisper
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\readme.md = ..\readme.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net", "Whisper.net\Whisper.net.csproj", "{5D1F57EB-AF79-419C-8DCB-E23F7BEC3E8C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "whisper", "build\win-x64\whisper.cpp\whisper.vcxproj", "{FE914A78-F221-36EA-9004-EA22EFD98480}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net.Tests", "Whisper.net.Tests\Whisper.net.Tests.csproj", "{9126E922-C981-4D1E-BB4D-264C91B8B829}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +105,30 @@ Global
 		{FE914A78-F221-36EA-9004-EA22EFD98480}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 		{FE914A78-F221-36EA-9004-EA22EFD98480}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|x64
 		{FE914A78-F221-36EA-9004-EA22EFD98480}.RelWithDebInfo|x86.Build.0 = RelWithDebInfo|x64
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|x64.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Debug|x86.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|x64.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|x86.ActiveCfg = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.MinSizeRel|x86.Build.0 = Debug|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|x64.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|x64.Build.0 = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|x86.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.Release|x86.Build.0 = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
+		{9126E922-C981-4D1E-BB4D-264C91B8B829}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
