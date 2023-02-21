@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest, {os: windows-2019, vm-image: windows-latest}]
+        arch: [amd64, arm64]
+        configuration: [Debug, Release]
+        if: matrix.os == 'windows-latest' || matrix.os == '{os: windows-2019, vm-image: windows-latest}' || matrix.os == 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Set up CMake
+        uses: actions/setup-cmake@v1
+        with:
+          cmake-version: '3.21.1'
+
+      - name: Create build directory
+        run: |
+          mkdir -p build/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}
+          cd build/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}
+          if [ "${{ matrix.arch }}" = "x86" ] && ( [ "${{ matrix.os }}" = "windows-latest" ] || [ "${{ matrix.os }}" = "{os: windows-2019, vm-image: windows-latest}" ] || [ "${{ matrix.os }}" = "ubuntu-latest" ] ); then cmake ../.. -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_GENERATOR_PLATFORM=Win32; else cmake ../.. -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_GENERATOR_PLATFORM=${{ matrix.arch }}; fi
+          
+      - name: Build
+        run: |
+          cd build/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}
+          cmake --build . --config ${{ matrix.configuration }} -j $(nproc) -v
+
+      - name: Copy artifacts
+        run: |
+          mkdir -p artifacts/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}
+          cp -R build/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}/* artifacts/${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.configuration }}
