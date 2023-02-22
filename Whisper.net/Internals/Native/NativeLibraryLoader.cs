@@ -26,9 +26,12 @@ internal static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        var assemblySearchPath = string.IsNullOrEmpty(AppDomain.CurrentDomain.RelativeSearchPath)
-                ? Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location)!
-                : AppDomain.CurrentDomain.RelativeSearchPath;
+        var assemblySearchPath = new[]
+        {
+            AppDomain.CurrentDomain.RelativeSearchPath,
+            Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location),
+            Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
+        }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
 
         var path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
         if (!File.Exists(path))
