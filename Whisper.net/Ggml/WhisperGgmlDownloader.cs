@@ -6,7 +6,7 @@ public static class WhisperGgmlDownloader
 {
     private static readonly Lazy<HttpClient> httpClient = new(() => new HttpClient(){Timeout = Timeout.InfiniteTimeSpan});
 
-    public static async Task<Stream> GetGgmlModelAsync(GgmlType type, CancellationToken cancellationToken)
+    public static async Task<Stream> GetGgmlModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var url = type switch
         {

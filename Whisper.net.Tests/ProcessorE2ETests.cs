@@ -14,7 +14,7 @@ public class ProcessorE2ETests
     public async Task SetupAsync()
     {
         ggmlModelPath = Path.GetTempFileName();
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny, CancellationToken.None);
+        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny);
         using var fileWriter = File.OpenWrite(ggmlModelPath);
         await model.CopyToAsync(fileWriter);
     }
