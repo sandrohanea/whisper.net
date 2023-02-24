@@ -4,9 +4,9 @@ namespace Whisper.net.Ggml;
 
 public static class WhisperGgmlDownloader
 {
-    private static readonly Lazy<HttpClient> httpClient = new(() => new HttpClient());
+    private static readonly Lazy<HttpClient> httpClient = new(() => new HttpClient(){Timeout = Timeout.InfiniteTimeSpan});
 
-    public static async Task<Stream> GetGgmlModelAsync(GgmlType type)
+    public static async Task<Stream> GetGgmlModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var url = type switch
         {
@@ -24,7 +24,7 @@ public static class WhisperGgmlDownloader
         };
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.Value.SendAsync(request);
+        var response = await httpClient.Value.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadAsStreamAsync();
