@@ -457,7 +457,7 @@ public sealed class WhisperProcessor : IDisposable
 
             for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
             {
-                var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(ctx, state, segmentIndex, tokenIndex);
+                var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(state, segmentIndex, tokenIndex);
                 sumProbability += tokenProbability;
                 if (tokenIndex == 0)
                 {

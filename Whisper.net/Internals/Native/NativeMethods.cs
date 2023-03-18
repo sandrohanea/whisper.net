@@ -16,6 +16,15 @@ internal static class NativeMethods
     public static extern IntPtr whisper_init_from_buffer_x32(IntPtr buffer, int buffer_size);
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_init_from_file_no_state(string path);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer_no_state", CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_init_from_buffer_no_state_x64(IntPtr buffer, long buffer_size);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer_no_state", CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_init_from_buffer_no_state_x32(IntPtr buffer, int buffer_size);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_free(IntPtr context);
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -46,7 +55,7 @@ internal static class NativeMethods
     public static extern int whisper_full_n_tokens_from_state(IntPtr state, int index);
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern float whisper_full_get_token_p_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
+    public static extern float whisper_full_get_token_p_from_state(IntPtr state, int segmentIndex, int tokenIndex);
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int whisper_tokenize(IntPtr context, IntPtr text, IntPtr tokens, int nMaxTokens);
@@ -74,4 +83,7 @@ internal static class NativeMethods
 
     [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_free_state(IntPtr state);
+
+    [DllImport("whisper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern int whisper_full_lang_id_from_state(IntPtr state);
 }

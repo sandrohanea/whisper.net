@@ -104,4 +104,28 @@ public class ProcessorE2ETests
         segments.Should().HaveCount(0);
         encoderBegins.Should().HaveCount(1);
     }
+
+    [Test]
+    public async Task TestAutoDetectLanguageWithRomanian()
+    {
+        var segments = new List<SegmentData>();
+        var encoderBegins = new List<EncoderBeginData>();
+        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var processor = factory.CreateBuilder()
+                        .WithLanguageDetection()
+                        .WithEncoderBeginHandler((e) =>
+                        {
+                            encoderBegins.Add(e);
+                            return true;
+                        })
+                        .Build();
+        using var fileReader = File.OpenRead("romana.wav");
+        await foreach (var segment in processor.ProcessAsync(fileReader))
+        {
+            segments.Add(segment);
+        }
+        segments.Should().HaveCountGreaterThan(0);
+        encoderBegins.Should().HaveCount(1);
+        segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
+    }
 }

@@ -33,7 +33,7 @@ internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n
 internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, IntPtr user_data);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr tokens, int tokens_count, IntPtr logits, IntPtr user_data);
+internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr state, IntPtr tokens, int tokens_count, IntPtr logits, IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperFullParams

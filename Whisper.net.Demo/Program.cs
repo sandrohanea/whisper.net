@@ -13,6 +13,7 @@ await Parser.Default.ParseArguments<Options>(args)
     .WithParsedAsync(Demo);
 
 async Task Demo(Options opt)
+
 {
     if (!File.Exists(opt.ModelName))
     {
