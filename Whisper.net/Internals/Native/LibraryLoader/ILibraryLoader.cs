@@ -1,8 +1,10 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
+
+using Whisper.net.Internals.Native.LibraryLoader;
 
 namespace Whisper.net.Native.LibraryLoader;
 
 internal interface ILibraryLoader
 {
-    IntPtr OpenLibrary(string filename, int flags);
+    LoadResult OpenLibrary(string filename);
 }

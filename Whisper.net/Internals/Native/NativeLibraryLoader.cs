@@ -1,13 +1,14 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.Internals.Native.LibraryLoader;
 using Whisper.net.Native.LibraryLoader;
 
 namespace Whisper.net.Native;
 
 internal static class NativeLibraryLoader
 {
-    internal static bool LoadNativeLibrary()
+    internal static LoadResult LoadNativeLibrary()
     {
         var architecture = RuntimeInformation.OSArchitecture switch
         {
@@ -47,8 +48,7 @@ internal static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
         };
 
-        // open with rtls lazy flag
-        var result = libraryLoader.OpenLibrary(path, 0x00001);
-        return result != IntPtr.Zero;
+        var result = libraryLoader.OpenLibrary(path);
+        return result;
     }
 }

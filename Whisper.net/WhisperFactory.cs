@@ -1,6 +1,7 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Whisper.net.Internals.ModelLoader;
+using Whisper.net.Internals.Native.LibraryLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net;
@@ -17,16 +18,16 @@ public sealed class WhisperFactory : IDisposable
     private readonly Lazy<IntPtr> contextLazy;
     private bool wasDisposed = false;
 
-    private static readonly Lazy<bool> libraryLoaded = new(() =>
+    private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
     {
         return NativeLibraryLoader.LoadNativeLibrary();
     }, true);
 
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
     {
-        if (!libraryLoaded.Value)
+        if (!libraryLoaded.Value.IsSuccess)
         {
-            throw new Exception("Failed to load native whisper library.");
+            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
         }
 
         this.loader = loader;

@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System;
 using System.IO;
