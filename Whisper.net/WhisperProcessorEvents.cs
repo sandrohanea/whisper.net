@@ -13,7 +13,7 @@ public class EncoderBeginData
 
 public class SegmentData
 {
-    public SegmentData(string text, TimeSpan start, TimeSpan end, float minProbability, float maxProbability, float probability)
+    public SegmentData(string text, TimeSpan start, TimeSpan end, float minProbability, float maxProbability, float probability, string language)
     {
         Text = text;
         Start = start;
@@ -21,6 +21,7 @@ public class SegmentData
         MinProbability = minProbability;
         MaxProbability = maxProbability;
         Probability = probability;
+        Language = language;
     }
 
     /// <summary>
@@ -61,4 +62,9 @@ public class SegmentData
     /// The possible values are from 0 to 1
     /// </remarks>
     public float Probability { get; }
+
+    /// <summary>
+    /// Gets the language of the current segment.
+    /// </summary>
+    public string Language { get; }
 }

@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Whisper.net.SamplingStrategy;
 
@@ -70,4 +70,5 @@ internal sealed class WhisperProcessorOptions
     public List<OnSegmentEventHandler> OnSegmentEventHandlers { get; set; } = new();
 
     public List<OnEncoderBeginEventHandler> OnEncoderBeginEventHandlers { get; set; } = new();
+    public bool ComputeProbabilities { get; set; }
 }

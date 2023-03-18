@@ -454,31 +454,36 @@ public sealed class WhisperProcessor : IDisposable
             float maximumProbability = 0;
             double sumProbability = 0;
             var numberOfTokens = NativeMethods.whisper_full_n_tokens_from_state(state, segmentIndex);
+            var languageId = NativeMethods.whisper_full_lang_id_from_state(state);
+            var language = Marshal.PtrToStringAnsi(NativeMethods.whisper_lang_str(languageId));
 
-            for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
+            if (options.ComputeProbabilities)
             {
-                var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(state, segmentIndex, tokenIndex);
-                sumProbability += tokenProbability;
-                if (tokenIndex == 0)
+                for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
                 {
-                    minimumProbability = tokenProbability;
-                    maximumProbability = tokenProbability;
-                    continue;
-                }
-                if (tokenProbability < minimumProbability)
-                {
-                    minimumProbability = tokenProbability;
-                }
+                    var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(state, segmentIndex, tokenIndex);
+                    sumProbability += tokenProbability;
+                    if (tokenIndex == 0)
+                    {
+                        minimumProbability = tokenProbability;
+                        maximumProbability = tokenProbability;
+                        continue;
+                    }
+                    if (tokenProbability < minimumProbability)
+                    {
+                        minimumProbability = tokenProbability;
+                    }
 
-                if (tokenProbability > maximumProbability)
-                {
-                    maximumProbability = tokenProbability;
+                    if (tokenProbability > maximumProbability)
+                    {
+                        maximumProbability = tokenProbability;
+                    }
                 }
             }
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens));
+                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {

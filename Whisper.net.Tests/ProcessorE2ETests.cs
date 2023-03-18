@@ -126,6 +126,7 @@ public class ProcessorE2ETests
         }
         segments.Should().HaveCountGreaterThan(0);
         encoderBegins.Should().HaveCount(1);
+        segments.Should().AllSatisfy(s => s.Language.Should().Be("ro"));
         segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
     }
 }

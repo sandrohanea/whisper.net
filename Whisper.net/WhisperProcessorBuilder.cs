@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Whisper.net.SamplingStrategy;
 
@@ -475,6 +475,16 @@ public class WhisperProcessorBuilder
         var beamSearchSamplingStrategy = new BeamSearchSamplingStrategy();
         whisperProcessorOptions.SamplingStrategy = beamSearchSamplingStrategy;
         return new BeamSearchSamplingStrategyBuilder(this, beamSearchSamplingStrategy);
+    }
+
+    /// <summary>
+    /// Confiugres the processor to return probabilities during segment decoding <seealso cref="SegmentData.MaxProbability"/>, <seealso cref="SegmentData.MinProbability"/> and <seealso cref="SegmentData.AverageProbability"/>.
+    /// </summary>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithProbabilities()
+    {
+        whisperProcessorOptions.ComputeProbabilities = true;
+        return this;
     }
 
     /// <summary>
