@@ -9,6 +9,13 @@ public static class NativeLibraryLoader
 {
     private static ILibraryLoader? defaultLibraryLoader = null;
 
+    /// <summary>
+    /// Sets the library loader used to load the native libraries. Overwrite this only if you want some custom loading.
+    /// </summary>
+    /// <param name="libraryLoader">The library loader to be used.</param>
+    /// <remarks>
+    /// It needs to be set before the first <seealso cref="WhisperFactory"/> is created, otherwise it won't have any effect.
+    /// </remarks>
     public static void SetLibraryLoader(ILibraryLoader libraryLoader)
     {
         defaultLibraryLoader = libraryLoader;
