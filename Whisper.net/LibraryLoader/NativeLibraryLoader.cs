@@ -1,9 +1,9 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
-using Whisper.net.LibraryLoader;
+using Whisper.net.Native;
 
-namespace Whisper.net.Native;
+namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
