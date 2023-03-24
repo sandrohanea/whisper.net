@@ -42,7 +42,7 @@ void LanguageIdentification(Options opt)
 {
     var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
-    // Same factory can be used by multiple taks to create processors.
+    // Same factory can be used by multiple task to create processors.
     using var factory = WhisperFactory.FromBuffer(bufferedModel);
 
     var builder = factory.CreateBuilder()
@@ -62,7 +62,7 @@ void LanguageIdentification(Options opt)
 
 async Task FullDetection(Options opt)
 {
-    // Same factory can be used by multiple taks to create processors.
+    // Same factory can be used by multiple task to create processors.
     using var factory = WhisperFactory.FromPath(opt.ModelName);
 
     var builder = factory.CreateBuilder()

@@ -1,9 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
-using Whisper.net.Internals.Native.LibraryLoader;
 
-namespace Whisper.net.Native.LibraryLoader;
+namespace Whisper.net.LibraryLoader;
 
 internal class LinuxLibraryLoader : ILibraryLoader
 {

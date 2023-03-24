@@ -1,8 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-namespace Whisper.net.Internals.Native.LibraryLoader;
+namespace Whisper.net.LibraryLoader;
 
-internal class LoadResult
+public class LoadResult
 {
     private LoadResult(bool isSuccess, string? errorMessage)
     {

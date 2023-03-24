@@ -1,7 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Whisper.net.Internals.ModelLoader;
-using Whisper.net.Internals.Native.LibraryLoader;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net;

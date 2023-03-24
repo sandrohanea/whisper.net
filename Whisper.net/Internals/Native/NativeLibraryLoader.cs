@@ -1,13 +1,19 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
-using Whisper.net.Internals.Native.LibraryLoader;
-using Whisper.net.Native.LibraryLoader;
+using Whisper.net.LibraryLoader;
 
 namespace Whisper.net.Native;
 
-internal static class NativeLibraryLoader
+public static class NativeLibraryLoader
 {
+    private static ILibraryLoader? defaultLibraryLoader = null;
+
+    public static void SetLibraryLoader(ILibraryLoader libraryLoader)
+    {
+        defaultLibraryLoader = libraryLoader;
+    }
+
     internal static LoadResult LoadNativeLibrary()
     {
         var architecture = RuntimeInformation.OSArchitecture switch
@@ -35,6 +41,12 @@ internal static class NativeLibraryLoader
         }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
 
         var path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+
+        if (defaultLibraryLoader != null)
+        {
+            return defaultLibraryLoader.OpenLibrary(path);
+        }
+
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"Native Library not found in path {path}. Probably it is not supported yet.");
