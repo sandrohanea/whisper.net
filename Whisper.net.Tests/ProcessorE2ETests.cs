@@ -129,4 +129,52 @@ public class ProcessorE2ETests
         segments.Should().AllSatisfy(s => s.Language.Should().Be("ro"));
         segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
     }
+
+    [Test]
+    public async Task ProcessAsync_Cancelled_WillCancellTheProcessing_AndDispose_WillWaitUntilFullyFinished()
+    {
+        var segments = new List<SegmentData>();
+        var segmentsEnumerated = new List<SegmentData>();
+        var cts = new CancellationTokenSource();
+        TaskCanceledException? taskCanceledException = null;
+
+        var encoderBegins = new List<EncoderBeginData>();
+        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        var processor = factory.CreateBuilder()
+                        .WithLanguage("en")
+                        .WithEncoderBeginHandler((e) =>
+                        {
+                            encoderBegins.Add(e);
+                            return true;
+                        })
+                        .WithSegmentEventHandler(s =>
+                        {
+                            segments.Add(s);
+                            cts.Cancel();
+                        })
+                        .Build();
+
+        using var fileReader = File.OpenRead("kennedy.wav");
+        try
+        {
+            await foreach (var data in processor.ProcessAsync(fileReader, cts.Token))
+            {
+                segmentsEnumerated.Add(data);
+            }
+        }
+        catch (TaskCanceledException ex)
+        {
+            taskCanceledException = ex;
+        }
+
+        await processor.DisposeAsync();
+
+        segmentsEnumerated.Should().BeEmpty();
+
+        segments.Should().HaveCount(1);
+        encoderBegins.Should().HaveCount(1);
+        taskCanceledException.Should().NotBeNull();
+
+        segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
+    }
 }

@@ -10,7 +10,7 @@ using Whisper.net.Wave;
 
 namespace Whisper.net;
 
-public sealed class WhisperProcessor : IDisposable
+public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 {
     private const byte trueByte = 1;
     private const byte falseByte = 0;
@@ -18,17 +18,21 @@ public sealed class WhisperProcessor : IDisposable
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
     private readonly List<GCHandle> gcHandles = new();
+    private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPrompt;
     private IntPtr? initialPromptText;
+    private bool isDisposed = false;
     private int segmentIndex;
+    private CancellationToken? currentCancellationToken = null;
 
     internal WhisperProcessor(WhisperProcessorOptions options)
     {
         this.options = options;
         currentWhisperContext = options.ContextHandle;
         whisperParams = GetWhisperParams();
+        processingSemaphore = new(1);
     }
 
     public void ChangeLanguage(string? newLanguage)
@@ -107,16 +111,24 @@ public sealed class WhisperProcessor : IDisposable
 
     public unsafe void Process(float[] samples)
     {
+        if (isDisposed)
+        {
+            throw new ObjectDisposedException("This processor has already been disposed.");
+        }
+
         fixed (float* pData = samples)
         {
+
             var state = NativeMethods.whisper_init_state(currentWhisperContext);
             try
             {
+                processingSemaphore.Wait();
                 NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
             }
             finally
             {
                 NativeMethods.whisper_free_state(state);
+                processingSemaphore.Release();
             }
         }
     }
@@ -146,6 +158,7 @@ public sealed class WhisperProcessor : IDisposable
 
         try
         {
+            currentCancellationToken = cancellationToken;
             var whisperTask = ProcessInternalAsync(samples)
                 .ContinueWith(_ => resetEvent.Set(), cancellationToken);
 
@@ -180,6 +193,11 @@ public sealed class WhisperProcessor : IDisposable
 
     public void Dispose()
     {
+        if (processingSemaphore.CurrentCount == 0)
+        {
+            throw new Exception("Cannot dispose while processing, please use DisposeAsync instead.");
+        }
+
         if (language.HasValue)
         {
             Marshal.FreeHGlobal(language.Value);
@@ -199,14 +217,20 @@ public sealed class WhisperProcessor : IDisposable
         {
             gcHandle.Free();
         }
+        isDisposed = true;
     }
 
     private unsafe Task ProcessInternalAsync(float[] samples)
     {
+        if (isDisposed)
+        {
+            throw new ObjectDisposedException("This processor has already been disposed.");
+        }
         return Task.Run(() =>
         {
             fixed (float* pData = samples)
             {
+                processingSemaphore.Wait();
                 var state = NativeMethods.whisper_init_state(currentWhisperContext);
                 try
                 {
@@ -215,6 +239,7 @@ public sealed class WhisperProcessor : IDisposable
                 finally
                 {
                     NativeMethods.whisper_free_state(state);
+                    processingSemaphore.Release();
                 }
             }
         });
@@ -428,6 +453,11 @@ public sealed class WhisperProcessor : IDisposable
 
     private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
     {
+        if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
+        {
+            return false;
+        }
+
         var encoderBeginArgs = new EncoderBeginData();
         foreach (var handler in options.OnEncoderBeginEventHandlers)
         {
@@ -512,5 +542,13 @@ public sealed class WhisperProcessor : IDisposable
         Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
         return System.Text.Encoding.UTF8.GetString(buffer);
 #endif
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // If a processing is still running, wait for it to finish
+        await processingSemaphore.WaitAsync();
+        processingSemaphore.Release();
+        Dispose();
     }
 }
