@@ -445,6 +445,17 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
+    /// Adds a <seealso cref="OnProgressHandler"/> which will report the progress in percentage.
+    /// </summary>
+    /// <param name="progressHandler">The event handler to be added.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithProgressHandler(OnProgressHandler progressHandler)
+    {
+        whisperProcessorOptions.OnProgressHandlers.Add(progressHandler);
+        return this;
+    }
+
+    /// <summary>
     /// Adds a <seealso cref="OnEncoderBeginEventHandler"/> which will be called when encoder will begin.
     /// </summary>
     /// <param name="segmentEventHandler">The event handler to be added.</param>

@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using Whisper.net.Ggml;
@@ -29,6 +30,7 @@ public class ProcessorE2ETests
     public void TestHappyFlow()
     {
         var segments = new List<SegmentData>();
+        var progress = new List<int>();
         var encoderBegins = new List<EncoderBeginData>();
         using var factory = WhisperFactory.FromPath(ggmlModelPath);
         using var processor = factory.CreateBuilder()
@@ -38,6 +40,8 @@ public class ProcessorE2ETests
                             encoderBegins.Add(e);
                             return true;
                         })
+                        .WithPrompt("I am Kennedy")
+                        .WithProgressHandler(progress.Add)
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
@@ -46,6 +50,7 @@ public class ProcessorE2ETests
 
         segments.Should().HaveCountGreaterThan(0);
         encoderBegins.Should().HaveCount(1);
+        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
 
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
@@ -55,6 +60,7 @@ public class ProcessorE2ETests
     {
         var segments = new List<SegmentData>();
         var segmentsEnumerated = new List<SegmentData>();
+        var progress = new List<int>();
 
         var encoderBegins = new List<EncoderBeginData>();
         using var factory = WhisperFactory.FromPath(ggmlModelPath);
@@ -65,6 +71,7 @@ public class ProcessorE2ETests
                             encoderBegins.Add(e);
                             return true;
                         })
+                        .WithProgressHandler(progress.Add)
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
@@ -77,6 +84,7 @@ public class ProcessorE2ETests
         segmentsEnumerated.Should().BeEquivalentTo(segments);
 
         segments.Should().HaveCountGreaterThan(0);
+        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
         encoderBegins.Should().HaveCount(1);
 
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
