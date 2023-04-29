@@ -33,6 +33,9 @@ internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n
 internal delegate bool WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, IntPtr user_data);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate void WhisperProgressCallback(IntPtr ctx, IntPtr state, int progress, IntPtr user_data);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr state, IntPtr tokens, int tokens_count, IntPtr logits, IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
@@ -97,6 +100,8 @@ internal struct WhisperFullParams
     // overwrite the audio context size (0 = use default)
     public int AudioContextSize;
 
+    public IntPtr InitialPrompt;
+
     // tokens to provide to the whisper decoder as initial prompt
     // these are prepended to any existing text context from a previous call
     public IntPtr PromptTokens;
@@ -140,6 +145,10 @@ internal struct WhisperFullParams
     public IntPtr OnNewSegment;
 
     public IntPtr OnNewSegmentUserData;
+
+    public IntPtr OnProgressCallback;
+
+    public IntPtr OnProgressCallbackUserData;
 
     public IntPtr OnEncoderBegin;
 

@@ -21,7 +21,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
     private IntPtr? language;
-    private IntPtr? initialPrompt;
     private IntPtr? initialPromptText;
     private bool isDisposed = false;
     private int segmentIndex;
@@ -203,11 +202,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             Marshal.FreeHGlobal(language.Value);
         }
 
-        if (initialPrompt.HasValue)
-        {
-            Marshal.FreeHGlobal(initialPrompt.Value);
-        }
-
         if (initialPromptText.HasValue)
         {
             Marshal.FreeHGlobal(initialPromptText.Value);
@@ -347,17 +341,8 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             var tokenMaxLength = options.Prompt!.Length + 1;
 
             initialPromptText = Marshal.StringToHGlobalAnsi(options.Prompt);
-            initialPrompt = Marshal.AllocHGlobal(tokenMaxLength);
 
-            var tokens = NativeMethods.whisper_tokenize(currentWhisperContext, initialPromptText.Value, initialPrompt.Value, tokenMaxLength);
-
-            if (tokens == -1)
-            {
-                throw new ApplicationException("Cannot tokenize prompt text.");
-            }
-
-            whisperParams.PromptTokens = initialPrompt.Value;
-            whisperParams.PromptNTokens = tokens;
+            whisperParams.InitialPrompt = initialPromptText.Value;
         }
 
         if (options.Language != null)
@@ -435,6 +420,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
         whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
 
+        if (options.OnProgressHandlers.Count > 0)
+        {
+            var whisperProgressCallback = new WhisperProgressCallback(OnProgress);
+            gcHandles.Add(GCHandle.Alloc(whisperProgressCallback));
+            whisperParams.OnProgressCallback = Marshal.GetFunctionPointerForDelegate(whisperProgressCallback);
+        }
+
         return whisperParams;
     }
 
@@ -449,6 +441,23 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
         var language = Marshal.PtrToStringAnsi(languagePtr);
         return language;
+    }
+
+    private void OnProgress(IntPtr ctx, IntPtr state, int progress, IntPtr user_data)
+    {
+        if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
+        {
+            return;
+        }
+
+        foreach (var handler in options.OnProgressHandlers)
+        {
+            handler?.Invoke(progress);
+            if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
+            {
+                return;
+            }
+        }
     }
 
     private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
