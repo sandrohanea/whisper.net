@@ -472,6 +472,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
     {
+        if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
+        {
+            return;
+        }
+
         var segments = NativeMethods.whisper_full_n_segments_from_state(state);
 
         while (segmentIndex < segments)
@@ -518,6 +523,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {
                     handler?.Invoke(eventHandlerArgs);
+                    if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
+                    {
+                        return;
+                    }
                 }
             }
 
