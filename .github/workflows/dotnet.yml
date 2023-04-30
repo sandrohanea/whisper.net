@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
     
     steps:
     - uses: actions/checkout@v3
@@ -23,6 +23,18 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
+    - name: Install Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'microsoft'
+        java-version: '11'
+    - name: Install .NET Workloads
+      run: | 
+          dotnet workload install android --ignore-failed-sources
+          dotnet workload install ios --ignore-failed-sources
+          dotnet workload install macos --ignore-failed-sources
+          dotnet workload install tvos --ignore-failed-sources
+          dotnet workload install maccatalyst --ignore-failed-sources
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
     - name: Build

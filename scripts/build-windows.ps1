@@ -20,7 +20,7 @@ function BuildWindowsX64() {
     cmake --build build/win-x64 --config Release
     
     #copy the binaries to runtimes/windows-x64
-    cp build/win-x64/bin/Release/whisper.dll ./Whisper.net/runtimes/win-x64/whisper.dll
+    cp build/win-x64/bin/Release/whisper.dll ./Whisper.net.Runtime/win-x64/whisper.dll
 }
 
 function BuildWindowsX86() {
@@ -38,7 +38,7 @@ function BuildWindowsX86() {
     cmake --build build/win-x86 --config Release
     
     #copy the binaries to runtimes/windows-x86
-    cp build/win-x86/bin/Release/whisper.dll ./Whisper.net/runtimes/win-x86/whisper.dll
+    cp build/win-x86/bin/Release/whisper.dll ./Whisper.net.Runtime/win-x86/whisper.dll
 }
 
 function BuildWindowsArm64() {
@@ -56,7 +56,7 @@ function BuildWindowsArm64() {
     cmake --build build/win-arm64 --config Release
     
     #copy the binaries to runtimes/windows-arm64
-    cp build/win-arm64/bin/Release/whisper.dll ./Whisper.net/runtimes/win-arm64/whisper.dll
+    cp build/win-arm64/bin/Release/whisper.dll ./Whisper.net.Runtime/win-arm64/whisper.dll
 }
 
 function BuildWindowsArm() {
@@ -74,7 +74,7 @@ function BuildWindowsArm() {
     cmake --build build/win-arm --config Release
     
     #copy the binaries to runtimes/windows-arm
-    cp build/win-arm/bin/Release/whisper.dll ./Whisper.net/runtimes/win-arm/whisper.dll
+    cp build/win-arm/bin/Release/whisper.dll ./Whisper.net.Runtime/win-arm/whisper.dll
 }
 
 BuildWindowsX64

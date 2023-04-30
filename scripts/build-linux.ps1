@@ -20,7 +20,7 @@ function BuildLinuxX64() {
     cmake --build build/linux-x64 --config Release
     
     #copy the binaries to runtimes/linux-x64
-    cp build/linux-x64/whisper.cpp/libwhisper.so ./Whisper.net/runtimes/linux-x64/whisper.so
+    cp build/linux-x64/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-x64/whisper.so
 }
 
 function BuildLinuxArm64() {
@@ -39,7 +39,7 @@ function BuildLinuxArm64() {
     cmake --build build/linux-arm64 --config Release 
     
     #copy the binaries to runtimes/linux-arm64
-    cp build/linux-arm64/whisper.cpp/libwhisper.so ./Whisper.net/runtimes/linux-arm64/whisper.so
+    cp build/linux-arm64/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-arm64/whisper.so
 }
 
 function BuildWebAssembly() {
@@ -58,7 +58,7 @@ function BuildWebAssembly() {
     cmake --build build/webassembly --config Release 
     
     #copy the binaries to runtimes/webassembly
-    cp build/webassembly/whisper.cpp/libwhisper.so ./Whisper.net/runtimes/webassembly/whisper.wasm
+    cp build/webassembly/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/webassembly/whisper.wasm
 }
 
 
@@ -78,7 +78,7 @@ function BuildLinuxArm() {
     cmake --build build/linux-arm --config Release 
     
     #copy the binaries to runtimes/linux-arm
-    cp build/linux-arm/whisper.cpp/libwhisper.so ./Whisper.net/runtimes/linux-arm/whisper.so
+    cp build/linux-arm/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-arm/whisper.so
 }
 
 BuildLinuxArm;

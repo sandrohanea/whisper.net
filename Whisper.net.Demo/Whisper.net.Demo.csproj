@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+	<Import Project="../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks>net7.0;net472</TargetFrameworks>
