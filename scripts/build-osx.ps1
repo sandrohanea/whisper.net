@@ -20,7 +20,7 @@ function BuildOsxX64() {
     cmake --build build/osx-x64 --config Release
     
     #copy the binaries to runtimes/osx-x64
-    cp build/osx-x64/whisper.cpp/libwhisper.dylib ./Whisper.net/runtimes/osx-x64/whisper.dylib
+    cp build/osx-x64/whisper.cpp/libwhisper.dylib ./Whisper.net.Runtime/osx-x64/whisper.dylib
 }
 
 function BuildOsxArm64() {
@@ -39,7 +39,7 @@ function BuildOsxArm64() {
     cmake --build build/osx-arm64 --config Release 
     
     #copy the binaries to runtimes/osx-arm64
-    cp build/osx-arm64/whisper.cpp/libwhisper.dylib ./Whisper.net/runtimes/osx-arm64/whisper.dylib
+    cp build/osx-arm64/whisper.cpp/libwhisper.dylib ./Whisper.net.Runtime/osx-arm64/whisper.dylib
 }
 
 BuildOsxArm64
