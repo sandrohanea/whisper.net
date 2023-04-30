@@ -7,14 +7,14 @@ namespace Whisper.net.LibraryLoader;
 internal class MacOsLibraryLoader : ILibraryLoader
 {
     [DllImport("libdl.dylib", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
-    public static extern IntPtr NativeOpenLibraryLibdl(string filename, int flags);
+    public static extern IntPtr NativeOpenLibraryLibdl(string? filename, int flags);
 
     [DllImport("libdl.dylib", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError();
 
-    public LoadResult OpenLibrary(string filename)
+    public LoadResult OpenLibrary(string? fileName)
     {
-        var loadedLib = NativeOpenLibraryLibdl(filename, 0x00001);
+        var loadedLib = NativeOpenLibraryLibdl(fileName, 0x00001);
 
         if (loadedLib == IntPtr.Zero)
         {

@@ -22,9 +22,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
-    private bool isDisposed = false;
+    private bool isDisposed;
     private int segmentIndex;
-    private CancellationToken? currentCancellationToken = null;
+    private CancellationToken? currentCancellationToken;
 
     internal WhisperProcessor(WhisperProcessorOptions options)
     {
@@ -158,20 +158,20 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         try
         {
             currentCancellationToken = cancellationToken;
-            var whisperTask = ProcessInternalAsync(samples)
-                .ContinueWith(_ => resetEvent.Set(), cancellationToken);
+            var whisperTask = ProcessInternalAsync(samples, cancellationToken)
+                .ContinueWith(_ => resetEvent.Set(), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Default);
 
-            while (!whisperTask.IsCompleted || buffer.Count > 0)
+            while (!whisperTask.IsCompleted || !buffer.IsEmpty)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (buffer.Count == 0)
+                if (buffer.IsEmpty)
                 {
                     await Task.WhenAny(whisperTask, resetEvent.WaitAsync())
                         .ConfigureAwait(false);
                 }
 
-                while (buffer.Count > 0 && buffer.TryDequeue(out var segmentData))
+                while (!buffer.IsEmpty && buffer.TryDequeue(out var segmentData))
                 {
                     yield return segmentData;
                 }
@@ -214,13 +214,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         isDisposed = true;
     }
 
-    private unsafe Task ProcessInternalAsync(float[] samples)
+    private unsafe Task ProcessInternalAsync(float[] samples, CancellationToken cancellationToken)
     {
         if (isDisposed)
         {
             throw new ObjectDisposedException("This processor has already been disposed.");
         }
-        return Task.Run(() =>
+        return Task.Factory.StartNew(() =>
         {
             fixed (float* pData = samples)
             {
@@ -236,7 +236,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     processingSemaphore.Release();
                 }
             }
-        });
+        }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
 
     private WhisperFullParams GetWhisperParams()
@@ -430,7 +430,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return whisperParams;
     }
 
-    private string? GetAutodetectedLanguage(IntPtr state)
+    private static string? GetAutodetectedLanguage(IntPtr state)
     {
         var detectedLanguageId = NativeMethods.whisper_full_lang_id(state);
         if (detectedLanguageId == -1)
@@ -527,7 +527,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language);
+                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {

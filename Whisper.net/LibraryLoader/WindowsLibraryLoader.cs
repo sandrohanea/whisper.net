@@ -7,9 +7,9 @@ namespace Whisper.net.LibraryLoader;
 
 internal class WindowsLibraryLoader : ILibraryLoader
 {
-    public LoadResult OpenLibrary(string filename)
+    public LoadResult OpenLibrary(string? fileName)
     {
-        var loadedLib = LoadLibrary(filename);
+        var loadedLib = LoadLibrary(fileName);
 
         if (loadedLib == IntPtr.Zero)
         {
@@ -22,5 +22,5 @@ internal class WindowsLibraryLoader : ILibraryLoader
     }
 
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpFileName);
+    private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string? lpFileName);
 }

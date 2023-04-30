@@ -1,13 +1,14 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
-
+#if !IOS && !MACCATALYST && !TVOS && !ANDROID
 using System.Runtime.InteropServices;
 using Whisper.net.Native;
+#endif
 
 namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
-    private static ILibraryLoader? defaultLibraryLoader = null;
+    private static ILibraryLoader? defaultLibraryLoader;
 
     /// <summary>
     /// Sets the library loader used to load the native libraries. Overwrite this only if you want some custom loading.
@@ -26,7 +27,7 @@ public static class NativeLibraryLoader
 
 #if IOS || MACCATALYST || TVOS || ANDROID
         // If we're not bypass loading, and the path was set, and loader was set, allow it to go through.
-        if (!bypassLoading && !string.IsNullOrEmpty(path) && defaultLibraryLoader != null)
+        if (!bypassLoading && defaultLibraryLoader != null)
         {
             return defaultLibraryLoader.OpenLibrary(path);
         }
@@ -65,7 +66,10 @@ public static class NativeLibraryLoader
                 Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
             }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
 
-            path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+            path = string.IsNullOrEmpty(assemblySearchPath)
+                ? Path.Combine("runtimes", $"{platform}-{architecture}", $"whisper.{extension}")
+                : Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+
         }
 
         if (defaultLibraryLoader != null)
