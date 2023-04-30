@@ -25,9 +25,9 @@ jobs:
         dotnet-version: 7.0.x
     - name: Install Java
     - uses: actions/setup-java@v2
-        with:
-          distribution: 'microsoft'
-          java-version: '11'
+      with:
+        distribution: 'microsoft'
+        java-version: '11'
     - name: Install .NET Workloads
         run: |
           dotnet workload install android --ignore-failed-sources
