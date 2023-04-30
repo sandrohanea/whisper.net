@@ -23,6 +23,16 @@ public static class NativeLibraryLoader
 
     internal static LoadResult LoadNativeLibrary(string? path = default, bool bypassLoading = false)
     {
+
+#if IOS || MACCATALYST || TVOS || ANDROID
+        // If we're not bypass loading, and the path was set, and loader was set, allow it to go through.
+        if (!bypassLoading && !string.IsNullOrEmpty(path) && defaultLibraryLoader != null)
+        {
+            return defaultLibraryLoader.OpenLibrary(path);
+        }
+
+        return LoadResult.Success;
+#else
         // If the user has handled loading the library themselves, we don't need to do anything.
         if (bypassLoading)
         {
@@ -78,5 +88,6 @@ public static class NativeLibraryLoader
 
         var result = libraryLoader.OpenLibrary(path);
         return result;
+#endif
     }
 }

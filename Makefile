@@ -1,6 +1,13 @@
 BUILD_TYPE=Release
+VERSION=1.3.0
+
+nuget:
+	mkdir -p nupkgs
+	nuget pack Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
 
 clean:
+	rm -rf nupkgs
 	rm -rf build
 	rm -rf runtimes
 
