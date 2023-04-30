@@ -53,7 +53,7 @@ public sealed class WhisperFactory : IDisposable
     /// <param name="path">The path to the model.</param>
     /// <param name="delayInitialization">A value indicating if the model should be loaded right away or during the first <see cref="CreateBuilder"/> call.</param>
     /// <param name="libraryPath">The path to the library</param>
-    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the library though other means.</param>
+    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the library through other means.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
