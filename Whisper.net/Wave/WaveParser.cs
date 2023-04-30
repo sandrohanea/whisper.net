@@ -1,4 +1,4 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 namespace Whisper.net.Wave;
 
@@ -10,7 +10,7 @@ public sealed class WaveParser
     private ushort bitsPerSample;
     private uint dataChunkSize;
     private long dataChunkPosition;
-    private bool wasInitialized = false;
+    private bool wasInitialized;
 
     public WaveParser(Stream waveStream)
     {

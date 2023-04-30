@@ -7,10 +7,10 @@ namespace Whisper.net.LibraryLoader;
 internal class LinuxLibraryLoader : ILibraryLoader
 {
     [DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
-    public static extern IntPtr NativeOpenLibraryLibdl(string filename, int flags);
+    public static extern IntPtr NativeOpenLibraryLibdl(string? filename, int flags);
 
     [DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
-    public static extern IntPtr NativeOpenLibraryLibdl2(string filename, int flags);
+    public static extern IntPtr NativeOpenLibraryLibdl2(string? filename, int flags);
 
     [DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError();
@@ -18,17 +18,17 @@ internal class LinuxLibraryLoader : ILibraryLoader
     [DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError2();
 
-    public LoadResult OpenLibrary(string filename)
+    public LoadResult OpenLibrary(string? fileName)
     {
         IntPtr loadedLib;
         try
         {
             // open with rtls lazy flag
-            loadedLib = NativeOpenLibraryLibdl2(filename, 0x00001);
+            loadedLib = NativeOpenLibraryLibdl2(fileName, 0x00001);
         }
         catch (DllNotFoundException)
         {
-            loadedLib = NativeOpenLibraryLibdl(filename, 0x00001);
+            loadedLib = NativeOpenLibraryLibdl(fileName, 0x00001);
         }
 
         if (loadedLib == IntPtr.Zero)

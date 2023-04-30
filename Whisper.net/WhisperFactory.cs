@@ -16,8 +16,8 @@ public sealed class WhisperFactory : IDisposable
 {
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
-    private bool wasDisposed = false;
-    private static bool bypassLoading = false;
+    private bool wasDisposed;
+    private static bool bypassLoading;
     private static string? libraryPath;
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
