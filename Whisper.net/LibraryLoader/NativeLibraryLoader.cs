@@ -75,7 +75,9 @@ public static class NativeLibraryLoader
 
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Native Library not found in path {path}. Probably it is not supported yet.");
+            throw new FileNotFoundException($"Native Library not found in path {path}. " +
+                $"Verify you have have included the native Whisper library in your application, " +
+                $"or install the default libraries with the Whisper.net.Runtime NuGet.");
         }
 
         ILibraryLoader libraryLoader = platform switch
