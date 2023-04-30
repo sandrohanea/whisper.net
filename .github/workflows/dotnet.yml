@@ -29,7 +29,7 @@ jobs:
         distribution: 'microsoft'
         java-version: '11'
     - name: Install .NET Workloads
-        run: |
+      run: |
           dotnet workload install android --ignore-failed-sources
           dotnet workload install ios --ignore-failed-sources
           dotnet workload install macos --ignore-failed-sources
