@@ -7,7 +7,7 @@ namespace Whisper.net.Native;
 internal static class NativeMethods
 {
     // Needed for Apple apps when linking library.
-#if IOS || MACOS || MACCATALYST || TVOS
+#if IOS || MACCATALYST || TVOS
     const string libraryName = "__Internal";
 #else
     const string libraryName = "whisper";
