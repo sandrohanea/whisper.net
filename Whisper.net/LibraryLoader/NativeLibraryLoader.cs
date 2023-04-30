@@ -21,8 +21,14 @@ public static class NativeLibraryLoader
         defaultLibraryLoader = libraryLoader;
     }
 
-    internal static LoadResult LoadNativeLibrary()
+    internal static LoadResult LoadNativeLibrary(string? path = default, bool bypassLoading = false)
     {
+        // If the user has handled loading the library themselves, we don't need to do anything.
+        if (bypassLoading)
+        {
+            return LoadResult.Success;
+        }
+
         var architecture = RuntimeInformation.OSArchitecture switch
         {
             Architecture.X64 => "x64",
@@ -40,14 +46,17 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        var assemblySearchPath = new[]
+        if (string.IsNullOrEmpty(path))
         {
-            AppDomain.CurrentDomain.RelativeSearchPath,
-            Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location),
-            Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
-        }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
+            var assemblySearchPath = new[]
+            {
+                AppDomain.CurrentDomain.RelativeSearchPath,
+                Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location),
+                Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
+            }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
 
-        var path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+            path = Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+        }
 
         if (defaultLibraryLoader != null)
         {
