@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, windows-latest]
     
     steps:
     - uses: actions/checkout@v3
@@ -24,11 +24,13 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Install Java
+      if: runner.os == 'Windows'
       uses: actions/setup-java@v2
       with:
         distribution: 'microsoft'
         java-version: '11'
     - name: Install .NET Workloads
+      if: runner.os == 'Windows'
       run: | 
           dotnet workload install android --ignore-failed-sources
           dotnet workload install ios --ignore-failed-sources
