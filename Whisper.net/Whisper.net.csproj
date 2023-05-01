@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0-ios;net6.0-tvos;net6.0-maccatalyst;net6.0-android</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>10</LangVersion>
-		<Version>1.3.0.1</Version>
+		<Version>1.4.0</Version>
 		<Authors>Sandro Hanea</Authors>
 		<Description>Cross-platform dotnet bindings for Whisper.</Description>
 		<PackageProjectUrl>https://github.com/sandrohanea/whisper.net</PackageProjectUrl>
@@ -20,6 +19,15 @@
 		<None Include="..\LICENSE" Pack="true" PackagePath="" />
 		<None Include="..\readme.md" Pack="true" PackagePath="" />
 	</ItemGroup>
+
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) Or $([MSBuild]::IsOSPlatform('Windows'))">
+		<TargetFrameworks>
+			netstandard2.0;netstandard2.1;net6.0-ios;net6.0-tvos;net6.0-maccatalyst;net6.0-android</TargetFrameworks>
+	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
