@@ -9,12 +9,18 @@ Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp] (https://githu
 To install Whisper.net, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
     PM> Install-Package Whisper.net
+    PM> Install-Package Whisper.net.Runtime
 
 or simply add a package reference in your csproj:
 
 ```
     <PackageReference Include="Whisper.net" Version="1.4.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.4.0" />
 ```
+
+## Runtime
+
+The runtime package, Whisper.net.Runtime, contains the native whisper.cpp library and it is required in order to run Whisper.net.
 
 ## Versioning
 
@@ -85,3 +91,7 @@ Whisper.net is supported on the following platforms:
 - Linux ARM
 - macOS x64
 - macOS ARM64 (Apple Silicon)
+- Android
+- iOS
+- MacCatalyst
+- tvOS
