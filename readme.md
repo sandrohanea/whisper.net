@@ -74,6 +74,40 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
 
 You can find the documentation and code samples here: [https://github.com/sandrohanea/whisper.net](https://github.com/sandrohanea/whisper.net)
 
+## Building The Runtime
+
+The build scripts are a combination of PowerShell scripts and a Makefile. You can read each of them for the underlying `cmake` commands being used, or run them directly from the scripts.
+
+### Android:
+
+`make android`
+
+- Before running, create an environment variable for `NDK_PATH` with the path to your Android NDK. For example,
+
+`NDK_PATH=/Users/UserName/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle`
+
+### Apple:
+
+`make apple`
+
+or
+
+`pwsh ./scripts/build-osx.ps1`
+
+- Compiling the Apple libraries requires a Mac with Xcode installed.
+
+### Linux:
+
+`make linux`
+
+or
+
+`pwsh ./scripts/build-linux.ps1`
+
+### Windows:
+
+- Run the `.bat` files in the root of this repo, or the powershell `./script/build-windows.ps1`
+
 ## License
 
 MIT Licence
