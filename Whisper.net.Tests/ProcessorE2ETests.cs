@@ -184,4 +184,24 @@ public class ProcessorE2ETests
 
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
+
+    [Test]
+    public async Task ProcessAsync_WhenJunkChunkExists_ProcessCorrectly()
+    {
+        var segments = new List<SegmentData>();
+
+        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        await using var processor = factory.CreateBuilder()
+                        .WithLanguage("en")
+                        .Build();
+
+        using var fileReader = File.OpenRead("junkchunk16khz.wav");
+        await foreach (var segment in processor.ProcessAsync(fileReader))
+        {
+            segments.Add(segment);
+        }
+
+        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+    }
+
 }
