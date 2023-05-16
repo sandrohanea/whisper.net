@@ -27,13 +27,13 @@ public sealed class WhisperFactory : IDisposable
 
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit, string? libraryPath = default, bool bypassLoading = false)
     {
+        WhisperFactory.libraryPath = libraryPath;
+        WhisperFactory.bypassLoading = bypassLoading;
+        
         if (!libraryLoaded.Value.IsSuccess)
         {
             throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
         }
-
-        WhisperFactory.libraryPath = libraryPath;
-        WhisperFactory.bypassLoading = bypassLoading;
 
         this.loader = loader;
         if (!delayInit)
