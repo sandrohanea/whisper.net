@@ -14,8 +14,8 @@ To install Whisper.net, run the following command in the [Package Manager Consol
 or simply add a package reference in your csproj:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.4.0" />
-    <PackageReference Include="Whisper.net.Runtime" Version="1.4.0" />
+    <PackageReference Include="Whisper.net" Version="1.4.2" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.4.2" />
 ```
 
 ## Runtime
