@@ -111,6 +111,9 @@ internal struct WhisperFullParams
     // for auto-detection, set to nullptr, "" or "auto"
     public IntPtr Language;
 
+    // Will end the pipeline after detecting the language. Not used by whisper.net
+    public byte DetectLanguage;
+
     // common decoding parameters:
     public byte SuppressBlank;
 
