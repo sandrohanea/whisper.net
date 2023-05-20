@@ -204,4 +204,39 @@ public class ProcessorE2ETests
         segments.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
+    [Test]
+    public async Task ProcessAsync_WhenMultichannel_ProcessCorrectly()
+    {
+        var segments = new List<SegmentData>();
+
+        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        await using var processor = factory.CreateBuilder()
+                        .WithLanguage("en")
+                        .Build();
+
+        using var fileReader = File.OpenRead("multichannel.wav");
+        await foreach (var segment in processor.ProcessAsync(fileReader))
+        {
+            segments.Add(segment);
+        }
+
+        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+    }
+
+    [Test]
+    public async Task Process_WhenMultichannel_ProcessCorrectly()
+    {
+        var segments = new List<SegmentData>();
+
+        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        await using var processor = factory.CreateBuilder()
+                        .WithLanguage("en")
+                        .WithSegmentEventHandler(segments.Add)
+                        .Build();
+
+        using var fileReader = File.OpenRead("multichannel.wav");
+        processor.Process(fileReader);
+
+        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+    }
 }

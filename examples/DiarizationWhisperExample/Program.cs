@@ -24,6 +24,10 @@ using var fileStream = File.OpenRead(wavFileName);
 
 await foreach (var result in processor.ProcessAsync(fileStream))
 {
+    // TODO: here, check the wave stream to see in which channel the diff is the highest for the specified time interval
+    // 1. Get the wave position for the specified time interval
+    // 2. Get the wave data for the specified time interval
+    // 3. Iterate in the wave data to find the channel with the highest diff
     Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
 }
 
