@@ -1,7 +1,7 @@
 # Whisper.net
 Open-Source Whisper.net
 
-Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp] (https://github.com/ggerganov/whisper.cpp)
+Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
 	
 ## Getting started
@@ -55,20 +55,20 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
     using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
 
     using var processor = whisperFactory.CreateBuilder()
-        .WithSegmentEventHandler(OnNewSegment)
-        .WithFileModel("ggml-base.bin")
-        .WithTranslate()
         .WithLanguage("auto")
         .Build();
 
-    void OnNewSegment(object sender, OnSegmentEventArgs e)
-    {
-        Console.WriteLine($"CSSS {e.Start} ==> {e.End} : {e.Segment}");
-    }
+    using var fileStream = File.OpenRead(wavFileName);
 
-    using var fileStream = File.OpenRead("yourAudio.wav");
-    processor.Process()
+    await foreach(var result in processor.ProcessAsync(fileStream))
+    {
+        Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
+    }
 ```	
+
+## Examples
+
+Check more examples [here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
 
 ## Documentation
 
