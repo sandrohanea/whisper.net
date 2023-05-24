@@ -24,7 +24,7 @@ public static class WhisperGgmlDownloader
         };
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.Value.SendAsync(request, cancellationToken);
+        var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
 #if IOS || MACCATALYST || TVOS || ANDROID || MACOS
