@@ -1,7 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-// Example is still in progress (Multichannel wav file with 3 channels is not supported yet by Whisper.net 1.4.2)
-
 using Whisper.net.Ggml;
 using Whisper.net;
 
@@ -22,13 +20,57 @@ using var processor = whisperFactory.CreateBuilder()
 
 using var fileStream = File.OpenRead(wavFileName);
 
+//TODO: Retrieve this directly from a wave parser when using a newer version where they are exposed.
+var channels = 3;
+var sampleRate = 16000;
+var bitsPerSample = 16;
+var headerSize = 44;
+var frameSize = bitsPerSample / 8 * channels;
+
 await foreach (var result in processor.ProcessAsync(fileStream))
 {
-    // TODO: here, check the wave stream to see in which channel the diff is the highest for the specified time interval
     // 1. Get the wave position for the specified time interval
-    // 2. Get the wave data for the specified time interval
-    // 3. Iterate in the wave data to find the channel with the highest diff
-    Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
+    var startSample = (long)result.Start.TotalMilliseconds * sampleRate / 1000;
+    var endSample = (long)result.End.TotalMilliseconds * sampleRate / 1000;
+
+    // Calculate buffer size.
+    var bufferSize = (int)(endSample - startSample) * frameSize;
+    var readBuffer = new byte[bufferSize];
+
+    // Set fileStream position.
+    fileStream.Position = headerSize + startSample * frameSize;
+
+    // Read the wave data for the specified time interval
+    await fileStream.ReadAsync(readBuffer.AsMemory());
+
+    // Process the readBuffer and convert to shorts.
+    var buffer = new short[bufferSize / 2];
+    for (var i = 0; i < buffer.Length; i++)
+    {
+        // Handle endianess manually and convert bytes to Int16.
+        buffer[i] = BitConverter.IsLittleEndian
+            ? (short)(readBuffer[i * 2] | (readBuffer[i * 2 + 1] << 8))
+            : (short)((readBuffer[i * 2] << 8) | readBuffer[i * 2 + 1]);
+    }
+
+    // 3. Iterate in the wave data to calculate total energy in each channel
+    var energy = new double[channels];
+    var maxEnergy = 0d;
+    var maxEnergyChannel = 0;
+    for (var i = 0; i < buffer.Length; i++)
+    {
+        var channel = i % channels;
+        energy[channel] += Math.Pow(buffer[i], 2);
+
+        if (energy[channel] > maxEnergy)
+        {
+            maxEnergy = energy[channel];
+            maxEnergyChannel = channel;
+        }
+    }
+
+    Console.WriteLine($"{result.Start}->{result.End}: {result.Text}. Max energy in channel: {maxEnergyChannel}");
+
 }
 
 static async Task DownloadModel(string fileName, GgmlType ggmlType)
