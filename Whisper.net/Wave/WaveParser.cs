@@ -11,30 +11,80 @@ public sealed class WaveParser
     private ushort bitsPerSample;
     private uint dataChunkSize;
     private long dataChunkPosition;
-    private bool wasInitialized;
+    private bool isInitialized;
 
     public WaveParser(Stream waveStream)
     {
         this.waveStream = waveStream;
     }
 
-    public int GetSamplesCount()
-    {
-        if (!wasInitialized)
-        {
-            Initialize();
-        }
+    /// <summary>
+    /// Gets the number of channels in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public ushort Channels => channels;
 
-        return (int)(dataChunkSize / 2 / channels);
-    }
+    /// <summary>
+    /// Gets the Sample Rate in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public uint SampleRate => sampleRate;
+
+    /// <summary>
+    /// Gets the Bits Per Sample in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public ushort BitsPerSample => bitsPerSample;
+
+    /// <summary>
+    /// Gets the size of the data chunk in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public uint DataChunkSize => dataChunkSize;
+
+    /// <summary>
+    /// Gets the position of the data chunk in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public long DataChunkPosition => dataChunkPosition;
+
+    /// <summary>
+    /// Gets a value indicating whether the wave parser is initialized.
+    /// </summary>
+    public bool IsInitialized => isInitialized;
+
+    /// <summary>
+    /// Gets the number of samples for each channel in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization.
+    /// </remarks>
+    public long SamplesCount => dataChunkSize / (bitsPerSample / 8) / channels;
+
+    /// <summary>
+    /// Gets the size of a single frame in the current wave file.
+    /// </summary>
+    /// <remarks>
+    /// It is populated only after the initialization and it is equal to <see cref="BitsPerSample"/> / 8 * <see cref="Channels"/>.
+    /// </remarks>
+    public int FrameSize => bitsPerSample / 8 * channels;
 
     /// <summary>
     /// Returns the average samples from all channels.
     /// </summary>
-    /// <returns></returns>
     public async Task<float[]> GetAvgSamplesAsync(CancellationToken cancellationToken)
     {
-        if (!wasInitialized)
+        if (!isInitialized)
         {
             await InitializeAsync();
         }
@@ -44,8 +94,7 @@ public sealed class WaveParser
             throw new InvalidOperationException("Channel count is set to 0");
         }
 
-        var samplesCount = GetSamplesCount();
-        var samples = new float[samplesCount];
+        var samples = new float[SamplesCount];
 
         var buffer = new byte[2048 * channels];
 
@@ -79,16 +128,15 @@ public sealed class WaveParser
     /// <returns></returns>
     public float[] GetAvgSamples()
     {
-        if (!wasInitialized)
+        if (!isInitialized)
         {
             Initialize();
         }
 
         var reader = GetDataReader();
-        var samplesCount = GetSamplesCount();
-        var samples = new float[samplesCount];
+        var samples = new float[SamplesCount];
 
-        for (var i = 0; i < samplesCount; i++)
+        for (var i = 0; i < SamplesCount; i++)
         {
             var sampleSum = 0L;
 
@@ -105,16 +153,15 @@ public sealed class WaveParser
 
     public float[] GetChannelSamples(int channelIndex = 0)
     {
-        if (!wasInitialized)
+        if (!isInitialized)
         {
             Initialize();
         }
 
         var reader = GetDataReader();
-        var samplesCount = GetSamplesCount();
-        var samples = new float[samplesCount];
+        var samples = new float[SamplesCount];
 
-        for (var i = 0; i < samplesCount; i++)
+        for (var i = 0; i < SamplesCount; i++)
         {
             for (var currentChannel = 0; currentChannel < channels; currentChannel++)
             {
@@ -131,19 +178,25 @@ public sealed class WaveParser
         return samples;
     }
 
-    private void Initialize()
+    /// <summary>
+    /// Initializes the wave parser, by reading the header and the format chunk.
+    /// </summary>
+    public void Initialize()
     {
         InitializeCore(useAsync: false).GetAwaiter().GetResult();
     }
 
-    private Task InitializeAsync()
+    /// <summary>
+    /// Initializes the wave parser, by reading the header and the format chunk in an async manner.
+    /// </summary>
+    public Task InitializeAsync()
     {
         return InitializeCore(useAsync: true);
     }
 
     private async Task InitializeCore(bool useAsync)
     {
-        if (wasInitialized)
+        if (isInitialized)
         {
             return;
         }
@@ -302,7 +355,7 @@ public sealed class WaveParser
 
         dataChunkSize = BitConverter.ToUInt32(buffer, 4);
         dataChunkPosition = waveStream.Position;
-        wasInitialized = true;
+        isInitialized = true;
     }
 
     private BinaryReader GetDataReader()
