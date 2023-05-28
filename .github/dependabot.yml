@@ -9,3 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/examples" # Location of package manifests
+    schedule:
+      interval: "weekly"
