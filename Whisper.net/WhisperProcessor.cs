@@ -122,6 +122,8 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             try
             {
                 processingSemaphore.Wait();
+                segmentIndex = 0;
+
                 NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
             }
             finally
@@ -153,10 +155,14 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             resetEvent!.Set();
         }
 
-        options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+        processingSemaphore.Wait();
 
         try
         {
+            segmentIndex = 0;
+
+            options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+
             currentCancellationToken = cancellationToken;
             var whisperTask = ProcessInternalAsync(samples, cancellationToken)
                 .ContinueWith(_ => resetEvent.Set(), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Default);
@@ -187,6 +193,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         finally
         {
             options.OnSegmentEventHandlers.Remove(OnSegmentHandler);
+            processingSemaphore.Release();
         }
     }
 
@@ -224,7 +231,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             fixed (float* pData = samples)
             {
-                processingSemaphore.Wait();
                 var state = NativeMethods.whisper_init_state(currentWhisperContext);
                 try
                 {
@@ -233,7 +239,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 finally
                 {
                     NativeMethods.whisper_free_state(state);
-                    processingSemaphore.Release();
                 }
             }
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
