@@ -155,7 +155,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             resetEvent!.Set();
         }
 
-        processingSemaphore.Wait();
+        await processingSemaphore.WaitAsync(cancellationToken);
 
         try
         {
