@@ -3,7 +3,7 @@ Open-Source Whisper.net
 
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
-	
+
 ## Getting started
 
 To install Whisper.net, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
@@ -21,6 +21,23 @@ or simply add a package reference in your csproj:
 ## Runtime
 
 The runtime package, Whisper.net.Runtime, contains the native whisper.cpp library and it is required in order to run Whisper.net.
+
+## CoreML Runtime
+
+Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
+
+```
+    <PackageReference Include="Whisper.net" Version="1.4.3" />
+    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.4.3" />
+```
+
+Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
+
+Using the ggml whisper models with CoreML requires an additional `mlmodelc` file to be placed alongside your whisper model. You can generate these via the [whisper.cpp scripts](https://github.com/ggerganov/whisper.cpp#core-ml-support). As whisper.cpp uses filepaths to detect this folder, you must load your whisper model with a file path. If successful, the whisper output logs will announce:
+
+`whisper_init_state: loading Core ML model from...`
+
+If not, it will announce an error and use the original core library instead.
 
 ## Versioning
 
@@ -64,7 +81,7 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
     {
         Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
     }
-```	
+```
 
 ## Examples
 
@@ -93,6 +110,12 @@ The build scripts are a combination of PowerShell scripts and a Makefile. You ca
 or
 
 `pwsh ./scripts/build-osx.ps1`
+
+- Compiling the Apple libraries requires a Mac with Xcode installed.
+
+### Apple CoreML:
+
+`make apple_coreml`
 
 - Compiling the Apple libraries requires a Mac with Xcode installed.
 
