@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+	<Import Condition="'$(EnableCoreML)' != 'true'" Project="../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Condition="'$(EnableCoreML)' == 'true'" Project="../Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks>net7.0;net472</TargetFrameworks>
@@ -13,7 +14,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<None Update="kennedy.wav">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
