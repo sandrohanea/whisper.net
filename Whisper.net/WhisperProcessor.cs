@@ -144,7 +144,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    public async IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(Memory<float> samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var resetEvent = new AsyncAutoResetEvent();
         var buffer = new ConcurrentQueue<SegmentData>();
@@ -192,6 +192,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+#pragma warning disable IDE0022 // Use block body for method
+    public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken = default) =>
+        ProcessAsync(new Memory<float>(samples), cancellationToken);
+#pragma warning restore IDE0022 // Use block body for method
+
     public void Dispose()
     {
         if (processingSemaphore.CurrentCount == 0)
@@ -216,7 +221,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         isDisposed = true;
     }
 
-    private unsafe Task ProcessInternalAsync(float[] samples, CancellationToken cancellationToken)
+    private unsafe Task ProcessInternalAsync(Memory<float> samples, CancellationToken cancellationToken)
     {
         if (isDisposed)
         {
@@ -224,7 +229,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
         return Task.Factory.StartNew(() =>
         {
-            fixed (float* pData = samples)
+            fixed (float* pData = samples.Span)
             {
                 processingSemaphore.Wait();
                 segmentIndex = 0;
