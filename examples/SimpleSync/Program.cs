@@ -8,19 +8,25 @@ using Whisper.net.Ggml;
 
 public class Program
 {
+    // This examples shows how to use Whisper.net to create a transcription from an audio file with 16Khz sample rate, using the segment event handler and synchronous processing.
     public static async Task Main(string[] args)
     {
+        // We declare three variables which we will use later, ggmlType, modelFileName and inputFileName
         var ggmlType = GgmlType.Base;
         var modelFileName = "ggml-base.bin";
         var wavFileName = "kennedy.wav";
 
+        // This section detects whether the "ggml-base.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))
         {
             await DownloadModel(modelFileName, ggmlType);
         }
 
+        // This section creates the whisperFactory object which is used to create the processor object.
         using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
 
+        // This section creates the processor object which is used to process the audio file, it uses language `auto` to detect the language of the audio file.
+        // It also sets the segment event handler, which is called every time a new segment is detected.
         using var processor = whisperFactory.CreateBuilder()
             .WithLanguage("auto")
             .WithSegmentEventHandler((segment) =>
@@ -30,6 +36,7 @@ public class Program
             })
             .Build();
 
+        // This section processes the audio file and prints the results (start time, end time and text) to the console.
         using var fileStream = File.OpenRead(wavFileName);
         processor.Process(fileStream);
     }

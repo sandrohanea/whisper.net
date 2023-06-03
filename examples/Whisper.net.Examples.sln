@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.33711.374
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleWhisperExample", "SimpleWhisperExample\SimpleWhisperExample.csproj", "{9955466B-E5CA-4971-B52F-D0EBD8D856AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple", "Simple\Simple.csproj", "{9955466B-E5CA-4971-B52F-D0EBD8D856AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSyncWhisperExample", "SimpleSyncWhisperExample\SimpleSyncWhisperExample.csproj", "{2F37482A-B00A-4B5C-A7C8-534E2D71EB61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSync", "SimpleSync\SimpleSync.csproj", "{2F37482A-B00A-4B5C-A7C8-534E2D71EB61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiarizationWhisperExample", "DiarizationWhisperExample\DiarizationWhisperExample.csproj", "{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diarization", "Diarization\Diarization.csproj", "{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAudioMp3", "NAudioMp3\NAudioMp3.csproj", "{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAudioResampleWav", "NAudioResampleWav\NAudioResampleWav.csproj", "{73DB5111-7DC7-4396-8993-0BB7EBB793CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73DB5111-7DC7-4396-8993-0BB7EBB793CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73DB5111-7DC7-4396-8993-0BB7EBB793CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73DB5111-7DC7-4396-8993-0BB7EBB793CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73DB5111-7DC7-4396-8993-0BB7EBB793CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
