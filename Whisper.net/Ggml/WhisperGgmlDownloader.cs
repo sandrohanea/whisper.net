@@ -37,7 +37,6 @@ public static class WhisperGgmlDownloader
     /// Gets the download stream for the CoreML model, which is a zip file.
     /// </summary>
     /// <param name="type">The type of the model which needs to be downloaded.</param>
-    /// <param name="quantization">The quantization of the model.</param>
     /// <param name="cancellationToken">A cancellation token used to cancell the request to huggingface.</param>
     /// <remarks>
     /// Needs to be extracted on in the same directory as the ggml model, also ggml model needs to be loaded using file path, not stream.
