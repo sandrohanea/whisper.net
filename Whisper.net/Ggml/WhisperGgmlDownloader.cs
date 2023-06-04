@@ -26,10 +26,10 @@ public static class WhisperGgmlDownloader
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-#if IOS || MACCATALYST || TVOS || ANDROID || MACOS
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETSTANDARD
         return await response.Content.ReadAsStreamAsync();
+#else
+        return await response.Content.ReadAsStreamAsync(cancellationToken);
 #endif
     }
 
@@ -44,19 +44,17 @@ public static class WhisperGgmlDownloader
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
-
         var modelName = GetModelName(type);
-
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v1/coreml/{modelName}-encoder.zip";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-#if IOS || MACCATALYST || TVOS || ANDROID || MACOS
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
-#else
+#if NETSTANDARD
         return await response.Content.ReadAsStreamAsync();
+#else
+        return await response.Content.ReadAsStreamAsync(cancellationToken);
 #endif
     }
 
