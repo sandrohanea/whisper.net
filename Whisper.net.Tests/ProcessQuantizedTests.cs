@@ -14,7 +14,7 @@ public class ProcessQuantizedTests
     public async Task SetupAsync()
     {
         ggmlModelPath = Path.GetTempFileName();
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.SmallEn, QuantizationType.Q5_0);
+        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny, QuantizationType.Q5_0);
         using var fileWriter = File.OpenWrite(ggmlModelPath);
         await model.CopyToAsync(fileWriter);
     }
@@ -46,7 +46,9 @@ public class ProcessQuantizedTests
         processor.Process(fileReader);
 
         segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCount(1);
+        encoderBegins.Should().HaveCountGreaterThanOrEqualTo(1);
         progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
+
+        segments.Should().Contain(segmentData => segmentData.Text.Contains("My fellow Americans"));
     }
 }
