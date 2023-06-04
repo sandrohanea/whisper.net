@@ -58,11 +58,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
     {
-        var (language, _) = DetectLanguageWithProbability(samples, speedUp);
+        var (language, _) = DetectLanguageWithProbability(samples.AsSpan(), speedUp);
         return language;
     }
 
-    public unsafe (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
+    public (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
+    {
+        return DetectLanguageWithProbability(samples.AsSpan(), speedUp);
+    }
+
+    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, bool speedUp = false)
     {
         var probs = new float[NativeMethods.whisper_lang_max_id()];
 
@@ -108,7 +113,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         Process(samples);
     }
 
-    public unsafe void Process(float[] samples)
+    public void Process(float[] samples)
+    {
+        Process(samples.AsSpan());
+    }
+
+    public unsafe void Process(ReadOnlySpan<float> samples)
     {
         if (isDisposed)
         {
@@ -144,7 +154,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    public async IAsyncEnumerable<SegmentData> ProcessAsync(Memory<float> samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<SegmentData> ProcessAsync(ReadOnlyMemory<float> samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var resetEvent = new AsyncAutoResetEvent();
         var buffer = new ConcurrentQueue<SegmentData>();
@@ -192,10 +202,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-#pragma warning disable IDE0022 // Use block body for method
-    public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, [EnumeratorCancellation] CancellationToken cancellationToken = default) =>
-        ProcessAsync(new Memory<float>(samples), cancellationToken);
-#pragma warning restore IDE0022 // Use block body for method
+    public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, CancellationToken cancellationToken = default)
+    {
+        return ProcessAsync(samples.AsMemory(), cancellationToken);
+    }
 
     public void Dispose()
     {
@@ -221,7 +231,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         isDisposed = true;
     }
 
-    private unsafe Task ProcessInternalAsync(Memory<float> samples, CancellationToken cancellationToken)
+    private unsafe Task ProcessInternalAsync(ReadOnlyMemory<float> samples, CancellationToken cancellationToken)
     {
         if (isDisposed)
         {
