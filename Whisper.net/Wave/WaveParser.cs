@@ -145,7 +145,7 @@ public sealed class WaveParser
                 sampleSum += reader.ReadInt16();
             }
 
-            samples[i] = (sampleSum / 4) / 32768.0f;
+            samples[i] = (sampleSum / 32768.0f) / channels;
         }
 
         return samples;

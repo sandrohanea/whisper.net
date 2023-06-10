@@ -9,11 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSync", "SimpleSync\Si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diarization", "Diarization\Diarization.csproj", "{0B8C62B9-9607-4004-8ECD-6DEA70598EC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAudioMp3", "NAudioMp3\NAudioMp3.csproj", "{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudioMp3", "NAudioMp3\NAudioMp3.csproj", "{2A95B4A4-A93D-40F4-A5F2-139C5D7260F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAudioResampleWav", "NAudioResampleWav\NAudioResampleWav.csproj", "{73DB5111-7DC7-4396-8993-0BB7EBB793CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudioResampleWav", "NAudioResampleWav\NAudioResampleWav.csproj", "{73DB5111-7DC7-4396-8993-0BB7EBB793CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreML", "CoreML\CoreML.csproj", "{9955466B-E5CA-4971-B52F-D0EBD8D856AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContinuousRecognition", "ContinuousRecognition\ContinuousRecognition.csproj", "{95FE1AC5-F46C-4E43-A1F5-290F93CB9B6B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net", "..\Whisper.net\Whisper.net.csproj", "{A5A05A97-D880-4F87-BCE3-1A5420846F4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{9955466B-E5CA-4971-B52F-D0EBD8D856AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9955466B-E5CA-4971-B52F-D0EBD8D856AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9955466B-E5CA-4971-B52F-D0EBD8D856AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95FE1AC5-F46C-4E43-A1F5-290F93CB9B6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95FE1AC5-F46C-4E43-A1F5-290F93CB9B6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95FE1AC5-F46C-4E43-A1F5-290F93CB9B6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95FE1AC5-F46C-4E43-A1F5-290F93CB9B6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A05A97-D880-4F87-BCE3-1A5420846F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A05A97-D880-4F87-BCE3-1A5420846F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A05A97-D880-4F87-BCE3-1A5420846F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A05A97-D880-4F87-BCE3-1A5420846F4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
