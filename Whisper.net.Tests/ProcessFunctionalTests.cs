@@ -2,36 +2,18 @@
 
 using FluentAssertions;
 using NUnit.Framework;
-using Whisper.net.Ggml;
 
 namespace Whisper.net.Tests;
 
 public class ProcessFunctionalTests
 {
-    private string ggmlModelPath = string.Empty;
-
-    [OneTimeSetUp]
-    public async Task SetupAsync()
-    {
-        ggmlModelPath = Path.GetTempFileName();
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny);
-        using var fileWriter = File.OpenWrite(ggmlModelPath);
-        await model.CopyToAsync(fileWriter);
-    }
-
-    [OneTimeTearDown]
-    public void TearDown()
-    {
-        File.Delete(ggmlModelPath);
-    }
-
     [Test]
     public void TestHappyFlow()
     {
         var segments = new List<SegmentData>();
         var progress = new List<int>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -59,7 +41,7 @@ public class ProcessFunctionalTests
     {
         var segments = new List<SegmentData>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -82,7 +64,7 @@ public class ProcessFunctionalTests
     {
         var segments = new List<SegmentData>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         using var processor = factory.CreateBuilder()
                         .WithLanguageDetection()
                         .WithEncoderBeginHandler((e) =>
@@ -107,7 +89,7 @@ public class ProcessFunctionalTests
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithSegmentEventHandler(segments.Add)
@@ -129,7 +111,7 @@ public class ProcessFunctionalTests
 
         OnSegmentEventHandler onNewSegment = segments1.Add;
 
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithSegmentEventHandler((s) => onNewSegment(s))
