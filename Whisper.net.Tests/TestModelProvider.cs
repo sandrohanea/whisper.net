@@ -31,6 +31,7 @@ internal class TestModelProvider
     public void TearDown()
     {
         File.Delete(ggmlModelTiny);
+        File.Delete(ggmlModelTinyQ5);
     }
 
     public static string GgmlModelTiny => ggmlModelTiny;
