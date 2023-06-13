@@ -2,28 +2,10 @@
 
 using FluentAssertions;
 using NUnit.Framework;
-using Whisper.net.Ggml;
 
 namespace Whisper.net.Tests;
 public class ProcessAsyncFunctionalTests
 {
-    private string ggmlModelPath = string.Empty;
-
-    [OneTimeSetUp]
-    public async Task SetupAsync()
-    {
-        ggmlModelPath = Path.GetTempFileName();
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny);
-        using var fileWriter = File.OpenWrite(ggmlModelPath);
-        await model.CopyToAsync(fileWriter);
-    }
-
-    [OneTimeTearDown]
-    public void TearDown()
-    {
-        File.Delete(ggmlModelPath);
-    }
-
     [Test]
     public async Task TestHappyFlowAsync()
     {
@@ -32,7 +14,7 @@ public class ProcessAsyncFunctionalTests
         var progress = new List<int>();
 
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -68,7 +50,7 @@ public class ProcessAsyncFunctionalTests
         TaskCanceledException? taskCanceledException = null;
 
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -112,7 +94,7 @@ public class ProcessAsyncFunctionalTests
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();
@@ -131,7 +113,7 @@ public class ProcessAsyncFunctionalTests
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();
@@ -153,7 +135,7 @@ public class ProcessAsyncFunctionalTests
         var segments2 = new List<SegmentData>();
         var segments3 = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();

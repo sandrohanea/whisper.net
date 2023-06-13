@@ -2,35 +2,18 @@
 
 using FluentAssertions;
 using NUnit.Framework;
-using Whisper.net.Ggml;
 
 namespace Whisper.net.Tests;
 
 public class ProcessQuantizedTests
 {
-    private string ggmlModelPath = string.Empty;
-
-    [OneTimeSetUp]
-    public async Task SetupAsync()
-    {
-        ggmlModelPath = Path.GetTempFileName();
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny, QuantizationType.Q5_0);
-        using var fileWriter = File.OpenWrite(ggmlModelPath);
-        await model.CopyToAsync(fileWriter);
-    }
-    [OneTimeTearDown]
-    public void TearDown()
-    {
-        File.Delete(ggmlModelPath);
-    }
-
     [Test]
     public void TestHappyFlowQuantized()
     {
         var segments = new List<SegmentData>();
         var progress = new List<int>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(ggmlModelPath);
+        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTinyQ5);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
