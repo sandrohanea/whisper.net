@@ -5,79 +5,128 @@ if (!(Test-Path "build")) {
     New-Item -ItemType Directory -Force -Path "build"
 }
 
-function BuildWindowsX64() {
-    Write-Host "Building Windows binaries for x86_64"
-
-    if((Test-Path "build/win-x64")) {
-        Write-Host "Deleting old build files for windows x86_64";
-        Remove-Item -Force -Recurse -Path "build/win-x64"
+function Get-VisualStudioCMakePath() {
+    $vsWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+    if (-not (Test-Path $vsWherePath)) {
+        return $null
     }
-    
-    New-Item -ItemType Directory -Force -Path "build/win-x64"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/win-x64  -A x64
-    cmake --build build/win-x64 --config Release
-    
-    #copy the binaries to runtimes/windows-x64
-    cp build/win-x64/bin/Release/whisper.dll ./Whisper.net.Runtime/win-x64/whisper.dll
+
+    $vsWhereOutput = & $vsWherePath -latest -requires Microsoft.Component.MSBuild -property installationPath
+    if (-not ([string]::IsNullOrEmpty($vsWhereOutput))) {
+        $cmakePath = Join-Path $vsWhereOutput 'Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin'
+        if (Test-Path $cmakePath) {
+            return $cmakePath
+        }
+    }
+
+    return $null
 }
 
-function BuildWindowsX86() {
-    Write-Host "Building Windows binaries for x86"
-
-    if((Test-Path "build/win-x86")) {
-        Write-Host "Deleting old build files for windows x86";
-        Remove-Item -Force -Recurse -Path "build/win-x86"
+function Get-MSBuildPlatform($Arch) {
+    $platforms = @{
+        "x64"   = "x64"
+        "x86"   = "Win32"
+        "arm64" = "ARM64"
+        "arm"   = "ARM"
     }
-    
-    New-Item -ItemType Directory -Force -Path "build/win-x86"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/win-x86  -A Win32
-    cmake --build build/win-x86 --config Release
-    
-    #copy the binaries to runtimes/windows-x86
-    cp build/win-x86/bin/Release/whisper.dll ./Whisper.net.Runtime/win-x86/whisper.dll
+
+    if ($platforms.ContainsKey($Arch)) {
+        return $platforms[$Arch]
+    }
+
+    return $null
 }
 
-function BuildWindowsArm64() {
-    Write-Host "Building Windows binaries for arm64"
+function BuildWindowsBase() {
+    param(
+        [Parameter(Mandatory=$true)] [string]$Arch,
+        [Parameter(Mandatory=$false)] [bool]$Cublas = $false,
+        [Parameter(Mandatory=$false)] [bool]$Clblast = $false
+    )
+    Write-Host "Building Windows binaries for $Arch with cublas: $Cublas, and clblast: $Clblast"
 
-    if((Test-Path "build/win-arm64")) {
-        Write-Host "Deleting old build files for windows arm64";
-        Remove-Item -Force -Recurse -Path "build/win-arm64"
+    
+    $platform = Get-MSBuildPlatform $Arch
+    if ([string]::IsNullOrEmpty($platform)) {
+        Write-Host "Unknown architecture $Arch"
+        return
     }
     
-    New-Item -ItemType Directory -Force -Path "build/win-arm64"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/win-arm64  -A ARM64
-    cmake --build build/win-arm64 --config Release
-    
-    #copy the binaries to runtimes/windows-arm64
-    cp build/win-arm64/bin/Release/whisper.dll ./Whisper.net.Runtime/win-arm64/whisper.dll
-}
+    $buildDirectory = "build/win-$Arch"
+    $options = @("-S", ".")
 
-function BuildWindowsArm() {
-    Write-Host "Building Windows binaries for arm"
+    if ($Cublas) {
+        $options += "-DWHISPER_CUBLAS=1"
+        $buildDirectory += "-cublas"
+    }
 
-    if((Test-Path "build/win-arm")) {
-        Write-Host "Deleting old build files for windows arm";
-        Remove-Item -Force -Recurse -Path "build/win-arm"
+    if ($Clblast) {
+        $options += "-DWHISPER_CLBLAST=1"
+        $buildDirectory += "-clblast"
+    }
+
+    $options += "-B"
+    $options += $buildDirectory
+    $options += "-A"
+    $options += $platform
+
+    if((Test-Path $buildDirectory)) {
+        Write-Host "Deleting old build files for $buildDirectory";
+        Remove-Item -Force -Recurse -Path $buildDirectory
+    }
+
+     $cmakePath = (Get-Command cmake -ErrorAction SilentlyContinue).Source
+    if ([string]::IsNullOrEmpty($cmakePath)) {
+        # CMake is not defined in the system's path, search for it in Visual Studio
+        $visualStudioPath = Get-VisualStudioCMakePath
+        if ([string]::IsNullOrEmpty($visualStudioPath)) {
+            Write-Host "CMake is not found in the system or Visual Studio."
+            return
+        }
+        $env:Path += ";$visualStudioPath"
+    }
+
+    New-Item -ItemType Directory -Force -Path $buildDirectory
+
+    # call CMake to generate the makefiles
+    
+    Write-Host "Running 'cmake $options'"
+
+    cmake $options
+    cmake --build $buildDirectory --config Release
+
+    $runtimePath = "./Whisper.net.Runtime"
+    if ($Cublas) {
+        $runtimePath += ".Cublas"
+    }
+    if ($Clblast) {
+        $runtimePath += ".Clblast"
     }
     
-    New-Item -ItemType Directory -Force -Path "build/windows-arm"
+    if (-not(Test-Path $runtimePath)) {
+        New-Item -ItemType Directory -Force -Path $runtimePath
+    }
+
+    $runtimePath += "/win-$Arch"
     
-    #call CMake to generate the makefiles
-    cmake -S . -B build/win-arm  -A ARM
-    cmake --build build/win-arm --config Release
-    
-    #copy the binaries to runtimes/windows-arm
-    cp build/win-arm/bin/Release/whisper.dll ./Whisper.net.Runtime/win-arm/whisper.dll
+    if (-not(Test-Path $runtimePath)) {
+        New-Item -ItemType Directory -Force -Path $runtimePath
+    }
+
+    Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
 }
 
-BuildWindowsX64
-BuildWindowsX86
-BuildWindowsArm
-BuildWindowsArm64
+function BuildWindowsAll() {
+    BuildWindowsBase -Arch "x64";
+    BuildWindowsBase -Arch "x86";
+    BuildWindowsBase -Arch "arm64";
+    BuildWindowsBase -Arch "arm";
+    BuildWindowsBase -Arch "x64" -Cublas $true;
+    BuildWindowsBase -Arch "x86" -Cublas $true;
+    BuildWindowsBase -Arch "arm64" -Cublas $true;
+    BuildWindowsBase -Arch "arm" -Cublas $true;
+    BuildWindowsBase -Arch "x64" -Clblast $true;
+    BuildWindowsBase -Arch "x86" -Clblast $true;
+    BuildWindowsBase -Arch "arm64" -Clblast $true;
+    BuildWindowsBase -Arch "arm" -Clblast $true;
+}
