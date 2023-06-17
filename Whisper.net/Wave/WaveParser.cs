@@ -354,6 +354,13 @@ public sealed class WaveParser
         }
 
         dataChunkSize = BitConverter.ToUInt32(buffer, 4);
+        // if the data chunk is not specified, it means the wave was constructed on the fly
+        // and we need to read until the end of the stream
+        if (dataChunkSize == uint.MaxValue)
+        {
+            dataChunkSize = (uint)(waveStream.Length - waveStream.Position);
+        }
+
         dataChunkPosition = waveStream.Position;
         isInitialized = true;
     }
