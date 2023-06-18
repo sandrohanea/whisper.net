@@ -1,6 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System;
 using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;

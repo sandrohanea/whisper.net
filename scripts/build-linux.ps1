@@ -5,82 +5,94 @@ if (!(Test-Path "build")) {
     New-Item -ItemType Directory -Force -Path "build"
 }
 
-function BuildLinuxX64() {
-    Write-Host "Building Linux binaries for x86_64"
+function BuildLinuxBase() {
+    param(
+        [Parameter(Mandatory=$true)] [string]$Arch,
+        [Parameter(Mandatory=$false)] [bool]$Cublas = $false,
+        [Parameter(Mandatory=$false)] [bool]$Clblast = $false
+    )
+    Write-Host "Building Linux binaries for $Arch with cublas: $Cublas, and clblast: $Clblast"
 
-    if((Test-Path "build/linux-x64")) {
-        Write-Host "Deleting old build files for linux x86_64";
-        Remove-Item -Force -Recurse -Path "build/linux-x64"
+    
+    $buildDirectory = "build/linux-$Arch"
+    $options = @("-S", ".")
+
+    if ($Cublas) {
+        $options += "-DWHISPER_CUBLAS=1"
+        $buildDirectory += "-cublas"
+    }
+
+    if ($Clblast) {
+        $options += "-DWHISPER_CLBLAST=1"
+        $buildDirectory += "-clblast"
+    }
+
+    $options += "-B"
+    $options += $buildDirectory
+    if ($Arch -eq "arm64") {
+        $options += "-DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc"
+        $options += "-DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++"
+        $options += "-DCMAKE_SYSTEM_NAME=Linux"
+        $options += "-DCMAKE_SYSTEM_PROCESSOR=aarch64"
+    }
+    elseif ($Arch -eq "arm") {
+        $options += "-DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc"
+        $options += "-DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++"
+        $options += "-DCMAKE_SYSTEM_NAME=Linux"
+        $options += "-DCMAKE_SYSTEM_PROCESSOR=arm"
+    }
+    elseif ($Arch -ne "x64") {
+        Write-Host "Unsupported architecture: $Arch"
+        return
+    }
+
+    if((Test-Path $buildDirectory)) {
+        Write-Host "Deleting old build files for $buildDirectory";
+        Remove-Item -Force -Recurse -Path $buildDirectory
+    }
+
+     $cmakePath = (Get-Command cmake -ErrorAction SilentlyContinue).Source
+    if ([string]::IsNullOrEmpty($cmakePath)) {
+        Write-Host "CMake is not found in the system path."
+    }
+
+    New-Item -ItemType Directory -Force -Path $buildDirectory
+
+    # call CMake to generate the makefiles
+    
+    Write-Host "Running 'cmake $options'"
+
+    cmake $options
+    cmake --build $buildDirectory --config Release
+
+    $runtimePath = "./Whisper.net.Runtime"
+    if ($Cublas) {
+        $runtimePath += ".Cublas"
+    }
+    if ($Clblast) {
+        $runtimePath += ".Clblast"
     }
     
-    New-Item -ItemType Directory -Force -Path "build/linux-x64"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/linux-x64
-    cmake --build build/linux-x64 --config Release
-    
-    #copy the binaries to runtimes/linux-x64
-    cp build/linux-x64/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-x64/whisper.so
-}
-
-function BuildLinuxArm64() {
-    Write-Host "Building Linux binaries for arm64"
-
-    if((Test-Path "build/linux-arm64")) {
-        Write-Host "Deleting old build files for linux arm64";
-        Remove-Item -Force -Recurse -Path "build/linux-arm64"
+    if (-not(Test-Path $runtimePath)) {
+        New-Item -ItemType Directory -Force -Path $runtimePath
     }
-    
-    New-Item -ItemType Directory -Force -Path "build/linux-arm64"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/linux-arm64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64
 
-    cmake --build build/linux-arm64 --config Release 
+    $runtimePath += "/linux-$Arch"
     
-    #copy the binaries to runtimes/linux-arm64
-    cp build/linux-arm64/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-arm64/whisper.so
-}
-
-function BuildWebAssembly() {
-    Write-Host "Building WebAssembly binaries"
-
-    if((Test-Path "build/webassembly")) {
-        Write-Host "Deleting old build files for WebAssembly";
-        Remove-Item -Force -Recurse -Path "build/webassembly"
+    if (-not(Test-Path $runtimePath)) {
+        New-Item -ItemType Directory -Force -Path $runtimePath
     }
-    
-    New-Item -ItemType Directory -Force -Path "build/webassembly"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/webassembly -DCMAKE_TOOLCHAIN_FILE=~/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_SYSTEM_NAME=Generic -DCMAKE_SYSTEM_PROCESSOR=wasm
-    
-    cmake --build build/webassembly --config Release 
-    
-    #copy the binaries to runtimes/webassembly
-    cp build/webassembly/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/webassembly/whisper.wasm
+
+    Move-Item "$buildDirectory/whisper.cpp/libwhisper.so" "$runtimePath/whisper.so" -Force
 }
 
-
-function BuildLinuxArm() {
-    Write-Host "Building Linux binaries for arm"
-
-    if((Test-Path "build/linux-arm")) {
-        Write-Host "Deleting old build files for linux arm";
-        Remove-Item -Force -Recurse -Path "build/linux-arm"
-    }
-    
-    New-Item -ItemType Directory -Force -Path "build/linux-arm"
-    
-    #call CMake to generate the makefiles
-    cmake -S . -B build/linux-arm -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm -DCMAKE_SYSTEM_PROCESSOR=arm
-
-    cmake --build build/linux-arm --config Release 
-    
-    #copy the binaries to runtimes/linux-arm
-    cp build/linux-arm/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-arm/whisper.so
+function BuildLinuxAll() {
+    BuildLinuxBase -Arch "x64";
+    BuildLinuxBase -Arch "arm64";
+    BuildLinuxBase -Arch "arm";
+    #WIP Cublas and Clblast
+    #BuildLinuxBase -Arch "x64" -Cublas $true;
+    #BuildLinuxBase -Arch "x64" -Clblast $true;
 }
 
-BuildLinuxArm;
-BuildLinuxX64;
-BuildLinuxArm64;
+BuildLinuxAll

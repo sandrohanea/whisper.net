@@ -23,11 +23,7 @@ internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
 
     public IntPtr LoadNativeContext()
     {
-        if (Environment.Is64BitProcess)
-        {
-            return NativeMethods.whisper_init_from_buffer_no_state_x64(pinnedBuffer.AddrOfPinnedObject(), buffer.Length);
-        }
-
-        return NativeMethods.whisper_init_from_buffer_no_state_x32(pinnedBuffer.AddrOfPinnedObject(), buffer.Length);
+        var bufferLength = new UIntPtr((uint)buffer.Length);
+        return NativeMethods.whisper_init_from_buffer_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength);
     }
 }

@@ -14,8 +14,8 @@ To install Whisper.net, run the following command in the [Package Manager Consol
 or simply add a package reference in your csproj:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.4.3" />
-    <PackageReference Include="Whisper.net.Runtime" Version="1.4.3" />
+    <PackageReference Include="Whisper.net" Version="1.4.4" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.4.4" />
 ```
 
 ## Runtime
@@ -27,8 +27,8 @@ The runtime package, Whisper.net.Runtime, contains the native whisper.cpp librar
 Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.4.3" />
-    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.4.3" />
+    <PackageReference Include="Whisper.net" Version="1.4.4" />
+    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.4.4" />
 ```
 
 Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
@@ -38,6 +38,18 @@ Using the ggml whisper models with CoreML requires an additional `mlmodelc` file
 `whisper_init_state: loading Core ML model from...`
 
 If not, it will announce an error and use the original core library instead.
+
+## GPU Support on Windows
+
+Dependeing on your GPU, you can use either `Whisper.net.Runtime.Cublas` or `Whisper.net.Runtime.Clblast`.
+For now, they are only available on Windows x64.
+
+Check the Cublas and Clblast examples.
+
+## Blazor and WASM
+
+For Blazor WebAssembly support, check the BlazorWasm example.
+Instead of `Whisper.net.Runtime`, you'll need to use `Whisper.net.Runtime.Wasm` but you'll need to also switch `WasmBuildNative` flag to true.
 
 ## Versioning
 

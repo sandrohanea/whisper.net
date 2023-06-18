@@ -8,16 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Whisper.net.Runtime" Version="1.4.3" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.4.4" />
+    <PackageReference Include="Whisper.net" Version="1.4.4" />
   </ItemGroup>
   
   <ItemGroup>
     <None Include="../TestData/bush.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
   </ItemGroup>
 </Project>

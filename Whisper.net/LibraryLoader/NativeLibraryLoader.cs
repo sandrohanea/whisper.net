@@ -35,7 +35,7 @@ public static class NativeLibraryLoader
         return LoadResult.Success;
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (bypassLoading)
+        if (bypassLoading || RuntimeInformation.OSArchitecture.ToString() == "Wasm")
         {
             return LoadResult.Success;
         }

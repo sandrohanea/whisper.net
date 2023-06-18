@@ -12,6 +12,8 @@ namespace Whisper.net;
 
 public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 {
+    private static readonly ConcurrentDictionary<long, WhisperProcessor> processorInstances = new();
+    private static long currentProcessorId;
     private const byte trueByte = 1;
     private const byte falseByte = 0;
 
@@ -26,9 +28,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private int segmentIndex;
     private CancellationToken? currentCancellationToken;
 
+    // Id is used to identify the current instance when calling the callbacks from C++
+    private readonly long myId;
+
     internal WhisperProcessor(WhisperProcessorOptions options)
     {
         this.options = options;
+        myId = Interlocked.Increment(ref currentProcessorId);
+
+        processorInstances[myId] = this;
+
         currentWhisperContext = options.ContextHandle;
         whisperParams = GetWhisperParams();
         processingSemaphore = new(1);
@@ -262,7 +271,8 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private WhisperFullParams GetWhisperParams()
     {
         var strategy = options.SamplingStrategy.GetNativeStrategy();
-        var whisperParams = NativeMethods.whisper_full_default_params(strategy);
+        var whisperParamsRef = NativeMethods.whisper_full_default_params_by_ref(strategy);
+        var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
 
         whisperParams.Strategy = strategy;
 
@@ -431,21 +441,47 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             }
         }
 
-        var newSegmentCallback = new WhisperNewSegmentCallback(OnNewSegment);
-        var whisperEncoderBeginCallback = new WhisperEncoderBeginCallback(OnEncoderBegin);
+        var myIntPtrId = new IntPtr(myId);
+        whisperParams.OnNewSegmentUserData = myIntPtrId;
+        whisperParams.OnEncoderBeginUserData = myIntPtrId;
 
-        // Creates GCHandles for the delegates so they won't be GC before the processor.
-        gcHandles.Add(GCHandle.Alloc(newSegmentCallback));
-        gcHandles.Add(GCHandle.Alloc(whisperEncoderBeginCallback));
-        whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(newSegmentCallback);
-        whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(whisperEncoderBeginCallback);
+#if NET6_0_OR_GREATER
+        unsafe
+        {
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onNewSegmentDelegate = &OnNewSegmentStatic;
+            whisperParams.OnNewSegment = (IntPtr)onNewSegmentDelegate;
+
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, byte> onEncoderBeginDelegate = &OnEncoderBeginStatic;
+            whisperParams.OnEncoderBegin = (IntPtr)onEncoderBeginDelegate;
+
+            if (options.OnProgressHandlers.Count > 0)
+            {
+                delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onProgressDelegate = &OnProgressStatic;
+                whisperParams.OnProgressCallback = (IntPtr)onProgressDelegate;
+                whisperParams.OnProgressCallbackUserData = myIntPtrId;
+            }
+        }
+#else
+        // For netframework, we don't have `UnmanagedCallersOnlyAttribute` so we need to use a delegate wrapped with a GC handle
+        var onNewSegmentDelegate = new WhisperNewSegmentCallback(OnNewSegmentStatic);
+        var gcHandle = GCHandle.Alloc(onNewSegmentDelegate);
+        gcHandles.Add(gcHandle);
+        whisperParams.OnNewSegment = Marshal.GetFunctionPointerForDelegate(onNewSegmentDelegate);
+
+        var onEncoderBeginDelegate = new WhisperEncoderBeginCallback(OnEncoderBeginStatic);
+        gcHandle = GCHandle.Alloc(onEncoderBeginDelegate);
+        gcHandles.Add(gcHandle);
+        whisperParams.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(onEncoderBeginDelegate);
 
         if (options.OnProgressHandlers.Count > 0)
         {
-            var whisperProgressCallback = new WhisperProgressCallback(OnProgress);
-            gcHandles.Add(GCHandle.Alloc(whisperProgressCallback));
-            whisperParams.OnProgressCallback = Marshal.GetFunctionPointerForDelegate(whisperProgressCallback);
+            var onProgressDelegate = new WhisperProgressCallback(OnProgressStatic);
+            gcHandle = GCHandle.Alloc(onProgressDelegate);
+            gcHandles.Add(gcHandle);
+            whisperParams.OnProgressCallback = Marshal.GetFunctionPointerForDelegate(onProgressDelegate);
+            whisperParams.OnProgressCallbackUserData = myIntPtrId;
         }
+#endif
 
         return whisperParams;
     }
@@ -463,7 +499,43 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return language;
     }
 
-    private void OnProgress(IntPtr ctx, IntPtr state, int progress, IntPtr user_data)
+#if NET6_0_OR_GREATER
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+#endif
+    private static void OnNewSegmentStatic(IntPtr ctx, IntPtr state, int nNew, IntPtr userData)
+    {
+        if (!processorInstances.TryGetValue(userData.ToInt64(), out var processor))
+        {
+            throw new Exception("Couldn't find processor instance for user data");
+        }
+        processor.OnNewSegment(state);
+    }
+
+#if NET6_0_OR_GREATER
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+#endif
+    private static byte OnEncoderBeginStatic(IntPtr ctx, IntPtr state, IntPtr userData)
+    {
+        if (!processorInstances.TryGetValue(userData.ToInt64(), out var processor))
+        {
+            throw new Exception("Couldn't find processor instance for user data");
+        }
+        return processor.OnEncoderBegin() ? trueByte : falseByte;
+    }
+
+#if NET6_0_OR_GREATER
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+#endif
+    private static void OnProgressStatic(IntPtr ctx, IntPtr state, int progress, IntPtr userData)
+    {
+        if (!processorInstances.TryGetValue(userData.ToInt64(), out var processor))
+        {
+            throw new Exception("Couldn't find processor instance for user data");
+        }
+        processor.OnProgress(progress);
+    }
+
+    private void OnProgress(int progress)
     {
         if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
         {
@@ -480,7 +552,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    private bool OnEncoderBegin(IntPtr ctx, IntPtr state, IntPtr user_data)
+    private bool OnEncoderBegin()
     {
         if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
         {
@@ -499,7 +571,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return true;
     }
 
-    private void OnNewSegment(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data)
+    private void OnNewSegment(IntPtr state)
     {
         if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
         {
