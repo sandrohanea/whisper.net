@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Whisper.net" Version="1.4.3" />
-    <PackageReference Include="Whisper.net.Runtime" Version="1.4.3" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.4.4" />
+    <PackageReference Include="Whisper.net" Version="1.4.4" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <None Include="../TestData/kennedy.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Clblast</id>
+    <title>Whisper.Net.Runtime.Clblast</title>
+    <version>1.4.4</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Web Assembly dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime.Clblast contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support (Clblast)</description>
+    <tags>whisper;clblast;gpu</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Clblast\**" target="build"/>
+  </files>
+</package>

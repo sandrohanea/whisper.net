@@ -16,26 +16,23 @@ internal static class NativeMethods
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_init_from_file(string path);
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer", CharSet = CharSet.Ansi)]
-    public static extern IntPtr whisper_init_from_buffer_x64(IntPtr buffer, long buffer_size);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer", CharSet = CharSet.Ansi)]
-    public static extern IntPtr whisper_init_from_buffer_x32(IntPtr buffer, int buffer_size);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_init_from_buffer(IntPtr buffer, UIntPtr buffer_size);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_init_from_file_no_state(string path);
 
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer_no_state", CharSet = CharSet.Ansi)]
-    public static extern IntPtr whisper_init_from_buffer_no_state_x64(IntPtr buffer, long buffer_size);
-
-    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "whisper_init_from_buffer_no_state", CharSet = CharSet.Ansi)]
-    public static extern IntPtr whisper_init_from_buffer_no_state_x32(IntPtr buffer, int buffer_size);
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_init_from_buffer_no_state(IntPtr buffer, UIntPtr buffer_size);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_free(IntPtr context);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern WhisperFullParams whisper_full_default_params(WhisperSamplingStrategy strategy);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_full_default_params_by_ref(WhisperSamplingStrategy strategy);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int whisper_full(IntPtr context, WhisperFullParams parameters, IntPtr samples, int nSamples);

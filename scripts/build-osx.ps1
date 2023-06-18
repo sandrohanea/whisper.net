@@ -42,5 +42,23 @@ function BuildOsxArm64() {
     cp build/osx-arm64/whisper.cpp/libwhisper.dylib ./Whisper.net.Runtime/osx-arm64/whisper.dylib
 }
 
-BuildOsxArm64
-BuildOsxX64
+function BuildWasm() {
+    Write-Host "Building WASM binaries"
+    if((Test-Path "build/wasm")) {
+        Write-Host "Deleting old build files for wasm";
+        Remove-Item -Force -Recurse -Path "build/wasm"
+    }
+
+    New-Item -ItemType Directory -Force -Path "build/wasm"
+
+    #call CMake to generate the makefiles
+    emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=Release
+    cmake --build build/wasm --config Release
+    
+    #copy the binaries to runtimes/wasm
+    cp build/wasm/whisper.cpp/libwhisper.a ./Whisper.net.Runtime.Wasm/whisper.a
+}
+
+BuildWasm
+#BuildOsxArm64
+#BuildOsxX64
