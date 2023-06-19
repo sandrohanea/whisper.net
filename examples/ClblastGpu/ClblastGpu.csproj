@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Whisper.net.Runtime.Cublas" Version="1.4.4" />
-    <PackageReference Include="Whisper.net" Version="1.4.4" />
+    <PackageReference Include="Whisper.net.Runtime.Clblast" Version="1.4.5" />
+    <PackageReference Include="Whisper.net" Version="1.4.5" />
   </ItemGroup>
   
   <ItemGroup>

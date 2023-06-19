@@ -223,20 +223,24 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             throw new Exception("Cannot dispose while processing, please use DisposeAsync instead.");
         }
 
+        processorInstances.TryRemove(myId, out _);
         if (language.HasValue)
         {
             Marshal.FreeHGlobal(language.Value);
+            language = null;
         }
 
         if (initialPromptText.HasValue)
         {
             Marshal.FreeHGlobal(initialPromptText.Value);
+            initialPromptText = null;
         }
 
         foreach (var gcHandle in gcHandles)
         {
             gcHandle.Free();
         }
+        gcHandles.Clear();
         isDisposed = true;
     }
 
@@ -273,7 +277,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var strategy = options.SamplingStrategy.GetNativeStrategy();
         var whisperParamsRef = NativeMethods.whisper_full_default_params_by_ref(strategy);
         var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
-
+        NativeMethods.whisper_free_params(whisperParamsRef);
         whisperParams.Strategy = strategy;
 
         if (options.Threads.HasValue)

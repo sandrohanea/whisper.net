@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWasm", "BlazorWasm\Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cublas", "Cublas\Cublas.csproj", "{7AD42B21-D644-4D18-9C89-6A1270581791}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clblast", "Clblast\Clblast.csproj", "{CDC1DA51-2EAD-4F69-BD2A-54DEE09EC007}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClblastGpu", "ClblastGpu\ClblastGpu.csproj", "{CDC1DA51-2EAD-4F69-BD2A-54DEE09EC007}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -29,6 +29,9 @@ internal static class NativeMethods
     public static extern void whisper_free(IntPtr context);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void whisper_free_params(IntPtr paramsPtr);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern WhisperFullParams whisper_full_default_params(WhisperSamplingStrategy strategy);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
