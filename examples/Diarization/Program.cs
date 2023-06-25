@@ -2,6 +2,7 @@
 
 using Whisper.net.Ggml;
 using Whisper.net;
+using Whisper.net.Wave;
 
 // This examples shows how to use Whisper.net to create a transcription from an audio file having multiple channels at 16Khz sample rate.
 // Each channel is represented by a speaker.
@@ -29,15 +30,17 @@ using var processor = whisperFactory.CreateBuilder()
 // This section opens the audio file and converts it to a wav file.
 using var fileStream = File.OpenRead(wavFileName);
 
-//TODO: Retrieve this directly from a wave parser when using a newer version where they are exposed.
-var channels = 3;
-var sampleRate = 16000;
-var bitsPerSample = 16;
-var headerSize = 44;
+var waveParser = new WaveParser(fileStream);
+await waveParser.InitializeAsync();
+var channels = waveParser.Channels;
+var sampleRate = waveParser.SampleRate;
+var bitsPerSample = waveParser.BitsPerSample;
+var headerSize = waveParser.DataChunkPosition;
 var frameSize = bitsPerSample / 8 * channels;
 
+var samples = await waveParser.GetAvgSamplesAsync(CancellationToken.None);
 // This section processes the audio file and prints the results (start time, end time and text) to the console.
-await foreach (var result in processor.ProcessAsync(fileStream))
+await foreach (var result in processor.ProcessAsync(samples))
 {
     // Get the wave position for the specified time interval
     var startSample = (long)result.Start.TotalMilliseconds * sampleRate / 1000;
