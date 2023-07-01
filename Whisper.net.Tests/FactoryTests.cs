@@ -1,7 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using FluentAssertions;
 using NUnit.Framework;
-using Whisper.net.Ggml;
 
 namespace Whisper.net.Tests;
 
