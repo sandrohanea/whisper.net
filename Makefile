@@ -1,5 +1,5 @@
 BUILD_TYPE=Release
-VERSION=1.4.5
+VERSION=1.4.6
 CMAKE_PARAMETERS=-DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 COREML_SUPPORT=$(CMAKE_PARAMETERS) -DWHISPER_COREML=ON -DWHISPER_COREML_ALLOW_FALLBACK=ON
 NDK :=
@@ -17,10 +17,10 @@ nuget:
 	mkdir -p nupkgs
 	nuget pack Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
-
-nuget_coreml:
-	mkdir -p nupkgs
 	nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack Whisper.net.Runtime.Cublas.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack Whisper.net.Runtime.Clblast.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack Whisper.net.Runtime.Wasm.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 
 clean:
 	rm -rf nupkgs

@@ -60,5 +60,5 @@ function BuildWasm() {
 }
 
 BuildWasm
-#BuildOsxArm64
-#BuildOsxX64
+BuildOsxArm64
+BuildOsxX64
