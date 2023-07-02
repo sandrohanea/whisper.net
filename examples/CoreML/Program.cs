@@ -26,17 +26,11 @@ public class Program
         }
 
         // This sections detects whether the modelc directory (used by CoreML) is in out project disk. If it doesn't, it downloads it and extract it to the current folder.
-        // TODO: Replace with WhisperGgmlDownloader.GetEncoderCoreMLModelAsync()
         if (!Directory.Exists(coreMlModelcName))
         {
-            using var httpClient = new HttpClient();
-            var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v1/coreml/ggml-base-encoder.zip";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            using var zipArchive = new ZipArchive(await response.Content.ReadAsStreamAsync());
-            zipArchive.ExtractToDirectory(".");
+            // Note: The modelc directory needs to be extracted at the same level as the "ggml-base.bin" file (and the current executable).
+            await WhisperGgmlDownloader.GetEncoderCoreMLModelAsync(ggmlType)
+                                       .ExtractToPath(".");
         }
 
         // This section creates the whisperFactory object which is used to create the processor object.
