@@ -18,6 +18,11 @@ or simply add a package reference in your csproj:
     <PackageReference Include="Whisper.net.Runtime" Version="1.4.6" />
 ```
 
+## TFL Community
+
+We also have a Teams for Life community, where people can ask questions about the library or just discuss with others about their experience.
+You can join the community [using this link](https://teams.live.com/l/community/EBADsHLtqswx_2OnwI)
+
 ## Runtime
 
 The runtime package, Whisper.net.Runtime, contains the native whisper.cpp library and it is required in order to run Whisper.net.
