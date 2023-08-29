@@ -64,6 +64,10 @@ internal static class NativeMethods
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern float whisper_full_get_token_p_from_state(IntPtr state, int segmentIndex, int tokenIndex);
 
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl)]
+    [return: MarshalAs(UnmanagedType.I1)]
+    public static extern bool whisper_full_get_segment_speaker_turn_next(IntPtr ctx, int iSegment);
+
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int whisper_tokenize(IntPtr context, IntPtr text, IntPtr tokens, int nMaxTokens);
 
@@ -87,6 +91,9 @@ internal static class NativeMethods
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_init_state(IntPtr context);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_ctx_init_openvino_encoder(IntPtr context, string path, string device, string cacheDir);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_free_state(IntPtr state);

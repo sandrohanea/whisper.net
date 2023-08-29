@@ -97,8 +97,15 @@ internal struct WhisperFullParams
     // speed-up the audio by 2x using Phase Vocoder
     public byte SpeedUp2x;
 
+    // enable debug_mode provides extra info (eg. Dump log_mel)
+    public byte DebugMode;
+
     // overwrite the audio context size (0 = use default)
     public int AudioContextSize;
+
+    // [EXPERIMENTAL] [TDRZ] tinydiarize
+    // enable tinydiarize speaker turn detection
+    public byte TinyDiarizeSpeakerTurnDirection;
 
     public IntPtr InitialPrompt;
 
