@@ -2,8 +2,6 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Whisper.net;
 using Whisper.net.Ggml;
@@ -34,7 +32,7 @@ public class Program
         }
 
         // This section creates the whisperFactory object which is used to create the processor object.
-        using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
+        using var whisperFactory = WhisperFactory.FromPath(modelFileName);
 
         // This section creates the processor object which is used to process the audio file, it uses language `auto` to detect the language of the audio file.
         using var processor = whisperFactory.CreateBuilder()
