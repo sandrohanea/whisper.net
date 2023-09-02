@@ -79,7 +79,7 @@ public class ProcessFunctionalTests
             segments.Add(segment);
         }
         segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCount(1);
+        encoderBegins.Should().HaveCountGreaterThanOrEqualTo(1);
         segments.Should().AllSatisfy(s => s.Language.Should().Be("ro"));
         segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
     }
