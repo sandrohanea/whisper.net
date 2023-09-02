@@ -22,20 +22,11 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
-    - name: Install Java
-      if: runner.os == 'Windows'
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'microsoft'
-        java-version: '11'
+        dotnet-version: 8.0.x
     - name: Install .NET Workloads
       if: runner.os == 'Windows'
       run: | 
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install ios --ignore-failed-sources
-          dotnet workload install tvos --ignore-failed-sources
-          dotnet workload install maccatalyst --ignore-failed-sources
+          dotnet workload install maui
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
     - name: Build
