@@ -19,6 +19,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: true
+        ref: ${{ github.head_ref }}
     
     - name: Check for submodule update
       id: check_submodule
@@ -50,7 +51,7 @@ jobs:
 
     - name: Pull latest commits
       if: steps.check_submodule.outputs.trigger_build == 'true'
-      run: git pull
+      run: git pull origin ${{ github.head_ref }}
 
     - name: Commit and Push
       if: steps.check_submodule.outputs.trigger_build == 'true'
