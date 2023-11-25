@@ -2,7 +2,10 @@ name: Linux Native build
 
 on:
   push:
-    branches: [ "native" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 
 jobs:
   build:
