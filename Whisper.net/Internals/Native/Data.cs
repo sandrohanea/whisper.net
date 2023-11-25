@@ -26,6 +26,13 @@ internal struct WhisperParamBeamSearch
     public float Patience;
 }
 
+internal enum GgmlLogLevel
+{
+    Error = 2,
+    Warning = 3,
+    Info = 4,
+}
+
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate void WhisperNewSegmentCallback(IntPtr ctx, IntPtr state, int n_new, IntPtr user_data);
 
@@ -36,7 +43,19 @@ internal delegate byte WhisperEncoderBeginCallback(IntPtr ctx, IntPtr state, Int
 internal delegate void WhisperProgressCallback(IntPtr ctx, IntPtr state, int progress, IntPtr user_data);
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-internal delegate bool WhisperLogitsFilterCallback(IntPtr ctx, IntPtr state, IntPtr tokens, int tokens_count, IntPtr logits, IntPtr user_data);
+internal delegate byte WhisperLogitsFilterCallback(IntPtr ctx, IntPtr state, IntPtr tokens, int tokens_count, IntPtr logits, IntPtr user_data);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate byte WhisperAbortCallback(IntPtr user_data);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate void WhisperGgmlLogCallback(GgmlLogLevel level, IntPtr message, IntPtr user_data);
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperContextParams
+{
+    public byte UseGpu;
+}
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperFullParams
@@ -58,6 +77,8 @@ internal struct WhisperFullParams
 
     // Do not use past transcription (if any) as prompt for the decoder
     public byte NoContext;
+
+    public byte NoTimestamps;
 
     //force single segment output (useful for streaming)
     public byte SingleSegment;
@@ -164,9 +185,22 @@ internal struct WhisperFullParams
 
     public IntPtr OnEncoderBeginUserData;
 
+    // Called each time before ggml computation starts
+    public IntPtr OnAbort;
+
+    public IntPtr OnAbortUserData;
+
     public IntPtr LogitsFilterCallback;
 
     public IntPtr LogitsFilterCallbackData;
+
+    public IntPtr WhisperGrammarElement;
+
+    public UIntPtr NGrammarRules;
+
+    public UIntPtr StartGrammarRule;
+
+    public float GrammarPenalty;
 }
 
 [StructLayout(LayoutKind.Sequential)]

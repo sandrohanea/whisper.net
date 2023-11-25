@@ -7,5 +7,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/win-x64/whisper.dll</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/linux-x64/libwhisper.so</TargetPath>
+        </None>
     </ItemGroup>
 </Project>

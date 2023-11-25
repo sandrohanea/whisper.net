@@ -5,16 +5,9 @@ using Whisper.net.Native;
 
 namespace Whisper.net.Internals.ModelLoader;
 
-internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
+internal class WhisperProcessorModelBufferLoader(byte[] buffer, bool useGpu) : IWhisperProcessorModelLoader
 {
-    private readonly byte[] buffer;
-    private readonly GCHandle pinnedBuffer;
-
-    public WhisperProcessorModelBufferLoader(byte[] buffer)
-    {
-        this.buffer = buffer;
-        pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-    }
+    private readonly GCHandle pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 
     public void Dispose()
     {
@@ -24,6 +17,6 @@ internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
     public IntPtr LoadNativeContext()
     {
         var bufferLength = new UIntPtr((uint)buffer.Length);
-        return NativeMethods.whisper_init_from_buffer_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength);
+        return NativeMethods.whisper_init_from_buffer_with_params_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength, new WhisperContextParams() { UseGpu = useGpu ? (byte)1 : (byte)0 });
     }
 }

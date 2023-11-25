@@ -49,11 +49,11 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        var (platform, extension) = Environment.OSVersion.Platform switch
+        var (platform, dynamicLibraryName) = Environment.OSVersion.Platform switch
         {
-            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => ("win", "dll"),
-            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => ("linux", "so"),
-            _ when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => ("osx", "dylib"),
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => ("win", "whisper.dll"),
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => ("linux", "libwhisper.so"),
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => ("macos", "libwhisper.dylib"),
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
@@ -67,8 +67,8 @@ public static class NativeLibraryLoader
             }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
 
             path = string.IsNullOrEmpty(assemblySearchPath)
-                ? Path.Combine("runtimes", $"{platform}-{architecture}", $"whisper.{extension}")
-                : Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", $"whisper.{extension}");
+                ? Path.Combine("runtimes", $"{platform}-{architecture}", dynamicLibraryName)
+                : Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", dynamicLibraryName);
 
         }
 
@@ -87,7 +87,7 @@ public static class NativeLibraryLoader
         ILibraryLoader libraryLoader = platform switch
         {
             "win" => new WindowsLibraryLoader(),
-            "osx" => new MacOsLibraryLoader(),
+            "macos" => new MacOsLibraryLoader(),
             "linux" => new LinuxLibraryLoader(),
             _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
         };

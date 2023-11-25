@@ -14,8 +14,8 @@ To install Whisper.net, run the following command in the [Package Manager Consol
 or simply add a package reference in your csproj:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.4.7" />
-    <PackageReference Include="Whisper.net.Runtime" Version="1.4.7" />
+    <PackageReference Include="Whisper.net" Version="1.5.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.5.0" />
 ```
 
 ## TFL Community
@@ -32,8 +32,8 @@ The runtime package, Whisper.net.Runtime, contains the native whisper.cpp librar
 Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.4.7" />
-    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.4.7" />
+    <PackageReference Include="Whisper.net" Version="1.5.0" />
+    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.5.0" />
 ```
 
 Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.

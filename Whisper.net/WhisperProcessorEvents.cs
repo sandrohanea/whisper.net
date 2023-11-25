@@ -8,6 +8,8 @@ public delegate void OnSegmentEventHandler(SegmentData e);
 
 public delegate bool OnEncoderBeginEventHandler(EncoderBeginData e);
 
+public delegate bool WhisperAbortEventHandler();
+
 public class EncoderBeginData
 {
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Whisper.net;
 using Whisper.net.Ggml;
+using Whisper.net.Logger;
 
 public class Program
 {
@@ -21,6 +22,12 @@ public class Program
         {
             await DownloadModel(modelFileName, ggmlType);
         }
+
+        // Optional logging from the native library
+        LogProvider.Instance.OnLog += (level, message) =>
+        {
+            Console.Write($"{level}: {message}");
+        };
 
         // This section creates the whisperFactory object which is used to create the processor object.
         using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");

@@ -1,6 +1,7 @@
 <Project ToolsVersion="4.0"
   xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
+  <ItemGroup
+    Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -14,7 +15,8 @@
       <TargetPath>libwhisper.coreml.dylib</TargetPath>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
+  <ItemGroup
+    Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -77,38 +79,47 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.coreml.dylib">
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.coreml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.coreml.dylib</TargetPath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>ggml-metal.metal</TargetPath>
+    </None>
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
     <!-- If using default runtime, include the split macOS libs rather that the lipoed version -->
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos\libwhisper.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/osx-x64/whisper.dylib</TargetPath>
+      <TargetPath>runtimes/macos-x64/libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos\libwhisper.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/osx-arm64/whisper.dylib</TargetPath>
+      <TargetPath>runtimes/macos-x64/libwhisper.coreml.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos\libwhisper.coreml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/osx-arm64/libwhisper.coreml.dylib</TargetPath>
+      <TargetPath>runtimes/macos-arm64/libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos\libwhisper.coreml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/osx-x64/libwhisper.coreml.dylib</TargetPath>
+      <TargetPath>runtimes/macos-arm64/libwhisper.coreml.dylib</TargetPath>
     </None>
   </ItemGroup>
 </Project>

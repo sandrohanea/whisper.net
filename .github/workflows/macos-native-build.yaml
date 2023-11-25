@@ -1,0 +1,55 @@
+
+name: MacOs Native build
+
+on:
+  push:
+    branches: [ "native" ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    
+    - name: Check for submodule update
+      id: check_submodule
+      run: |
+        cd whisper.cpp
+        SUBMODULE_COMMIT_ID=$(git rev-parse HEAD)
+        echo "Submodule commit ID: $SUBMODULE_COMMIT_ID"
+        cd $GITHUB_WORKSPACE
+        STORED_COMMIT_ID=$(cat native-commit-id-macos)
+        echo "Stored commit ID: $STORED_COMMIT_ID"
+        if [ "$SUBMODULE_COMMIT_ID" != "$STORED_COMMIT_ID" ]; then
+          echo "Submodule has new commits. Triggering build."
+          echo "trigger_build=true" >> $GITHUB_OUTPUT
+          echo $SUBMODULE_COMMIT_ID > native-commit-id-macos
+        else
+          echo "No new commits in submodule."
+          echo "trigger_build=false" >> $GITHUB_OUTPUT
+        fi
+        
+
+    - name: Run apple coreml build
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: make apple_coreml
+
+    - name: Run apple build
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: make apple
+
+    - name: Pull latest commits
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: git pull
+
+    - name: Commit and Push
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Add native changes macos

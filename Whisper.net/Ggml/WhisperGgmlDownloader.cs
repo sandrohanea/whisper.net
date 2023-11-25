@@ -20,7 +20,7 @@ public static class WhisperGgmlDownloader
         var subdirectory = GetQuantizationSubdirectory(quantization);
         var modelName = GetModelName(type);
 
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v1/{subdirectory}/{modelName}.bin";
+        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v2/{subdirectory}/{modelName}.bin";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -37,7 +37,7 @@ public static class WhisperGgmlDownloader
     /// Gets the download stream for the CoreML model, which is a zip file.
     /// </summary>
     /// <param name="type">The type of the model which needs to be downloaded.</param>
-    /// <param name="cancellationToken">A cancellation token used to cancell the request to huggingface.</param>
+    /// <param name="cancellationToken">A cancellation token used to stop the request to huggingface.</param>
     /// <remarks>
     /// Needs to be extracted on in the same directory as the ggml model, also ggml model needs to be loaded using file path, not stream.
     /// </remarks>
@@ -45,7 +45,7 @@ public static class WhisperGgmlDownloader
     public static async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v1/coreml/{modelName}-encoder.zip";
+        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v2/coreml/{modelName}-encoder.zip";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -86,7 +86,8 @@ public static class WhisperGgmlDownloader
             GgmlType.Medium => "ggml-medium",
             GgmlType.MediumEn => "ggml-medium.en",
             GgmlType.LargeV1 => "ggml-large-v1",
-            GgmlType.Large => "ggml-large",
+            GgmlType.LargeV2 => "ggml-large-v2",
+            GgmlType.LargeV3 => "ggml-large-v3",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
@@ -98,7 +99,6 @@ public static class WhisperGgmlDownloader
             QuantizationType.NoQuantization => "classic",
             QuantizationType.Q4_0 => "q4_0",
             QuantizationType.Q4_1 => "q4_1",
-            QuantizationType.Q4_2 => "q4_2",
             QuantizationType.Q5_0 => "q5_0",
             QuantizationType.Q5_1 => "q5_1",
             QuantizationType.Q8_0 => "q8_0",
