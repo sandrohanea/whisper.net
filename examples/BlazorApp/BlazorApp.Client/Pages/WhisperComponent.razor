@@ -1,0 +1,69 @@
+﻿@using System.Text
+@using Whisper.net
+@using Whisper.net.Ggml
+
+<h1>Whisper.net component which doesn't care if it is executed in client or in server</h1>
+
+In order to create a transcript, just select a wave file with 16kHz sample rate, in the input file below and wait for the result.
+
+@if (whisperProcessor == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>Drop a file to process</p>
+    <InputFile OnChange="@(async (f) => await OnFileChange(f))"> </InputFile>
+}
+
+@if (!string.IsNullOrEmpty(txtResult))
+{
+    <p>Result:</p>
+    <pre>@txtResult</pre>
+}
+
+@code
+{
+    private WhisperProcessor? whisperProcessor = null;
+    private static WhisperFactory? whisperFactory = null;
+    private string txtResult = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        if (whisperFactory == null)
+        {
+            using var memoryStream = new MemoryStream();
+            var model = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny);
+            await model.CopyToAsync(memoryStream);
+            whisperFactory = WhisperFactory.FromBuffer(memoryStream.ToArray());
+        }
+
+        if (whisperProcessor == null)
+        {
+            whisperProcessor = whisperFactory.CreateBuilder()
+                                    .WithLanguage("en")
+                                    .Build();
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var sb = new StringBuilder();
+        var file = e.File;
+        using var fileReader = file.OpenReadStream(5 * 1024 * 1024);
+        await foreach (var result in whisperProcessor!.ProcessAsync(fileReader))
+        {
+
+            sb.AppendLine($"{result.Start}->{result.End}: {result.Text}");
+            txtResult = sb.ToString();
+            StateHasChanged();
+        }
+    }
+}

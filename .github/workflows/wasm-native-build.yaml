@@ -1,0 +1,61 @@
+
+name: Wasm Native build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ github.head_ref }}
+    
+    - name: Check for submodule update
+      id: check_submodule
+      run: |
+        cd whisper.cpp
+        SUBMODULE_COMMIT_ID=$(git rev-parse HEAD)
+        echo "Submodule commit ID: $SUBMODULE_COMMIT_ID"
+        cd $GITHUB_WORKSPACE
+        STORED_COMMIT_ID=$(cat native-commit-id-wasm)
+        echo "Stored commit ID: $STORED_COMMIT_ID"
+        if [ "$SUBMODULE_COMMIT_ID" != "$STORED_COMMIT_ID" ]; then
+          echo "Submodule has new commits. Triggering build."
+          echo "trigger_build=true" >> $GITHUB_OUTPUT
+          echo $SUBMODULE_COMMIT_ID > native-commit-id-wasm
+        else
+          echo "No new commits in submodule."
+          echo "trigger_build=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Install Emscripten
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      uses: mymindstorm/setup-emsdk@v13
+   
+    - name: Run wasm build
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: make wasm
+
+    - name: Remove Emscripten
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: rm -rf emsdk*
+
+    - name: Pull latest commits
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: git pull origin ${{ github.head_ref }}
+
+    - name: Commit and Push
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Add native changes wasm

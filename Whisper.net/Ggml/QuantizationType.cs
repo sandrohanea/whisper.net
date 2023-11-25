@@ -6,7 +6,6 @@ public enum QuantizationType
     NoQuantization,
     Q4_0,
     Q4_1,
-    Q4_2,
     Q5_0,
     Q5_1,
     Q8_0

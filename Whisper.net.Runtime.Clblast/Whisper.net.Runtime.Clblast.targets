@@ -8,4 +8,13 @@
             <TargetPath>runtimes/win-x64/whisper.dll</TargetPath>
         </None>
     </ItemGroup>
+    <ItemGroup
+        Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\clblast.dll">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>clblast.dll</TargetPath>
+        </None>
+    </ItemGroup>
 </Project>

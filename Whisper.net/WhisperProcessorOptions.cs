@@ -67,10 +67,13 @@ internal sealed class WhisperProcessorOptions
 
     public float? NoSpeechThreshold { get; set; }
 
-    public List<OnSegmentEventHandler> OnSegmentEventHandlers { get; set; } = new();
+    public List<OnSegmentEventHandler> OnSegmentEventHandlers { get; set; } = [];
 
-    public List<OnProgressHandler> OnProgressHandlers { get; set; } = new();
+    public List<OnProgressHandler> OnProgressHandlers { get; set; } = [];
 
-    public List<OnEncoderBeginEventHandler> OnEncoderBeginEventHandlers { get; set; } = new();
+    public List<OnEncoderBeginEventHandler> OnEncoderBeginEventHandlers { get; set; } = [];
+
+    public WhisperAbortEventHandler? WhisperAbortEventHandler { get; set; }
+
     public bool ComputeProbabilities { get; set; }
 }
