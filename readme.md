@@ -3,6 +3,13 @@ Open-Source Whisper.net
 
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
+Native builds:
+
+[![Linux](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml)
+[![Windows](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml)
+[![MacOs](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml)
+[![Android](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml)
+[![Wasm](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml)
 
 ## Getting started
 
@@ -38,29 +45,34 @@ Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple Co
 
 Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
 
-Using the ggml whisper models with CoreML requires an additional `mlmodelc` file to be placed alongside your whisper model. You can generate these via the [whisper.cpp scripts](https://github.com/ggerganov/whisper.cpp#core-ml-support). As whisper.cpp uses filepaths to detect this folder, you must load your whisper model with a file path. If successful, the whisper output logs will announce:
+Using the ggml whisper models with CoreML requires an additional `mlmodelc` file to be placed alongside your whisper model.
+
+You can download and extract these using [WhisperGgmlDownloader](https://github.com/sandrohanea/whisper.net/blob/main/Whisper.net/Ggml/WhisperGgmlDownloader.cs#L45). Check the [CoreML example](https://github.com/sandrohanea/whisper.net/blob/main/examples/CoreML/Program.cs).
+
+You can also generate these via the [whisper.cpp scripts](https://github.com/ggerganov/whisper.cpp#core-ml-support). As whisper.cpp uses filepaths to detect this folder, you must load your whisper model with a file path.
+
+If successful, the whisper output logs will announce:
 
 `whisper_init_state: loading Core ML model from...`
 
 If not, it will announce an error and use the original core library instead.
 
-## GPU Support on Windows
+## GPU Support
 
 Dependeing on your GPU, you can use either `Whisper.net.Runtime.Cublas` or `Whisper.net.Runtime.Clblast`.
-For now, they are only available on Windows x64.
+For now, they are only available on Windows x64 and Linux x64 (only Cublas).
 
 Check the Cublas and Clblast examples.
 
 ## Blazor and WASM
 
-For Blazor WebAssembly support, check the BlazorWasm example.
-Instead of `Whisper.net.Runtime`, you'll need to use `Whisper.net.Runtime.Wasm` but you'll need to also switch `WasmBuildNative` flag to true.
+Blazor is supported with both InteractivityServer and InteractivityWebAssemly. You can check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
 
 ## Versioning
 
-Each version of Whisper.net is tied to a specific version of Whisper.cpp. The version of Whisper.net is the same as the version of Whisper it is based on. For example, Whisper.net 1.2.0 is based on Whisper 1.2.0.
+Each version of Whisper.net is tied to a specific version of Whisper.cpp. The version of Whisper.net is the same as the version of Whisper it is based on. For example, Whisper.net 1.2.0 is based on Whisper.cpp 1.2.0.
 
-However, there can be cases where Whisper.net patch version is incremented without a corresponding Whisper.cpp version change. This is the case when the changes in Whisper.net are not related to the changes in Whisper.cpp.
+However, the patch version is not tied to Whisper.cpp. For example, Whisper.net 1.2.1 is based on Whisper.cpp 1.2.0 and Whisper.net 1.5.0 is based on Whisper.cpp 1.5.1.
 
 ## Ggml Models
 
@@ -124,10 +136,6 @@ The build scripts are a combination of PowerShell scripts and a Makefile. You ca
 
 `make apple`
 
-or
-
-`pwsh ./scripts/build-osx.ps1`
-
 - Compiling the Apple libraries requires a Mac with Xcode installed.
 
 ### Apple CoreML:
@@ -140,13 +148,11 @@ or
 
 `make linux`
 
-or
-
-`pwsh ./scripts/build-linux.ps1`
-
 ### Windows:
 
-- Run the `.bat` files in the root of this repo, or the powershell `./script/build-windows.ps1`
+- Import the powershel module `Import-Module ./windows-scripts.ps1`
+- Run `BuildWindowsAll` to build all Windows libraries
+
 
 ## License
 
@@ -169,3 +175,4 @@ Whisper.net is supported on the following platforms:
 - iOS
 - MacCatalyst
 - tvOS
+- WebAssembly
