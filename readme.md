@@ -25,10 +25,11 @@ or simply add a package reference in your csproj:
     <PackageReference Include="Whisper.net.Runtime" Version="1.5.0" />
 ```
 
-## TFL Community
+## GPT for whisper
 
-We also have a Teams for Life community, where people can ask questions about the library or just discuss with others about their experience.
-You can join the community [using this link](https://teams.live.com/l/community/EBADsHLtqswx_2OnwI)
+We also have a custom-built GPT inside chatgpt, which can help you with information based on this code, previous issues and releases available [here](https://chat.openai.com/g/g-GQU8iEnAa-whisper-net-helper).
+
+Please, make sure you try to ask it before publishing a new question here, as it can be a lot faster.
 
 ## Runtime
 
