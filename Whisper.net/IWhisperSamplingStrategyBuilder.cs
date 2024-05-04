@@ -2,10 +2,9 @@
 
 namespace Whisper.net;
 
-public interface IWhisperSamplingStrategyBuilder
-{
-    /// <summary>
-    /// Returns the parent <seealso cref="WhisperProcessorBuilder"/>.
-    /// </summary>
-    WhisperProcessorBuilder ParentBuilder { get; }
+public interface IWhisperSamplingStrategyBuilder {
+  /// <summary>
+  /// Returns the parent <seealso cref="WhisperProcessorBuilder"/>.
+  /// </summary>
+  WhisperProcessorBuilder ParentBuilder { get; }
 }

@@ -1,4 +1,4 @@
 {
-    "cmake.configureOnOpen": false,
-    "dotnet.defaultSolution": "Whisper.net.sln"
+  "cmake.configureOnOpen": false,
+  "dotnet.defaultSolution": "Whisper.net.sln"
 }
