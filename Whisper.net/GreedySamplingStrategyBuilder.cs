@@ -7,12 +7,14 @@ namespace Whisper.net;
 /// <summary>
 /// Builder for <seealso cref="GreedySamplingStrategyBuilder"/>
 /// </summary>
-public class GreedySamplingStrategyBuilder : IWhisperSamplingStrategyBuilder {
+public class GreedySamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
+{
   private readonly GreedySamplingStrategy greedySamplingStrategy;
 
   internal
   GreedySamplingStrategyBuilder(WhisperProcessorBuilder parentBuilder,
-                                GreedySamplingStrategy greedySamplingStrategy) {
+                                GreedySamplingStrategy greedySamplingStrategy)
+  {
     ParentBuilder = parentBuilder;
     this.greedySamplingStrategy = greedySamplingStrategy;
   }
@@ -29,7 +31,8 @@ public class GreedySamplingStrategyBuilder : IWhisperSamplingStrategyBuilder {
   /// <remarks>
   /// If not configured, 1 decoder is used.
   /// </remarks>
-  public GreedySamplingStrategyBuilder WithBestOf(int bestOf) {
+  public GreedySamplingStrategyBuilder WithBestOf(int bestOf)
+  {
     greedySamplingStrategy.BestOf = bestOf;
     return this;
   }

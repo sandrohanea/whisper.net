@@ -8,13 +8,15 @@ using NAudio.Wave;
 using Whisper.net;
 using Whisper.net.Ggml;
 
-public class Program {
+public class Program
+{
   // This example shows how to use the NAudio library to convert a wav file to a
   // wav file with 16Khz sample rate and then use the Whisper library to process
   // the wav file. The converstion is needed because the Whisper library only
   // supports wav files with 16Khz sample rate, other sample rates are not
   // supported and NotSupportedWaveException will be thrown.
-  public static async Task Main(string[] args) {
+  public static async Task Main(string[] args)
+  {
     // We declare three variables which we will use later, ggmlType,
     // modelFileName and inputFileName
     var ggmlType = GgmlType.Base;
@@ -23,7 +25,8 @@ public class Program {
 
     // This section detects whether the "ggml-base.bin" file exists in our
     // project disk. If it doesn't, it downloads it from the internet
-    if (!File.Exists(modelFileName)) {
+    if (!File.Exists(modelFileName))
+    {
       await DownloadModel(modelFileName, ggmlType);
     }
 
@@ -54,12 +57,14 @@ public class Program {
 
     // This section processes the audio file and prints the results (start time,
     // end time and text) to the console.
-    await foreach (var result in processor.ProcessAsync(wavStream)) {
+    await foreach (var result in processor.ProcessAsync(wavStream))
+    {
       Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
     }
   }
 
-  private static async Task DownloadModel(string fileName, GgmlType ggmlType) {
+  private static async Task DownloadModel(string fileName, GgmlType ggmlType)
+  {
     Console.WriteLine($"Downloading Model {fileName}");
     using var modelStream =
         await WhisperGgmlDownloader.GetGgmlModelAsync(ggmlType);

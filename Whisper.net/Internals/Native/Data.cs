@@ -4,27 +4,31 @@ using System.Runtime.InteropServices;
 
 namespace Whisper.net.Native;
 
-internal enum WhisperSamplingStrategy {
+internal enum WhisperSamplingStrategy
+{
   StrategyGreedy,     // GreedyDecoder
   StrategyBeamSearch, // BeamSearchDecoder
 }
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct WhisperParamGreedy {
+internal struct WhisperParamGreedy
+{
   // ref:
   // https://github.com/openai/whisper/blob/f82bc59f5ea234d4b97fb2860842ed38519f7e65/whisper/transcribe.py#L264
   public int BestOf;
 }
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct WhisperParamBeamSearch {
+internal struct WhisperParamBeamSearch
+{
   public int BeamSize;
 
   // Note: not implemented, ref: https://arxiv.org/pdf/2204.05424.pdf
   public float Patience;
 }
 
-internal enum GgmlLogLevel {
+internal enum GgmlLogLevel
+{
   Error = 2,
   Warning = 3,
   Info = 4,
@@ -57,12 +61,14 @@ internal delegate void WhisperGgmlLogCallback(GgmlLogLevel level,
                                               IntPtr message, IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct WhisperContextParams {
+internal struct WhisperContextParams
+{
   public byte UseGpu;
 }
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct WhisperFullParams {
+internal struct WhisperFullParams
+{
   public WhisperSamplingStrategy Strategy;
 
   public int Threads;
@@ -211,4 +217,6 @@ internal struct WhisperFullParams {
 }
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct WhisperContext {}
+internal struct WhisperContext
+{
+}

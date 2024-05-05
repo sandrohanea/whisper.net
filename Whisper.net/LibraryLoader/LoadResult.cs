@@ -2,15 +2,18 @@
 
 namespace Whisper.net.LibraryLoader;
 
-public class LoadResult {
-  private LoadResult(bool isSuccess, string? errorMessage) {
+public class LoadResult
+{
+  private LoadResult(bool isSuccess, string? errorMessage)
+  {
     IsSuccess = isSuccess;
     ErrorMessage = errorMessage;
   }
 
   public static LoadResult Success { get; } = new(true, null);
 
-  public static LoadResult Failure(string errorMessage) {
+  public static LoadResult Failure(string errorMessage)
+  {
     return new(false, errorMessage);
   }
 

@@ -5,9 +5,11 @@ using NUnit.Framework;
 
 namespace Whisper.net.Tests;
 
-public class ProcessQuantizedTests {
+public class ProcessQuantizedTests
+{
   [Test]
-  public void TestHappyFlowQuantized() {
+  public void TestHappyFlowQuantized()
+  {
     var segments = new List<SegmentData>();
     var progress = new List<int>();
     var encoderBegins = new List<EncoderBeginData>();
@@ -15,10 +17,11 @@ public class ProcessQuantizedTests {
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTinyQ5);
     using var processor = factory.CreateBuilder()
                               .WithLanguage("en")
-                              .WithEncoderBeginHandler((e) => {
-                                encoderBegins.Add(e);
-                                return true;
-                              })
+                              .WithEncoderBeginHandler((e) =>
+                                                       {
+                                                         encoderBegins.Add(e);
+                                                         return true;
+                                                       })
                               .WithProgressHandler(progress.Add)
                               .WithSegmentEventHandler(segments.Add)
                               .Build();

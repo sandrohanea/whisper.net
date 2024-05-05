@@ -4,7 +4,8 @@ using System.IO.Compression;
 
 namespace Whisper.net.Ggml;
 
-public static class WhisperGgmlDownloader {
+public static class WhisperGgmlDownloader
+{
   private static readonly Lazy<HttpClient> httpClient =
       new(() => new HttpClient() { Timeout = Timeout.InfiniteTimeSpan });
 
@@ -19,7 +20,8 @@ public static class WhisperGgmlDownloader {
   public static async Task<Stream> GetGgmlModelAsync(
       GgmlType type,
       QuantizationType quantization = QuantizationType.NoQuantization,
-      CancellationToken cancellationToken = default) {
+      CancellationToken cancellationToken = default)
+  {
     var subdirectory = GetQuantizationSubdirectory(quantization);
     var modelName = GetModelName(type);
 
@@ -50,7 +52,8 @@ public static class WhisperGgmlDownloader {
   /// <exception cref="ArgumentOutOfRangeException"></exception>
   public static async Task<Stream>
   GetEncoderCoreMLModelAsync(GgmlType type,
-                             CancellationToken cancellationToken = default) {
+                             CancellationToken cancellationToken = default)
+  {
     var modelName = GetModelName(type);
     var url =
         $"https://huggingface.co/sandrohanea/whisper.net/resolve/v2/coreml/{modelName}-encoder.zip";
@@ -77,12 +80,14 @@ public static class WhisperGgmlDownloader {
   /// </remarks>
   /// <returns></returns>
   public static async Task ExtractToPath(this Task<Stream> zipStream,
-                                         string path) {
+                                         string path)
+  {
     using var zipArchive = new ZipArchive(await zipStream, ZipArchiveMode.Read);
     zipArchive.ExtractToDirectory(path);
   }
 
-  private static string GetModelName(GgmlType type) {
+  private static string GetModelName(GgmlType type)
+  {
     return type switch { GgmlType.Tiny => "ggml-tiny",
                          GgmlType.TinyEn => "ggml-tiny.en",
                          GgmlType.Base => "ggml-base",
@@ -99,7 +104,8 @@ public static class WhisperGgmlDownloader {
   }
 
   private static string
-  GetQuantizationSubdirectory(QuantizationType quantization) {
+  GetQuantizationSubdirectory(QuantizationType quantization)
+  {
     return quantization switch { QuantizationType.NoQuantization => "classic",
                                  QuantizationType.Q4_0 => "q4_0",
                                  QuantizationType.Q4_1 => "q4_1",

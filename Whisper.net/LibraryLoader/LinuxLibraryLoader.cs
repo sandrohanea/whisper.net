@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace Whisper.net.LibraryLoader;
 
-internal class LinuxLibraryLoader : ILibraryLoader {
+internal class LinuxLibraryLoader : ILibraryLoader
+{
   [DllImport("libdl.so", ExactSpelling = true, CharSet = CharSet.Auto,
              EntryPoint = "dlopen")]
   public static extern IntPtr NativeOpenLibraryLibdl(string? filename,
@@ -23,21 +24,29 @@ internal class LinuxLibraryLoader : ILibraryLoader {
              EntryPoint = "dlerror")]
   public static extern IntPtr GetLoadError2();
 
-  public LoadResult OpenLibrary(string? fileName) {
+  public LoadResult OpenLibrary(string? fileName)
+  {
     IntPtr loadedLib;
-    try {
+    try
+    {
       // open with rtls lazy flag
       loadedLib = NativeOpenLibraryLibdl2(fileName, 0x00001);
-    } catch (DllNotFoundException) {
+    }
+    catch (DllNotFoundException)
+    {
       loadedLib = NativeOpenLibraryLibdl(fileName, 0x00001);
     }
 
-    if (loadedLib == IntPtr.Zero) {
+    if (loadedLib == IntPtr.Zero)
+    {
       string errorMessage;
-      try {
+      try
+      {
         errorMessage =
             Marshal.PtrToStringAnsi(GetLoadError2()) ?? "Unknown error";
-      } catch (DllNotFoundException) {
+      }
+      catch (DllNotFoundException)
+      {
         errorMessage =
             Marshal.PtrToStringAnsi(GetLoadError()) ?? "Unknown error";
       }

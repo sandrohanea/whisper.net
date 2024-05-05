@@ -5,11 +5,14 @@ using System.Runtime.InteropServices;
 
 namespace Whisper.net.LibraryLoader;
 
-internal class WindowsLibraryLoader : ILibraryLoader {
-  public LoadResult OpenLibrary(string? fileName) {
+internal class WindowsLibraryLoader : ILibraryLoader
+{
+  public LoadResult OpenLibrary(string? fileName)
+  {
     var loadedLib = LoadLibrary(fileName);
 
-    if (loadedLib == IntPtr.Zero) {
+    if (loadedLib == IntPtr.Zero)
+    {
       var errorCode = Marshal.GetLastWin32Error();
       var errorMessage = new Win32Exception(errorCode).Message;
       return LoadResult.Failure(errorMessage);

@@ -15,38 +15,48 @@ namespace Whisper.net;
 /// The factory is loading the model and it is reusing it across all the
 /// processors.
 /// </remarks>
-public sealed class WhisperFactory : IDisposable {
+public sealed class WhisperFactory : IDisposable
+{
   private readonly IWhisperProcessorModelLoader loader;
   private readonly Lazy<IntPtr> contextLazy;
   private bool wasDisposed;
   private static bool bypassLoading;
   private static string? libraryPath;
 
-  private static readonly Lazy<LoadResult> libraryLoaded = new(() => {
-    var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(
-        WhisperFactory.libraryPath, WhisperFactory.bypassLoading);
-    if (libraryLoaded.IsSuccess) {
-      LogProvider.InitializeLogging();
-    }
-    return libraryLoaded;
-  }, true);
+  private static readonly Lazy<LoadResult> libraryLoaded = new(
+      () =>
+      {
+        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(
+            WhisperFactory.libraryPath, WhisperFactory.bypassLoading);
+        if (libraryLoaded.IsSuccess)
+        {
+          LogProvider.InitializeLogging();
+        }
+        return libraryLoaded;
+      },
+      true);
 
   private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit,
                          string? libraryPath = default,
-                         bool bypassLoading = false) {
+                         bool bypassLoading = false)
+  {
     WhisperFactory.libraryPath = libraryPath;
     WhisperFactory.bypassLoading = bypassLoading;
 
-    if (!libraryLoaded.Value.IsSuccess) {
+    if (!libraryLoaded.Value.IsSuccess)
+    {
       throw new Exception(
           $"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
     }
 
     this.loader = loader;
-    if (!delayInit) {
+    if (!delayInit)
+    {
       var nativeContext = loader.LoadNativeContext();
       contextLazy = new Lazy<IntPtr>(() => nativeContext);
-    } else {
+    }
+    else
+    {
       contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(),
                                      isThreadSafe: false);
     }
@@ -73,7 +83,8 @@ public sealed class WhisperFactory : IDisposable {
                                         bool delayInitialization = false,
                                         string? libraryPath = default,
                                         bool bypassLoading = false,
-                                        bool useGpu = true) {
+                                        bool useGpu = true)
+  {
     return new WhisperFactory(new WhisperProcessorModelFileLoader(path, useGpu),
                               delayInitialization, libraryPath, bypassLoading);
   }
@@ -99,7 +110,8 @@ public sealed class WhisperFactory : IDisposable {
                                           bool delayInitialization = false,
                                           string? libraryPath = default,
                                           bool bypassLoading = false,
-                                          bool useGpu = true) {
+                                          bool useGpu = true)
+  {
     return new WhisperFactory(
         new WhisperProcessorModelBufferLoader(buffer, useGpu),
         delayInitialization, libraryPath, bypassLoading);
@@ -113,24 +125,30 @@ public sealed class WhisperFactory : IDisposable {
   /// already disposed.</exception> <exception
   /// cref="WhisperModelLoadException">Throws if the model couldn't be
   /// loaded.</exception>
-  public WhisperProcessorBuilder CreateBuilder() {
-    if (wasDisposed) {
+  public WhisperProcessorBuilder CreateBuilder()
+  {
+    if (wasDisposed)
+    {
       throw new ObjectDisposedException(nameof(WhisperFactory));
     }
 
     var context = contextLazy.Value;
-    if (context == IntPtr.Zero) {
+    if (context == IntPtr.Zero)
+    {
       throw new WhisperModelLoadException("Failed to load the whisper model.");
     }
 
     return new WhisperProcessorBuilder(contextLazy.Value);
   }
 
-  public void Dispose() {
-    if (wasDisposed) {
+  public void Dispose()
+  {
+    if (wasDisposed)
+    {
       return;
     }
-    if (contextLazy.IsValueCreated && contextLazy.Value != IntPtr.Zero) {
+    if (contextLazy.IsValueCreated && contextLazy.Value != IntPtr.Zero)
+    {
       NativeMethods.whisper_free(contextLazy.Value);
     }
     loader.Dispose();

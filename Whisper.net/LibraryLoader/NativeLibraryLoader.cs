@@ -6,7 +6,8 @@ using Whisper.net.Native;
 
 namespace Whisper.net.LibraryLoader;
 
-public static class NativeLibraryLoader {
+public static class NativeLibraryLoader
+{
   private static ILibraryLoader? defaultLibraryLoader;
 
   /// <summary>
@@ -18,17 +19,19 @@ public static class NativeLibraryLoader {
   /// It needs to be set before the first <seealso cref="WhisperFactory"/> is
   /// created, otherwise it won't have any effect.
   /// </remarks>
-  public static void SetLibraryLoader(ILibraryLoader libraryLoader) {
+  public static void SetLibraryLoader(ILibraryLoader libraryLoader)
+  {
     defaultLibraryLoader = libraryLoader;
   }
 
   internal static LoadResult LoadNativeLibrary(string? path = default,
-                                               bool bypassLoading = false) {
-
+                                               bool bypassLoading = false)
+  {
 #if IOS || MACCATALYST || TVOS || ANDROID
     // If we're not bypass loading, and the path was set, and loader was set,
     // allow it to go through.
-    if (!bypassLoading && defaultLibraryLoader != null) {
+    if (!bypassLoading && defaultLibraryLoader != null)
+    {
       return defaultLibraryLoader.OpenLibrary(path);
     }
 
@@ -36,8 +39,8 @@ public static class NativeLibraryLoader {
 #else
     // If the user has handled loading the library themselves, we don't need to
     // do anything.
-    if (bypassLoading ||
-        RuntimeInformation.OSArchitecture.ToString() == "Wasm") {
+    if (bypassLoading || RuntimeInformation.OSArchitecture.ToString() == "Wasm")
+    {
       return LoadResult.Success;
     }
 
@@ -59,7 +62,8 @@ public static class NativeLibraryLoader {
           $"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
     };
 
-    if (string.IsNullOrEmpty(path)) {
+    if (string.IsNullOrEmpty(path))
+    {
       var assemblySearchPath =
           new[] { AppDomain.CurrentDomain.RelativeSearchPath,
                   Path.GetDirectoryName(
@@ -76,11 +80,13 @@ public static class NativeLibraryLoader {
                              $"{platform}-{architecture}", dynamicLibraryName);
     }
 
-    if (defaultLibraryLoader != null) {
+    if (defaultLibraryLoader != null)
+    {
       return defaultLibraryLoader.OpenLibrary(path);
     }
 
-    if (!File.Exists(path)) {
+    if (!File.Exists(path))
+    {
       throw new FileNotFoundException(
           $"Native Library not found in path {path}. " +
           $"Verify you have have included the native Whisper library in your application, " +

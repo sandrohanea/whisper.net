@@ -12,7 +12,8 @@ var maxProcessingTimeMs = 10000;
 var minProcessingTimeMs = 1500;
 var advancingProcessingTimeMs = 500;
 
-if (!File.Exists(modelFileName)) {
+if (!File.Exists(modelFileName))
+{
   await DownloadModel(modelFileName, ggmlType);
 }
 
@@ -46,11 +47,13 @@ var bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, (int)bufferSize));
 
 var currentSampleIndex = 0;
 
-for (var i = 0; i < bytesRead;) {
+for (var i = 0; i < bytesRead;)
+{
   long sampleSum = 0;
 
   for (var currentChannel = 0; currentChannel < waveParser.Channels;
-       currentChannel++) {
+       currentChannel++)
+  {
     sampleSum += BitConverter.ToInt16(buffer, i);
     i += 2;
   }
@@ -62,10 +65,12 @@ for (var i = 0; i < bytesRead;) {
 var currentProcessedStartTime = TimeSpan.Zero;
 var currentProcessedEndTime = TimeSpan.FromMilliseconds(minProcessingTimeMs);
 
-await using (var processor = builder.Build()) {
+await using (var processor = builder.Build())
+{
   var segments = new List<SegmentData>();
   await foreach (var data in processor.ProcessAsync(
-                     samples.AsMemory(0, currentSampleIndex))) {
+                     samples.AsMemory(0, currentSampleIndex)))
+  {
     segments.Add(data);
   }
   partialResults.Add(
@@ -74,16 +79,19 @@ await using (var processor = builder.Build()) {
 
 var fullText = string.Empty;
 
-while (currentSampleIndex < waveParser.SamplesCount) {
+while (currentSampleIndex < waveParser.SamplesCount)
+{
   bufferSize = waveParser.SampleRate / 1000 * advancingProcessingTimeMs * 2 *
                waveParser.Channels;
 
   bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, (int)bufferSize));
-  for (var i = 0; i < bytesRead;) {
+  for (var i = 0; i < bytesRead;)
+  {
     long sampleSum = 0;
 
     for (var currentChannel = 0; currentChannel < waveParser.Channels;
-         currentChannel++) {
+         currentChannel++)
+    {
       sampleSum += BitConverter.ToInt16(buffer, i);
       i += 2;
     }
@@ -95,17 +103,20 @@ while (currentSampleIndex < waveParser.SamplesCount) {
   currentProcessedEndTime = currentProcessedEndTime.Add(
       TimeSpan.FromMilliseconds(advancingProcessingTimeMs));
 
-  await using (var processor = builder.Build()) {
+  await using (var processor = builder.Build())
+  {
     var segments = new List<SegmentData>();
     await foreach (var data in processor.ProcessAsync(
-                       samples.AsMemory(0, currentSampleIndex))) {
+                       samples.AsMemory(0, currentSampleIndex)))
+    {
       segments.Add(data);
     }
     partialResults.Add(
         (segments, currentProcessedStartTime, currentProcessedEndTime));
 
     var indexSegment = 0;
-    foreach (var segment in segments) {
+    foreach (var segment in segments)
+    {
       Console.WriteLine(
           $"{indexSegment}: {segment.Start}->{segment.End}: {segment.Text}  => with probability: {segment.Probability}");
       indexSegment++;
@@ -114,7 +125,8 @@ while (currentSampleIndex < waveParser.SamplesCount) {
 
   var indexPartial = 0;
   // TODO: Check if partials concluded to one finished segment and return it.
-  foreach (var partial in partialResults) {
+  foreach (var partial in partialResults)
+  {
     //  Console.WriteLine(indexPartial + ":" + partial.startTime + " - " +
     //  partial.endTime + " " + partial.segments.Count + "
     //  segments\n-----------");
@@ -128,10 +140,12 @@ while (currentSampleIndex < waveParser.SamplesCount) {
   // remove half of the samples and continue processing the rest of the samples.
   if (currentProcessedEndTime.TotalMilliseconds -
           currentProcessedStartTime.TotalMilliseconds >=
-      maxProcessingTimeMs) {
+      maxProcessingTimeMs)
+  {
     // First, we copy the last part of the samples to the beginning of the array
     var samplesToCopy = currentSampleIndex - maxProcessingTimeMs / 2;
-    for (var i = 0; i < samplesToCopy; i++) {
+    for (var i = 0; i < samplesToCopy; i++)
+    {
       samples[i] = samples[i + maxProcessingTimeMs / 2];
     }
     currentProcessedStartTime = currentProcessedStartTime.Add(
@@ -140,7 +154,8 @@ while (currentSampleIndex < waveParser.SamplesCount) {
   }
 }
 
-static async Task DownloadModel(string fileName, GgmlType ggmlType) {
+static async Task DownloadModel(string fileName, GgmlType ggmlType)
+{
   Console.WriteLine($"Downloading Model {fileName}");
   using var modelStream =
       await WhisperGgmlDownloader.GetGgmlModelAsync(ggmlType);

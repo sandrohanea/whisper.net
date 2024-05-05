@@ -10,12 +10,16 @@ public delegate bool OnEncoderBeginEventHandler(EncoderBeginData e);
 
 public delegate bool WhisperAbortEventHandler();
 
-public class EncoderBeginData {}
+public class EncoderBeginData
+{
+}
 
-public class SegmentData {
+public class SegmentData
+{
   public SegmentData(string text, TimeSpan start, TimeSpan end,
                      float minProbability, float maxProbability,
-                     float probability, string language) {
+                     float probability, string language)
+  {
     Text = text;
     Start = start;
     End = end;

@@ -2,7 +2,8 @@
 
 namespace Whisper.net.Ggml;
 
-public enum GgmlType {
+public enum GgmlType
+{
   Tiny,
   TinyEn,
   Base,

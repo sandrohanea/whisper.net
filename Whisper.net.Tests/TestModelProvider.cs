@@ -6,12 +6,14 @@ using Whisper.net.Ggml;
 namespace Whisper.net.Tests;
 
 [SetUpFixture]
-internal class TestModelProvider {
+internal class TestModelProvider
+{
   private static string ggmlModelTiny = string.Empty;
   private static string ggmlModelTinyQ5 = string.Empty;
 
   [OneTimeSetUp]
-  public static async Task SetupAsync() {
+  public static async Task SetupAsync()
+  {
     ggmlModelTiny = await DownloadModelAsync(GgmlType.Tiny);
     ggmlModelTinyQ5 =
         await DownloadModelAsync(GgmlType.Tiny, QuantizationType.Q5_0);
@@ -19,7 +21,8 @@ internal class TestModelProvider {
 
   private static async Task<string> DownloadModelAsync(
       GgmlType type,
-      QuantizationType quantizationType = QuantizationType.NoQuantization) {
+      QuantizationType quantizationType = QuantizationType.NoQuantization)
+  {
     var ggmlModelPath = Path.GetTempFileName();
     var model =
         await WhisperGgmlDownloader.GetGgmlModelAsync(type, quantizationType);
@@ -29,7 +32,8 @@ internal class TestModelProvider {
   }
 
   [OneTimeTearDown]
-  public void TearDown() {
+  public void TearDown()
+  {
     File.Delete(ggmlModelTiny);
     File.Delete(ggmlModelTinyQ5);
   }

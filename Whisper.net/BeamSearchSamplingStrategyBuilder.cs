@@ -7,13 +7,14 @@ namespace Whisper.net;
 /// <summary>
 /// Builder for <seealso cref="BeamSearchSamplingStrategy"/>
 /// </summary>
-public class BeamSearchSamplingStrategyBuilder
-    : IWhisperSamplingStrategyBuilder {
+public class BeamSearchSamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
+{
   private readonly BeamSearchSamplingStrategy beamSearchSamplingStrategy;
 
   internal BeamSearchSamplingStrategyBuilder(
       WhisperProcessorBuilder whisperProcessorBuilder,
-      BeamSearchSamplingStrategy beamSearchSamplingStrategy) {
+      BeamSearchSamplingStrategy beamSearchSamplingStrategy)
+  {
     ParentBuilder = whisperProcessorBuilder;
     this.beamSearchSamplingStrategy = beamSearchSamplingStrategy;
   }
@@ -30,7 +31,8 @@ public class BeamSearchSamplingStrategyBuilder
   /// <remarks>
   /// If not configured, 5 beam sizes are used.
   /// </remarks>
-  public BeamSearchSamplingStrategyBuilder WithBeamSize(int beamSize) {
+  public BeamSearchSamplingStrategyBuilder WithBeamSize(int beamSize)
+  {
     beamSearchSamplingStrategy.BeamSize = beamSize;
     return this;
   }
@@ -45,7 +47,8 @@ public class BeamSearchSamplingStrategyBuilder
   /// If not configured, -1.0f patience is used.
   /// Note: This is not implmented yet in the native code.
   /// </remarks>
-  public BeamSearchSamplingStrategyBuilder WithPatience(float patience) {
+  public BeamSearchSamplingStrategyBuilder WithPatience(float patience)
+  {
     beamSearchSamplingStrategy.Patience = patience;
     return this;
   }

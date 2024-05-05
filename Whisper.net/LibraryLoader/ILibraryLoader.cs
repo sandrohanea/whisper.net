@@ -2,6 +2,7 @@
 
 namespace Whisper.net.LibraryLoader;
 
-public interface ILibraryLoader {
+public interface ILibraryLoader
+{
   LoadResult OpenLibrary(string? fileName);
 }
