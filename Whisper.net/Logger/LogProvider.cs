@@ -4,8 +4,7 @@ using System.Runtime.InteropServices;
 using Whisper.net.Native;
 
 namespace Whisper.net.Logger;
-public class LogProvider
-{
+public class LogProvider {
   private LogProvider() {}
 
   /// <summary>
@@ -16,12 +15,10 @@ public class LogProvider
 
   public event Action<WhisperLogLevel, string?>? OnLog;
 
-  internal static void InitializeLogging()
-  {
+  internal static void InitializeLogging() {
     IntPtr funcPointer;
 #if NET6_0_OR_GREATER
-    unsafe
-    {
+    unsafe {
       delegate *unmanaged[Cdecl]<GgmlLogLevel, IntPtr, IntPtr, void> onLogging =
           &LogUnmanaged;
       funcPointer = (IntPtr)onLogging;
@@ -40,8 +37,7 @@ public class LogProvider
   private static readonly WhisperGgmlLogCallback logCallback = LogUnmanaged;
 #endif
   internal static void LogUnmanaged(GgmlLogLevel level, IntPtr message,
-                                    IntPtr user_data)
-  {
+                                    IntPtr user_data) {
     var messageString = Marshal.PtrToStringAnsi(message);
     var managedLevel =
         level switch { GgmlLogLevel.Error => WhisperLogLevel.Error,
@@ -50,8 +46,7 @@ public class LogProvider
     Log(managedLevel, messageString);
   }
 
-  internal static void Log(WhisperLogLevel level, string? message)
-  {
+  internal static void Log(WhisperLogLevel level, string? message) {
     Instance.OnLog?.Invoke(level, message);
   }
 }

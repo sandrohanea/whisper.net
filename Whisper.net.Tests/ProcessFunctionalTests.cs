@@ -5,11 +5,9 @@ using NUnit.Framework;
 
 namespace Whisper.net.Tests;
 
-public class ProcessFunctionalTests
-{
+public class ProcessFunctionalTests {
   [Test]
-  public void TestHappyFlow()
-  {
+  public void TestHappyFlow() {
     var segments = new List<SegmentData>();
     var progress = new List<int>();
     var encoderBegins = new List<EncoderBeginData>();
@@ -17,11 +15,10 @@ public class ProcessFunctionalTests
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
     using var processor = factory.CreateBuilder()
                               .WithLanguage("en")
-                              .WithEncoderBeginHandler((e) =>
-                                                       {
-                                                         encoderBegins.Add(e);
-                                                         return true;
-                                                       })
+                              .WithEncoderBeginHandler((e) => {
+                                encoderBegins.Add(e);
+                                return true;
+                              })
                               .WithPrompt("I am Kennedy")
                               .WithProgressHandler(progress.Add)
                               .WithSegmentEventHandler(segments.Add)
@@ -39,19 +36,17 @@ public class ProcessFunctionalTests
   }
 
   [Test]
-  public void TestCancelEncoder()
-  {
+  public void TestCancelEncoder() {
     var segments = new List<SegmentData>();
     var encoderBegins = new List<EncoderBeginData>();
     using var factory =
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
     using var processor = factory.CreateBuilder()
                               .WithLanguage("en")
-                              .WithEncoderBeginHandler((e) =>
-                                                       {
-                                                         encoderBegins.Add(e);
-                                                         return false;
-                                                       })
+                              .WithEncoderBeginHandler((e) => {
+                                encoderBegins.Add(e);
+                                return false;
+                              })
                               .WithSegmentEventHandler(segments.Add)
                               .Build();
 
@@ -63,23 +58,20 @@ public class ProcessFunctionalTests
   }
 
   [Test]
-  public async Task TestAutoDetectLanguageWithRomanian()
-  {
+  public async Task TestAutoDetectLanguageWithRomanian() {
     var segments = new List<SegmentData>();
     var encoderBegins = new List<EncoderBeginData>();
     using var factory =
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
     using var processor = factory.CreateBuilder()
                               .WithLanguageDetection()
-                              .WithEncoderBeginHandler((e) =>
-                                                       {
-                                                         encoderBegins.Add(e);
-                                                         return true;
-                                                       })
+                              .WithEncoderBeginHandler((e) => {
+                                encoderBegins.Add(e);
+                                return true;
+                              })
                               .Build();
     using var fileReader = File.OpenRead("romana.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader)) {
       segments.Add(segment);
     }
     segments.Should().HaveCountGreaterThan(0);
@@ -90,8 +82,7 @@ public class ProcessFunctionalTests
   }
 
   [Test]
-  public async Task Process_WhenMultichannel_ProcessCorrectly()
-  {
+  public async Task Process_WhenMultichannel_ProcessCorrectly() {
     var segments = new List<SegmentData>();
 
     using var factory =
@@ -108,8 +99,8 @@ public class ProcessFunctionalTests
   }
 
   [Test]
-  public async Task Process_CalledMultipleTimes_Serially_WillCompleteEverytime()
-  {
+  public async
+      Task Process_CalledMultipleTimes_Serially_WillCompleteEverytime() {
     var segments1 = new List<SegmentData>();
     var segments2 = new List<SegmentData>();
     var segments3 = new List<SegmentData>();

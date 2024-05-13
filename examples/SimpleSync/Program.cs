@@ -7,13 +7,11 @@ using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Logger;
 
-public class Program
-{
+public class Program {
   // This examples shows how to use Whisper.net to create a transcription from
   // an audio file with 16Khz sample rate, using the segment event handler and
   // synchronous processing.
-  public static async Task Main(string[] args)
-  {
+  public static async Task Main(string[] args) {
     // We declare three variables which we will use later, ggmlType,
     // modelFileName and inputFileName
     var ggmlType = GgmlType.Base;
@@ -22,14 +20,13 @@ public class Program
 
     // This section detects whether the "ggml-base.bin" file exists in our
     // project disk. If it doesn't, it downloads it from the internet
-    if (!File.Exists(modelFileName))
-    {
+    if (!File.Exists(modelFileName)) {
       await DownloadModel(modelFileName, ggmlType);
     }
 
     // Optional logging from the native library
-    LogProvider.Instance.OnLog += (level, message) =>
-    { Console.WriteLine($"{level}: {message}"); };
+    LogProvider.Instance.OnLog +=
+        (level, message) => { Console.WriteLine($"{level}: {message}"); };
 
     // This section creates the whisperFactory object which is used to create
     // the processor object.
@@ -42,13 +39,11 @@ public class Program
     using var processor =
         whisperFactory.CreateBuilder()
             .WithLanguage("auto")
-            .WithSegmentEventHandler(
-                (segment) =>
-                {
-                  // Do whetever you want with your segment here.
-                  Console.WriteLine(
-                      $"{segment.Start}->{segment.End}: {segment.Text}");
-                })
+            .WithSegmentEventHandler((segment) => {
+              // Do whetever you want with your segment here.
+              Console.WriteLine(
+                  $"{segment.Start}->{segment.End}: {segment.Text}");
+            })
             .Build();
 
     // This section processes the audio file and prints the results (start time,
@@ -57,8 +52,7 @@ public class Program
     processor.Process(fileStream);
   }
 
-  private static async Task DownloadModel(string fileName, GgmlType ggmlType)
-  {
+  private static async Task DownloadModel(string fileName, GgmlType ggmlType) {
     Console.WriteLine($"Downloading Model {fileName}");
     using var modelStream =
         await WhisperGgmlDownloader.GetGgmlModelAsync(ggmlType);

@@ -4,10 +4,8 @@ using Whisper.net.Native;
 
 namespace Whisper.net.SamplingStrategy;
 
-internal class GreedySamplingStrategy : IWhisperSamplingStrategy
-{
-  public WhisperSamplingStrategy GetNativeStrategy()
-  {
+internal class GreedySamplingStrategy : IWhisperSamplingStrategy {
+  public WhisperSamplingStrategy GetNativeStrategy() {
     return WhisperSamplingStrategy.StrategyGreedy;
   }
 

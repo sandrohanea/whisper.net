@@ -14,8 +14,7 @@ await Parser.Default.ParseArguments<Options>(args).WithParsedAsync(Demo);
 async Task Demo(Options opt)
 
 {
-  if (!File.Exists(opt.ModelName))
-  {
+  if (!File.Exists(opt.ModelName)) {
     Console.WriteLine($"Downloading Model {opt.ModelName}");
     using var modelStream =
         await WhisperGgmlDownloader.GetGgmlModelAsync(opt.ModelType);
@@ -23,8 +22,7 @@ async Task Demo(Options opt)
     await modelStream.CopyToAsync(fileWriter);
   }
 
-  switch (opt.Command)
-  {
+  switch (opt.Command) {
   case "lang-detect":
     LanguageIdentification(opt);
     break;
@@ -38,8 +36,7 @@ async Task Demo(Options opt)
   }
 }
 
-void LanguageIdentification(Options opt)
-{
+void LanguageIdentification(Options opt) {
   var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
   // Same factory can be used by multiple task to create processors.
@@ -59,15 +56,13 @@ void LanguageIdentification(Options opt)
   Console.WriteLine("Language is " + language);
 }
 
-async Task FullDetection(Options opt)
-{
+async Task FullDetection(Options opt) {
   // Same factory can be used by multiple task to create processors.
   using var factory = WhisperFactory.FromPath(opt.ModelName);
 
   var builder = factory.CreateBuilder().WithLanguage(opt.Language);
 
-  if (opt.Command == "translate")
-  {
+  if (opt.Command == "translate") {
     builder.WithTranslate();
   }
 
@@ -75,16 +70,14 @@ async Task FullDetection(Options opt)
 
   using var fileStream = File.OpenRead(opt.FileName);
 
-  await foreach (var segment in processor.ProcessAsync(fileStream,
-                                                       CancellationToken.None))
-  {
+  await foreach (var segment in processor.ProcessAsync(
+                     fileStream, CancellationToken.None)) {
     Console.WriteLine(
         $"New Segment: {segment.Start} ==> {segment.End} : {segment.Text}");
   }
 }
 
-public class Options
-{
+public class Options {
   [Option('t', "command", Required = false,
           HelpText = "Command to run (lang-detect, transcribe or translate)",
           Default = "transcribe")]

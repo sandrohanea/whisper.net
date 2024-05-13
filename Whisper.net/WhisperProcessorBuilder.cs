@@ -7,12 +7,10 @@ namespace Whisper.net;
 /// <summary>
 /// Builder for <see cref="WhisperProcessor"/>.
 /// </summary>
-public class WhisperProcessorBuilder
-{
+public class WhisperProcessorBuilder {
   private readonly WhisperProcessorOptions whisperProcessorOptions;
 
-  internal WhisperProcessorBuilder(IntPtr context)
-  {
+  internal WhisperProcessorBuilder(IntPtr context) {
     whisperProcessorOptions =
         new WhisperProcessorOptions() { ContextHandle = context };
   }
@@ -26,8 +24,7 @@ public class WhisperProcessorBuilder
   /// If not specified, the same number as the hardware threads that the
   /// underlying hardware can support concurrently is used.
   /// </remarks>
-  public WhisperProcessorBuilder WithThreads(int threads)
-  {
+  public WhisperProcessorBuilder WithThreads(int threads) {
     whisperProcessorOptions.Threads = threads;
     return this;
   }
@@ -41,8 +38,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, a number of 16384 tokens is used.
   /// </remarks>
-  public WhisperProcessorBuilder WithMaxLastTextTokens(int maxLastTextTokens)
-  {
+  public WhisperProcessorBuilder WithMaxLastTextTokens(int maxLastTextTokens) {
     whisperProcessorOptions.MaxLastTextTokens = maxLastTextTokens;
     return this;
   }
@@ -56,8 +52,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processing is happening from the beginning.
   /// </remarks>
-  public WhisperProcessorBuilder WithOffset(TimeSpan offset)
-  {
+  public WhisperProcessorBuilder WithOffset(TimeSpan offset) {
     whisperProcessorOptions.Offset = offset;
     return this;
   }
@@ -70,8 +65,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processing is happening for the entire input.
   /// </remarks>
-  public WhisperProcessorBuilder WithDuration(TimeSpan duration)
-  {
+  public WhisperProcessorBuilder WithDuration(TimeSpan duration) {
     whisperProcessorOptions.Duration = duration;
     return this;
   }
@@ -83,8 +77,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processor will just transcribe it.
   /// </remarks>
-  public WhisperProcessorBuilder WithTranslate()
-  {
+  public WhisperProcessorBuilder WithTranslate() {
     whisperProcessorOptions.Translate = true;
     return this;
   }
@@ -98,8 +91,7 @@ public class WhisperProcessorBuilder
   /// If not specified, the processor use part transformations as initial prompt
   /// for newer processing.
   /// </remarks>
-  public WhisperProcessorBuilder WithNoContext()
-  {
+  public WhisperProcessorBuilder WithNoContext() {
     whisperProcessorOptions.NoContext = true;
     return this;
   }
@@ -113,8 +105,7 @@ public class WhisperProcessorBuilder
   /// If not specified, the processor will return multiple segments (if they are
   /// recognized).
   /// </remarks>
-  public WhisperProcessorBuilder WithSingleSegment()
-  {
+  public WhisperProcessorBuilder WithSingleSegment() {
     whisperProcessorOptions.SingleSegment = true;
     return this;
   }
@@ -127,8 +118,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processor will not print special tokens.
   /// </remarks>
-  public WhisperProcessorBuilder WithPrintSpecialTokens()
-  {
+  public WhisperProcessorBuilder WithPrintSpecialTokens() {
     whisperProcessorOptions.PrintSpecialTokens = true;
     return this;
   }
@@ -140,8 +130,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processor will not print progress information.
   /// </remarks>
-  public WhisperProcessorBuilder WithPrintProgress()
-  {
+  public WhisperProcessorBuilder WithPrintProgress() {
     whisperProcessorOptions.PrintProgress = true;
     return this;
   }
@@ -153,8 +142,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processor will not print results to stdout.
   /// </remarks>
-  public WhisperProcessorBuilder WithPrintResults()
-  {
+  public WhisperProcessorBuilder WithPrintResults() {
     whisperProcessorOptions.PrintResults = true;
     return this;
   }
@@ -168,8 +156,7 @@ public class WhisperProcessorBuilder
   /// configured. If not specified, the processor will print also timestamps.
   /// </remarks>
   public WhisperProcessorBuilder
-  WithPrintTimestamps(bool printTimestamps = true)
-  {
+  WithPrintTimestamps(bool printTimestamps = true) {
     whisperProcessorOptions.PrintTimestamps = printTimestamps;
     return this;
   }
@@ -181,8 +168,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, the processor will not use token timestamps.
   /// </remarks>
-  public WhisperProcessorBuilder WithTokenTimestamps()
-  {
+  public WhisperProcessorBuilder WithTokenTimestamps() {
     whisperProcessorOptions.UseTokenTimestamps = true;
     return this;
   }
@@ -197,8 +183,7 @@ public class WhisperProcessorBuilder
   /// effect only together with <seealso cref="WithTokenTimestamps"/>
   /// </remarks>
   public WhisperProcessorBuilder
-  WithTokenTimestampsThreshold(float tokenTimestampsThreshold)
-  {
+  WithTokenTimestampsThreshold(float tokenTimestampsThreshold) {
     whisperProcessorOptions.TokenTimestampsThreshold = tokenTimestampsThreshold;
     return this;
   }
@@ -213,8 +198,7 @@ public class WhisperProcessorBuilder
   /// effect only together with <seealso cref="WithTokenTimestamps"/>
   /// </remarks>
   public WhisperProcessorBuilder
-  WithTokenTimestampsSumThreshold(float tokenTimestampsSumThreshold)
-  {
+  WithTokenTimestampsSumThreshold(float tokenTimestampsSumThreshold) {
     whisperProcessorOptions.TokenTimestampsSumThreshold =
         tokenTimestampsSumThreshold;
     return this;
@@ -227,8 +211,7 @@ public class WhisperProcessorBuilder
   /// used</param> <returns>An instance to the same builder.</returns> <remarks>
   /// If not specified no max segment length will be applied.
   /// </remarks>
-  public WhisperProcessorBuilder WithMaxSegmentLength(int maxSegmentLength)
-  {
+  public WhisperProcessorBuilder WithMaxSegmentLength(int maxSegmentLength) {
     whisperProcessorOptions.MaxSegmentLength = maxSegmentLength;
     return this;
   }
@@ -240,8 +223,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified split will be done based on the model configuration.
   /// </remarks>
-  public WhisperProcessorBuilder SplitOnWord()
-  {
+  public WhisperProcessorBuilder SplitOnWord() {
     whisperProcessorOptions.SplitOnWord = true;
     return this;
   }
@@ -254,8 +236,7 @@ public class WhisperProcessorBuilder
   /// If not specified no max number of tokens will be applied.
   /// </remarks>
   public WhisperProcessorBuilder
-  WithMaxTokensPerSegment(int maxTokensPerSegment)
-  {
+  WithMaxTokensPerSegment(int maxTokensPerSegment) {
     whisperProcessorOptions.MaxTokensPerSegment = maxTokensPerSegment;
     return this;
   }
@@ -268,8 +249,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// Quality might be degraded while performance might be improved.
   /// </remarks>
-  public WhisperProcessorBuilder WithSpeedUp2x()
-  {
+  public WhisperProcessorBuilder WithSpeedUp2x() {
     whisperProcessorOptions.SpeedUp2x = true;
     return this;
   }
@@ -283,8 +263,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// Quality might be degraded while performance might be improved.
   /// </remarks>
-  public WhisperProcessorBuilder WithAudioContextSize(int audioContextSize)
-  {
+  public WhisperProcessorBuilder WithAudioContextSize(int audioContextSize) {
     whisperProcessorOptions.AudioContextSize = audioContextSize;
     return this;
   }
@@ -295,8 +274,7 @@ public class WhisperProcessorBuilder
   /// </summary>
   /// <param name="prompt">The prompt to be used.</param>
   /// <returns>An instance to the same builder.</returns>
-  public WhisperProcessorBuilder WithPrompt(string prompt)
-  {
+  public WhisperProcessorBuilder WithPrompt(string prompt) {
     whisperProcessorOptions.Prompt = prompt;
     return this;
   }
@@ -310,8 +288,7 @@ public class WhisperProcessorBuilder
   /// Default value is "en".
   /// Example: "en", "ro"
   /// </remarks>
-  public WhisperProcessorBuilder WithLanguage(string language)
-  {
+  public WhisperProcessorBuilder WithLanguage(string language) {
     whisperProcessorOptions.Language = language;
     return this;
   }
@@ -324,8 +301,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// Note: Processing time will slightly increase.
   /// </remarks>
-  public WhisperProcessorBuilder WithLanguageDetection()
-  {
+  public WhisperProcessorBuilder WithLanguageDetection() {
     whisperProcessorOptions.Language = string.Empty;
     return this;
   }
@@ -337,8 +313,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, blanks are automatically suppressed.
   /// </remarks>
-  public WhisperProcessorBuilder WithoutSuppressBlank()
-  {
+  public WhisperProcessorBuilder WithoutSuppressBlank() {
     whisperProcessorOptions.SuppressBlank = false;
     return this;
   }
@@ -353,8 +328,7 @@ public class WhisperProcessorBuilder
   /// More details:
   /// https://ai.stackexchange.com/questions/32477/what-is-the-temperature-in-the-gpt-models/32478#32478
   /// </remarks>
-  public WhisperProcessorBuilder WithTemperature(float temperature)
-  {
+  public WhisperProcessorBuilder WithTemperature(float temperature) {
     whisperProcessorOptions.Temperature = temperature;
     return this;
   }
@@ -368,8 +342,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// If not specified, default value is: 1f.
   /// </remarks>
-  public WhisperProcessorBuilder WithMaxInitialTs(float maxInitialTs)
-  {
+  public WhisperProcessorBuilder WithMaxInitialTs(float maxInitialTs) {
     whisperProcessorOptions.MaxInitialTs = maxInitialTs;
     return this;
   }
@@ -385,8 +358,7 @@ public class WhisperProcessorBuilder
   /// default. More information about the length penalty can be found here:
   /// https://arxiv.org/abs/1609.08144.
   /// </remarks>
-  public WhisperProcessorBuilder WithLengthPenalty(float lengthPenalty)
-  {
+  public WhisperProcessorBuilder WithLengthPenalty(float lengthPenalty) {
     whisperProcessorOptions.LengthPenalty = lengthPenalty;
     return this;
   }
@@ -402,8 +374,7 @@ public class WhisperProcessorBuilder
   /// cref="WithLogProbThreshold(float)"/> or <seealso
   /// cref="WithNoSpeechThreshold(float)"/>. Default value is 0.2f.
   /// </remarks>
-  public WhisperProcessorBuilder WithTemperatureInc(float temperature)
-  {
+  public WhisperProcessorBuilder WithTemperatureInc(float temperature) {
     whisperProcessorOptions.TemperatureInc = temperature;
     return this;
   }
@@ -416,8 +387,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// Default value is 2.4f.
   /// </remarks>
-  public WhisperProcessorBuilder WithEntropyThreshold(float entropyThreshold)
-  {
+  public WhisperProcessorBuilder WithEntropyThreshold(float entropyThreshold) {
     whisperProcessorOptions.EntropyThreshold = entropyThreshold;
     return this;
   }
@@ -431,8 +401,7 @@ public class WhisperProcessorBuilder
   /// <remarks>
   /// Default value is -1.0f.
   /// </remarks>
-  public WhisperProcessorBuilder WithLogProbThreshold(float logProbThreshold)
-  {
+  public WhisperProcessorBuilder WithLogProbThreshold(float logProbThreshold) {
     whisperProcessorOptions.LogProbThreshold = logProbThreshold;
     return this;
   }
@@ -446,8 +415,8 @@ public class WhisperProcessorBuilder
   /// Default value is 0.6f.
   /// Note: Not implemented in native code.
   /// </remarks>
-  public WhisperProcessorBuilder WithNoSpeechThreshold(float noSpeechThreshold)
-  {
+  public WhisperProcessorBuilder
+  WithNoSpeechThreshold(float noSpeechThreshold) {
     whisperProcessorOptions.NoSpeechThreshold = noSpeechThreshold;
     return this;
   }
@@ -459,8 +428,7 @@ public class WhisperProcessorBuilder
   /// <param name="segmentEventHandler">The event handler to be added.</param>
   /// <returns>An instance to the same builder.</returns>
   public WhisperProcessorBuilder
-  WithSegmentEventHandler(OnSegmentEventHandler segmentEventHandler)
-  {
+  WithSegmentEventHandler(OnSegmentEventHandler segmentEventHandler) {
     whisperProcessorOptions.OnSegmentEventHandlers.Add(segmentEventHandler);
     return this;
   }
@@ -472,8 +440,7 @@ public class WhisperProcessorBuilder
   /// <param name="progressHandler">The event handler to be added.</param>
   /// <returns>An instance to the same builder.</returns>
   public WhisperProcessorBuilder
-  WithProgressHandler(OnProgressHandler progressHandler)
-  {
+  WithProgressHandler(OnProgressHandler progressHandler) {
     whisperProcessorOptions.OnProgressHandlers.Add(progressHandler);
     return this;
   }
@@ -485,8 +452,7 @@ public class WhisperProcessorBuilder
   /// <param name="encoderBeginEventHandler">The event handler to be
   /// added.</param> <returns>An instance to the same builder.</returns>
   public WhisperProcessorBuilder
-  WithEncoderBeginHandler(OnEncoderBeginEventHandler encoderBeginEventHandler)
-  {
+  WithEncoderBeginHandler(OnEncoderBeginEventHandler encoderBeginEventHandler) {
     whisperProcessorOptions.OnEncoderBeginEventHandlers.Add(
         encoderBeginEventHandler);
     return this;
@@ -497,8 +463,7 @@ public class WhisperProcessorBuilder
   /// </summary>
   /// <returns>A new <seealso cref="GreedySamplingStrategyBuilder"/> for
   /// configuring the <seealso cref="GreedySamplingStrategy"/></returns>
-  public IWhisperSamplingStrategyBuilder WithGreedySamplingStrategy()
-  {
+  public IWhisperSamplingStrategyBuilder WithGreedySamplingStrategy() {
     var greedySamplingStrategy = new GreedySamplingStrategy();
     whisperProcessorOptions.SamplingStrategy = greedySamplingStrategy;
     return new GreedySamplingStrategyBuilder(this, greedySamplingStrategy);
@@ -509,8 +474,7 @@ public class WhisperProcessorBuilder
   /// </summary>
   /// <returns>A new <seealso cref="BeamSearchSamplingStrategyBuilder"/> for
   /// configuring the <seealso cref="BeamSearchSamplingStrategy"/></returns>
-  public IWhisperSamplingStrategyBuilder WithBeamSearchSamplingStrategy()
-  {
+  public IWhisperSamplingStrategyBuilder WithBeamSearchSamplingStrategy() {
     var beamSearchSamplingStrategy = new BeamSearchSamplingStrategy();
     whisperProcessorOptions.SamplingStrategy = beamSearchSamplingStrategy;
     return new BeamSearchSamplingStrategyBuilder(this,
@@ -524,8 +488,7 @@ public class WhisperProcessorBuilder
   /// cref="SegmentData.Probability"/>.
   /// </summary>
   /// <returns>An instance to the same builder.</returns>
-  public WhisperProcessorBuilder WithProbabilities()
-  {
+  public WhisperProcessorBuilder WithProbabilities() {
     whisperProcessorOptions.ComputeProbabilities = true;
     return this;
   }
@@ -535,8 +498,7 @@ public class WhisperProcessorBuilder
   /// </summary>
   /// <returns>The <seealso cref="WhisperProcessor"/> build with these
   /// configs.</returns>
-  public WhisperProcessor Build()
-  {
+  public WhisperProcessor Build() {
     return new WhisperProcessor(whisperProcessorOptions);
   }
 }

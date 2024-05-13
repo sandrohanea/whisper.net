@@ -4,10 +4,8 @@ using Whisper.net.Native;
 
 namespace Whisper.net.SamplingStrategy;
 
-internal class BeamSearchSamplingStrategy : IWhisperSamplingStrategy
-{
-  public WhisperSamplingStrategy GetNativeStrategy()
-  {
+internal class BeamSearchSamplingStrategy : IWhisperSamplingStrategy {
+  public WhisperSamplingStrategy GetNativeStrategy() {
     return WhisperSamplingStrategy.StrategyBeamSearch;
   }
 

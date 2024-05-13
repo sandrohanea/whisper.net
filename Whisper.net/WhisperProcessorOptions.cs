@@ -4,8 +4,7 @@ using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
-internal sealed class WhisperProcessorOptions
-{
+internal sealed class WhisperProcessorOptions {
   public IWhisperSamplingStrategy SamplingStrategy { get; set; } =
       new GreedySamplingStrategy();
 

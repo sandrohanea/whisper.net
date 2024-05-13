@@ -4,11 +4,9 @@ using FluentAssertions;
 using NUnit.Framework;
 
 namespace Whisper.net.Tests;
-public class ProcessAsyncFunctionalTests
-{
+public class ProcessAsyncFunctionalTests {
   [Test]
-  public async Task TestHappyFlowAsync()
-  {
+  public async Task TestHappyFlowAsync() {
     var segments = new List<SegmentData>();
     var segmentsEnumerated = new List<SegmentData>();
     var progress = new List<int>();
@@ -18,18 +16,16 @@ public class ProcessAsyncFunctionalTests
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
     using var processor = factory.CreateBuilder()
                               .WithLanguage("en")
-                              .WithEncoderBeginHandler((e) =>
-                                                       {
-                                                         encoderBegins.Add(e);
-                                                         return true;
-                                                       })
+                              .WithEncoderBeginHandler((e) => {
+                                encoderBegins.Add(e);
+                                return true;
+                              })
                               .WithProgressHandler(progress.Add)
                               .WithSegmentEventHandler(segments.Add)
                               .Build();
 
     using var fileReader = File.OpenRead("kennedy.wav");
-    await foreach (var data in processor.ProcessAsync(fileReader))
-    {
+    await foreach (var data in processor.ProcessAsync(fileReader)) {
       segmentsEnumerated.Add(data);
     }
 
@@ -45,8 +41,7 @@ public class ProcessAsyncFunctionalTests
 
   [Test]
   public async Task
-  ProcessAsync_Cancelled_WillCancellTheProcessing_AndDispose_WillWaitUntilFullyFinished()
-  {
+  ProcessAsync_Cancelled_WillCancellTheProcessing_AndDispose_WillWaitUntilFullyFinished() {
     var segments = new List<SegmentData>();
     var segmentsEnumerated = new List<SegmentData>();
     var cts = new CancellationTokenSource();
@@ -57,28 +52,23 @@ public class ProcessAsyncFunctionalTests
         WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
     var processor = factory.CreateBuilder()
                         .WithLanguage("en")
-                        .WithEncoderBeginHandler((e) =>
-                                                 {
-                                                   encoderBegins.Add(e);
-                                                   return true;
-                                                 })
-                        .WithSegmentEventHandler(s =>
-                                                 {
-                                                   segments.Add(s);
-                                                   cts.Cancel();
-                                                 })
+                        .WithEncoderBeginHandler((e) => {
+                          encoderBegins.Add(e);
+                          return true;
+                        })
+                        .WithSegmentEventHandler(s => {
+                          segments.Add(s);
+                          cts.Cancel();
+                        })
                         .Build();
 
     using var fileReader = File.OpenRead("kennedy.wav");
-    try
-    {
-      await foreach (var data in processor.ProcessAsync(fileReader, cts.Token))
-      {
+    try {
+      await foreach (var data in processor.ProcessAsync(fileReader,
+                                                        cts.Token)) {
         segmentsEnumerated.Add(data);
       }
-    }
-    catch (TaskCanceledException ex)
-    {
+    } catch (TaskCanceledException ex) {
       taskCanceledException = ex;
     }
 
@@ -95,8 +85,7 @@ public class ProcessAsyncFunctionalTests
   }
 
   [Test]
-  public async Task ProcessAsync_WhenJunkChunkExists_ProcessCorrectly()
-  {
+  public async Task ProcessAsync_WhenJunkChunkExists_ProcessCorrectly() {
     var segments = new List<SegmentData>();
 
     using var factory =
@@ -105,8 +94,7 @@ public class ProcessAsyncFunctionalTests
         factory.CreateBuilder().WithLanguage("en").Build();
 
     using var fileReader = File.OpenRead("junkchunk16khz.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader)) {
       segments.Add(segment);
     }
 
@@ -114,8 +102,7 @@ public class ProcessAsyncFunctionalTests
   }
 
   [Test]
-  public async Task ProcessAsync_WhenMultichannel_ProcessCorrectly()
-  {
+  public async Task ProcessAsync_WhenMultichannel_ProcessCorrectly() {
     var segments = new List<SegmentData>();
 
     using var factory =
@@ -124,8 +111,7 @@ public class ProcessAsyncFunctionalTests
         factory.CreateBuilder().WithLanguage("en").Build();
 
     using var fileReader = File.OpenRead("multichannel.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader)) {
       segments.Add(segment);
     }
 
@@ -134,8 +120,7 @@ public class ProcessAsyncFunctionalTests
 
   [Test]
   public async
-      Task ProcessAsync_CalledMultipleTimes_Serially_WillCompleteEverytime()
-  {
+      Task ProcessAsync_CalledMultipleTimes_Serially_WillCompleteEverytime() {
     var segments1 = new List<SegmentData>();
     var segments2 = new List<SegmentData>();
     var segments3 = new List<SegmentData>();
@@ -146,20 +131,17 @@ public class ProcessAsyncFunctionalTests
         factory.CreateBuilder().WithLanguage("en").Build();
 
     using var fileReader = File.OpenRead("kennedy.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader)) {
       segments1.Add(segment);
     }
 
     using var fileReader2 = File.OpenRead("kennedy.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader2))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader2)) {
       segments2.Add(segment);
     }
 
     using var fileReader3 = File.OpenRead("kennedy.wav");
-    await foreach (var segment in processor.ProcessAsync(fileReader3))
-    {
+    await foreach (var segment in processor.ProcessAsync(fileReader3)) {
       segments3.Add(segment);
     }
 
