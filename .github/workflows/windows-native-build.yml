@@ -43,31 +43,31 @@ jobs:
         if: steps.check_submodule.outputs.trigger_build == 'true'
         uses: microsoft/setup-msbuild@v1
         
-      - name: Install OpenCl with vcpkg
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: |
-           vcpkg --triplet=x64-windows install opencl
+      # - name: Install OpenCl with vcpkg
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   run: |
+      #      vcpkg --triplet=x64-windows install opencl
 
-      - name: Add Clblast to path
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: |
-          New-Item -ItemType Directory -Force -Path build
-          Invoke-WebRequest -Uri "https://github.com/CNugteren/CLBlast/releases/download/1.6.1/CLBlast-1.6.1-windows-x64.zip" -OutFile "build\clblast.zip"
-          Expand-Archive -LiteralPath "build\clblast.zip" -DestinationPath "build/clblast" -Force
-          7z x "build/clblast/CLBlast-1.6.1-windows-x64.7z" -o"build/clblast" -y
-          Remove-Item "./build/clblast.zip"
-          Remove-Item "./build/clblast/CLBlast-1.6.1-windows-x64.7z"
-          $currentPath = (Get-Location).Path
-          $clblastPath = $currentPath + "\build\clblast\CLBlast-1.6.1-windows-x64"
-          $env:Path = $env:Path + ";" + $clblastPath
-          Write-Output "PATH=$env:Path" | Out-File -Append -FilePath $env:GITHUB_ENV
-        shell: pwsh
+      # - name: Add Clblast to path
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   run: |
+      #     New-Item -ItemType Directory -Force -Path build
+      #     Invoke-WebRequest -Uri "https://github.com/CNugteren/CLBlast/releases/download/1.6.1/CLBlast-1.6.1-windows-x64.zip" -OutFile "build\clblast.zip"
+      #     Expand-Archive -LiteralPath "build\clblast.zip" -DestinationPath "build/clblast" -Force
+      #     7z x "build/clblast/CLBlast-1.6.1-windows-x64.7z" -o"build/clblast" -y
+      #     Remove-Item "./build/clblast.zip"
+      #     Remove-Item "./build/clblast/CLBlast-1.6.1-windows-x64.7z"
+      #     $currentPath = (Get-Location).Path
+      #     $clblastPath = $currentPath + "\build\clblast\CLBlast-1.6.1-windows-x64"
+      #     $env:Path = $env:Path + ";" + $clblastPath
+      #     Write-Output "PATH=$env:Path" | Out-File -Append -FilePath $env:GITHUB_ENV
+      #   shell: pwsh
 
-      - name: Install CUDA Toolkit
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: '12.1.0'
+      # - name: Install CUDA Toolkit
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   uses: Jimver/cuda-toolkit@v0.2.11
+      #   with:
+      #     cuda: '12.1.0'
 
       - name: Run Build
         if: steps.check_submodule.outputs.trigger_build == 'true'

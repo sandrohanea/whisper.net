@@ -29,9 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\build-linux.ps1 = scripts\build-linux.ps1
-		scripts\build-osx.ps1 = scripts\build-osx.ps1
-		scripts\build-windows.ps1 = scripts\build-windows.ps1
+		windows-scripts.ps1 = windows-scripts.ps1
 	EndProjectSection
 EndProject
 Global
