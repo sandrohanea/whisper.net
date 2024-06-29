@@ -10,6 +10,9 @@ using Whisper.net.Wave;
 
 namespace Whisper.net;
 
+/// <summary>
+/// Represents a processor that can transcribe or translate audio input.
+/// </summary>
 public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 {
     private static readonly ConcurrentDictionary<long, WhisperProcessor> processorInstances = new();
@@ -19,7 +22,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
-    private readonly List<GCHandle> gcHandles = new();
+    private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
     private IntPtr? language;
@@ -43,6 +46,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         processingSemaphore = new(1);
     }
 
+    /// <summary>
+    /// Change the language that is used to process the audio input.
+    /// </summary>
+    /// <param name="newLanguage"></param>
     public void ChangeLanguage(string? newLanguage)
     {
         var oldLanguage = language;
@@ -65,17 +72,35 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         whisperParams = newParams;
     }
 
+    /// <summary>
+    /// For the given audio input, detects the most probable language.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="speedUp"></param>
+    /// <returns></returns>
     public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
     {
         var (language, _) = DetectLanguageWithProbability(samples.AsSpan(), speedUp);
         return language;
     }
 
+    /// <summary>
+    /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="speedUp"></param>
+    /// <returns></returns>
     public (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
     {
         return DetectLanguageWithProbability(samples.AsSpan(), speedUp);
     }
 
+    /// <summary>
+    /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="speedUp"></param>
+    /// <returns></returns>
     public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, bool speedUp = false)
     {
         var probs = new float[NativeMethods.whisper_lang_max_id()];
@@ -113,6 +138,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="waveStream"></param>
     public void Process(Stream waveStream)
     {
         var waveParser = new WaveParser(waveStream);
@@ -122,11 +151,20 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         Process(samples);
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
     public void Process(float[] samples)
     {
         Process(samples.AsSpan());
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <exception cref="ObjectDisposedException"></exception>
     public unsafe void Process(ReadOnlySpan<float> samples)
     {
         if (isDisposed)
@@ -153,6 +191,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="waveStream"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async IAsyncEnumerable<SegmentData> ProcessAsync(Stream waveStream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var waveParser = new WaveParser(waveStream);
@@ -163,6 +207,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async IAsyncEnumerable<SegmentData> ProcessAsync(ReadOnlyMemory<float> samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var resetEvent = new AsyncAutoResetEvent();
@@ -221,6 +271,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, CancellationToken cancellationToken = default)
     {
         return ProcessAsync(samples.AsMemory(), cancellationToken);
@@ -549,7 +605,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     }
 
 #if NET6_0_OR_GREATER
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static byte OnEncoderBeginStatic(IntPtr ctx, IntPtr state, IntPtr userData)
     {
@@ -561,7 +617,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     }
 
 #if NET6_0_OR_GREATER
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static void OnProgressStatic(IntPtr ctx, IntPtr state, int progress, IntPtr userData)
     {
@@ -691,6 +747,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 #endif
     }
 
+    /// <summary>
+    /// Releases the resources used by this processor.
+    /// </summary>
+    /// <returns></returns>
     public async ValueTask DisposeAsync()
     {
         // If a processing is still running, wait for it to finish

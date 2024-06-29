@@ -1,17 +1,19 @@
-﻿// Licensed under the MIT license: https://opensource.org/licenses/MIT
+// Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 namespace Whisper.net.Wave;
 
-public class CorruptedWaveException : Exception
+/// <summary>
+/// Thrown by the <seealso cref="WaveParser"/> when the wave stream is corrupted and cannot be parsed.
+/// </summary>
+/// <param name="message"></param>
+public class CorruptedWaveException(string? message) : Exception(message)
 {
-    public CorruptedWaveException(string? message) : base(message)
-    {
-    }
 }
 
-public class NotSupportedWaveException : Exception
+/// <summary>
+/// Thrown by the <seealso cref="WaveParser"/> when the wave stream is not currently supported.
+/// </summary>
+/// <param name="message"></param>
+public class NotSupportedWaveException(string? message) : Exception(message)
 {
-    public NotSupportedWaveException(string? message) : base(message)
-    {
-    }
 }

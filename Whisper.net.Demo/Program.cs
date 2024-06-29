@@ -1,9 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
 using Whisper.net;
 using Whisper.net.Ggml;
@@ -83,20 +79,39 @@ async Task FullDetection(Options opt)
     }
 }
 
+/// <summary>
+/// The options for this Demo
+/// </summary>
 public class Options
 {
+    /// <summary>
+    /// The command to run (lang-detect, transcribe or transalte)
+    /// </summary>
     [Option('t', "command", Required = false, HelpText = "Command to run (lang-detect, transcribe or translate)", Default = "transcribe")]
-    public string Command { get; set; }
+    public string Command { get; set; } = "transcribe";
 
+    /// <summary>
+    /// The fileName to process
+    /// </summary>
     [Option('f', "file", Required = false, HelpText = "File to process", Default = "kennedy.wav")]
-    public string FileName { get; set; }
+    public string FileName { get; set; } = "kennedy.wav";
 
+    /// <summary>
+    /// The language to be used, or `auto` if auto-detection should be tried.
+    /// </summary>
     [Option('l', "lang", Required = false, HelpText = "Language", Default = "auto")]
-    public string Language { get; set; }
+    public string Language { get; set; } = "auto";
 
+    /// <summary>
+    /// The ggml model file to be used
+    /// </summary>
     [Option('m', "modelFile", Required = false, HelpText = "Model to use (filename", Default = "ggml-base.bin")]
-    public string ModelName { get; set; }
+    public string ModelName { get; set; } = "ggml-base.bin";
+
+    /// <summary>
+    /// The model type, to be downloaded if model file was not found.
+    /// </summary>
 
     [Option('g', "ggml", Required = false, HelpText = "Ggml Model type to download (if not exists)", Default = GgmlType.Base)]
-    public GgmlType ModelType { get; set; }
+    public GgmlType ModelType { get; set; } = GgmlType.Base;
 }
