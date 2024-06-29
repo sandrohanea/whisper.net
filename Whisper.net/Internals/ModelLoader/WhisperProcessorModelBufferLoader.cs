@@ -17,6 +17,21 @@ internal class WhisperProcessorModelBufferLoader(byte[] buffer, bool useGpu) : I
     public IntPtr LoadNativeContext()
     {
         var bufferLength = new UIntPtr((uint)buffer.Length);
-        return NativeMethods.whisper_init_from_buffer_with_params_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength, new WhisperContextParams() { UseGpu = useGpu ? (byte)1 : (byte)0 });
+        return NativeMethods.whisper_init_from_buffer_with_params_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
+            new WhisperContextParams()
+            {
+                UseGpu = useGpu ? (byte)1 : (byte)0,
+                FlashAttention = 0,
+                GpuDevice = 0,
+                DtwTokenLevelTimestamp = 0,
+                HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE,
+                DtwNTop = -1,
+                WhisperAheads = new WhisperAheads()
+                {
+                    NHeads = 0,
+                    Heads = IntPtr.Zero
+                },
+                Dtw_mem_size = 1024 * 1024 * 128,
+            });
     }
 }

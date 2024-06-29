@@ -39,10 +39,10 @@ apple_coreml: copy_metal_coreml macos_x64_coreml macos_arm64_coreml ios_coreml m
 linux: linux_x64_cublas linux_x64 linux_arm64 linux_arm 
 
 copy_metal:
-	cp whisper.cpp/ggml-metal.metal Whisper.net.Runtime/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal.m Whisper.net.Runtime/ggml-metal.metal
 
 copy_metal_coreml:
-	cp whisper.cpp/ggml-metal.metal Whisper.net.Runtime.CoreML/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal.m Whisper.net.Runtime.CoreML/ggml-metal.metal
 
 wasm:
 	rm -rf build/wasm

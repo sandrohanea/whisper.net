@@ -17,7 +17,7 @@ internal static class NativeMethods
     public static extern IntPtr whisper_init_from_file_with_params_no_state(string path, WhisperContextParams whisperContextParams);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern IntPtr whisper_init_from_buffer_with_params_no_state(IntPtr buffer, UIntPtr buffer_size, WhisperContextParams whisperContextParams);
+    public static extern IntPtr whisper_init_from_buffer_with_params_no_state(IntPtr buffer, nuint buffer_size, WhisperContextParams whisperContextParams);
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_free(IntPtr context);

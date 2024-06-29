@@ -27,6 +27,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
+    private IntPtr? suppressRegex;
     private bool isDisposed;
     private int segmentIndex;
     private CancellationToken? currentCancellationToken;
@@ -302,6 +303,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             initialPromptText = null;
         }
 
+        if (suppressRegex.HasValue)
+        {
+            Marshal.FreeHGlobal(suppressRegex.Value);
+            suppressRegex = null;
+        }
+
         foreach (var gcHandle in gcHandles)
         {
             gcHandle.Free();
@@ -426,14 +433,15 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             whisperParams.MaxTokensPerSegment = options.MaxTokensPerSegment.Value;
         }
 
-        if (options.SpeedUp2x.HasValue)
-        {
-            whisperParams.SpeedUp2x = options.SpeedUp2x.Value ? trueByte : falseByte;
-        }
-
         if (options.AudioContextSize.HasValue)
         {
             whisperParams.AudioContextSize = options.AudioContextSize.Value;
+        }
+
+        if (!string.IsNullOrEmpty(options.SuppressRegex))
+        {
+            suppressRegex = Marshal.StringToHGlobalAnsi(options.SuppressRegex);
+            whisperParams.SuppressRegex = suppressRegex.Value;
         }
 
         if (!string.IsNullOrEmpty(options.Prompt))

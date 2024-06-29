@@ -122,6 +122,7 @@ function BuildWindowsBase() {
     }
 
     Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/Release/ggml.dll" "$runtimePath/ggml.dll" -Force
 }
 
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {

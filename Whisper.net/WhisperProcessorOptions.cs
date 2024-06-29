@@ -44,8 +44,9 @@ internal sealed class WhisperProcessorOptions
 
     public int? MaxTokensPerSegment { get; set; }
 
-    public bool? SpeedUp2x { get; set; }
     public int? AudioContextSize { get; set; }
+
+    public string? SuppressRegex { get; set; }
 
     public string? Prompt { get; set; }
 
