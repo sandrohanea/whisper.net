@@ -1,10 +1,10 @@
-name: Windows native build
+name: Windows ARM native build
 
 on:
   push:
     branches: [ "main" ]
-  #pull_request:
-  #  branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 
 jobs:
