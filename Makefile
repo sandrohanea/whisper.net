@@ -272,8 +272,8 @@ android_x64:
 	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=x86_64 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -S . -B build/android-x86_64
 	cmake --build build/android-x86_64
 	mkdir -p Whisper.net.Runtime/android-x86_64
-	cp build/android-x64/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/android-x64/libwhisper.so
-	cp build/android-x64/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/android-x64/libggml.so
+	cp build/android-x86_64/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/android-x86_64/libwhisper.so
+	cp build/android-x86_64/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/android-x86_64/libggml.so
 
 xcframework:
 	mkdir -p output/lib
