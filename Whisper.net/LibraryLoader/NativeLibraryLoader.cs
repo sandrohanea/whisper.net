@@ -82,8 +82,8 @@ public static class NativeLibraryLoader
         var libraryFileName = platform switch
         {
             "win" => $"{libraryName}.dll",
-            "macos" => $"lib{libraryName}.so",
-            "linux" => $"lib{libraryName}.dylib",
+            "macos" => $"lib{libraryName}.dylib",
+            "linux" => $"lib{libraryName}.so",
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
         return Path.Combine(runtimePath, libraryFileName);
