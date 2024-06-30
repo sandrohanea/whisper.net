@@ -20,7 +20,6 @@ nuget:
 	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
 	nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack Whisper.net.Runtime.Cublas.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
-	nuget pack Whisper.net.Runtime.Wasm.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 
 clean:
 	rm -rf nupkgs
@@ -32,10 +31,10 @@ macos_host: apple applecoreml android wasm
 android: android_x86 android_x64 android_arm64-v8a
 
 apple_x64: copy_metal macos_x64
-apple: macos_arm64 ios ios_64 maccatalyst_x64 maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
+apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
 
 apple_coreml_x64: copy_metal_coreml macos_x64_coreml
-apple_coreml: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml tvos_simulator_coreml tvos_coreml lipo_coreml
+apple_coreml: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml tvos_simulator_coreml tvos_coreml
 
 linux: linux_x64_cublas linux_x64 linux_arm64 linux_arm 
 
@@ -93,7 +92,8 @@ macos_arm64:
 	rm -rf build/macos-arm64
 	cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/macos-arm64
 	cmake --build build/macos-arm64
-	cp build/macos-arm64/whisper.cpp/libwhisper.dylib ./Whisper.net.Runtime/macos-arm64/libwhisper.dylib
+	cp build/macos-arm64/whisper.cpp/src/libwhisper.dylib ./Whisper.net.Runtime/macos-arm64/libwhisper.dylib
+	cp build/macos-arm64/whisper.cpp/ggml/src/libggml.dylib ./Whisper.net.Runtime/macos-arm64/libggml.dylib
 
 macos_x64_coreml:
 	rm -rf build/macos-x64-coreml
@@ -107,8 +107,9 @@ macos_arm64_coreml:
 	rm -rf build/macos-arm64-coreml
 	cmake $(COREML_SUPPORT) -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/macos-arm64-coreml
 	cmake --build build/macos-arm64-coreml
-	cp build/macos-arm64-coreml/whisper.cpp/libwhisper.dylib ./Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.dylib
-	cp build/macos-arm64-coreml/whisper.cpp/libwhisper.coreml.dylib ./Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.coreml.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/src/libwhisper.dylib ./Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/src/libwhisper.coreml.dylib ./Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.coreml.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/ggml/src/libggml.dylib ./Whisper.net.Runtime.CoreML/macos-arm64/libggml.dylib
 
 ios:
 	rm -rf build/ios
@@ -116,51 +117,42 @@ ios:
 	cmake --build build/ios
 	mkdir -p runtimes/ios
 	cp build/ios/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/ios-device/libwhisper.dylib
+	cp build/ios/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/ios-device/libggml.dylib
 
 ios_coreml:
 	rm -rf build/ios-coreml
 	cmake $(COREML_SUPPORT) -DCMAKE_OSX_ARCHITECTURES="arm64" -DGGML_METAL=OFF -DCMAKE_OSX_SYSROOT="iphoneos" -S . -B build/ios-coreml
 	cmake --build build/ios-coreml
 	mkdir -p runtimes/ios-coreml
-	cp build/ios-coreml/whisper.cpp/libwhisper.coreml.dylib runtimes/ios-coreml/libwhisper.coreml.dylib
-	cp build/ios-coreml/whisper.cpp/libwhisper.dylib runtimes/ios-coreml/libwhisper.dylib
-
-ios_64:
-	rm -rf build/ios_64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=OS64 -S . -B build/ios_64
-	cmake --build build/ios_64
-	mkdir -p runtimes/ios_64
-	cp build/ios_64/whisper.cpp/libwhisper.dylib runtimes/ios_64/libwhisper.dylib
-
-maccatalyst_x64:
-	rm -rf build/maccatalyst_x64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DGGML_METAL=OFF -DPLATFORM=MAC_CATALYST -S . -B build/maccatalyst_x64
-	cmake --build build/maccatalyst_x64
-	mkdir -p runtimes/maccatalyst_x64
-	cp build/maccatalyst_x64/whisper.cpp/libwhisper.dylib runtimes/maccatalyst_x64/libwhisper.dylib
+	cp build/ios-coreml/whisper.cpp/src/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/ios-device/libwhisper.coreml.dylib
+	cp build/ios-coreml/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime.CoreML/ios-device/libwhisper.dylib
+	cp build/ios-coreml/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime.CoreML/ios-device/libggml.dylib
 
 maccatalyst_arm64:
 	rm -rf build/maccatalyst_arm64
 	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=MAC_CATALYST_ARM64 -S . -B build/maccatalyst_arm64
 	cmake --build build/maccatalyst_arm64
 	mkdir -p runtimes/maccatalyst_arm64
-	cp build/maccatalyst_arm64/whisper.cpp/libwhisper.dylib Whisper.net.Runtime/maccatalyst/libwhisper.dylib
+	cp build/maccatalyst_arm64/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/maccatalyst/libwhisper.dylib
+	cp build/maccatalyst_arm64/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/maccatalyst/libggml.dylib
 
 maccatalyst_arm64_coreml:
 	rm -rf build/maccatalyst-arm64-coreml
-	cmake $(COREML_SUPPORT) -DCMAKE_SYSTEM_PROCESSOR=arm -DCMAKE_HOST_SYSTEM_PROCESSOR=arm64 -DWHISPER_METAL=OFF -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_CXX_FLAGS="-target arm64-apple-ios13.1-macabi" -DCMAKE_C_FLAGS="-target arm64-apple-ios13.1-macabi" -S . -B build/maccatalyst-arm64-coreml
+	cmake $(COREML_SUPPORT) -DCMAKE_SYSTEM_PROCESSOR=arm -DCMAKE_HOST_SYSTEM_PROCESSOR=arm64 -DGGML_METAL=OFF -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_CXX_FLAGS="-target arm64-apple-ios13.1-macabi" -DCMAKE_C_FLAGS="-target arm64-apple-ios13.1-macabi" -S . -B build/maccatalyst-arm64-coreml
 	cmake --build build/maccatalyst-arm64-coreml
 	mkdir -p runtimes/maccatalyst-arm64-coreml
-	cp build/maccatalyst-arm64-coreml/whisper.cpp/libwhisper.coreml.dylib runtimes/maccatalyst-arm64-coreml/libwhisper.coreml.dylib
-	cp build/maccatalyst-arm64-coreml/whisper.cpp/libwhisper.dylib runtimes/maccatalyst-arm64-coreml/libwhisper.dylib
+	cp build/maccatalyst-arm64-coreml/whisper.cpp/src/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.coreml.dylib
+	cp build/maccatalyst-arm64-coreml/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.dylib
+	cp build/maccatalyst-arm64-coreml/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime.CoreML/maccatalyst/libggml.dylib
 
 ios_simulator_coreml:
 	rm -rf build/ios-simulator-coreml
 	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="iphonesimulator" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build/ios-simulator-coreml
 	cmake --build build/ios-simulator-coreml
 	mkdir -p runtimes/ios-simulator-coreml
-	cp build/ios-simulator-coreml/whisper.cpp/libwhisper.coreml.dylib runtimes/ios-simulator-coreml/libwhisper.coreml.dylib
-	cp build/ios-simulator-coreml/whisper.cpp/libwhisper.dylib runtimes/ios-simulator-coreml/libwhisper.dylib
+	cp build/ios-simulator-coreml/whisper.cpp/src/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.coreml.dylib
+	cp build/ios-simulator-coreml/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.dylib
+	cp build/ios-simulator-coreml/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime.CoreML/ios-simulator/libggml.dylib
 
 ios_simulator_arm64:
 	rm -rf build/ios_simulator_arm64
@@ -181,45 +173,26 @@ tvos:
 	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=TVOS -S . -B build/tvos
 	cmake --build build/tvos
 	mkdir -p runtimes/tvos
-	cp build/tvos/whisper.cpp/libwhisper.dylib Whisper.net.Runtime/tvos-device/libwhisper.dylib
+	cp build/tvos/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/tvos-device/libwhisper.dylib
+	cp build/tvos/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/tvos-device/libggml.dylib
 
 tvos_coreml:
 	rm -rf build/tvos-coreml
 	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="appletvos" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos-coreml
 	cmake --build build/tvos-coreml
 	mkdir -p runtimes/tvos-coreml
-	cp build/tvos-coreml/whisper.cpp/libwhisper.coreml.dylib runtimes/tvos-coreml/libwhisper.coreml.dylib
-	cp build/tvos-coreml/whisper.cpp/libwhisper.dylib runtimes/tvos-coreml/libwhisper.dylib
+	cp build/tvos-coreml/whisper.cpp/src/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/tvos-device/libwhisper.coreml.dylib
+	cp build/tvos-coreml/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime.CoreML/tvos-device/libwhisper.dylib
+	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml.dylib  Whisper.net.Runtime.CoreML/tvos-device/libggml.dylib
 
 tvos_simulator_coreml:
 	rm -rf build/tvos-simulator-coreml
 	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="appletvsimulator" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build/tvos-simulator-coreml
 	cmake --build build/tvos-simulator-coreml
 	mkdir -p runtimes/tvos-simulator-coreml
-	cp build/tvos-simulator-coreml/whisper.cpp/libwhisper.coreml.dylib runtimes/tvos-simulator-coreml/libwhisper.coreml.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/libwhisper.dylib runtimes/tvos-simulator-coreml/libwhisper.dylib
-
-lipo_coreml:
-	mkdir -p Whisper.net.Runtime.CoreML/tvos-simulator
-	cp runtimes/tvos-simulator-coreml/libwhisper.dylib Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.dylib
-	cp runtimes/tvos-simulator-coreml/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.coreml.dylib
-	install_name_tool -add_rpath "@executable_path/" Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.dylib
-	mkdir -p Whisper.net.Runtime.CoreML/tvos-device
-	cp runtimes/tvos-coreml/libwhisper.dylib Whisper.net.Runtime.CoreML/tvos-device/libwhisper.dylib
-	cp runtimes/tvos-coreml/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/tvos-device/libwhisper.coreml.dylib
-	install_name_tool -add_rpath "@executable_path/" Whisper.net.Runtime.CoreML/tvos-device/libwhisper.dylib
-	mkdir -p Whisper.net.Runtime.CoreML/ios-simulator
-	cp runtimes/ios-simulator-coreml/libwhisper.dylib Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.dylib
-	cp runtimes/ios-simulator-coreml/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.coreml.dylib
-	install_name_tool -add_rpath "@executable_path/" Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.dylib
-	mkdir -p Whisper.net.Runtime.CoreML/ios-device
-	cp runtimes/ios-coreml/libwhisper.dylib Whisper.net.Runtime.CoreML/ios-device/libwhisper.dylib
-	cp runtimes/ios-coreml/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/ios-device/libwhisper.coreml.dylib
-	install_name_tool -add_rpath "@executable_path/" Whisper.net.Runtime.CoreML/ios-device/libwhisper.dylib
-	mkdir -p Whisper.net.Runtime.CoreML/maccatalyst
-	cp runtimes/maccatalyst-arm64-coreml/libwhisper.dylib Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.dylib
-	cp runtimes/maccatalyst-arm64-coreml/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.coreml.dylib
-	install_name_tool -add_rpath "@executable_path/../MonoBundle" Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.dylib
+	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.coreml.dylib Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.coreml.dylib
+	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.dylib
+	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime.CoreML/tvos-simulator/libggml.dylib
 
 android_arm64-v8a:
 	rm -rf build/android-arm64-v8a
