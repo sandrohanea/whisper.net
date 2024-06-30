@@ -4,7 +4,6 @@ function PackAllNugets([Parameter(Mandatory = $true)] [string]$Version, [Paramet
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c $Configuration
     nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack Whisper.net.Runtime.Cublas.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Clblast.nuspec -Version $Version -OutputDirectory ./nupkgs
 }
 
 function Get-VisualStudioCMakePath() {
@@ -43,7 +42,6 @@ function BuildWindowsBase() {
     param(
         [Parameter(Mandatory = $true)] [string]$Arch,
         [Parameter(Mandatory = $false)] [bool]$Cublas = $false,
-        [Parameter(Mandatory = $false)] [bool]$Clblast = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
     #if not exist "build" create the directory
@@ -51,7 +49,7 @@ function BuildWindowsBase() {
         New-Item -ItemType Directory -Force -Path "build"
     }
 
-    Write-Host "Building Windows binaries for $Arch with cublas: $Cublas, and clblast: $Clblast"
+    Write-Host "Building Windows binaries for $Arch with cublas: $Cublas"
 
     
     $platform = Get-MSBuildPlatform $Arch
@@ -66,11 +64,6 @@ function BuildWindowsBase() {
     if ($Cublas) {
         $options += "-DGGML_CUDA=1"
         $buildDirectory += "-cublas"
-    }
-
-    if ($Clblast) {
-        $options += "-DWHISPER_CLBLAST=1"
-        $buildDirectory += "-clblast"
     }
 
     $options += "-B"
@@ -107,10 +100,7 @@ function BuildWindowsBase() {
     if ($Cublas) {
         $runtimePath += ".Cublas"
     }
-    if ($Clblast) {
-        $runtimePath += ".Clblast"
-    }
-    
+
     if (-not(Test-Path $runtimePath)) {
         New-Item -ItemType Directory -Force -Path $runtimePath
     }
@@ -129,7 +119,6 @@ function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration 
     BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
     BuildWindowsBase -Arch "arm" -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
-    BuildWindowsBase -Arch "x64" -Clblast $true -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
     BuildWindowsBase -Arch "x86" -Configuration $Configuration;
 }

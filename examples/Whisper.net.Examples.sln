@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net", "..\Whisper.n
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cublas", "Cublas\Cublas.csproj", "{7AD42B21-D644-4D18-9C89-6A1270581791}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClblastGpu", "ClblastGpu\ClblastGpu.csproj", "{CDC1DA51-2EAD-4F69-BD2A-54DEE09EC007}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp\BlazorApp.csproj", "{7BC244E8-E205-46B8-9C23-AAA53528F8E2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp.Client", "BlazorApp\BlazorApp.Client\BlazorApp.Client.csproj", "{C4941505-6AB6-4FA7-AD9D-3FA9F93E499E}"
