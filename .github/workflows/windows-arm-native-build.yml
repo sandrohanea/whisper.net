@@ -3,14 +3,14 @@ name: Windows native build
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  #pull_request:
+  #  branches: [ "main" ]
 
 
 jobs:
   build:
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     permissions:
       contents: write
 
@@ -27,12 +27,12 @@ jobs:
           $SubmoduleCommitId = git rev-parse HEAD
           Write-Host "Submodule commit ID: $SubmoduleCommitId"
           Set-Location $Env:GITHUB_WORKSPACE
-          $StoredCommitId = Get-Content native-commit-id-windows
+          $StoredCommitId = Get-Content native-commit-id-windows-arm
           Write-Host "Stored commit ID: $StoredCommitId"
           if ($SubmoduleCommitId -ne $StoredCommitId) {
             Write-Host "Submodule has new commits. Triggering build."
             Write-Output "trigger_build=true" | Out-File -Append $Env:GITHUB_OUTPUT
-            Set-Content -Path native-commit-id-windows -Value $SubmoduleCommitId
+            Set-Content -Path native-commit-id-windows-arm -Value $SubmoduleCommitId
           } else {
             Write-Host "No new commits in submodule."
             Write-Output "trigger_build=false" | Out-File -Append $Env:GITHUB_OUTPUT
@@ -43,22 +43,11 @@ jobs:
         if: steps.check_submodule.outputs.trigger_build == 'true'
         uses: microsoft/setup-msbuild@v1
         
-      - name: Install OpenCl with vcpkg
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: |
-           vcpkg --triplet=x64-windows install opencl
-
-      - name: Install CUDA Toolkit
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: '12.1.0'
-
       - name: Run Build
         if: steps.check_submodule.outputs.trigger_build == 'true'
         run: | 
           Import-Module ./windows-scripts.ps1
-          BuildWindowsIntel
+          BuildWindowsArm
         shell: pwsh
 
       - name: Remove CUDA installer
@@ -73,4 +62,4 @@ jobs:
         if: steps.check_submodule.outputs.trigger_build == 'true'
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Add native changes windows
+          commit_message: Add native changes windows ARM

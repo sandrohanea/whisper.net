@@ -115,6 +115,17 @@ function BuildWindowsBase() {
     Move-Item "$buildDirectory/bin/Release/ggml.dll" "$runtimePath/ggml.dll" -Force
 }
 
+function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
+    BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
+    BuildWindowsBase -Arch "arm" -Configuration $Configuration;
+}
+
+function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
+    BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
+    BuildWindowsBase -Arch "x64" -Configuration $Configuration;
+    BuildWindowsBase -Arch "x86" -Configuration $Configuration;
+}
+
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
     BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
     BuildWindowsBase -Arch "arm" -Configuration $Configuration;
