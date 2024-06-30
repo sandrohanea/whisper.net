@@ -64,9 +64,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-        with:
-          submodules: true
-          ref: ${{ github.head_ref }}
+      with:
+        submodules: true
+        ref: ${{ github.head_ref }}
     - name: Check for submodule update
       id: check_submodule
       run: |
