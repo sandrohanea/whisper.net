@@ -3,7 +3,7 @@ function PackAllNugets([Parameter(Mandatory = $true)] [string]$Version, [Paramet
     nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c $Configuration
     nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cublas.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
 }
 
 function Get-VisualStudioCMakePath() {
@@ -41,7 +41,7 @@ function Get-MSBuildPlatform($Arch) {
 function BuildWindowsBase() {
     param(
         [Parameter(Mandatory = $true)] [string]$Arch,
-        [Parameter(Mandatory = $false)] [bool]$Cublas = $false,
+        [Parameter(Mandatory = $false)] [bool]$Cuda = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
     #if not exist "build" create the directory
@@ -49,7 +49,7 @@ function BuildWindowsBase() {
         New-Item -ItemType Directory -Force -Path "build"
     }
 
-    Write-Host "Building Windows binaries for $Arch with cublas: $Cublas"
+    Write-Host "Building Windows binaries for $Arch with cuda: $Cuda"
 
     
     $platform = Get-MSBuildPlatform $Arch
@@ -61,9 +61,9 @@ function BuildWindowsBase() {
     $buildDirectory = "build/win-$Arch"
     $options = @("-S", ".")
 
-    if ($Cublas) {
+    if ($Cuda) {
         $options += "-DGGML_CUDA=1"
-        $buildDirectory += "-cublas"
+        $buildDirectory += "-cuda"
     }
 
     $options += "-B"
@@ -97,8 +97,8 @@ function BuildWindowsBase() {
     cmake --build $buildDirectory --config $Configuration
 
     $runtimePath = "./Whisper.net.Runtime"
-    if ($Cublas) {
-        $runtimePath += ".Cublas"
+    if ($Cuda) {
+        $runtimePath += ".Cuda"
     }
 
     if (-not(Test-Path $runtimePath)) {
@@ -121,7 +121,7 @@ function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration 
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
+    BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
     BuildWindowsBase -Arch "x86" -Configuration $Configuration;
 }
@@ -129,7 +129,7 @@ function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuratio
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
     BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
     BuildWindowsBase -Arch "arm" -Configuration $Configuration;
-    BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
+    BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
     BuildWindowsBase -Arch "x86" -Configuration $Configuration;
 }

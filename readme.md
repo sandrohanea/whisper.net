@@ -60,18 +60,18 @@ If not, it will announce an error and use the original core library instead.
 
 ## GPU Support
 
-We support Nvidia GPUs with `Whisper.net.Runtime.Cublas`.
+We support Nvidia GPUs with `Whisper.net.Runtime.Cuda`.
 
 For now, they are only available on Windows x64 and Linux x64.
 
-To use it, reference the `Whisper.net.Runtime.Cublas` nuget,
+To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
 
 ```
     <PackageReference Include="Whisper.net" Version="1.5.0" />
-    <PackageReference Include="Whisper.net.Runtime.Cublas" Version="1.5.0" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.5.0" />
 ```
 
-Note: when using the GPU runtime, make sure you have the latest Nvidia drivers installed, and you don't have "Whisper.net.Runtime" referenced in your project.
+Note: when using the GPU runtime, make sure you have the latest Nvidia drivers installed.
 
 ## Blazor and WASM
 

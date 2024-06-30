@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContinuousRecognition", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net", "..\Whisper.net\Whisper.net.csproj", "{A5A05A97-D880-4F87-BCE3-1A5420846F4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cublas", "Cublas\Cublas.csproj", "{7AD42B21-D644-4D18-9C89-6A1270581791}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NvidiaCuda", "NvidiaCuda\NvidiaCuda.csproj", "{7AD42B21-D644-4D18-9C89-6A1270581791}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp\BlazorApp.csproj", "{7BC244E8-E205-46B8-9C23-AAA53528F8E2}"
 EndProject

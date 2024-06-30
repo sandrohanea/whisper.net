@@ -19,7 +19,7 @@ nuget:
 	nuget pack Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
 	nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
-	nuget pack Whisper.net.Runtime.Cublas.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 
 clean:
 	rm -rf nupkgs
@@ -34,7 +34,7 @@ apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulato
 apple_coreml_x64: copy_metal_coreml macos_x64_coreml
 apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml tvos_simulator_coreml tvos_coreml
 
-linux: linux_x64_cublas linux_x64 linux_arm64 linux_arm 
+linux: linux_x64_cuda linux_x64 linux_arm64 linux_arm 
 
 copy_metal:
 	cp whisper.cpp/ggml/src/ggml-metal.m Whisper.net.Runtime/ggml-metal.metal
@@ -70,14 +70,14 @@ linux_arm:
 	cp build/linux-arm/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/linux-arm/libwhisper.so
 	cp build/linux-arm/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/linux-arm/libggml.so
 
-linux_x64_cublas:
-	rm -rf build/linux-x64-cublas
-	cmake -S . -B build/linux-x64-cublas -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON
-	cmake --build build/linux-x64-cublas --config $(BUILD_TYPE)
+linux_x64_cuda:
+	rm -rf build/linux-x64-cuda
+	cmake -S . -B build/linux-x64-cuda -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON
+	cmake --build build/linux-x64-cuda --config $(BUILD_TYPE)
 	find . -name "libwhisper.so"
 	find . -name "libggml.so"
-	cp build/linux-x64-cublas/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cublas/linux-x64/libwhisper.so
-	cp build/linux-x64-cublas/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cublas/linux-x64/libggml.so
+	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cuda/linux-x64/libwhisper.so
+	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cuda/linux-x64/libggml.so
 
 macos_x64:
 	rm -rf build/macos-x64

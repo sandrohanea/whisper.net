@@ -52,7 +52,7 @@ void LanguageIdentification(Options opt)
 
     var samples = wave.GetAvgSamples();
 
-    var language = processor.DetectLanguage(samples, speedUp: true);
+    var language = processor.DetectLanguage(samples);
     Console.WriteLine("Language is " + language);
 }
 

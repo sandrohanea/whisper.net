@@ -41,6 +41,7 @@
             <TargetPath>libwhisper.dylib</TargetPath>
         </None>
     </ItemGroup>
+    <!-- Start Windows -->
     <ItemGroup
         Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
         <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm\whisper.dll">
@@ -49,11 +50,23 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/win-arm/whisper.dll</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm\ggml.dll">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/win-arm/ggml.dll</TargetPath>
+        </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/win-arm64/whisper.dll</TargetPath>
+        </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\ggml.dll">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/win-arm64/ggml.dll</TargetPath>
         </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
             <Pack>true</Pack>
@@ -73,12 +86,25 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/win-x86/whisper.dll</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml.dll">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/win-x86/ggml.dll</TargetPath>
+        </None>
     </ItemGroup>
+    <!-- End Windows -->
+    <!-- Start Android-->
     <ItemGroup
         Condition="$(AndroidSupportedAbis.Contains('x86')) or $(RuntimeIdentifiers.Contains('android-x86'))">
         <AndroidNativeLibrary Visible="false"
             Include="$(MSBuildThisFileDirectory)android-x86\libwhisper.so">
-            <Link>whisper-x86\whisper.so</Link>
+            <Link>whisper-x86\libwhisper.so</Link>
+            <Abi>x86</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Visible="false"
+            Include="$(MSBuildThisFileDirectory)android-x86\libggml.so">
+            <Link>whisper-x86\libggml.so</Link>
             <Abi>x86</Abi>
         </AndroidNativeLibrary>
     </ItemGroup>
@@ -86,7 +112,12 @@
         Condition="$(AndroidSupportedAbis.Contains('x86_64')) or $(RuntimeIdentifiers.Contains('android-x64'))">
         <AndroidNativeLibrary Visible="false"
             Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
-            <Link>whisper-x86_64\whisper.so</Link>
+            <Link>whisper-x86_64\libwhisper.so</Link>
+            <Abi>x86_64</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Visible="false"
+            Include="$(MSBuildThisFileDirectory)android-x86_64\libggml.so">
+            <Link>whisper-x86_64\libggml.so</Link>
             <Abi>x86_64</Abi>
         </AndroidNativeLibrary>
     </ItemGroup>
@@ -94,23 +125,35 @@
         Condition="$(AndroidSupportedAbis.Contains('arm64-v8a')) or $(RuntimeIdentifiers.Contains('android-arm64'))">
         <AndroidNativeLibrary Visible="false"
             Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libwhisper.so">
-            <Link>whisper-armv8\whisper.so</Link>
+            <Link>whisper-armv8\libwhisper.so</Link>
+            <Abi>arm64-v8a</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Visible="false"
+            Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml.so">
+            <Link>whisper-armv8\libggml.so</Link>
             <Abi>arm64-v8a</Abi>
         </AndroidNativeLibrary>
     </ItemGroup>
+    <!-- End Android -->
     <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
-        <!-- If using default runtime, include the split macOS libs rather that the lipoed version -->
+        <!-- Start MacOS-->
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)/ggml-metal.metal">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/macos-arm64/ggml-metal.metal</TargetPath>
+        </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/macos-x64/libwhisper.dylib</TargetPath>
         </None>
-        <None Visible="false" Include="$(MSBuildThisFileDirectory)/ggml-metal.metal">
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml.dylib">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <TargetPath>runtimes/macos-arm64/ggml-metal.metal</TargetPath>
+            <TargetPath>runtimes/macos-x64/libggml.dylib</TargetPath>
         </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.dylib">
             <Pack>true</Pack>
@@ -118,11 +161,25 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/macos-arm64/libwhisper.dylib</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libggml.dylib">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/macos-arm64/libggml.dylib</TargetPath>
+        </None>
+        <!-- End MacOs -->
+        <!-- Start Linux-->
         <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/linux-arm64/libwhisper.so</TargetPath>
+        </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libggml.so">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/linux-arm64/libggml.so</TargetPath>
         </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
             <Pack>true</Pack>
@@ -130,13 +187,27 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/linux-x64/libwhisper.so</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/linux-x64/libggml.so</TargetPath>
+        </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libwhisper.so">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>runtimes/linux-arm/libwhisper.so</TargetPath>
         </None>
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libggml.so">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>runtimes/linux-arm/libggml.so</TargetPath>
+        </None>
+        <!-- End Linux -->
     </ItemGroup>
+    <!-- Start Wasm-->
     <PropertyGroup Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">
         <WasmBuildNative Condition="'$(WasmBuildNative)' == ''">true</WasmBuildNative>
     </PropertyGroup>
@@ -160,6 +231,7 @@
         </None>
         <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/ggml.a" />
     </ItemGroup>
+    <!-- End Wasm -->
 
     <ItemGroup Condition="$(TargetFramework.Contains('-')) == false or $(RuntimeIdentifier.StartsWith('tvos-')) or $(RuntimeIdentifier.StartsWith('tvossimulator-')) or (('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.'))) or $(TargetFramework.Contains('-maccatalyst')) == true or (('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
         <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
