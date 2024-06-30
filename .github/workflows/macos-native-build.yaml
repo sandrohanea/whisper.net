@@ -57,7 +57,7 @@ jobs:
         commit_message: Add native changes macos
 
   arm-build:
-    depends-on: intel-build
+    needs: intel-build
     runs-on: macos-14
     permissions:
        contents: write
