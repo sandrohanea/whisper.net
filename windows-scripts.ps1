@@ -64,7 +64,7 @@ function BuildWindowsBase() {
     $options = @("-S", ".")
 
     if ($Cublas) {
-        $options += "-DWHISPER_CUBLAS=1"
+        $options += "-DGGML_CUDA=1"
         $buildDirectory += "-cublas"
     }
 
@@ -126,10 +126,10 @@ function BuildWindowsBase() {
 }
 
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
+    BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
+    BuildWindowsBase -Arch "x64" -Clblast $true -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
-  #  BuildWindowsBase -Arch "x86" -Configuration $Configuration;
-  #  BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
-  #  BuildWindowsBase -Arch "arm" -Configuration $Configuration;
-  #  BuildWindowsBase -Arch "x64" -Cublas $true -Configuration $Configuration;
-  #  BuildWindowsBase -Arch "x64" -Clblast $true -Configuration $Configuration;
+    BuildWindowsBase -Arch "x86" -Configuration $Configuration;
+    BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
+    BuildWindowsBase -Arch "arm" -Configuration $Configuration;
 }
