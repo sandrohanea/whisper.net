@@ -149,19 +149,19 @@ ios_simulator_coreml:
 
 ios_simulator_arm64:
 	rm -rf build/ios_simulator_arm64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=SIMULATORARM64 -S . -B build/ios_simulator_arm64
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="iphonesimulator" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build/ios_simulator_arm64
 	cmake --build build/ios_simulator_arm64
 	cp build/ios_simulator_arm64/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/ios-simulator/libwhisper.dylib
 
 tvos_simulator_arm64:
 	rm -rf build/tvos_simulator_arm64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=SIMULATOR_TVOSARM64 -S . -B build/tvos_simulator_arm64
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvsimulator" -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build/tvos_simulator_arm64
 	cmake --build build/tvos_simulator_arm64
 	cp build/tvos_simulator_arm64/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/tvos-simulator/libwhisper.dylib
 
 tvos:
 	rm -rf build/tvos
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=TVOS -S . -B build/tvos
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvos" -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos
 	cmake --build build/tvos
 	cp build/tvos/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/tvos-device/libwhisper.dylib
 	cp build/tvos/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/tvos-device/libggml.dylib
