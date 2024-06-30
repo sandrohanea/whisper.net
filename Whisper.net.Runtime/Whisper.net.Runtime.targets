@@ -151,6 +151,16 @@
         <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/whisper.a" />
     </ItemGroup>
 
+    <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
+        <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/ggml.a">
+            <Pack>true</Pack>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <TargetPath>browser-wasm/ggml.a</TargetPath>
+        </None>
+        <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/ggml.a" />
+    </ItemGroup>
+
     <ItemGroup Condition="$(TargetFramework.Contains('-')) == false or $(RuntimeIdentifier.StartsWith('tvos-')) or $(RuntimeIdentifier.StartsWith('tvossimulator-')) or (('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.'))) or $(TargetFramework.Contains('-maccatalyst')) == true or (('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
         <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
             <Pack>true</Pack>
