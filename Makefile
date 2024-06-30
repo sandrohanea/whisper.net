@@ -126,7 +126,7 @@ ios_coreml:
 
 maccatalyst_arm64:
 	rm -rf build/maccatalyst_arm64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=MAC_CATALYST_ARM64 -S . -B build/maccatalyst_arm64
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_SYSTEM_PROCESSOR=arm -DCMAKE_HOST_SYSTEM_PROCESSOR=arm64 -DCMAKE_SYSTEM_NAME=Darwin -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_CXX_FLAGS="-target arm64-apple-ios13.1-macabi" -DCMAKE_C_FLAGS="-target arm64-apple-ios13.1-macabi" -S . -B build/maccatalyst_arm64
 	cmake --build build/maccatalyst_arm64
 	cp build/maccatalyst_arm64/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/maccatalyst/libwhisper.dylib
 	cp build/maccatalyst_arm64/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/maccatalyst/libggml.dylib
