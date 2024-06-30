@@ -48,10 +48,10 @@ wasm:
 	rm -rf build/wasm
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 	cmake --build build/wasm --config $(BUILD_TYPE)
-	ls -l build/wasm
-	find . -name "libwhisper.a"
-	cp build/wasm/whisper.cpp/libwhisper.a ./Whisper.net.Runtime/browser-wasm/whisper.a
-	cp build/wasm/whisper.cpp/libggml.a ./Whisper.net.Runtime/browser-wasm/ggml.a
+	find . -i "libggml.a"
+	ls -l build/wasm/whisper.cpp/src/
+	cp build/wasm/whisper.cpp/src/libwhisper.a ./Whisper.net.Runtime/browser-wasm/whisper.a
+	cp build/wasm/whisper.cpp/src/libggml.a ./Whisper.net.Runtime/browser-wasm/ggml.a
 
 linux_x64:
 	rm -rf build/linux-x64
