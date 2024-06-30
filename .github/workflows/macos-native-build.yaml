@@ -85,13 +85,13 @@ jobs:
           echo "trigger_build=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: Run apple coreml build for arm
-      if: steps.check_submodule.outputs.trigger_build == 'true'
-      run: make apple_coreml_arm
-
     - name: Run apple build for arm
       if: steps.check_submodule.outputs.trigger_build == 'true'
       run: make apple_arm
+
+    - name: Run apple coreml build for arm
+      if: steps.check_submodule.outputs.trigger_build == 'true'
+      run: make apple_coreml_arm
 
     - name: Pull latest commits
       if: steps.check_submodule.outputs.trigger_build == 'true'

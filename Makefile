@@ -111,7 +111,7 @@ macos_arm64_coreml:
 
 ios:
 	rm -rf build/ios
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_TOOLCHAIN_FILE=ios.toolchain.cmake -DPLATFORM=OS -S . -B build/ios
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="iphoneos" -S . -B build/ios
 	cmake --build build/ios
 	cp build/ios/whisper.cpp/src/libwhisper.dylib Whisper.net.Runtime/ios-device/libwhisper.dylib
 	cp build/ios/whisper.cpp/ggml/src/libggml.dylib Whisper.net.Runtime/ios-device/libggml.dylib
