@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable package versions centrally, as for examples we want to be as explicit as possible with each project -->
+    <!-- The reason for this is that people should be able to just copy-paste one example and it should "just work" without the need of package version defined in the Directory.packages.props-->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+</Project>

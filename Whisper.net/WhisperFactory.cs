@@ -23,7 +23,7 @@ public sealed class WhisperFactory : IDisposable
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
     {
-        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(WhisperFactory.libraryPath, WhisperFactory.bypassLoading);
+        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(WhisperFactory.bypassLoading);
         if (libraryLoaded.IsSuccess)
         {
             LogProvider.InitializeLogging();

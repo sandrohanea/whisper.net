@@ -77,11 +77,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// For the given audio input, detects the most probable language.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="speedUp"></param>
     /// <returns></returns>
-    public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
+    public unsafe string? DetectLanguage(float[] samples)
     {
-        var (language, _) = DetectLanguageWithProbability(samples.AsSpan(), speedUp);
+        var (language, _) = DetectLanguageWithProbability(samples.AsSpan());
         return language;
     }
 
@@ -91,9 +90,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <param name="samples"></param>
     /// <param name="speedUp"></param>
     /// <returns></returns>
-    public (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
+    public (string? language, float probability) DetectLanguageWithProbability(float[] samples)
     {
-        return DetectLanguageWithProbability(samples.AsSpan(), speedUp);
+        return DetectLanguageWithProbability(samples.AsSpan());
     }
 
     /// <summary>
@@ -102,7 +101,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <param name="samples"></param>
     /// <param name="speedUp"></param>
     /// <returns></returns>
-    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, bool speedUp = false)
+    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
     {
         var probs = new float[NativeMethods.whisper_lang_max_id()];
 
@@ -113,15 +112,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             {
                 fixed (float* pSamples = samples)
                 {
-                    if (speedUp)
-                    {
-                        // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
-                        NativeMethods.whisper_pcm_to_mel_phase_vocoder_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
-                    }
-                    else
-                    {
-                        NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
-                    }
+                    NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                 }
                 var langId = NativeMethods.whisper_lang_auto_detect_with_state(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
@@ -571,19 +562,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 #endif
 
         return whisperParams;
-    }
-
-    private static string? GetAutodetectedLanguage(IntPtr state)
-    {
-        var detectedLanguageId = NativeMethods.whisper_full_lang_id(state);
-        if (detectedLanguageId == -1)
-        {
-            return null;
-        }
-
-        var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
-        var language = Marshal.PtrToStringAnsi(languagePtr);
-        return language;
     }
 
 #if NET6_0_OR_GREATER

@@ -59,11 +59,6 @@ public static class NativeLibraryLoader
              ? Path.Combine("runtimes", $"{platform}-{architecture}", dynamicLibraryName)
              : Path.Combine(assemblySearchPath, "runtimes", $"{platform}-{architecture}", dynamicLibraryName);
 
-        if (defaultLibraryLoader != null)
-        {
-            return defaultLibraryLoader.OpenLibrary(path);
-        }
-
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"Native Library not found in path {path}. " +

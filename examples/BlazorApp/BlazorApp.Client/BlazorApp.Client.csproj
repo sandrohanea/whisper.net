@@ -1,11 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <Import Project="../../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -16,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.5.0" />
+    <PackageReference Include="Whisper.net" Version="1.5.0" />
   </ItemGroup>
 
 </Project>
