@@ -51,7 +51,7 @@ jobs:
       run: |
        git lfs install
        #create a big file to test git lfs
-       dd if=/dev/zero of=bigfile bs=10M count=20
+       dd if=/dev/zero of=bigfile.so bs=10M count=20
 
     - name: Commit and Push
       if: steps.check_submodule.outputs.trigger_build == 'true'
