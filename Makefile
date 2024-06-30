@@ -56,7 +56,7 @@ linux_x64:
 	cmake -S . -B build/linux-x64 -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	cp build/linux-x64/whisper.cpp/libwhisper.so ./Whisper.net.Runtime/linux-x64/libwhisper.so
-    cp build/linux-x64/whisper.cpp/libggml.so ./Whisper.net.Runtime/linux-x64/libggml.so
+	cp build/linux-x64/whisper.cpp/libggml.so ./Whisper.net.Runtime/linux-x64/libggml.so
 
 linux_arm64:
 	rm -rf build/linux-arm64
@@ -76,7 +76,7 @@ linux_x64_cublas:
 	rm -rf build/linux-x64-cublas
 	cmake -S . -B build/linux-x64-cublas -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON
 	cmake --build build/linux-x64-cublas --config $(BUILD_TYPE)
-    ls -l build/linux-x64-cublas/whisper.cpp/
+	ls -l build/linux-x64-cublas/whisper.cpp/
 	cp build/linux-x64-cublas/whisper.cpp/libwhisper.so ./Whisper.net.Runtime.Cublas/linux-x64/libwhisper.so
 	cp build/linux-x64-cublas/whisper.cpp/libggml.so ./Whisper.net.Runtime.Cublas/linux-x64/libggml.so
 
