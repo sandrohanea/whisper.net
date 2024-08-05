@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.Threading.Channels;
 using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;
@@ -8,9 +9,7 @@ var ggmlType = GgmlType.TinyEn;
 var modelFileName = "ggml-tinyen.bin";
 var wavFileName = "bush.wav";
 
-var maxProcessingTimeMs = 10000;
-var minProcessingTimeMs = 1500;
-var advancingProcessingTimeMs = 500;
+var chunkDuration = TimeSpan.FromSeconds(5);
 
 if (!File.Exists(modelFileName))
 {
@@ -19,118 +18,136 @@ if (!File.Exists(modelFileName))
 
 using var whisperFactory = WhisperFactory.FromPath(modelFileName);
 
-var builder = whisperFactory.CreateBuilder()
-    .WithProbabilities()
-    .WithLanguage("en");
+var builder = whisperFactory.CreateBuilder().WithProbabilities().WithLanguage("en");
 
-using var fileStream = File.OpenRead(wavFileName);
-var waveParser = new WaveParser(fileStream);
-await waveParser.InitializeAsync();
+using var processor = builder.Build();
 
-var samples = new float[waveParser.SampleRate / 1000 * maxProcessingTimeMs];
+var channel = Channel.CreateUnbounded<float[]>(
+    new UnboundedChannelOptions { SingleReader = true, SingleWriter = true, }
+);
 
-// Process first the minimum processing time of the audio file 
-
-// Read first min processing time into samples
-var dataPosition = waveParser.DataChunkPosition;
-
-fileStream.Seek(dataPosition, SeekOrigin.Begin);
-
-var partialResults = new List<(List<SegmentData> segments, TimeSpan startTime, TimeSpan endTime)>();
-var buffer = new byte[waveParser.SampleRate / 1000 * maxProcessingTimeMs * 2 * waveParser.Channels];
-
-var bufferSize = waveParser.SampleRate / 1000 * minProcessingTimeMs * 2 * waveParser.Channels;
-
-var bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, (int)bufferSize));
-
-var currentSampleIndex = 0;
-
-for (var i = 0; i < bytesRead;)
+var thread = new Thread(() => PushToChannel(wavFileName, chunkDuration, channel))
 {
-    long sampleSum = 0;
+    IsBackground = true,
+};
 
-    for (var currentChannel = 0; currentChannel < waveParser.Channels; currentChannel++)
+thread.Start();
+
+var reader = channel.Reader;
+
+var sampleBuffer = (float[]?)null;
+var bufferSize = 0;
+var chunkCount = 0;
+
+var start = DateTime.Now;
+
+while (await reader.WaitToReadAsync())
+{
+    var samples = await reader.ReadAsync();
+
+    sampleBuffer ??= new float[samples.Length * 2];
+
+    WriteBuffer(sampleBuffer, samples, ref bufferSize);
+
+    await foreach (var result in processor.ProcessAsync(sampleBuffer.AsMemory(0, bufferSize)))
     {
-        sampleSum += BitConverter.ToInt16(buffer, i);
-        i += 2;
+        Console.WriteLine(
+            $"{chunkCount}: {result.Start}->{result.End}: {result.Text}  => with probability: {result.Probability}"
+        );
     }
 
-    samples[currentSampleIndex++] = sampleSum / (float)waveParser.Channels / 32768.0f;
+    chunkCount++;
 }
 
-var currentProcessedStartTime = TimeSpan.Zero;
-var currentProcessedEndTime = TimeSpan.FromMilliseconds(minProcessingTimeMs);
-
-await using (var processor = builder.Build())
+static void WriteBuffer(float[] destination, in float[] source, ref int count)
 {
-    var segments = new List<SegmentData>();
-    await foreach (var data in processor.ProcessAsync(samples.AsMemory(0, currentSampleIndex)))
-    {
-        segments.Add(data);
+    var floatSize = sizeof(float);
 
+    if (count <= 0)
+    {
+        Buffer.BlockCopy(source, 0, destination, 0, source.Length * floatSize);
+        count = source.Length;
+        return;
     }
-    partialResults.Add((segments, currentProcessedStartTime, currentProcessedEndTime));
+
+    Buffer.BlockCopy(
+        destination,
+        destination.Length / 2 * floatSize,
+        destination,
+        0,
+        destination.Length / 2 * floatSize
+    );
+
+    Buffer.BlockCopy(
+        source,
+        0,
+        destination,
+        destination.Length / 2 * floatSize,
+        source.Length * floatSize
+    );
+
+    count = destination.Length;
 }
 
-var fullText = string.Empty;
-
-while (currentSampleIndex < waveParser.SamplesCount)
+static void PushToChannel(string filename, TimeSpan chunkDuration, Channel<float[]> channel)
 {
-    bufferSize = waveParser.SampleRate / 1000 * advancingProcessingTimeMs * 2 * waveParser.Channels;
+    var writer = channel.Writer;
 
-    bytesRead = await fileStream.ReadAsync(buffer.AsMemory(0, (int)bufferSize));
-    for (var i = 0; i < bytesRead;)
+    using var sourceStream = File.Open(filename, FileMode.Open);
+
+    var waveParser = new WaveParser(sourceStream);
+    waveParser.Initialize();
+
+    var samplesSize = CalculateSamplesSize(waveParser, chunkDuration);
+    var chunkSize = CalculateChunkSize(waveParser, chunkDuration);
+
+    var samples = new float[samplesSize];
+    var buffer = new byte[chunkSize];
+
+    sourceStream.Seek(waveParser.DataChunkPosition, SeekOrigin.Begin);
+
+    while (sourceStream.Position != sourceStream.Length)
     {
-        long sampleSum = 0;
+        var bytesRead = sourceStream.Read(buffer);
 
-        for (var currentChannel = 0; currentChannel < waveParser.Channels; currentChannel++)
+        ConvertToSamples(bytesRead, buffer, samples);
+
+        writer.TryWrite(samples);
+
+        if (bytesRead == chunkSize)
         {
-            sampleSum += BitConverter.ToInt16(buffer, i);
-            i += 2;
-        }
-
-        samples[currentSampleIndex++] = sampleSum / (float)waveParser.Channels / 32768.0f;
-    }
-
-    currentProcessedEndTime = currentProcessedEndTime.Add(TimeSpan.FromMilliseconds(advancingProcessingTimeMs));
-
-    await using (var processor = builder.Build())
-    {
-        var segments = new List<SegmentData>();
-        await foreach (var data in processor.ProcessAsync(samples.AsMemory(0, currentSampleIndex)))
-        {
-            segments.Add(data);
-        }
-        partialResults.Add((segments, currentProcessedStartTime, currentProcessedEndTime));
-
-        var indexSegment = 0;
-        foreach (var segment in segments)
-        {
-            Console.WriteLine($"{indexSegment}: {segment.Start}->{segment.End}: {segment.Text}  => with probability: {segment.Probability}");
-            indexSegment++;
+            Thread.Sleep(chunkDuration);
         }
     }
 
-    var indexPartial = 0;
-    //TODO: Check if partials concluded to one finished segment and return it.
-    foreach (var partial in partialResults)
+    writer.Complete();
+}
+
+static int CalculateChunkSize(WaveParser waveParser, TimeSpan chunkDuration)
+{
+    if (!waveParser.IsInitialized)
     {
-      //  Console.WriteLine(indexPartial + ":" + partial.startTime + " - " + partial.endTime + " " + partial.segments.Count + " segments\n-----------");
-        indexPartial++;
-        // If one segment is identified. E.g. "My fellow Americans" from second 0 to second 3 => we remove that part from the samples, adding the text to the prompt and continue processing the rest of the samples.
+        throw new InvalidOperationException("WaveParser is not initialized");
     }
 
-    // If the total current processing time is reaching max processing time => we remove half of the samples and continue processing the rest of the samples.
-    if (currentProcessedEndTime.TotalMilliseconds - currentProcessedStartTime.TotalMilliseconds >= maxProcessingTimeMs)
+    var sizeOfOneSecondAudio = waveParser.SampleRate * (waveParser.BitsPerSample / 8);
+    var totalAudioDataSize = sizeOfOneSecondAudio * chunkDuration.TotalSeconds;
+
+    return Convert.ToInt32(totalAudioDataSize);
+}
+
+static int CalculateSamplesSize(WaveParser waveParser, TimeSpan chunkDuration)
+{
+    return Convert.ToInt32(waveParser.SampleRate * chunkDuration.TotalSeconds);
+}
+
+static void ConvertToSamples(int count, byte[] buffer, float[] samples)
+{
+    var sampleIndex = 0;
+
+    for (var i = 0; i < count; i += 2)
     {
-        // First, we copy the last part of the samples to the beginning of the array
-        var samplesToCopy = currentSampleIndex - maxProcessingTimeMs / 2;
-        for (var i = 0; i < samplesToCopy; i++)
-        {
-            samples[i] = samples[i + maxProcessingTimeMs / 2];
-        }
-        currentProcessedStartTime = currentProcessedStartTime.Add(TimeSpan.FromMilliseconds(maxProcessingTimeMs / 2));
-        currentSampleIndex = samplesToCopy;
+        samples[sampleIndex++] = BitConverter.ToInt16(buffer, i) / 32768.0f;
     }
 }
 
