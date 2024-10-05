@@ -18,11 +18,9 @@ jobs:
           ref: ${{ github.head_ref }}
           
       - name: Add msbuild to PATH
-        if: steps.check_submodule.outputs.trigger_build == 'true'
         uses: microsoft/setup-msbuild@v1
         
       - name: Run Build
-        if: steps.check_submodule.outputs.trigger_build == 'true'
         run: | 
           Import-Module ./windows-scripts.ps1
           BuildWindowsArm
