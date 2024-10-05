@@ -39,3 +39,8 @@ jobs:
       if: steps.check_submodule.outputs.trigger_build == 'true'
       run: rm -rf cuda_installer-*
       
+    - name: Upload Linux Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-build
+        path: 'Whisper.net.Run*/linux-*/*'

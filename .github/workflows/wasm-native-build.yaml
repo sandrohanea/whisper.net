@@ -18,14 +18,16 @@ jobs:
         ref: ${{ github.head_ref }}
     
     - name: Install Emscripten
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       uses: mymindstorm/setup-emsdk@v13
    
     - name: Run wasm build
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: make wasm
 
     - name: Remove Emscripten
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: rm -rf emsdk*
       
+    - name: Upload Wasm Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: wasm-build
+        path: 'Whisper.net.Run*/browser-wasm/*'
