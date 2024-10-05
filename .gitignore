@@ -358,3 +358,6 @@ MigrationBackup/
 /nupkgs
 /Whisper.net.Runtime/*
 !/Whisper.net.Runtime/Whisper.net.Runtime.targets
+
+/Whisper.net.Runtime.Cuda/*
+!/Whisper.net.Runtime.Cuda/Whisper.net.Runtime.Cuda.targets

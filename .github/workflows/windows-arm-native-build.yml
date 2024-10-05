@@ -27,7 +27,9 @@ jobs:
           Import-Module ./windows-scripts.ps1
           BuildWindowsArm
         shell: pwsh
-
-      - name: Remove CUDA installer
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
+        
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: 'Whisper.net.Runtime.*/win-*/*'
