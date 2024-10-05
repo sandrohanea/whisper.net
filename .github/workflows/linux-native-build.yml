@@ -3,8 +3,7 @@ name: Linux Native build
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 
 jobs:
@@ -20,24 +19,6 @@ jobs:
         submodules: true
         ref: ${{ github.head_ref }}
     
-    - name: Check for submodule update
-      id: check_submodule
-      run: |
-        cd whisper.cpp
-        SUBMODULE_COMMIT_ID=$(git rev-parse HEAD)
-        echo "Submodule commit ID: $SUBMODULE_COMMIT_ID"
-        cd $GITHUB_WORKSPACE
-        STORED_COMMIT_ID=$(cat native-commit-id-linux)
-        echo "Stored commit ID: $STORED_COMMIT_ID"
-        if [ "$SUBMODULE_COMMIT_ID" != "$STORED_COMMIT_ID" ]; then
-          echo "Submodule has new commits. Triggering build."
-          echo "trigger_build=true" >> $GITHUB_OUTPUT
-          echo $SUBMODULE_COMMIT_ID > native-commit-id-linux
-        else
-          echo "No new commits in submodule."
-          echo "trigger_build=false" >> $GITHUB_OUTPUT
-        fi
-
     - name: Install aarch64-linux-gnu-gcc
       if: steps.check_submodule.outputs.trigger_build == 'true'
       run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
@@ -46,11 +27,6 @@ jobs:
       if: steps.check_submodule.outputs.trigger_build == 'true'
       run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
     
-    - name: Install git lfs
-      if: steps.check_submodule.outputs.trigger_build == 'true'
-      run: |
-       git lfs install
-
     - name: Install CUDA Toolkit
       if: steps.check_submodule.outputs.trigger_build == 'true'
       uses: Jimver/cuda-toolkit@v0.2.11
@@ -64,13 +40,4 @@ jobs:
     - name: Remove CUDA installer
       if: steps.check_submodule.outputs.trigger_build == 'true'
       run: rm -rf cuda_installer-*
-
-    - name: Pull latest commits
-      if: steps.check_submodule.outputs.trigger_build == 'true'
-      run: git pull origin ${{ github.head_ref }}
-
-    - name: Commit and Push
-      if: steps.check_submodule.outputs.trigger_build == 'true'
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: Add native changes linux
+      

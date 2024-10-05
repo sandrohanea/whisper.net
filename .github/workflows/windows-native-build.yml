@@ -3,8 +3,7 @@ name: Windows native build
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch: 
 
 
 jobs:
@@ -19,40 +18,21 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
-
-      - name: Check for submodule update
-        id: check_submodule
-        run: |
-          Set-Location whisper.cpp
-          $SubmoduleCommitId = git rev-parse HEAD
-          Write-Host "Submodule commit ID: $SubmoduleCommitId"
-          Set-Location $Env:GITHUB_WORKSPACE
-          $StoredCommitId = Get-Content native-commit-id-windows
-          Write-Host "Stored commit ID: $StoredCommitId"
-          if ($SubmoduleCommitId -ne $StoredCommitId) {
-            Write-Host "Submodule has new commits. Triggering build."
-            Write-Output "trigger_build=true" | Out-File -Append $Env:GITHUB_OUTPUT
-            Set-Content -Path native-commit-id-windows -Value $SubmoduleCommitId
-          } else {
-            Write-Host "No new commits in submodule."
-            Write-Output "trigger_build=false" | Out-File -Append $Env:GITHUB_OUTPUT
-          }
-        shell: pwsh
-
+          
       - name: Add msbuild to PATH
         if: steps.check_submodule.outputs.trigger_build == 'true'
         uses: microsoft/setup-msbuild@v1
         
-      - name: Install OpenCl with vcpkg
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: |
-           vcpkg --triplet=x64-windows install opencl
+      # - name: Install OpenCl with vcpkg
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   run: |
+      #      vcpkg --triplet=x64-windows install opencl
 
-      - name: Install CUDA Toolkit
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: '12.1.0'
+      # - name: Install CUDA Toolkit
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   uses: Jimver/cuda-toolkit@v0.2.11
+      #   with:
+      #     cuda: '12.1.0'
 
       - name: Run Build
         if: steps.check_submodule.outputs.trigger_build == 'true'
@@ -61,16 +41,12 @@ jobs:
           BuildWindowsIntel
         shell: pwsh
 
-      - name: Remove CUDA installer
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
+      # - name: Remove CUDA installer
+      #   if: steps.check_submodule.outputs.trigger_build == 'true'
+      #   run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
 
-      - name: Pull latest commits
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        run: git pull origin ${{ github.head_ref }}
-
-      - name: Commit and Push
-        if: steps.check_submodule.outputs.trigger_build == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          commit_message: Add native changes windows
+          name: windows-build
+          path: 'Whisper.net.Runtime/win-*/*'

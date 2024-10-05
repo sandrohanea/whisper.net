@@ -356,3 +356,5 @@ MigrationBackup/
 /src/build
 /build
 /nupkgs
+/Whisper.net.Runtime/*
+!/Whisper.net.Runtime/Whisper.net.Runtime.targets
