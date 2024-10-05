@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: windows-build
-          path: 'Whisper.net.Runtime.*/win-*/*'
+          path: 'Whisper.net.Run*/win-*/*'
