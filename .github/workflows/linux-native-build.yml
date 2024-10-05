@@ -18,25 +18,20 @@ jobs:
         ref: ${{ github.head_ref }}
     
     - name: Install aarch64-linux-gnu-gcc
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
 
     - name: Install gcc-arm-linux-gnueabihf
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
     
     - name: Install CUDA Toolkit
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       uses: Jimver/cuda-toolkit@v0.2.11
       with:
         cuda: '12.1.0'
     
     - name: Run linux
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: make linux
     
     - name: Remove CUDA installer
-      if: steps.check_submodule.outputs.trigger_build == 'true'
       run: rm -rf cuda_installer-*
       
     - name: Upload Linux Build Artifacts
