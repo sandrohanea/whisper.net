@@ -33,7 +33,7 @@ jobs:
       - name: Run Build
         run: | 
           Import-Module ./windows-scripts.ps1
-          BuildWindowsAll
+          BuildWindowsIntel
         shell: pwsh
 
       - name: Remove CUDA installer
