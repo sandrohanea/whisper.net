@@ -27,7 +27,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: mac-intel-build
-        path: 'Whisper.net.Run*/*/*'
+        path: |
+            'Whisper.net.Run*/*/*'
+            'Whisper.net.Run*/*.metal'
       
   arm-build:
     needs: intel-build
@@ -51,4 +53,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: mac-arm-build
-        path: 'Whisper.net.Run*/*/*'
+        path: |
+            'Whisper.net.Run*/*/*'
+            'Whisper.net.Run*/*.metal'
