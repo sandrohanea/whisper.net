@@ -29,5 +29,5 @@ jobs:
       - name: Upload Windows Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: windows-build
+          name: windows-arm-build
           path: 'Whisper.net.Run*/win-*/*'
