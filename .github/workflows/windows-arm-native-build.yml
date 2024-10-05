@@ -1,8 +1,6 @@
 name: Windows ARM native build
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch: 
 
 

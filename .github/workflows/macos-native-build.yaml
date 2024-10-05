@@ -2,8 +2,6 @@
 name: MacOs Native build
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch: 
 
 

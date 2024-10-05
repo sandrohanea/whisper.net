@@ -2,8 +2,6 @@
 name: Wasm Native build
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
