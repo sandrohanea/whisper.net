@@ -62,7 +62,7 @@ linux_arm64:
 	rm -rf build/linux-arm64
 	cmake -S . -B build/linux-arm64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64
 	cmake --build build/linux-arm64 --config $(BUILD_TYPE)
-	mkdir -p Whisper.net.Runtime/browser-arm64
+	mkdir -p Whisper.net.Runtime/linux-arm64
 	cp build/linux-arm64/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/linux-arm64/libwhisper.so
 	cp build/linux-arm64/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/linux-arm64/libggml.so
 
@@ -70,7 +70,7 @@ linux_arm:
 	rm -rf build/linux-arm
 	cmake -S . -B build/linux-arm -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm
 	cmake --build build/linux-arm --config $(BUILD_TYPE)
-	mkdir -p Whisper.net.Runtime/browser-arm
+	mkdir -p Whisper.net.Runtime/linux-arm
 	cp build/linux-arm/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/linux-arm/libwhisper.so
 	cp build/linux-arm/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/linux-arm/libggml.so
 
