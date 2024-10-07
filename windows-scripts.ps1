@@ -127,7 +127,8 @@ function BuildWindowsBase() {
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
     BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
-    BuildWindowsBase -Arch "arm" -Configuration $Configuration;
+ #   BuildWindowsBase -Arch "arm" -Configuration $Configuration;
+ # Arm build not working anymore with VS
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
