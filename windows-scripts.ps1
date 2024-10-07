@@ -71,6 +71,11 @@ function BuildWindowsBase() {
         $options += "-DGGML_VULKAN=1"
         $buildDirectory += "-vulkan"
     }
+    
+    if ($OpenVino) {
+        $options += "-DWHISPER_OPENVINO=1"
+        $buildDirectory += "-openvino"
+    }
 
     $options += "-B"
     $options += $buildDirectory
@@ -109,6 +114,10 @@ function BuildWindowsBase() {
 
     if ($Vulkan) {
         $runtimePath += ".Vulkan"
+    }
+
+    if ($Vulkan) {
+        $runtimePath += ".OpenVino"
     }
 
     if (-not(Test-Path $runtimePath)) {

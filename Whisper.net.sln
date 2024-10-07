@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 		.github\workflows\wasm-native-build.yaml = .github\workflows\wasm-native-build.yaml
 		.github\workflows\windows-arm-native-build.yml = .github\workflows\windows-arm-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
+		.github\workflows\windows-openvino-build.yml = .github\workflows\windows-openvino-build.yml
 		.github\workflows\windows-vulkan-build.yml = .github\workflows\windows-vulkan-build.yml
 	EndProjectSection
 EndProject

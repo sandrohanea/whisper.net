@@ -367,3 +367,6 @@ MigrationBackup/
 
 /Whisper.net.Runtime.CoreML/*
 !/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets
+
+/Whisper.net.Runtime.OpenVino/*
+!/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets
