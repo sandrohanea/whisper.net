@@ -34,6 +34,37 @@ public static class WhisperGgmlDownloader
     }
 
     /// <summary>
+    /// Gets the download stream for the OpenVino model, which is a zip file.
+    /// </summary>
+    /// <param name="type">The type of the model which needs to be downloaded.</param>
+    /// <param name="cancellationToken">A cancellation token used to stop the request to huggingface.</param>
+    /// <returns></returns>
+    public static async Task<Stream> GetEncoderOpenVinoModelAsync(GgmlType type, CancellationToken cancellationToken = default)
+    {
+        var modelName = GetModelName(type);
+        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/openvino/{modelName}-encoder.zip";
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
+#if NETSTANDARD
+        return await response.Content.ReadAsStreamAsync();
+#else
+        return await response.Content.ReadAsStreamAsync(cancellationToken);
+#endif
+    }
+
+    /// <summary>
+    /// Gets the manifest file for the OpenVino model.
+    /// </summary>
+    /// <param name="type"> The type of the model which needs to be loaded</param>
+    /// <returns></returns>
+    public static string GetOpenVinoManifestFileName(GgmlType type)
+    {
+        var modelName = GetModelName(type);
+        return $"{modelName}-encoder.xml";
+    }
+
+    /// <summary>
     /// Gets the download stream for the CoreML model, which is a zip file.
     /// </summary>
     /// <param name="type">The type of the model which needs to be downloaded.</param>

@@ -345,8 +345,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
             var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);
             var cachePath = Marshal.StringToHGlobalAnsi(options.OpenVinoCacheDir);
-            NativeMethods.whisper_ctx_init_openvino_encoder(
+            NativeMethods.whisper_ctx_init_openvino_encoder_with_state(
                 options.ContextHandle,
+                state,
                 modelPath,
                 device,
                 cachePath);
