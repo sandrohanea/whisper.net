@@ -24,9 +24,9 @@ jobs:
       - name: Install OpenVino SDK
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4/windows/w_openvino_toolkit_windows_2024.4.0.16579.c3152d32c9c_x86_64.zip -OutFile openvino.zip
+          Invoke-WebRequest -Uri https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4.1/windows/w_openvino_toolkit_windows_2024.4.1.16618.643f23d1318_x86_64.zip -OutFile openvino.zip
           Expand-Archive -Path openvino.zip -DestinationPath openvino
-          .\openvino\w_openvino_toolkit_windows_2024.4.0.16579.c3152d32c9c_x86_64\setupvars.ps1
+          .\openvino\w_openvino_toolkit_windows_2024.4.1.16618.643f23d1318_x86_64\setupvars.ps1
           
 
       - name: Run Build
