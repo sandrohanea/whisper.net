@@ -1,0 +1,37 @@
+name: Linux OpenVino native build
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ github.head_ref }}
+    
+    - name: Install aarch64-linux-gnu-gcc
+      run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+
+    - name: Install gcc-arm-linux-gnueabihf
+      run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+    
+    - name: Run linux
+      run: |
+        wget https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4/linux/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64.tgz -O openvino.tgz
+        mkdir openvino
+        tar -xvf openvino.tgz -C openvino
+        source openvino/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64/setupvars.sh
+        make linux_x64_openvino
+    
+    - name: Upload Linux OpenVino Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-openvino-build
+        path: 'Whisper.net.Run*/linux-*/*'

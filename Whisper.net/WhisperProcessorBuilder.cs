@@ -252,19 +252,6 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
-    /// [EXPERIMENTAL] Configures the processor to speed up the audio 2x for faster recognition.
-    /// </summary>
-    /// <returns>An instance to the same builder.</returns>
-    /// <remarks>
-    /// Quality might be degraded while performance might be improved.
-    /// </remarks>
-    public WhisperProcessorBuilder WithSpeedUp2x()
-    {
-        whisperProcessorOptions.SpeedUp2x = true;
-        return this;
-    }
-
-    /// <summary>
     ///  [EXPERIMENTAL] Configures the processor to override the audio context size.
     /// </summary>
     /// <param name="audioContextSize">Audio context size to be overridden</param>
@@ -275,6 +262,20 @@ public class WhisperProcessorBuilder
     public WhisperProcessorBuilder WithAudioContextSize(int audioContextSize)
     {
         whisperProcessorOptions.AudioContextSize = audioContextSize;
+        return this;
+    }
+
+    /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to suppress specific tokens that are matched by the regex.
+    /// </summary>
+    /// <param name="regex">The regex that should be used for filtering.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// See https://github.com/openai/whisper/discussions/1041 for more details.
+    /// </remarks>
+    public WhisperProcessorBuilder WithSuppressRegex(string regex)
+    {
+        whisperProcessorOptions.SuppressRegex = regex;
         return this;
     }
 
@@ -494,6 +495,30 @@ public class WhisperProcessorBuilder
     public WhisperProcessorBuilder WithProbabilities()
     {
         whisperProcessorOptions.ComputeProbabilities = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the options for OpenVino encoder.
+    /// </summary>
+    /// <param name="openVinoEncoderPath">
+    /// Optional path to OpenVINO encoder IR model. If set to null, the path will be generated from the ggml model path that was passed if loaded from a file.
+    /// </param>
+    /// <param name="openVinoDevice">
+    /// OpenVINO device to run inference on ("CPU", "GPU", etc.)
+    /// </param>
+    /// <param name="openVinoCachePath">
+    /// Optional cache directory that can speed up init time, especially for  GPU, by caching compiled 'blobs' there. Null if not used.
+    /// </param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// These options will be applied only if using OpenVino runtime.
+    /// </remarks>
+    public WhisperProcessorBuilder WithOpenVinoEncoder(string? openVinoEncoderPath, string? openVinoDevice, string? openVinoCachePath)
+    {
+        whisperProcessorOptions.OpenVinoModelPath = openVinoEncoderPath;
+        whisperProcessorOptions.OpenVinoDevice = openVinoDevice;
+        whisperProcessorOptions.OpenVinoCacheDir = openVinoCachePath;
         return this;
     }
 

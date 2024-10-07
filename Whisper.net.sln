@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -20,16 +21,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 		.github\workflows\android-native-build.yaml = .github\workflows\android-native-build.yaml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
+		.github\workflows\linux-openvino-build.yml = .github\workflows\linux-openvino-build.yml
 		.github\workflows\macos-native-build.yaml = .github\workflows\macos-native-build.yaml
 		.github\workflows\wasm-native-build.yaml = .github\workflows\wasm-native-build.yaml
+		.github\workflows\windows-arm-native-build.yml = .github\workflows\windows-arm-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
+		.github\workflows\windows-openvino-build.yml = .github\workflows\windows-openvino-build.yml
+		.github\workflows\windows-vulkan-build.yml = .github\workflows\windows-vulkan-build.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\build-linux.ps1 = scripts\build-linux.ps1
-		scripts\build-osx.ps1 = scripts\build-osx.ps1
-		scripts\build-windows.ps1 = scripts\build-windows.ps1
+		Makefile = Makefile
+		windows-scripts.ps1 = windows-scripts.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC45AC94-3CD7-45D8-A847-2D9C06E1806A}"
+	ProjectSection(SolutionItems) = preProject
+		Whisper.net.Runtime.CoreML.nuspec = Whisper.net.Runtime.CoreML.nuspec
+		Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
+		Whisper.net.Runtime.Cuda.nuspec = Whisper.net.Runtime.Cuda.nuspec
+		Whisper.net.Runtime.Cuda\Whisper.net.Runtime.Cuda.targets = Whisper.net.Runtime.Cuda\Whisper.net.Runtime.Cuda.targets
+		Whisper.net.Runtime.nuspec = Whisper.net.Runtime.nuspec
+		Whisper.net.Runtime.OpenVino.nuspec = Whisper.net.Runtime.OpenVino.nuspec
+		Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
+		Whisper.net.Runtime\Whisper.net.Runtime.targets = Whisper.net.Runtime\Whisper.net.Runtime.targets
+		Whisper.net.Runtime.Vulkan.nuspec = Whisper.net.Runtime.Vulkan.nuspec
+		Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
 	EndProjectSection
 EndProject
 Global
@@ -127,6 +145,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5C865649-4AED-4BBF-A7CA-BD68D21EF48F} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
 		{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
+		{CC45AC94-3CD7-45D8-A847-2D9C06E1806A} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5CAA926-1B7D-3A67-9130-E6EFE3E9DFD9}

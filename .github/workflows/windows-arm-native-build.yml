@@ -7,7 +7,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-2022
+    runs-on: windows-latest
     permissions:
       contents: write
 
@@ -16,3 +16,18 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
+          
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1
+        
+      - name: Run Build
+        run: | 
+          Import-Module ./windows-scripts.ps1
+          BuildWindowsArm
+        shell: pwsh
+        
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-arm-build
+          path: 'Whisper.net.Run*/win-*/*'

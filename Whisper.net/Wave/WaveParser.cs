@@ -4,21 +4,22 @@ using System.Runtime.CompilerServices;
 
 namespace Whisper.net.Wave;
 
-public sealed class WaveParser
+/// <summary>
+/// Represents a parser for the wave stream, that can read the samples and the metadata from the file.
+/// </summary>
+/// <remarks>
+/// The 
+/// </remarks>
+/// <param name="waveStream">The wave stream to be processed.</param>
+public sealed class WaveParser(Stream waveStream)
 {
-    private static readonly byte[] expectedSubFormatForPcm = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 };
-    private readonly Stream waveStream;
+    private static readonly byte[] expectedSubFormatForPcm = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71];
     private ushort channels;
     private uint sampleRate;
     private ushort bitsPerSample;
     private uint dataChunkSize;
     private long dataChunkPosition;
     private bool isInitialized;
-
-    public WaveParser(Stream waveStream)
-    {
-        this.waveStream = waveStream;
-    }
 
     /// <summary>
     /// Gets the number of channels in the current wave file.
@@ -143,6 +144,12 @@ public sealed class WaveParser
         return samples;
     }
 
+    /// <summary>
+    /// Returns the number of samples for the given channel.
+    /// </summary>
+    /// <param name="channelIndex">The channel index.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public float[] GetChannelSamples(int channelIndex = 0)
     {
         Initialize();

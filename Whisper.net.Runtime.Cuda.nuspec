@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Cuda</id>
+    <title>Whisper.Net.Runtime.Cuda</title>
+    <version>1.7.0</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Web Assembly dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime.Cuda contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support (Cuda)</description>
+    <tags>whisper;cuda;gpu;cublas;</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Cuda\**" target="build"/>
+  </files>
+</package>

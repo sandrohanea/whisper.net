@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0; net472</TargetFrameworks>
+    <LangVersion>12</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Whisper.net.Runtime.OpenVino" Version="1.7.0" />
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="../TestData/kennedy.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+</Project>

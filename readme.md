@@ -21,8 +21,8 @@ To install Whisper.net, run the following command in the [Package Manager Consol
 or simply add a package reference in your csproj:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.5.0" />
-    <PackageReference Include="Whisper.net.Runtime" Version="1.5.0" />
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
 ```
 
 ## GPT for whisper
@@ -40,8 +40,8 @@ The runtime package, Whisper.net.Runtime, contains the native whisper.cpp librar
 Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.5.0" />
-    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.5.0" />
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.7.0" />
 ```
 
 Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
@@ -60,10 +60,46 @@ If not, it will announce an error and use the original core library instead.
 
 ## GPU Support
 
-Dependeing on your GPU, you can use either `Whisper.net.Runtime.Cublas` or `Whisper.net.Runtime.Clblast`.
-For now, they are only available on Windows x64 and Linux x64 (only Cublas).
+We support GPU acceleration with the following runtimes:
 
-Check the Cublas and Clblast examples.
+ - *CUDA (NVidia):* `Whisper.net.Runtime.Cuda` => for Windows x64 and Linux x64
+ - *Vulkan:* `Whisper.net.Runtime.Vulkan` => for Windows x64.
+ - *OpenVINO:* `Whisper.net.Runtime.OpenVino` => for Windows x64 and Linux x64.
+
+To use any of these, reference the associated nuget package.
+
+Example:
+
+```
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
+```
+
+Note: when using the GPU runtime, make sure you have the latest drivers and the dependency for each platform:
+
+- For Cuda, you will need NVidia Drivers with Cuda and Cublas support (minimum version 12.1.0)
+- For Vulkan, you will need [Vulkan Runtime](https://www.vulkan.org/tools#vulkan-gpu-resources)
+- For OpenVino, you will need [OpenVino Runtime](https://github.com/openvinotoolkit/openvino/releases)
+
+## Multiple Runtimes Support
+
+You can install and use multiple runtimes in the same project. For example, you can use `Whisper.net.Runtime` for Windows and `Whisper.net.Runtime.CoreML` for Apple devices.
+
+The runtime will be automatically selected based on the platform you are running the application on and the availability of the native runtime.
+
+The following order of priority will be used be default:
+
+ - `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
+ - `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
+ - `Whisper.net.Runtime.CoreML` (Apple devices)
+ - `Whisper.net.Runtime.OpenVino` (Intel devices)
+ - `Whisper.net.Runtime` (CPU inference)
+
+ If you want to change the order or force a specific runtime, you can do it by seting the RuntimeOrder on the RuntimeOptions.
+
+ ```csharp
+     WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
+ ```
 
 ## Blazor and WASM
 
@@ -73,7 +109,7 @@ Blazor is supported with both InteractivityServer and InteractivityWebAssemly. Y
 
 Each version of Whisper.net is tied to a specific version of Whisper.cpp. The version of Whisper.net is the same as the version of Whisper it is based on. For example, Whisper.net 1.2.0 is based on Whisper.cpp 1.2.0.
 
-However, the patch version is not tied to Whisper.cpp. For example, Whisper.net 1.2.1 is based on Whisper.cpp 1.2.0 and Whisper.net 1.5.0 is based on Whisper.cpp 1.5.1.
+However, the patch version is not tied to Whisper.cpp. For example, Whisper.net 1.2.1 is based on Whisper.cpp 1.2.0 and Whisper.net 1.7.0 is based on Whisper.cpp 1.7.1.
 
 ## Ggml Models
 
@@ -166,7 +202,6 @@ Whisper.net is supported on the following platforms:
 - Windows x86
 - Windows x64
 - Windows ARM64
-- Windows ARM
 - Linux x64
 - Linux ARM64
 - Linux ARM

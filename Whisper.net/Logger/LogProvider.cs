@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 
 namespace Whisper.net.Logger;
@@ -32,6 +33,7 @@ public class LogProvider
         funcPointer = Marshal.GetFunctionPointerForDelegate(logCallback);
 #endif
         NativeMethods.whisper_log_set(funcPointer, IntPtr.Zero);
+        GgmlNativeMethods.ggml_log_set(funcPointer, IntPtr.Zero);
     }
 
 #if NET6_0_OR_GREATER
@@ -49,6 +51,7 @@ public class LogProvider
             GgmlLogLevel.Warning => WhisperLogLevel.Warning,
             _ => WhisperLogLevel.Info
         };
+
         Log(managedLevel, messageString);
     }
 

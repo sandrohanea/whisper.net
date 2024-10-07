@@ -1,0 +1,29 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup
+      Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/win-x64/whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/win-x64/ggml.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/linux-x64/libwhisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/linux-x64/libggml.so</TargetPath>
+    </None>
+  </ItemGroup>
+</Project>

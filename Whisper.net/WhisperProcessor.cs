@@ -4,12 +4,16 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
 using Whisper.net.Wave;
 
 namespace Whisper.net;
 
+/// <summary>
+/// Represents a processor that can transcribe or translate audio input.
+/// </summary>
 public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 {
     private static readonly ConcurrentDictionary<long, WhisperProcessor> processorInstances = new();
@@ -19,11 +23,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
-    private readonly List<GCHandle> gcHandles = new();
+    private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
+    private IntPtr? suppressRegex;
     private bool isDisposed;
     private int segmentIndex;
     private CancellationToken? currentCancellationToken;
@@ -43,6 +48,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         processingSemaphore = new(1);
     }
 
+    /// <summary>
+    /// Change the language that is used to process the audio input.
+    /// </summary>
+    /// <param name="newLanguage"></param>
     public void ChangeLanguage(string? newLanguage)
     {
         var oldLanguage = language;
@@ -65,37 +74,46 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         whisperParams = newParams;
     }
 
-    public unsafe string? DetectLanguage(float[] samples, bool speedUp = false)
+    /// <summary>
+    /// For the given audio input, detects the most probable language.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <returns></returns>
+    public unsafe string? DetectLanguage(float[] samples)
     {
-        var (language, _) = DetectLanguageWithProbability(samples.AsSpan(), speedUp);
+        var (language, _) = DetectLanguageWithProbability(samples.AsSpan());
         return language;
     }
 
-    public (string? language, float probability) DetectLanguageWithProbability(float[] samples, bool speedUp = false)
+    /// <summary>
+    /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="speedUp"></param>
+    /// <returns></returns>
+    public (string? language, float probability) DetectLanguageWithProbability(float[] samples)
     {
-        return DetectLanguageWithProbability(samples.AsSpan(), speedUp);
+        return DetectLanguageWithProbability(samples.AsSpan());
     }
 
-    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, bool speedUp = false)
+    /// <summary>
+    /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="speedUp"></param>
+    /// <returns></returns>
+    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
     {
         var probs = new float[NativeMethods.whisper_lang_max_id()];
 
         fixed (float* pData = probs)
         {
-            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            var state = GetWhisperState();
             try
             {
                 fixed (float* pSamples = samples)
                 {
-                    if (speedUp)
-                    {
-                        // whisper_pcm_to_mel_phase_vocoder is not yet exported from whisper.cpp
-                        NativeMethods.whisper_pcm_to_mel_phase_vocoder_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
-                    }
-                    else
-                    {
-                        NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
-                    }
+                    NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                 }
                 var langId = NativeMethods.whisper_lang_auto_detect_with_state(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
@@ -113,6 +131,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="waveStream"></param>
     public void Process(Stream waveStream)
     {
         var waveParser = new WaveParser(waveStream);
@@ -122,11 +144,20 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         Process(samples);
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
     public void Process(float[] samples)
     {
         Process(samples.AsSpan());
     }
 
+    /// <summary>
+    /// Starts the synchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <exception cref="ObjectDisposedException"></exception>
     public unsafe void Process(ReadOnlySpan<float> samples)
     {
         if (isDisposed)
@@ -137,7 +168,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         fixed (float* pData = samples)
         {
 
-            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            var state = GetWhisperState();
             try
             {
                 processingSemaphore.Wait();
@@ -153,6 +184,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="waveStream"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async IAsyncEnumerable<SegmentData> ProcessAsync(Stream waveStream, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var waveParser = new WaveParser(waveStream);
@@ -163,6 +200,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async IAsyncEnumerable<SegmentData> ProcessAsync(ReadOnlyMemory<float> samples, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var resetEvent = new AsyncAutoResetEvent();
@@ -221,6 +264,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    /// <summary>
+    /// Starts the asynchronous processing.
+    /// </summary>
+    /// <param name="samples"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, CancellationToken cancellationToken = default)
     {
         return ProcessAsync(samples.AsMemory(), cancellationToken);
@@ -246,6 +295,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             initialPromptText = null;
         }
 
+        if (suppressRegex.HasValue)
+        {
+            Marshal.FreeHGlobal(suppressRegex.Value);
+            suppressRegex = null;
+        }
+
         foreach (var gcHandle in gcHandles)
         {
             gcHandle.Free();
@@ -267,7 +322,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                var state = NativeMethods.whisper_init_state(currentWhisperContext);
+                var state = GetWhisperState();
 
                 try
                 {
@@ -280,6 +335,24 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 }
             }
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+    }
+
+    private IntPtr GetWhisperState()
+    {
+        var state = NativeMethods.whisper_init_state(currentWhisperContext);
+        if (RuntimeOptions.Instance.LoadedLibrary == RuntimeLibrary.OpenVino)
+        {
+            var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
+            var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);
+            var cachePath = Marshal.StringToHGlobalAnsi(options.OpenVinoCacheDir);
+            NativeMethods.whisper_ctx_init_openvino_encoder_with_state(
+                options.ContextHandle,
+                state,
+                modelPath,
+                device,
+                cachePath);
+        }
+        return state;
     }
 
     private WhisperFullParams GetWhisperParams()
@@ -370,14 +443,15 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             whisperParams.MaxTokensPerSegment = options.MaxTokensPerSegment.Value;
         }
 
-        if (options.SpeedUp2x.HasValue)
-        {
-            whisperParams.SpeedUp2x = options.SpeedUp2x.Value ? trueByte : falseByte;
-        }
-
         if (options.AudioContextSize.HasValue)
         {
             whisperParams.AudioContextSize = options.AudioContextSize.Value;
+        }
+
+        if (!string.IsNullOrEmpty(options.SuppressRegex))
+        {
+            suppressRegex = Marshal.StringToHGlobalAnsi(options.SuppressRegex);
+            whisperParams.SuppressRegex = suppressRegex.Value;
         }
 
         if (!string.IsNullOrEmpty(options.Prompt))
@@ -509,19 +583,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return whisperParams;
     }
 
-    private static string? GetAutodetectedLanguage(IntPtr state)
-    {
-        var detectedLanguageId = NativeMethods.whisper_full_lang_id(state);
-        if (detectedLanguageId == -1)
-        {
-            return null;
-        }
-
-        var languagePtr = NativeMethods.whisper_lang_str(detectedLanguageId);
-        var language = Marshal.PtrToStringAnsi(languagePtr);
-        return language;
-    }
-
 #if NET6_0_OR_GREATER
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
@@ -549,7 +610,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     }
 
 #if NET6_0_OR_GREATER
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static byte OnEncoderBeginStatic(IntPtr ctx, IntPtr state, IntPtr userData)
     {
@@ -561,7 +622,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     }
 
 #if NET6_0_OR_GREATER
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static void OnProgressStatic(IntPtr ctx, IntPtr state, int progress, IntPtr userData)
     {
@@ -691,6 +752,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 #endif
     }
 
+    /// <summary>
+    /// Releases the resources used by this processor.
+    /// </summary>
+    /// <returns></returns>
     public async ValueTask DisposeAsync()
     {
         // If a processing is still running, wait for it to finish

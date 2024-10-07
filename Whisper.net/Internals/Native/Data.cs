@@ -10,6 +10,24 @@ internal enum WhisperSamplingStrategy
     StrategyBeamSearch, // BeamSearchDecoder
 }
 
+internal enum WhisperAlignmentHeadsPreset
+{
+    WHISPER_AHEADS_NONE,
+    WHISPER_AHEADS_N_TOP_MOST,  // All heads from the N-top-most text-layers
+    WHISPER_AHEADS_CUSTOM,
+    WHISPER_AHEADS_TINY_EN,
+    WHISPER_AHEADS_TINY,
+    WHISPER_AHEADS_BASE_EN,
+    WHISPER_AHEADS_BASE,
+    WHISPER_AHEADS_SMALL_EN,
+    WHISPER_AHEADS_SMALL,
+    WHISPER_AHEADS_MEDIUM_EN,
+    WHISPER_AHEADS_MEDIUM,
+    WHISPER_AHEADS_LARGE_V1,
+    WHISPER_AHEADS_LARGE_V2,
+    WHISPER_AHEADS_LARGE_V3,
+}
+
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperParamGreedy
 {
@@ -52,9 +70,30 @@ internal delegate byte WhisperAbortCallback(IntPtr user_data);
 internal delegate void WhisperGgmlLogCallback(GgmlLogLevel level, IntPtr message, IntPtr user_data);
 
 [StructLayout(LayoutKind.Sequential)]
+internal struct WhisperAhead
+{
+    public int n_text_layer;
+    public int n_head;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperAheads
+{
+    public nuint NHeads;
+    public IntPtr Heads;
+}
+
+[StructLayout(LayoutKind.Sequential)]
 internal struct WhisperContextParams
 {
     public byte UseGpu;
+    public byte FlashAttention;
+    public int GpuDevice;
+    public byte DtwTokenLevelTimestamp;
+    public WhisperAlignmentHeadsPreset HeadsPreset;
+    public int DtwNTop;
+    public WhisperAheads WhisperAheads;
+    public nuint Dtw_mem_size;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -114,9 +153,6 @@ internal struct WhisperFullParams
     public int MaxTokensPerSegment;
 
     // [EXPERIMENTAL] speed-up techniques
-    // note: these can significantly reduce the quality of the output
-    // speed-up the audio by 2x using Phase Vocoder
-    public byte SpeedUp2x;
 
     // enable debug_mode provides extra info (eg. Dump log_mel)
     public byte DebugMode;
@@ -127,6 +163,8 @@ internal struct WhisperFullParams
     // [EXPERIMENTAL] [TDRZ] tinydiarize
     // enable tinydiarize speaker turn detection
     public byte TinyDiarizeSpeakerTurnDirection;
+
+    public IntPtr SuppressRegex;
 
     public IntPtr InitialPrompt;
 
@@ -196,9 +234,9 @@ internal struct WhisperFullParams
 
     public IntPtr WhisperGrammarElement;
 
-    public UIntPtr NGrammarRules;
+    public nuint NGrammarRules;
 
-    public UIntPtr StartGrammarRule;
+    public nuint StartGrammarRule;
 
     public float GrammarPenalty;
 }

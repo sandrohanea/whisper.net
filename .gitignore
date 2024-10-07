@@ -355,5 +355,18 @@ MigrationBackup/
 #build path for CMake
 /src/build
 /build
-/runtimes
 /nupkgs
+/Whisper.net.Runtime/*
+!/Whisper.net.Runtime/Whisper.net.Runtime.targets
+
+/Whisper.net.Runtime.Cuda/*
+!/Whisper.net.Runtime.Cuda/Whisper.net.Runtime.Cuda.targets
+
+/Whisper.net.Runtime.Vulkan/*
+!/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets
+
+/Whisper.net.Runtime.CoreML/*
+!/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets
+
+/Whisper.net.Runtime.OpenVino/*
+!/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets
