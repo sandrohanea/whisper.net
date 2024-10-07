@@ -8,21 +8,21 @@ namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
-    internal static LoadResult LoadNativeLibrary(bool bypassLoading, List<RuntimeLibrary> runtimeLibraries)
+    internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS || ANDROID
         return LoadResult.Success;
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (bypassLoading || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
+        if (RuntimeOptions.Instance.BypassLoading || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
             return LoadResult.Success;
         }
 
-        return LoadLibraryComponent(runtimeLibraries);
+        return LoadLibraryComponent();
     }
 
-    private static LoadResult LoadLibraryComponent(List<RuntimeLibrary> runtimeLibraries)
+    private static LoadResult LoadLibraryComponent()
     {
         var platform = Environment.OSVersion.Platform switch
         {
@@ -42,7 +42,7 @@ public static class NativeLibraryLoader
 
         LoadResult? lastError = null;
 
-        foreach (var runtimePath in GetRuntimePaths(platform, runtimeLibraries))
+        foreach (var (runtimePath, runtimeLibrary) in GetRuntimePaths(platform))
         {
             var ggmlPath = GetLibraryPath(platform, "ggml", runtimePath);
             if (!File.Exists(ggmlPath))
@@ -61,8 +61,13 @@ public static class NativeLibraryLoader
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-            return libraryLoader.OpenLibrary(whisperPath);
+            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath);
 
+            if (whisperLoaded.IsSuccess)
+            {
+                RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
+                return whisperLoaded;
+            }
         }
 
         // We don't have any error, so we couldn't even find some library to load.
@@ -89,7 +94,7 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static IEnumerable<string> GetRuntimePaths(string platform, List<RuntimeLibrary> runtimeLibraries)
+    private static IEnumerable<(string, RuntimeLibrary)> GetRuntimePaths(string platform)
     {
         var architecture = RuntimeInformation.OSArchitecture switch
         {
@@ -111,7 +116,7 @@ public static class NativeLibraryLoader
              ? "runtimes"
              : Path.Combine(assemblySearchPath, "runtimes");
 
-        foreach (var library in runtimeLibraries)
+        foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
             var runtimePath = library switch
             {
@@ -125,7 +130,7 @@ public static class NativeLibraryLoader
 
             if (Directory.Exists(runtimePath))
             {
-                yield return runtimePath;
+                yield return (runtimePath, library);
             }
         }
 

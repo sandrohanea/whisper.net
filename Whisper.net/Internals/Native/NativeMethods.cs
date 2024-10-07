@@ -72,4 +72,7 @@ internal static class NativeMethods
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_log_set(IntPtr logCallback, IntPtr user_data);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void whisper_ctx_init_openvino_encoder(IntPtr context, IntPtr modelPath, IntPtr device, IntPtr cacheDir);
 }

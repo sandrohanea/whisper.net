@@ -15,41 +15,19 @@ namespace Whisper.net;
 /// </remarks>
 public sealed class WhisperFactory : IDisposable
 {
-    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu];
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private bool wasDisposed;
-    private static bool bypassLoading;
-    private static string? libraryPath;
-    private static bool useGpu = true;
-    private static List<RuntimeLibrary> runtimeLibrary = defaultRuntimeOrder;
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
     {
-        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(bypassLoading, runtimeLibrary);
+        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary();
         if (libraryLoaded.IsSuccess)
         {
             LogProvider.InitializeLogging();
         }
         return libraryLoaded;
     }, true);
-
-    /// <summary>
-    /// Optional initialization of the whisper library, to bypass the runtime loading or to set a custom path.
-    /// </summary>
-    /// <param name="libraryPath">The custom path to be used when loading the runtime library.</param>
-    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the runtime library manually or providing it in path.</param>
-    /// <param name="useGpu">A value indicating if the model should be loaded on the GPU or CPU (if runtime with GPU support is installed).</param>
-    /// <remarks>
-    /// Use this initialization on your own risk if you understand how the runtime library is being loaded, otherwise use the default initialization and do not call this method.
-    /// </remarks>
-    public static void Initialize(string? libraryPath = null, bool bypassLoading = false, bool useGpu = true, List<RuntimeLibrary>? runtimeLibraryOrder = null)
-    {
-        WhisperFactory.libraryPath = libraryPath;
-        WhisperFactory.bypassLoading = bypassLoading;
-        WhisperFactory.useGpu = useGpu;
-        WhisperFactory.runtimeLibrary = runtimeLibraryOrder ?? defaultRuntimeOrder;
-    }
 
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
     {
@@ -81,7 +59,7 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromPath(string path, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, useGpu), delayInitialization);
+        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, RuntimeOptions.Instance.UseGpu), delayInitialization);
     }
 
     /// <summary>
@@ -95,7 +73,7 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromBuffer(byte[] buffer, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, useGpu), delayInitialization);
+        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, RuntimeOptions.Instance.UseGpu), delayInitialization);
     }
 
     /// <summary>

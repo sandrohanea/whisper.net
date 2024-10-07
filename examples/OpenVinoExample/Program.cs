@@ -10,11 +10,12 @@ using Whisper.net.Logger;
 public class Program
 {
     // This examples shows how to use Whisper.net to create a transcription from an audio file with 16Khz sample rate.
+    // It uses both Cuda (NVidia GPU) or CPU, and loads the first one that is available.
     public static async Task Main(string[] args)
     {
         // We declare three variables which we will use later, ggmlType, modelFileName and wavFileName
-        var ggmlType = GgmlType.Base;
-        var modelFileName = "ggml-base.bin";
+        var ggmlType = GgmlType.LargeV3Turbo;
+        var modelFileName = "ggml-large-v3-turbo.bin";
         var wavFileName = "kennedy.wav";
 
         LogProvider.Instance.OnLog += (level, message) =>
@@ -22,17 +23,18 @@ public class Program
             Console.Write($"{level}: {message}");
         };
 
-        // This section detects whether the "ggml-base.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
+        // This section detects whether the "ggml-large-v3-turbo.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))
         {
             await DownloadModel(modelFileName, ggmlType);
         }
 
         // This section creates the whisperFactory object which is used to create the processor object.
-        using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
+        using var whisperFactory = WhisperFactory.FromPath(modelFileName);
 
         // This section creates the processor object which is used to process the audio file, it uses language `auto` to detect the language of the audio file.
         using var processor = whisperFactory.CreateBuilder()
+            .WithOpenVinoEncoder("C:\\Projects\\sandrohanea\\whisper.net\\whisper.cpp\\models\\ggml-large-v3-turbo-encoder-openvino.xml", "GPU", null)
             .WithLanguage("auto")
             .Build();
 

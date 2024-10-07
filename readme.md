@@ -63,8 +63,8 @@ If not, it will announce an error and use the original core library instead.
 We support GPUs with:
 
  - `Whisper.net.Runtime.Cuda` (NVidia only) => available for Windows x64 and Linux x64
- - `Whisper.net.Runtime.Vulkan` (AMD) => available for Windows x64.
- - `Whisper.net.Runtime.OpenVino` (Intel) => available for Windows x64 and Linux x64.
+ - `Whisper.net.Runtime.Vulkan` => available for Windows x64.
+ - `Whisper.net.Runtime.OpenVino` => available for Windows x64 and Linux x64.
 
 To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
 
@@ -93,7 +93,7 @@ The following order of priority will be used be default:
  - `Whisper.net.Runtime.OpenVino` (Intel devices)
  - `Whisper.net.Runtime` (CPU inference)
 
- If you want to change the order or force a specific runtime, you can do it by calling the `Initialize` method on the `WhisperFactory` class, before creating any `WhisperFactory`:
+ If you want to change the order or force a specific runtime, you can do it by seting the RuntimeOrder on the RuntimeOptions.
 
  ```csharp
      WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);

@@ -38,10 +38,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC45AC94-3CD7-45D8-A847-2D9C06E1806A}"
 	ProjectSection(SolutionItems) = preProject
+		Whisper.net.Runtime.CoreML.nuspec = Whisper.net.Runtime.CoreML.nuspec
 		Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
+		Whisper.net.Runtime.Cuda.nuspec = Whisper.net.Runtime.Cuda.nuspec
 		Whisper.net.Runtime.Cuda\Whisper.net.Runtime.Cuda.targets = Whisper.net.Runtime.Cuda\Whisper.net.Runtime.Cuda.targets
+		Whisper.net.Runtime.nuspec = Whisper.net.Runtime.nuspec
+		Whisper.net.Runtime.OpenVino.nuspec = Whisper.net.Runtime.OpenVino.nuspec
 		Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
 		Whisper.net.Runtime\Whisper.net.Runtime.targets = Whisper.net.Runtime\Whisper.net.Runtime.targets
+		Whisper.net.Runtime.Vulkan.nuspec = Whisper.net.Runtime.Vulkan.nuspec
 		Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
 	EndProjectSection
 EndProject

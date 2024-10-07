@@ -3,7 +3,10 @@
 namespace Whisper.net.Logger;
 public enum WhisperLogLevel
 {
-    Error,
-    Warning,
-    Info
+    None = 0,
+    Info = 1,
+    Warning = 2,
+    Error = 3,
+    Debug = 4,
+    Cont = 5
 }

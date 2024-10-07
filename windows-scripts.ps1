@@ -154,3 +154,17 @@ function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration 
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
     BuildWindowsBase -Arch "x86" -Configuration $Configuration;
 }
+
+function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
+
+    if (-not(Test-Path "nupkgs")) {
+        New-Item -ItemType Directory -Force -Path "nupkgs"
+    }
+
+    dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
+    nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
+}

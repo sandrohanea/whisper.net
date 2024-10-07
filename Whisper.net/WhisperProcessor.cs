@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
 using Whisper.net.Wave;
@@ -107,7 +108,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         fixed (float* pData = probs)
         {
-            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            var state = GetWhisperState();
             try
             {
                 fixed (float* pSamples = samples)
@@ -167,7 +168,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         fixed (float* pData = samples)
         {
 
-            var state = NativeMethods.whisper_init_state(currentWhisperContext);
+            var state = GetWhisperState();
             try
             {
                 processingSemaphore.Wait();
@@ -321,7 +322,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                var state = NativeMethods.whisper_init_state(currentWhisperContext);
+                var state = GetWhisperState();
 
                 try
                 {
@@ -334,6 +335,23 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 }
             }
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+    }
+
+    private IntPtr GetWhisperState()
+    {
+        var state = NativeMethods.whisper_init_state(currentWhisperContext);
+        if (RuntimeOptions.Instance.LoadedLibrary == RuntimeLibrary.OpenVino)
+        {
+            var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
+            var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);
+            var cachePath = Marshal.StringToHGlobalAnsi(options.OpenVinoCacheDir);
+            NativeMethods.whisper_ctx_init_openvino_encoder(
+                options.ContextHandle,
+                modelPath,
+                device,
+                cachePath);
+        }
+        return state;
     }
 
     private WhisperFullParams GetWhisperParams()

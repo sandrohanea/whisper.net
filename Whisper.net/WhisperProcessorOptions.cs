@@ -6,6 +6,12 @@ namespace Whisper.net;
 
 internal sealed class WhisperProcessorOptions
 {
+    public string? OpenVinoModelPath { get; set; }
+
+    public string? OpenVinoDevice { get; set; }
+
+    public string? OpenVinoCacheDir { get; set; }
+
     public IWhisperSamplingStrategy SamplingStrategy { get; set; } = new GreedySamplingStrategy();
 
     public IntPtr ContextHandle { get; set; }

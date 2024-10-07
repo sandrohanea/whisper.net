@@ -13,7 +13,7 @@ internal sealed class WhisperProcessorModelFileLoader(string pathModel, bool use
 
     public IntPtr LoadNativeContext()
     {
-        return NativeMethods.whisper_init_from_file_with_params_no_state(pathModel,
+         return NativeMethods.whisper_init_from_file_with_params_no_state(pathModel,
             new WhisperContextParams()
             {
                 UseGpu = useGpu ? (byte)1 : (byte)0,

@@ -5,11 +5,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Whisper.net;
 using Whisper.net.Ggml;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Logger;
 
 public class Program
 {
     // This examples shows how to use Whisper.net to create a transcription from an audio file with 16Khz sample rate.
+    // It uses both Cuda (NVidia GPU) or CPU, and loads the first one that is available.
     public static async Task Main(string[] args)
     {
         // We declare three variables which we will use later, ggmlType, modelFileName and wavFileName
@@ -21,6 +23,9 @@ public class Program
         {
             Console.Write($"{level}: {message}");
         };
+
+        // Optional set the order of the runtimes:
+        RuntimeOptions.Instance.SetRuntimeLibraryOrder([RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
 
         // This section detects whether the "ggml-base.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))
