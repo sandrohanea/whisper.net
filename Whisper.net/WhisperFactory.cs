@@ -15,15 +15,18 @@ namespace Whisper.net;
 /// </remarks>
 public sealed class WhisperFactory : IDisposable
 {
+    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.Cpu];
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private bool wasDisposed;
     private static bool bypassLoading;
     private static string? libraryPath;
+    private static bool useGpu = true;
+    private static List<RuntimeLibrary> runtimeLibrary = defaultRuntimeOrder;
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
     {
-        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(WhisperFactory.bypassLoading);
+        var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary(bypassLoading, runtimeLibrary);
         if (libraryLoaded.IsSuccess)
         {
             LogProvider.InitializeLogging();
@@ -31,11 +34,25 @@ public sealed class WhisperFactory : IDisposable
         return libraryLoaded;
     }, true);
 
-    private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit, string? libraryPath = default, bool bypassLoading = false)
+    /// <summary>
+    /// Optional initialization of the whisper library, to bypass the runtime loading or to set a custom path.
+    /// </summary>
+    /// <param name="libraryPath">The custom path to be used when loading the runtime library.</param>
+    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the runtime library manually or providing it in path.</param>
+    /// <param name="useGpu">A value indicating if the model should be loaded on the GPU or CPU (if runtime with GPU support is installed).</param>
+    /// <remarks>
+    /// Use this initialization on your own risk if you understand how the runtime library is being loaded, otherwise use the default initialization and do not call this method.
+    /// </remarks>
+    public static void Initialize(string? libraryPath = null, bool bypassLoading = false, bool useGpu = true, List<RuntimeLibrary>? runtimeLibraryOrder = null)
     {
         WhisperFactory.libraryPath = libraryPath;
         WhisperFactory.bypassLoading = bypassLoading;
+        WhisperFactory.useGpu = useGpu;
+        WhisperFactory.runtimeLibrary = runtimeLibraryOrder ?? defaultRuntimeOrder;
+    }
 
+    private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
+    {
         if (!libraryLoaded.Value.IsSuccess)
         {
             throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
@@ -58,16 +75,13 @@ public sealed class WhisperFactory : IDisposable
     /// </summary>
     /// <param name="path">The path to the model.</param>
     /// <param name="delayInitialization">A value indicating if the model should be loaded right away or during the first <see cref="CreateBuilder"/> call.</param>
-    /// <param name="libraryPath">The path to the library</param>
-    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the library through other means.</param>
-    /// <param name="useGpu">A value indicating if the model should be loaded on the GPU or CPU (if runtime with GPU support is installed)</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromPath(string path, bool delayInitialization = false, string? libraryPath = default, bool bypassLoading = false, bool useGpu = true)
+    public static WhisperFactory FromPath(string path, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, useGpu), delayInitialization, libraryPath, bypassLoading);
+        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, useGpu), delayInitialization);
     }
 
     /// <summary>
@@ -75,16 +89,13 @@ public sealed class WhisperFactory : IDisposable
     /// </summary>
     /// <param name="buffer">The buffer with the model.</param>
     /// <param name="delayInitialization">A value indicating if the model should be loaded right away or during the first <see cref="CreateBuilder"/> call.</param>
-    /// <param name="libraryPath">The path to the library</param>
-    /// <param name="bypassLoading">Bypass loading the library. Use this if you've already loaded the library though other means.</param>
-    /// <param name="useGpu">A value indicating if the model should be loaded on the GPU or CPU (if runtime with GPU support is installed)</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromBuffer(byte[] buffer, bool delayInitialization = false, string? libraryPath = default, bool bypassLoading = false, bool useGpu = true)
+    public static WhisperFactory FromBuffer(byte[] buffer, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, useGpu), delayInitialization, libraryPath, bypassLoading);
+        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, useGpu), delayInitialization);
     }
 
     /// <summary>

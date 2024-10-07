@@ -36,7 +36,7 @@ jobs:
           BuildWindowsBase -Arch "x64" -Configuration "Release"  -Vulkan $true
         shell: pwsh
         
-      - name: Upload Windows Build Artifacts
+      - name: Upload Windows Vulkan Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: windows-vulkan-build

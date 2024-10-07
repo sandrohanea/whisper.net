@@ -70,7 +70,7 @@ function BuildWindowsBase() {
     if ($Vulkan) {
         $options += "-DGGML_VULKAN=1"
         $buildDirectory += "-vulkan"
-    })
+    }
 
     $options += "-B"
     $options += $buildDirectory
@@ -105,6 +105,10 @@ function BuildWindowsBase() {
     $runtimePath = "./Whisper.net.Runtime"
     if ($Cuda) {
         $runtimePath += ".Cuda"
+    }
+
+    if ($Vulkan) {
+        $runtimePath += ".Vulkan"
     }
 
     if (-not(Test-Path $runtimePath)) {

@@ -8,7 +8,7 @@ namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
-    internal static LoadResult LoadNativeLibrary(bool bypassLoading = false)
+    internal static LoadResult LoadNativeLibrary(bool bypassLoading, List<RuntimeLibrary> runtimeLibraries)
     {
 #if IOS || MACCATALYST || TVOS || ANDROID
         return LoadResult.Success;
@@ -19,10 +19,10 @@ public static class NativeLibraryLoader
             return LoadResult.Success;
         }
 
-        return LoadLibraryComponent();
+        return LoadLibraryComponent(runtimeLibraries);
     }
 
-    private static LoadResult LoadLibraryComponent()
+    private static LoadResult LoadLibraryComponent(List<RuntimeLibrary> runtimeLibraries)
     {
         var platform = Environment.OSVersion.Platform switch
         {
@@ -42,7 +42,7 @@ public static class NativeLibraryLoader
 
         LoadResult? lastError = null;
 
-        foreach (var runtimePath in GetRuntimePaths(platform))
+        foreach (var runtimePath in GetRuntimePaths(platform, runtimeLibraries))
         {
             var ggmlPath = GetLibraryPath(platform, "ggml", runtimePath);
             if (!File.Exists(ggmlPath))
@@ -89,7 +89,7 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static IEnumerable<string> GetRuntimePaths(string platform)
+    private static IEnumerable<string> GetRuntimePaths(string platform, List<RuntimeLibrary> runtimeLibraries)
     {
         var architecture = RuntimeInformation.OSArchitecture switch
         {
@@ -111,17 +111,20 @@ public static class NativeLibraryLoader
              ? "runtimes"
              : Path.Combine(assemblySearchPath, "runtimes");
 
-        // If cuda library is found, return this first to be loaded.
-        var cudaPath = Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}");
-        if (Directory.Exists(cudaPath))
+        foreach (var library in runtimeLibraries)
         {
-            yield return cudaPath;
-        }
+            var runtimePath = library switch
+            {
+                RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
+                RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
+                RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
+                _ => throw new InvalidOperationException("Unknown runtime library")
+            };
 
-        var defaultPath = Path.Combine(runtimesPath, $"{platform}-{architecture}");
-        if (Directory.Exists(defaultPath))
-        {
-            yield return defaultPath;
+            if (Directory.Exists(runtimePath))
+            {
+                yield return runtimePath;
+            }
         }
 
 #endif
