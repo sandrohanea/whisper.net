@@ -84,7 +84,9 @@ linux_x64_cuda:
 
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
-	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_VULKAN=ON
+	echo $VULKAN_SDK
+
+	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR=$VULKAN_SDK/include -DVulkan_LIBRARY=$VULKAN_SDK/lib/libvulkan.so -Dglslc=$VULKAN_SDK/bin/glslc
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p Whisper.net.Runtime.Vulkan/linux-x64-vulkan
 	ls -l build/linux-x64-vulkan/whisper.cpp/src/
