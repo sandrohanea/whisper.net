@@ -23,10 +23,7 @@ jobs:
 
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
-
-      - name: Install shaderc
-        run: sudo apt-get update && sudo apt-get install -y shaderc
-
+        
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1.0.4
         with:
