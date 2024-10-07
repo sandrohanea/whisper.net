@@ -60,13 +60,15 @@ If not, it will announce an error and use the original core library instead.
 
 ## GPU Support
 
-We support GPUs with:
+We support GPU acceleration with the following runtimes:
 
- - `Whisper.net.Runtime.Cuda` (NVidia only) => available for Windows x64 and Linux x64
- - `Whisper.net.Runtime.Vulkan` => available for Windows x64.
- - `Whisper.net.Runtime.OpenVino` => available for Windows x64 and Linux x64.
+ - *CUDA (NVidia):* `Whisper.net.Runtime.Cuda` => for Windows x64 and Linux x64
+ - *Vulkan:* `Whisper.net.Runtime.Vulkan` => for Windows x64.
+ - *OpenVINO:* `Whisper.net.Runtime.OpenVino` => for Windows x64 and Linux x64.
 
-To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
+To use any of these, reference the associated nuget package.
+
+Example:
 
 ```
     <PackageReference Include="Whisper.net" Version="1.7.0" />
@@ -75,9 +77,9 @@ To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
 
 Note: when using the GPU runtime, make sure you have the latest drivers and the dependency for each platform:
 
-- For Cuda, you need to have the latest NVidia drivers installed.
-- For Vulkan, you need to have the latest AMD drivers installed, and the Vulkan Runtime
-- For OpenVino, you need to have the OpenVino toolkit installed.
+- For Cuda, you will need NVidia Drivers with Cuda and Cublas support (minimum version 12.1.0)
+- For Vulkan, you will need [Vulkan Runtime](https://www.vulkan.org/tools#vulkan-gpu-resources)
+- For OpenVino, you will need [OpenVino Runtime](https://github.com/openvinotoolkit/openvino/releases)
 
 ## Multiple Runtimes Support
 
