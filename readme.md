@@ -4,9 +4,12 @@ Open-Source Whisper.net
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
 Native builds:
-
 [![Linux](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml)
-[![Windows](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml)
+[![Linux OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml)
+[![Windows / CUDA](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml)
+[![Windows ARM](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml)
+[![Windows OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml)
+[![Windows Vulkan](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml)
 [![MacOs](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml)
 [![Android](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml)
 [![Wasm](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml)
