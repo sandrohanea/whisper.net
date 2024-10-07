@@ -88,6 +88,7 @@ public static class WhisperGgmlDownloader
             GgmlType.LargeV1 => "ggml-large-v1",
             GgmlType.LargeV2 => "ggml-large-v2",
             GgmlType.LargeV3 => "ggml-large-v3",
+            GgmlType.LargeV3Turbo => "ggml-large-v3-turbo",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

@@ -361,3 +361,9 @@ MigrationBackup/
 
 /Whisper.net.Runtime.Cuda/*
 !/Whisper.net.Runtime.Cuda/Whisper.net.Runtime.Cuda.targets
+
+/Whisper.net.Runtime.Vulkan/*
+!/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets
+
+/Whisper.net.Runtime.CoreML/*
+!/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets

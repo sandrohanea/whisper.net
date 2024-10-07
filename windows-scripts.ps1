@@ -42,6 +42,7 @@ function BuildWindowsBase() {
     param(
         [Parameter(Mandatory = $true)] [string]$Arch,
         [Parameter(Mandatory = $false)] [bool]$Cuda = $false,
+        [Parameter(Mandatory = $false)] [bool]$Vulkan = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
     #if not exist "build" create the directory
@@ -65,6 +66,11 @@ function BuildWindowsBase() {
         $options += "-DGGML_CUDA=1"
         $buildDirectory += "-cuda"
     }
+
+    if ($Vulkan) {
+        $options += "-DGGML_VULKAN=1"
+        $buildDirectory += "-vulkan"
+    })
 
     $options += "-B"
     $options += $buildDirectory

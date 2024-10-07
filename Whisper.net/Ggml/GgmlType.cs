@@ -14,5 +14,6 @@ public enum GgmlType
     MediumEn,
     LargeV1,
     LargeV2,
-    LargeV3
+    LargeV3,
+    LargeV3Turbo
 }
