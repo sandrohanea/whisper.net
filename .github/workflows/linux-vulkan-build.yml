@@ -1,4 +1,4 @@
-name: Windows Vulkan native build
+name: Linux Vulkan native build
 
 on:
   pull_request:
@@ -36,8 +36,8 @@ jobs:
       - name: Run linux
         run: make linux_x64_vulkan
       
-      - name: Upload Windows Vulkan Build Artifacts
+      - name: Upload Linux Vulkan Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: windows-vulkan-build
-          path: 'Whisper.net.Run*/win-*/*'
+          name: windows-linux-build
+          path: 'Whisper.net.Run*/linux-*/*'
