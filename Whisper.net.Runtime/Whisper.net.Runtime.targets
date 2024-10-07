@@ -44,18 +44,6 @@
     <!-- Start Windows -->
     <ItemGroup
         Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
-        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm\whisper.dll">
-            <Pack>true</Pack>
-            <PackageCopyToOutput>true</PackageCopyToOutput>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <TargetPath>runtimes/win-arm/whisper.dll</TargetPath>
-        </None>
-        <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm\ggml.dll">
-            <Pack>true</Pack>
-            <PackageCopyToOutput>true</PackageCopyToOutput>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <TargetPath>runtimes/win-arm/ggml.dll</TargetPath>
-        </None>
         <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
