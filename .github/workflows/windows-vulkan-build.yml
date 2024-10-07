@@ -24,6 +24,7 @@ jobs:
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1.0.0
         with:
+          vulkan_version: 1.3.290.0
           optional_components: com.lunarg.vulkan.vma
           install_runtime: true
           cache: true
