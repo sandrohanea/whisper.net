@@ -59,7 +59,7 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromPath(string path, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, RuntimeOptions.Instance.UseGpu), delayInitialization);
+        return new WhisperFactory(new WhisperProcessorModelFileLoader(path), delayInitialization);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromBuffer(byte[] buffer, bool delayInitialization = false)
     {
-        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, RuntimeOptions.Instance.UseGpu), delayInitialization);
+        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer), delayInitialization);
     }
 
     /// <summary>

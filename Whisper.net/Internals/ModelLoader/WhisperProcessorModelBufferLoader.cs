@@ -1,11 +1,12 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net.Internals.ModelLoader;
 
-internal class WhisperProcessorModelBufferLoader(byte[] buffer, bool useGpu) : IWhisperProcessorModelLoader
+internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProcessorModelLoader
 {
     private readonly GCHandle pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
 
@@ -20,9 +21,9 @@ internal class WhisperProcessorModelBufferLoader(byte[] buffer, bool useGpu) : I
         return NativeMethods.whisper_init_from_buffer_with_params_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
             new WhisperContextParams()
             {
-                UseGpu = useGpu ? (byte)1 : (byte)0,
+                UseGpu = RuntimeOptions.Instance.UseGpu ? (byte)1 : (byte)0,
                 FlashAttention = 0,
-                GpuDevice = 0,
+                GpuDevice = RuntimeOptions.Instance.GpuDevice,
                 DtwTokenLevelTimestamp = 0,
                 HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE,
                 DtwNTop = -1,
