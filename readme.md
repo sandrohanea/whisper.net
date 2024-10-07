@@ -60,9 +60,11 @@ If not, it will announce an error and use the original core library instead.
 
 ## GPU Support
 
-We support GPUs with `Whisper.net.Runtime.Cuda` (NVidia only) and `Whisper.net.Runtime.Vulkan`.
+We support GPUs with:
 
-For now, `Whisper.net.Runtime.Cuda` is only available on Windows x64 and Linux x64 and `Whisper.net.Runtime.Vulkan` is available on Windows x64.
+ - `Whisper.net.Runtime.Cuda` (NVidia only) => available for Windows x64 and Linux x64
+ - `Whisper.net.Runtime.Vulkan` (AMD) => available for Windows x64.
+ - `Whisper.net.Runtime.OpenVino` (Intel) => available for Windows x64 and Linux x64.
 
 To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
 
@@ -71,7 +73,11 @@ To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
     <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
 ```
 
-Note: when using the GPU runtime, make sure you have the latest Nvidia drivers installed + Vulkan (if using it).
+Note: when using the GPU runtime, make sure you have the latest drivers and the dependency for each platform:
+
+- For Cuda, you need to have the latest NVidia drivers installed.
+- For Vulkan, you need to have the latest AMD drivers installed, and the Vulkan Runtime
+- For OpenVino, you need to have the OpenVino toolkit installed.
 
 ## Multiple Runtimes Support
 
@@ -84,12 +90,13 @@ The following order of priority will be used be default:
  - `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
  - `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
  - `Whisper.net.Runtime.CoreML` (Apple devices)
+ - `Whisper.net.Runtime.OpenVino` (Intel devices)
  - `Whisper.net.Runtime` (CPU inference)
 
  If you want to change the order or force a specific runtime, you can do it by calling the `Initialize` method on the `WhisperFactory` class, before creating any `WhisperFactory`:
 
  ```csharp
-     WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
+     WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
  ```
 
 ## Blazor and WASM

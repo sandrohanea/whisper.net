@@ -1,0 +1,32 @@
+name: Linux OpenVino native build
+
+on:
+  pull_request:
+    branches:
+         - main
+
+jobs:
+  build:
+  
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+      
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ github.head_ref }}
+    
+    - name: Run linux
+      run: |
+        winget https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4/linux/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64.tgz -O openvino.tgz
+        tar -xvf openvino.tgz -C openvino
+        source openvino/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64/setupvars.sh
+        make linux_x64_openvino
+    
+    - name: Upload Linux Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-build
+        path: 'Whisper.net.Run*/linux-*/*'

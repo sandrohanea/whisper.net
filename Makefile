@@ -82,6 +82,14 @@ linux_x64_cuda:
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cuda/linux-x64/libwhisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cuda/linux-x64/libggml.so
 
+linux_x64_openvino:
+	rm -rf build/linux-x64-openvino
+	cmake -S . -B build/linux-x64-openvino -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWHISPER_OPENVINO=ON
+	cmake --build build/linux-x64-openvino --config $(BUILD_TYPE)
+	mkdir -p Whisper.net.Runtime.OpenVino/linux-x64
+	cp build/linux-x64-openvino/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.OpenVino/linux-x64/libwhisper.so
+	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.OpenVino/linux-x64/libggml.so
+
 macos_x64:
 	rm -rf build/macos-x64
 	cmake -S . -DCMAKE_OSX_ARCHITECTURES="x86_64" -DGGML_METAL=OFF -B build/macos-x64
