@@ -28,6 +28,7 @@ jobs:
       run: |
         wget https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4/linux/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64.tgz -O openvino.tgz
         ls -l
+        mkdir openvino
         tar -xvf openvino.tgz -C openvino
         ls -l
         source openvino/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64/setupvars.sh
