@@ -20,7 +20,7 @@ public static class WhisperGgmlDownloader
         var subdirectory = GetQuantizationSubdirectory(quantization);
         var modelName = GetModelName(type);
 
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v2/{subdirectory}/{modelName}.bin";
+        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/{subdirectory}/{modelName}.bin";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
@@ -45,7 +45,7 @@ public static class WhisperGgmlDownloader
     public static async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v2/coreml/{modelName}-encoder.zip";
+        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/coreml/{modelName}-encoder.zip";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
