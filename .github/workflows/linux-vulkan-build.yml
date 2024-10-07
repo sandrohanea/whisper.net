@@ -1,12 +1,14 @@
 name: Windows Vulkan native build
 
 on:
-  workflow_dispatch: 
+  pull_request:
+    branches: [ "main" ]
+
 
 jobs:
   build:
-
-    runs-on: windows-2022
+  
+    runs-on: ubuntu-20.04
     permissions:
       contents: write
 
@@ -15,10 +17,13 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
-          
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
+      
+      - name: Install aarch64-linux-gnu-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
 
+      - name: Install gcc-arm-linux-gnueabihf
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+      
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1.0.0
         with:
@@ -27,13 +32,10 @@ jobs:
           install_runtime: true
           cache: true
           stripdown: true
-
-      - name: Run Build
-        run: | 
-          Import-Module ./windows-scripts.ps1
-          BuildWindowsBase -Arch "x64" -Configuration "Release"  -Vulkan $true
-        shell: pwsh
-        
+          
+      - name: Run linux
+        run: make linux_x64_vulkan
+      
       - name: Upload Windows Vulkan Build Artifacts
         uses: actions/upload-artifact@v3
         with:

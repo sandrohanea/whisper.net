@@ -118,6 +118,7 @@ public static class NativeLibraryLoader
                 RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
                 RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
                 RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
+                RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
                 _ => throw new InvalidOperationException("Unknown runtime library")
             };
 

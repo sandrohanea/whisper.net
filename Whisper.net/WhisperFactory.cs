@@ -15,7 +15,7 @@ namespace Whisper.net;
 /// </remarks>
 public sealed class WhisperFactory : IDisposable
 {
-    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.Cpu];
+    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.Cpu];
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private bool wasDisposed;

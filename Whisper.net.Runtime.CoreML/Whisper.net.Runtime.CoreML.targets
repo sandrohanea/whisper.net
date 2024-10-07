@@ -116,37 +116,37 @@
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-x64/libwhisper.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-x64/libwhisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-x64/libggml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-x64/libggml.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-x64/libwhisper.coreml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-x64/libwhisper.coreml.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-arm64/libwhisper.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-arm64/libwhisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libggml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-arm64/libggml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-arm64/libggml.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-arm64/libwhisper.coreml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-arm64/libwhisper.coreml.dylib</TargetPath>
     </None>
   </ItemGroup>
 </Project>

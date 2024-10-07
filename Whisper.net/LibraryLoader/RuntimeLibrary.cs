@@ -6,5 +6,6 @@ public enum RuntimeLibrary
 {
     Cpu,
     Cuda,
-    Vulkan
+    Vulkan,
+    CoreML
 }
