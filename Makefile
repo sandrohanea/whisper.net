@@ -79,8 +79,8 @@ linux_x64_cuda:
 	cmake -S . -B build/linux-x64-cuda -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON
 	cmake --build build/linux-x64-cuda --config $(BUILD_TYPE)
 	mkdir -p Whisper.net.Runtime.Cuda/linux-x64
-	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cuda/linux-x64/libwhisper.so
-	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cuda/linux-x64/libggml.so
+	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
+	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml.so
 
 linux_x64_openvino:
 	rm -rf build/linux-x64-openvino

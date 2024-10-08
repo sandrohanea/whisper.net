@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vulkan", "Vulkan\Vulkan.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenVinoExample", "OpenVinoExample\OpenVinoExample.csproj", "{1657F744-D10E-4532-B2B5-DD03838235DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelExecution", "ParallelExecution\ParallelExecution.csproj", "{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,10 @@ Global
 		{1657F744-D10E-4532-B2B5-DD03838235DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1657F744-D10E-4532-B2B5-DD03838235DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1657F744-D10E-4532-B2B5-DD03838235DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

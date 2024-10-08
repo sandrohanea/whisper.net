@@ -110,7 +110,7 @@ function BuildWindowsBase() {
 
     $runtimePath = "./Whisper.net.Runtime"
     if ($Cuda) {
-        $runtimePath += ".Cuda"
+        $runtimePath += ".Cuda.Windows"
     }
 
     if ($Vulkan) {
@@ -163,6 +163,8 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
 
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
     nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
