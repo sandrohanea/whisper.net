@@ -7,7 +7,7 @@ namespace Whisper.net.LibraryLoader;
 
 internal class WindowsLibraryLoader : ILibraryLoader
 {
-    public LoadResult OpenLibrary(string? fileName)
+    public LoadResult OpenLibrary(string? fileName, bool global)
     {
         var loadedLib = LoadLibrary(fileName);
 

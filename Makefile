@@ -34,7 +34,9 @@ apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulato
 apple_coreml_x64: copy_metal_coreml macos_x64_coreml
 apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml tvos_simulator_coreml tvos_coreml
 
-linux: linux_x64_cuda linux_x64 linux_arm64 linux_arm 
+linux: linux_x64 linux_arm64 linux_arm
+
+linux_cuda: linux_x64_cuda
 
 copy_metal:
 	cp whisper.cpp/ggml/src/ggml-metal.m Whisper.net.Runtime/ggml-metal.metal
@@ -56,6 +58,7 @@ linux_x64:
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	mkdir -p Whisper.net.Runtime/linux-x64
 	cp build/linux-x64/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/linux-x64/libwhisper.so
+	patchelf --set-rpath '$$ORIGIN' ./Whisper.net.Runtime/linux-x64/libwhisper.so
 	cp build/linux-x64/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/linux-x64/libggml.so
 
 linux_arm64:

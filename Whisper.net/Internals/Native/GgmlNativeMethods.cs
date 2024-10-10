@@ -9,7 +9,7 @@ internal static class GgmlNativeMethods
 #if IOS || MACCATALYST || TVOS
     const string libraryName = "__Internal";
 #else
-    const string libraryName = "ggml";
+    const string libraryName = "libggml.so";
 #endif
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]

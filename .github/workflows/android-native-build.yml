@@ -3,14 +3,13 @@ name: Android Native build
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 
 jobs:
   build:
 
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -27,7 +26,8 @@ jobs:
       run: make android
       
     - name: Upload Android Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: android-build
         path: 'Whisper.net.Run*/android-*/*'
+        retention-days: 7

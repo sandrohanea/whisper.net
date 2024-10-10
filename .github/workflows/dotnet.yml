@@ -4,42 +4,80 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main" ]
-  #pull_request:
-  #  branches: [ "main" ]
+  workflow_call:
     
 jobs:
-  build:
+  # dotnet-windows:
     
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+  #   runs-on: windows-latest
     
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - name: Install Java
-      if: runner.os == 'Windows'
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'microsoft'
-        java-version: '11'
-    - name: Install .NET Workloads
-      if: runner.os == 'Windows'
-      run: | 
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install ios --ignore-failed-sources
-          dotnet workload install tvos --ignore-failed-sources
-          dotnet workload install maccatalyst --ignore-failed-sources
-    - name: Restore dependencies
-      run: dotnet restore ./Whisper.net.sln
-    - name: Build
-      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror 
-    - name: Test
-      run: |
-        dotnet test ./Whisper.net.sln --no-build
+  #   steps:
+  #   - uses: actions/checkout@v3
+  
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: 8.0.x
+        
+  #   - name: Download Artifacts
+  #     id: download-artifact
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       merge-multiple: true
+
+  #   - name: Install Java
+  #     uses: actions/setup-java@v2
+  #     with:
+  #       distribution: 'microsoft'
+  #       java-version: '11'
+
+  #   - name: Install .NET Workloads
+  #     run: | 
+  #         dotnet workload install android --ignore-failed-sources
+  #         dotnet workload install ios --ignore-failed-sources
+  #         dotnet workload install tvos --ignore-failed-sources
+  #         dotnet workload install maccatalyst --ignore-failed-sources
+          
+  #   - name: Restore dependencies
+  #     run: dotnet restore ./Whisper.net.sln
+
+  #   - name: Build
+  #     run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+  #   - name: Test
+  #     run: |
+  #       dotnet test ./Whisper.net.sln --no-build
+
+  dotnet-linux:
+     runs-on: ubuntu-latest
+
+     steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+          
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+     
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+      - name: Check LDD for libwhisper
+        run: |
+           echo 'Checking ldd for libwhisper.so'
+           ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libwhisper.so
+            echo 'Checking ldd for libggml.so'
+            ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libggml.so
+
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build
+

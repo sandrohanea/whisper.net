@@ -4,5 +4,5 @@ namespace Whisper.net.LibraryLoader;
 
 internal interface ILibraryLoader
 {
-    LoadResult OpenLibrary(string? fileName);
+    LoadResult OpenLibrary(string? fileName, bool global);
 }

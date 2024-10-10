@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Whisper.net.Native;
 #endif
@@ -14,11 +15,11 @@ public static class NativeLibraryLoader
         return LoadResult.Success;
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (RuntimeOptions.Instance.BypassLoading || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
+        if (RuntimeOptions.Instance.BypassLoading
+            || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
             return LoadResult.Success;
         }
-
         return LoadLibraryComponent();
     }
 
@@ -49,9 +50,10 @@ public static class NativeLibraryLoader
             {
                 continue;
             }
+            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
-            var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath);
-
+#if NETSTANDARD2_0
+            var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath, global: true);
             // Maybe GPU is not available but we still have other runtime installed
             if (!ggmlLoadResult.IsSuccess)
             {
@@ -60,8 +62,29 @@ public static class NativeLibraryLoader
             }
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
-            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath);
+            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath, global: true);
+#else
+            var nativeLibraryLoaded = NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
+            var whisperLoaded = nativeLibraryLoaded != IntPtr.Zero ? LoadResult.Success : LoadResult.Failure("Cannot load the library");
+            Console.WriteLine("Whisper loaded: {0}", nativeLibraryLoaded);
+            if (whisperLoaded.IsSuccess)
+            {
+                NativeLibrary.SetDllImportResolver(typeof(NativeMethods).Assembly, DllImportResolver);
+                IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+                {
+                    Console.WriteLine("DllImportResolver: " + libraryName);
+                    if (libraryName == "libwhisper.so")
+                    {
+                        // Load the main library
+                        return NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
+                    }
+
+                    return IntPtr.Zero;
+                }
+            }
+#endif
+
+            Console.WriteLine($"Success loaded whisper: {whisperLoaded.IsSuccess} --- Error message: {whisperLoaded.ErrorMessage}");
 
             if (whisperLoaded.IsSuccess)
             {

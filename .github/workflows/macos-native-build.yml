@@ -3,13 +3,12 @@ name: MacOs Native build
 
 on:
   workflow_dispatch: 
+  workflow_call:
 
 
 jobs:
   intel-build:
     runs-on: macos-13
-    permissions:
-      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -24,18 +23,16 @@ jobs:
       run: make apple_x64
       
     - name: Upload Mac Intel Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mac-intel-build
         path: |
             Whisper.net.Run*/*/*
             Whisper.net.Run*/*.metal
+        retention-days: 7
       
   arm-build:
-    needs: intel-build
     runs-on: macos-14
-    permissions:
-       contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -45,14 +42,12 @@ jobs:
 
     - name: Run apple build for arm
       run: make apple_arm
-
-    - name: Run apple coreml build for arm
-      run: make apple_coreml_arm
       
     - name: Upload Mac Arm Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mac-arm-build
         path: |
             Whisper.net.Run*/*/*
             Whisper.net.Run*/*.metal
+        retention-days: 7
