@@ -72,6 +72,5 @@ jobs:
         
       - name: Test
         run: |
-          export LD_DEBUG=all
           dotnet test ./Whisper.net.sln --no-build
 
