@@ -7,8 +7,6 @@ jobs:
   build:
 
     runs-on: windows-2022
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4

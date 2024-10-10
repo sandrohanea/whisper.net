@@ -19,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C865649-4AED-4BBF-A7CA-BD68D21EF48F}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\android-native-build.yaml = .github\workflows\android-native-build.yaml
+		.github\workflows\cpu-build-and-test.yml = .github\workflows\cpu-build-and-test.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml

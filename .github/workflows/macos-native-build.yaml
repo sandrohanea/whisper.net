@@ -3,13 +3,12 @@ name: MacOs Native build
 
 on:
   workflow_dispatch: 
+  workflow_call:
 
 
 jobs:
   intel-build:
     runs-on: macos-13
-    permissions:
-      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -32,7 +31,6 @@ jobs:
             Whisper.net.Run*/*.metal
       
   arm-build:
-    needs: intel-build
     runs-on: macos-14
     permissions:
        contents: write

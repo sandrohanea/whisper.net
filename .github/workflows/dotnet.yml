@@ -4,21 +4,16 @@
 name: CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_call:
     
 jobs:
-  build:
+  dotnet-windows:
     
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: windows-latest
     
     steps:
     - uses: actions/checkout@v3
+  
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -28,17 +23,15 @@ jobs:
       id: download-artifact
       uses: actions/download-artifact@v4
       with:
-        name: wasm-build
+        merge-multiple: true
 
     - name: Install Java
-      if: runner.os == 'Windows'
       uses: actions/setup-java@v2
       with:
         distribution: 'microsoft'
         java-version: '11'
 
     - name: Install .NET Workloads
-      if: runner.os == 'Windows'
       run: | 
           dotnet workload install android --ignore-failed-sources
           dotnet workload install ios --ignore-failed-sources
@@ -47,8 +40,36 @@ jobs:
           
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
+
     - name: Build
-      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror 
+      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
     - name: Test
       run: |
         dotnet test ./Whisper.net.sln --no-build
+
+  dotnet-linux:
+     runs-on: ubuntu-latest
+
+     steps:
+      - uses: actions/checkout@v3
+  
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+          
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+     
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+     
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build

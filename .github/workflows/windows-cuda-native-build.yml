@@ -8,8 +8,6 @@ jobs:
   build:
 
     runs-on: windows-2019
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4

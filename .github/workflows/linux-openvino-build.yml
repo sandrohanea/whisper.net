@@ -7,8 +7,6 @@ jobs:
   build:
   
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
       
     steps:
     - uses: actions/checkout@v4
