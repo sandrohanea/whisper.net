@@ -73,7 +73,7 @@ public static class NativeLibraryLoader
                 IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
                 {
                     Console.WriteLine("DllImportResolver: " + libraryName);
-                    if (libraryName == "whisper")
+                    if (libraryName == "libwhisper.so")
                     {
                         // Load the main library
                         return NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
