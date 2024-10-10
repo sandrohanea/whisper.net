@@ -18,14 +18,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net.Tests", "Whispe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C865649-4AED-4BBF-A7CA-BD68D21EF48F}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\android-native-build.yaml = .github\workflows\android-native-build.yaml
+		.github\workflows\android-native-build.yml = .github\workflows\android-native-build.yml
 		.github\workflows\cpu-build-and-test.yml = .github\workflows\cpu-build-and-test.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
 		.github\workflows\linux-openvino-build.yml = .github\workflows\linux-openvino-build.yml
-		.github\workflows\macos-native-build.yaml = .github\workflows\macos-native-build.yaml
-		.github\workflows\wasm-native-build.yaml = .github\workflows\wasm-native-build.yaml
+		.github\workflows\macos-native-build.yml = .github\workflows\macos-native-build.yml
+		.github\workflows\wasm-native-build.yml = .github\workflows\wasm-native-build.yml
 		.github\workflows\windows-arm-native-build.yml = .github\workflows\windows-arm-native-build.yml
 		.github\workflows\windows-cuda-native-build.yml = .github\workflows\windows-cuda-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
