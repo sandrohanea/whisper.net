@@ -14,11 +14,11 @@ public static class NativeLibraryLoader
         return LoadResult.Success;
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (RuntimeOptions.Instance.BypassLoading || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
+        if (RuntimeOptions.Instance.BypassLoading
+            || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
             return LoadResult.Success;
         }
-
         return LoadLibraryComponent();
     }
 
@@ -49,11 +49,10 @@ public static class NativeLibraryLoader
             {
                 continue;
             }
+            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
+#if NETSTANDARD2_0
             var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath, global: true);
-
-            Console.WriteLine($"Success loaded ggml: {ggmlLoadResult.IsSuccess} --- Error message: {ggmlLoadResult.ErrorMessage}" );
-
             // Maybe GPU is not available but we still have other runtime installed
             if (!ggmlLoadResult.IsSuccess)
             {
@@ -62,8 +61,12 @@ public static class NativeLibraryLoader
             }
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
-            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
             var whisperLoaded = libraryLoader.OpenLibrary(whisperPath, global: true);
+#else
+            var nativeLibraryLoaded = NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
+            var whisperLoaded = nativeLibraryLoaded != IntPtr.Zero ? LoadResult.Success : LoadResult.Failure("Cannot load the library");
+#endif
+
             Console.WriteLine($"Success loaded whisper: {whisperLoaded.IsSuccess} --- Error message: {whisperLoaded.ErrorMessage}");
 
             if (whisperLoaded.IsSuccess)
