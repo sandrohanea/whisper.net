@@ -11,19 +11,19 @@ on:
     
 jobs:
   android:
-     uses: ./android-native-build.yml
+     uses: ./.android-native-build.yml
 
   macos:
-     uses: ./macos-native-build.yml 
+     uses: ./.macos-native-build.yml 
 
   windows:
-     uses: ./windows-native-build.yml
+     uses: ./.windows-native-build.yml
 
   wasm:
-     uses: ./wasm-native-build.yml
+     uses: ./.wasm-native-build.yml
 
   linux:
-     uses: ./linux-native-build.yml
+     uses: ./.linux-native-build.yml
 
   dotnet-build:
     needs:
