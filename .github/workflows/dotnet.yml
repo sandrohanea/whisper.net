@@ -24,41 +24,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
-    - name: Download Wasm artifacts
+    - name: Download Artifacts
       id: download-artifact
       uses: actions/download-artifact@v4
       with:
         name: wasm-build
-        
-    - name: Download Windows artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-build
-        
-    - name: Download Linux artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: linux-build
-        
-    - name: Download Mac Arm artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: mac-arm-build
-    
-    - name: Download Mac Intel artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: mac-intel-build
-
-    - name: Download Android artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: android-build
 
     - name: Install Java
       if: runner.os == 'Windows'
