@@ -58,7 +58,7 @@ linux_x64:
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	mkdir -p Whisper.net.Runtime/linux-x64
 	cp build/linux-x64/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime/linux-x64/libwhisper.so
-	patchelf --set-rpath '$$ORIGIN' ./Whisper.net.Runtime/linux-x64/libwhisper.so'
+	patchelf --set-rpath '$$ORIGIN' ./Whisper.net.Runtime/linux-x64/libwhisper.so
 	cp build/linux-x64/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime/linux-x64/libggml.so
 
 linux_arm64:
