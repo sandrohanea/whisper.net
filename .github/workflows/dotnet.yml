@@ -69,7 +69,14 @@ jobs:
      
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-        
+
+      - name: Check LDD for libwhisper
+        run: |
+           echo 'Checking ldd for libwhisper.so'
+           ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libwhisper.so
+            echo 'Checking ldd for libggml.so'
+            ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libggml.so
+
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build
