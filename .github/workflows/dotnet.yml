@@ -58,7 +58,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-          
+
+      - name: Install strace
+        run: sudo apt-get install strace
+
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4
@@ -72,12 +75,12 @@ jobs:
 
       - name: Check the runtime library
         run: |
-            ls -l Whisper.net.Tests/bin/Debug/net8.0
-            ls -l Whisper.net.Tests/bin/Debug/net8.0/runtimes
-            ls -l Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64
+            echo 'ldd whisper:'
             ldd Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libwhisper.so
+            echo 'ldd ggml:'
             ldd Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libggml.so
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build
+          strace -f -e trace=open,read,write,dlopen dotnet test ./Whisper.net.sln --no-build
+
