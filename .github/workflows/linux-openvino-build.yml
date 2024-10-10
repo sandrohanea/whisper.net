@@ -29,7 +29,7 @@ jobs:
         make linux_x64_openvino
     
     - name: Upload Linux OpenVino Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: linux-openvino-build
         path: 'Whisper.net.Run*/linux-*/*'

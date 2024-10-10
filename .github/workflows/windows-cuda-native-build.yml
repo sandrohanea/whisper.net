@@ -38,7 +38,7 @@ jobs:
         run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
 
       - name: Upload Windows Cuda Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-cuda-build
           path: 'Whisper.net.Run*/win-*/*'

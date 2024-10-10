@@ -33,7 +33,7 @@ jobs:
         shell: pwsh
         
       - name: Upload Windows Vulkan Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-vulkan-build
           path: 'Whisper.net.Run*/win-*/*'

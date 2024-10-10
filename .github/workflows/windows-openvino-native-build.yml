@@ -27,7 +27,7 @@ jobs:
         shell: pwsh
         
       - name: Upload Windows OpenVino Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-openvino-build
           path: 'Whisper.net.Run*/win-*/*'

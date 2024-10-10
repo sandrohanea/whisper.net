@@ -1,0 +1,28 @@
+
+name: MacOs CoreML Native build
+
+on:
+  workflow_dispatch: 
+  workflow_call:
+
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        ref: ${{ github.head_ref }}
+        
+    - name: Run apple coreml build for arm
+      run: make apple_coreml_arm
+      
+    - name: Upload CoreML Mac Arm Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mac-coreml-arm-build
+        path: |
+            Whisper.net.Run*/*/*
+            Whisper.net.Run*/*.metal
