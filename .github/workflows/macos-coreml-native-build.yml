@@ -26,3 +26,4 @@ jobs:
         path: |
             Whisper.net.Run*/*/*
             Whisper.net.Run*/*.metal
+        retention-days: 7

@@ -69,7 +69,15 @@ jobs:
      
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-     
+
+      - name: Check the runtime library
+        run: |
+            ls -l Whisper.net.Tests/bin/Debug/net8.0
+            ls -l Whisper.net.Tests/bin/Debug/net8.0/runtimes
+            ls -l Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64
+            ldd Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libwhisper.so
+            ldd Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libggml.so
+
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build

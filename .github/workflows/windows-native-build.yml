@@ -18,7 +18,7 @@ jobs:
           ref: ${{ github.head_ref }}
           
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
         
       - name: Run Build
         run: | 
@@ -31,6 +31,7 @@ jobs:
         with:
           name: windows-build
           path: 'Whisper.net.Run*/win-*/*'
+          retention-days: 7
 
   arm-build:
 
@@ -43,7 +44,7 @@ jobs:
           ref: ${{ github.head_ref }}
           
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
         
       - name: Run Build
         run: | 
@@ -56,3 +57,4 @@ jobs:
         with:
           name: windows-arm-build
           path: 'Whisper.net.Run*/win-*/*'
+          retention-days: 7

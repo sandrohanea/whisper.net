@@ -38,3 +38,4 @@ jobs:
       with:
         name: linux-build
         path: 'Whisper.net.Run*/linux-*/*'
+        retention-days: 7

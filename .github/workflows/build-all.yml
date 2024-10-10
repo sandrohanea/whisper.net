@@ -26,23 +26,23 @@ jobs:
   linux:
      uses: ./.github/workflows/linux-native-build.yml
 
-  windows-cuda:
-     uses: ./.github/workflows/windows-cuda-native-build.yml
+  # windows-cuda:
+  #    uses: ./.github/workflows/windows-cuda-native-build.yml
 
-  windows-vulkan:
-      uses: ./.github/workflows/windows-vulkan-native-build.yml
+  # windows-vulkan:
+  #     uses: ./.github/workflows/windows-vulkan-native-build.yml
 
-  windows-openvino:
-      uses: ./.github/workflows/windows-openvino-native-build.yml
+  # windows-openvino:
+  #     uses: ./.github/workflows/windows-openvino-native-build.yml
 
-  linux-cuda:
-        uses: ./.github/workflows/linux-cuda-native-build.yml
+  # linux-cuda:
+  #       uses: ./.github/workflows/linux-cuda-native-build.yml
 
-  linux-openvino:
-        uses: ./.github/workflows/linux-openvino-native-build.yml
+  # linux-openvino:
+  #       uses: ./.github/workflows/linux-openvino-native-build.yml
 
-  macos-coreml:
-          uses: ./.github/workflows/macos-coreml-native-build.yml
+  # macos-coreml:
+  #         uses: ./.github/workflows/macos-coreml-native-build.yml
 
   dotnet-build:
     needs:

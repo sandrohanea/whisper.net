@@ -18,7 +18,7 @@ jobs:
           ref: ${{ github.head_ref }}
           
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
         
       - name: Install OpenCl with vcpkg
         run: |
@@ -43,3 +43,4 @@ jobs:
         with:
           name: windows-cuda-build
           path: 'Whisper.net.Run*/win-*/*'
+          retention-days: 7

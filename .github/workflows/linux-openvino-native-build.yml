@@ -34,3 +34,4 @@ jobs:
       with:
         name: linux-openvino-build
         path: 'Whisper.net.Run*/linux-*/*'
+        retention-days: 7
