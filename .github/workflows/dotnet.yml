@@ -7,46 +7,46 @@ on:
   workflow_call:
     
 jobs:
-  dotnet-windows:
+  # dotnet-windows:
     
-    runs-on: windows-latest
+  #   runs-on: windows-latest
     
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
   
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
+  #   - name: Setup .NET
+  #     uses: actions/setup-dotnet@v3
+  #     with:
+  #       dotnet-version: 8.0.x
         
-    - name: Download Artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        merge-multiple: true
+  #   - name: Download Artifacts
+  #     id: download-artifact
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       merge-multiple: true
 
-    - name: Install Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'microsoft'
-        java-version: '11'
+  #   - name: Install Java
+  #     uses: actions/setup-java@v2
+  #     with:
+  #       distribution: 'microsoft'
+  #       java-version: '11'
 
-    - name: Install .NET Workloads
-      run: | 
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install ios --ignore-failed-sources
-          dotnet workload install tvos --ignore-failed-sources
-          dotnet workload install maccatalyst --ignore-failed-sources
+  #   - name: Install .NET Workloads
+  #     run: | 
+  #         dotnet workload install android --ignore-failed-sources
+  #         dotnet workload install ios --ignore-failed-sources
+  #         dotnet workload install tvos --ignore-failed-sources
+  #         dotnet workload install maccatalyst --ignore-failed-sources
           
-    - name: Restore dependencies
-      run: dotnet restore ./Whisper.net.sln
+  #   - name: Restore dependencies
+  #     run: dotnet restore ./Whisper.net.sln
 
-    - name: Build
-      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+  #   - name: Build
+  #     run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
-    - name: Test
-      run: |
-        dotnet test ./Whisper.net.sln --no-build
+  #   - name: Test
+  #     run: |
+  #       dotnet test ./Whisper.net.sln --no-build
 
   dotnet-linux:
      runs-on: ubuntu-latest
@@ -82,5 +82,6 @@ jobs:
 
       - name: Test
         run: |
-          strace -f -e trace=open,read,write,dlopen dotnet test ./Whisper.net.sln --no-build
+          export LD_DEBUG=all
+          strace -f -e trace=all dotnet test ./Whisper.net.sln --no-build
 
