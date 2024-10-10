@@ -142,7 +142,6 @@ function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration 
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
     BuildWindowsBase -Arch "x64" -Configuration $Configuration;
     BuildWindowsBase -Arch "x86" -Configuration $Configuration;
 }

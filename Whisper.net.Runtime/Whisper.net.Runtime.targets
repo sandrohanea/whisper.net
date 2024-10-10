@@ -22,8 +22,9 @@
             <Pack>true</Pack>
             <PackageCopyToOutput>true</PackageCopyToOutput>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <TargetPath>runtimes/maccatalyst/libwhisper.dylib</TargetPath>
+            <TargetPath>libwhisper.dylib</TargetPath>
         </None>
+      
     </ItemGroup>
     <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvos-'))">
         <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libwhisper.dylib">

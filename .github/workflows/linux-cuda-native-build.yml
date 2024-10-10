@@ -1,4 +1,4 @@
-name: Linux Native build
+name: Linux Cuda Native build
 
 on:
   workflow_dispatch:
@@ -23,10 +23,18 @@ jobs:
     - name: Install gcc-arm-linux-gnueabihf
       run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
     
-    - name: Run linux
-      run: make linux
+    - name: Install CUDA Toolkit
+      uses: Jimver/cuda-toolkit@v0.2.11
+      with:
+        cuda: '12.1.0'
     
-    - name: Upload Linux Build Artifacts
+    - name: Run linux
+      run: make linux_cuda
+    
+    - name: Remove CUDA installer
+      run: rm -rf cuda_installer-*
+      
+    - name: Upload Linux Cuda Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: linux-build

@@ -1,0 +1,46 @@
+name: Windows Cuda native build
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+  
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
+          
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1
+        
+      - name: Install OpenCl with vcpkg
+        run: |
+           vcpkg --triplet=x64-windows install opencl
+
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: '12.1.0'
+
+      - name: Run Build
+        run: | 
+          Import-Module ./windows-scripts.ps1
+          BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
+        shell: pwsh
+
+      - name: Remove CUDA installer
+        run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
+
+      - name: Upload Windows Cuda Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-cuda-build
+          path: 'Whisper.net.Run*/win-*/*'

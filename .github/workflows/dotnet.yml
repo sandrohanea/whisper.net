@@ -6,8 +6,8 @@ name: CI
 on:
   push:
     branches: [ "main" ]
-  #pull_request:
-  #  branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
     
 jobs:
   build:
@@ -22,13 +22,51 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
+        
+    - name: Download Wasm artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: wasm-build
+        
+    - name: Download Windows artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-build
+        
+    - name: Download Linux artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: linux-build
+        
+    - name: Download Mac Arm artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mac-arm-build
+    
+    - name: Download Mac Intel artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mac-intel-build
+
+    - name: Download Android artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: android-build
+
     - name: Install Java
       if: runner.os == 'Windows'
       uses: actions/setup-java@v2
       with:
         distribution: 'microsoft'
         java-version: '11'
+
     - name: Install .NET Workloads
       if: runner.os == 'Windows'
       run: | 
@@ -36,6 +74,7 @@ jobs:
           dotnet workload install ios --ignore-failed-sources
           dotnet workload install tvos --ignore-failed-sources
           dotnet workload install maccatalyst --ignore-failed-sources
+          
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
     - name: Build
