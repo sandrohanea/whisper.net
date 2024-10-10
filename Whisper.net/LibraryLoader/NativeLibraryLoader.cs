@@ -50,7 +50,9 @@ public static class NativeLibraryLoader
                 continue;
             }
 
-            var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath);
+            var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath, global: true);
+
+            Console.WriteLine($"Success loaded ggml: {ggmlLoadResult.IsSuccess} --- Error message: {ggmlLoadResult.ErrorMessage}" );
 
             // Maybe GPU is not available but we still have other runtime installed
             if (!ggmlLoadResult.IsSuccess)
@@ -61,7 +63,8 @@ public static class NativeLibraryLoader
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath);
+            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath, global: false);
+            Console.WriteLine($"Success loaded whisper: {whisperLoaded.IsSuccess} --- Error message: {whisperLoaded.ErrorMessage}");
 
             if (whisperLoaded.IsSuccess)
             {
