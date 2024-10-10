@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Whisper.net.Native;
 #endif
@@ -65,6 +66,22 @@ public static class NativeLibraryLoader
 #else
             var nativeLibraryLoaded = NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
             var whisperLoaded = nativeLibraryLoaded != IntPtr.Zero ? LoadResult.Success : LoadResult.Failure("Cannot load the library");
+            Console.WriteLine("Whisper loaded: {0}", nativeLibraryLoaded);
+            if (whisperLoaded.IsSuccess)
+            {
+                NativeLibrary.SetDllImportResolver(typeof(NativeMethods).Assembly, DllImportResolver);
+                IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+                {
+                    Console.WriteLine("DllImportResolver: " + libraryName);
+                    if (libraryName == "whisper")
+                    {
+                        // Load the main library
+                        return NativeLibrary.Load(whisperPath, typeof(NativeLibraryLoader).Assembly, DllImportSearchPath.UseDllDirectoryForDependencies);
+                    }
+
+                    return IntPtr.Zero;
+                }
+            }
 #endif
 
             Console.WriteLine($"Success loaded whisper: {whisperLoaded.IsSuccess} --- Error message: {whisperLoaded.ErrorMessage}");
