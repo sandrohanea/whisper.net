@@ -58,10 +58,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-
-      - name: Install strace
-        run: sudo apt-get install strace
-
+          
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4

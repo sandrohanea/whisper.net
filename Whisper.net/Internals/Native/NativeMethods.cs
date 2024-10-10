@@ -10,7 +10,7 @@ internal static class NativeMethods
 #if IOS || MACCATALYST || TVOS
     const string libraryName = "__Internal";
 #else
-    const string libraryName = "whisper";
+    const string libraryName = "libwhisper.so";
 #endif
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
