@@ -11,19 +11,19 @@ on:
     
 jobs:
   android:
-     uses: ./.android-native-build.yml
+     uses: ./.android-native-build.yml@${{ github.head_ref }}
 
   macos:
-     uses: ./.macos-native-build.yml 
+     uses: ./.macos-native-build.yml@${{ github.head_ref }}
 
   windows:
-     uses: ./.windows-native-build.yml
+     uses: ./.windows-native-build.yml@${{ github.head_ref }}
 
   wasm:
-     uses: ./.wasm-native-build.yml
+     uses: ./.wasm-native-build.yml@${{ github.head_ref }}
 
   linux:
-     uses: ./.linux-native-build.yml
+     uses: ./.linux-native-build.yml@${{ github.head_ref }}
 
   dotnet-build:
     needs:
@@ -32,5 +32,5 @@ jobs:
      - windows
      - wasm
      - linux
-    uses: ./dotnet.yml
+    uses: ./dotnet.yml@${{ github.head_ref }}
     
