@@ -12,19 +12,19 @@ on:
 jobs:
 
   android:
-     uses: .github/workflows/android-native-build.yml
+     uses: ./.github/workflows/android-native-build.yml
 
   macos:
-     uses: .github/workflows/macos-native-build.yml
+     uses: ./.github/workflows/macos-native-build.yml
 
   windows:
-     uses: .github/workflows/windows-native-build.yml
+     uses: ./.github/workflows/windows-native-build.yml
 
   wasm:
-     uses: .github/workflows/wasm-native-build.yml
+     uses: ./.github/workflows/wasm-native-build.yml
 
   linux:
-     uses: .github/workflows/linux-native-build.yml
+     uses: ./.github/workflows/linux-native-build.yml
 
   dotnet-build:
     needs:
@@ -33,5 +33,5 @@ jobs:
      - windows
      - wasm
      - linux
-    uses: .github/workflows/dotnet.yml
+    uses: ./.github/workflows/dotnet.yml
     
