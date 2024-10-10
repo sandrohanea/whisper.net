@@ -23,7 +23,7 @@ internal class LinuxLibraryLoader : ILibraryLoader
         IntPtr loadedLib;
         try
         {
-            // open with rtls lazy flag
+            // open with rtld now + (global if true)
             loadedLib = NativeOpenLibraryLibdl2(fileName, global ? 0x00102 : 0x00002);
         }
         catch (DllNotFoundException)

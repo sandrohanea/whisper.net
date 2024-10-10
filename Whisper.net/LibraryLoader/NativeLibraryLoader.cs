@@ -63,7 +63,7 @@ public static class NativeLibraryLoader
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath, global: false);
+            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath, global: true);
             Console.WriteLine($"Success loaded whisper: {whisperLoaded.IsSuccess} --- Error message: {whisperLoaded.ErrorMessage}");
 
             if (whisperLoaded.IsSuccess)
