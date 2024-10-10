@@ -32,8 +32,6 @@ jobs:
       
   arm-build:
     runs-on: macos-14
-    permissions:
-       contents: write
 
     steps:
     - uses: actions/checkout@v4
