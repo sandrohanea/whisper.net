@@ -10,20 +10,21 @@ on:
     branches: [ "main" ]
     
 jobs:
+
   android:
-     uses: ./.android-native-build.yml@${{ github.head_ref }}
+     uses: ./.github/workflows/android-native-build.yml
 
   macos:
-     uses: ./.macos-native-build.yml@${{ github.head_ref }}
+     uses: ./.github/workflows/macos-native-build.yml
 
   windows:
-     uses: ./.windows-native-build.yml@${{ github.head_ref }}
+     uses: ./.github/workflows/windows-native-build.yml
 
   wasm:
-     uses: ./.wasm-native-build.yml@${{ github.head_ref }}
+     uses: ./.github/workflows/wasm-native-build.yml
 
   linux:
-     uses: ./.linux-native-build.yml@${{ github.head_ref }}
+     uses: ./.github/workflows/linux-native-build.yml
 
   dotnet-build:
     needs:
@@ -32,5 +33,5 @@ jobs:
      - windows
      - wasm
      - linux
-    uses: ./dotnet.yml@${{ github.head_ref }}
+    uses: ./.github/workflows/dotnet.yml
     
