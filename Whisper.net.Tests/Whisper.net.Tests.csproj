@@ -27,7 +27,6 @@
 
   <!-- Adding device specific props in maui -->
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-ios' or '$(TargetFramework)' == 'net8.0-maccatalyst' or '$(TargetFramework)' == 'net8.0-tvos' or '$(TargetFramework)' == 'net8.0-android' ">
-    <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
     <ApplicationId>whisper.net.test.app</ApplicationId>
     <ApplicationTitle>Whisper.net.Test</ApplicationTitle>
