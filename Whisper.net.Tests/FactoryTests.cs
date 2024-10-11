@@ -1,11 +1,20 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using FluentAssertions;
 using NUnit.Framework;
+using Whisper.net.Logger;
 
 namespace Whisper.net.Tests;
 
 public class FactoryTests
 {
+    public FactoryTests()
+    {
+        LogProvider.Instance.OnLog += (level, message) =>
+        {
+            Console.WriteLine($"[{level}] {message}");
+        };
+    }
+
     [Test]
     public void CreateBuilder_WithNoModel_ShouldThrow()
     {

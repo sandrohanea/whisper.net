@@ -18,34 +18,29 @@ internal class LinuxLibraryLoader : ILibraryLoader
     [DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError2();
 
-    public LoadResult OpenLibrary(string? fileName, bool global)
+    public IntPtr OpenLibrary(string fileName, bool global)
     {
-        IntPtr loadedLib;
         try
         {
             // open with rtld now + (global if true)
-            loadedLib = NativeOpenLibraryLibdl2(fileName, global ? 0x00102 : 0x00002);
+            return NativeOpenLibraryLibdl2(fileName, global ? 0x00102 : 0x00002);
         }
         catch (DllNotFoundException)
         {
-            loadedLib = NativeOpenLibraryLibdl(fileName, global ? 0x00102 : 0x00002);
+            return NativeOpenLibraryLibdl(fileName, global ? 0x00102 : 0x00002);
         }
+    }
 
-        if (loadedLib == IntPtr.Zero)
+    public string GetLastError()
+    {
+        try
         {
-            string errorMessage;
-            try
-            {
-                errorMessage = Marshal.PtrToStringAnsi(GetLoadError2()) ?? "Unknown error";
-            }
-            catch (DllNotFoundException)
-            {
-                errorMessage = Marshal.PtrToStringAnsi(GetLoadError()) ?? "Unknown error";
-            }
-
-            return LoadResult.Failure(errorMessage);
+            return Marshal.PtrToStringAnsi(GetLoadError2()) ?? "Unknown error";
+        }
+        catch (DllNotFoundException)
+        {
+            return Marshal.PtrToStringAnsi(GetLoadError()) ?? "Unknown error";
         }
 
-        return LoadResult.Success;
     }
 }

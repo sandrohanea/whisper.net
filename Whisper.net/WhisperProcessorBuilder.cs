@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using Whisper.net.Internals.Native;
 using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
@@ -10,13 +11,15 @@ namespace Whisper.net;
 public class WhisperProcessorBuilder
 {
     private readonly WhisperProcessorOptions whisperProcessorOptions;
+    private readonly INativeWhisper nativeWhisper;
 
-    internal WhisperProcessorBuilder(IntPtr context)
+    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper)
     {
         whisperProcessorOptions = new WhisperProcessorOptions()
         {
             ContextHandle = context
         };
+        this.nativeWhisper = nativeWhisper;
     }
 
     /// <summary>
@@ -528,6 +531,6 @@ public class WhisperProcessorBuilder
     /// <returns>The <seealso cref="WhisperProcessor"/> build with these configs.</returns>
     public WhisperProcessor Build()
     {
-        return new WhisperProcessor(whisperProcessorOptions);
+        return new WhisperProcessor(whisperProcessorOptions, nativeWhisper);
     }
 }

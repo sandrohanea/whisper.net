@@ -221,11 +221,11 @@ public sealed class WaveParser(Stream waveStream)
             var maxBytesToRead = (int)Math.Min(buffer.Length, (SamplesCount - sampleIndex) * FrameSize);
             if (useAsync)
             {
-#if NET6_0_OR_GREATER
+#if NETSTANDARD
+                bytesRead = await waveStream.ReadAsync(buffer, 0, maxBytesToRead, cancellationToken);
+#else
                 var memoryToUse = maxBytesToRead == buffer.Length ? memoryBuffer : memoryBuffer[..maxBytesToRead];
                 bytesRead = await waveStream.ReadAsync(memoryToUse, cancellationToken);
-#else
-                bytesRead = await waveStream.ReadAsync(buffer, 0, maxBytesToRead, cancellationToken);
 #endif
             }
             else
@@ -270,10 +270,10 @@ public sealed class WaveParser(Stream waveStream)
         {
             if (useAsync)
             {
-#if NET6_0_OR_GREATER
-                return await waveStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
-#else
+#if NETSTANDARD
                 return await waveStream.ReadAsync(buffer, offset, count, cancellationToken);
+#else
+                return await waveStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
 #endif
             }
 
