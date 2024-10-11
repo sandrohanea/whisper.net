@@ -7,46 +7,87 @@ on:
   workflow_call:
     
 jobs:
-  # dotnet-windows:
+
+  dotnet-macos:
+    runs-on: macos-14
+      
+    steps:
+    - uses: actions/checkout@v3
     
-  #   runs-on: windows-latest
-    
-  #   steps:
-  #   - uses: actions/checkout@v3
-  
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v3
-  #     with:
-  #       dotnet-version: 8.0.x
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
         
-  #   - name: Download Artifacts
-  #     id: download-artifact
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       merge-multiple: true
-
-  #   - name: Install Java
-  #     uses: actions/setup-java@v2
-  #     with:
-  #       distribution: 'microsoft'
-  #       java-version: '11'
-
-  #   - name: Install .NET Workloads
-  #     run: | 
-  #         dotnet workload install android --ignore-failed-sources
-  #         dotnet workload install ios --ignore-failed-sources
-  #         dotnet workload install tvos --ignore-failed-sources
-  #         dotnet workload install maccatalyst --ignore-failed-sources
+    - name: Download Artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+  
+    - name: Install Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'microsoft'
+        java-version: '11'
+  
+    - name: Install .NET Workloads
+      run: | 
+          dotnet workload install android --ignore-failed-sources
+          dotnet workload install ios --ignore-failed-sources
+          dotnet workload install tvos --ignore-failed-sources
+          dotnet workload install maccatalyst --ignore-failed-sources
           
-  #   - name: Restore dependencies
-  #     run: dotnet restore ./Whisper.net.sln
+    - name: Restore dependencies
+      run: dotnet restore ./Whisper.net.sln
+  
+    - name: Build
+      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+  
+    - name: Test
+      run: |
+        dotnet test ./Whisper.net.sln --no-build
 
-  #   - name: Build
-  #     run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+  dotnet-windows:
+    
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+  
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Download Artifacts
+      id: download-artifact
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
 
-  #   - name: Test
-  #     run: |
-  #       dotnet test ./Whisper.net.sln --no-build
+    - name: Install Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'microsoft'
+        java-version: '11'
+
+    - name: Install .NET Workloads
+      run: | 
+          dotnet workload install android --ignore-failed-sources
+          dotnet workload install ios --ignore-failed-sources
+          dotnet workload install tvos --ignore-failed-sources
+          dotnet workload install maccatalyst --ignore-failed-sources
+          
+    - name: Restore dependencies
+      run: dotnet restore ./Whisper.net.sln
+
+    - name: Build
+      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+    - name: Test
+      run: |
+        dotnet test ./Whisper.net.sln --no-build
 
   dotnet-linux:
      runs-on: ubuntu-latest

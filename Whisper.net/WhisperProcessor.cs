@@ -92,7 +92,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="speedUp"></param>
     /// <returns></returns>
     public (string? language, float probability) DetectLanguageWithProbability(float[] samples)
     {
@@ -103,7 +102,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="speedUp"></param>
     /// <returns></returns>
     public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
     {
@@ -720,7 +718,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
+                var eventHandlerArgs = new SegmentData(textAnsi!, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {

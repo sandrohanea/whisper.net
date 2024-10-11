@@ -22,9 +22,6 @@ jobs:
     - name: Install gcc-arm-linux-gnueabihf
       run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
     
-    - name: Install patchelf
-      run: sudo apt-get update && sudo apt-get install -y patchelf
-    
     - name: Run linux
       run: make linux
     
