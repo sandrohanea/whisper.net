@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		Directory.Packages.props = Directory.Packages.props
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -19,18 +20,19 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C865649-4AED-4BBF-A7CA-BD68D21EF48F}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\android-native-build.yml = .github\workflows\android-native-build.yml
-		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\build-all.yml = .github\workflows\build-all.yml
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
-		.github\workflows\macos-coreml-native-build.yml = .github\workflows\macos-coreml-native-build.yml
 		.github\workflows\linux-openvino-native-build.yml = .github\workflows\linux-openvino-native-build.yml
+		.github\workflows\macos-coreml-native-build.yml = .github\workflows\macos-coreml-native-build.yml
 		.github\workflows\macos-native-build.yml = .github\workflows\macos-native-build.yml
+		.github\workflows\pack-all.yml = .github\workflows\pack-all.yml
 		.github\workflows\wasm-native-build.yml = .github\workflows\wasm-native-build.yml
 		.github\workflows\windows-cuda-native-build.yml = .github\workflows\windows-cuda-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
-		.github\workflows\windows-vulkan-native-build.yml = .github\workflows\windows-vulkan-native-build.yml
 		.github\workflows\windows-openvino-native-build.yml = .github\workflows\windows-openvino-native-build.yml
+		.github\workflows\windows-vulkan-native-build.yml = .github\workflows\windows-vulkan-native-build.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884}"

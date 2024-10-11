@@ -17,7 +17,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: |
+          8.0.x
+          6.0.x
         
     - name: Download Artifacts
       id: download-artifact
@@ -58,7 +60,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: |
+          8.0.x
+          6.0.x
         
     - name: Download Artifacts
       id: download-artifact
@@ -98,7 +102,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+         dotnet-version: |
+           8.0.x
+           6.0.x
           
       - name: Download Artifacts
         id: download-artifact

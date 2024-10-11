@@ -52,4 +52,14 @@ jobs:
      - wasm
      - linux
     uses: ./.github/workflows/dotnet.yml
-    
+
+  pack-all:
+    needs:
+     - dotnet-build
+   # - windows-cuda
+   # - windows-vulkan
+   # - windows-openvino
+   # - linux-cuda
+   # - linux-vulkan
+   # - macos-coreml
+    uses: ./.github/workflows/pack-all.yml
