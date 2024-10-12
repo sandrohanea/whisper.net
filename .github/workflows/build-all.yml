@@ -60,5 +60,6 @@ jobs:
      - windows-vulkan
      - windows-openvino
      - linux-cuda
+     - linux-openvino
      - macos-coreml
     uses: ./.github/workflows/pack-all.yml
