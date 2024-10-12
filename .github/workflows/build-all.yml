@@ -37,7 +37,7 @@ jobs:
 
   linux-cuda:
         uses: ./.github/workflows/linux-cuda-native-build.yml
-
+        
   linux-openvino:
         uses: ./.github/workflows/linux-openvino-native-build.yml
 
@@ -60,6 +60,5 @@ jobs:
      - windows-vulkan
      - windows-openvino
      - linux-cuda
-     - linux-vulkan
      - macos-coreml
     uses: ./.github/workflows/pack-all.yml
