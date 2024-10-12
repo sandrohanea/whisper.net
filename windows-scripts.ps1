@@ -1,11 +1,3 @@
-function PackAllNugets([Parameter(Mandatory = $true)] [string]$Version, [Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    New-Item -ItemType Directory -Force -Path "nupkgs"
-    nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
-    dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c $Configuration
-    nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
-}
-
 function Get-VisualStudioCMakePath() {
     $vsWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     if (-not (Test-Path $vsWherePath)) {
