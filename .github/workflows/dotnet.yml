@@ -98,6 +98,9 @@ jobs:
 
   dotnet-android:
      runs-on: ubuntu-latest
+     
+     env:
+       USE_WHISPER_MAUI: 'TRUE'
 
      steps:
        - uses: actions/checkout@v3
