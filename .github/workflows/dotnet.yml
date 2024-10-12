@@ -129,14 +129,14 @@ jobs:
          run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
        - name: Publish android build
-         run: dotnet publish .\tests\Whisper.net.Maui.Tests\Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
 
 
        - name: Run tests
          uses: reactivecircus/android-emulator-runner@v2
          with:
            api-level: 30
-           script: xharness android test --app .\tests\Whisper.net.Maui.Tests\bin\Debug\net8.0-android\com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o xharnessoutput
+           script: xharness android test --app ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o xharnessoutput
 
        - name: Upload output
          uses: actions/upload-artifact@v4
