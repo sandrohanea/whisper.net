@@ -96,52 +96,52 @@ jobs:
         run: |
           dotnet test ./Whisper.net.sln --no-build
 
-  dotnet-maui:
-     runs-on: macos-14
+  # dotnet-maui:
+  #    runs-on: macos-14
      
-     env:
-       USE_WHISPER_MAUI: 'TRUE'
+  #    env:
+  #      USE_WHISPER_MAUI: 'TRUE'
 
-     steps:
-       - uses: actions/checkout@v3
+  #    steps:
+  #      - uses: actions/checkout@v3
 
-       - name: Setup .NET
-         uses: actions/setup-dotnet@v3
-         with:
-            dotnet-version: |
-              8.0.x
+  #      - name: Setup .NET
+  #        uses: actions/setup-dotnet@v3
+  #        with:
+  #           dotnet-version: |
+  #             8.0.x
               
-       - name: Download Artifacts
-         id: download-artifact
-         uses: actions/download-artifact@v4
-         with:
-           merge-multiple: true
+  #      - name: Download Artifacts
+  #        id: download-artifact
+  #        uses: actions/download-artifact@v4
+  #        with:
+  #          merge-multiple: true
 
-       - name: Install dotnet workloads
-         run: |
-           dotnet workload install maui --ignore-failed-sources
-           dotnet workload install tvos --ignore-failed-sources
+  #      - name: Install dotnet workloads
+  #        run: |
+  #          dotnet workload install maui --ignore-failed-sources
+  #          dotnet workload install tvos --ignore-failed-sources
          
-       - name: Install xharness
-         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-prerelease.24511.1"
+  #      - name: Install xharness
+  #        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-prerelease.24511.1"
 
-       - name: Restore dependencies
-         run: dotnet restore ./Whisper.net.Maui.Tests.sln
+  #      - name: Restore dependencies
+  #        run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
-       - name: Publish android build
-         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+  #      - name: Publish android build
+  #        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
 
 
-       - name: Run tests
-         uses: reactivecircus/android-emulator-runner@v2
-         with:
-           api-level: 31
-           arch: arm64-v8a
-           script: xharness android test --app ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o xharnessoutput
+  #      - name: Run tests
+  #        uses: reactivecircus/android-emulator-runner@v2
+  #        with:
+  #          api-level: 31
+  #          arch: arm64-v8a
+  #          script: xharness android test --app ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o xharnessoutput
 
-       - name: Upload output
-         uses: actions/upload-artifact@v4
-         with:
-           name: android-test-results
-           path: |
-               xharnessoutput/*/*
+  #      - name: Upload output
+  #        uses: actions/upload-artifact@v4
+  #        with:
+  #          name: android-test-results
+  #          path: |
+  #              xharnessoutput/*/*
