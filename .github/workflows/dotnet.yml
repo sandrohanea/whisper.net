@@ -121,7 +121,7 @@ jobs:
          run: dotnet workload install maui --ignore-failed-sources
          
        - name: Install xharness
-         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json -version "10.0.0-prerelease.24511.1"
+         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-prerelease.24511.1"
 
        - name: Restore dependencies
          run: dotnet restore ./Whisper.net.Maui.Tests.sln
