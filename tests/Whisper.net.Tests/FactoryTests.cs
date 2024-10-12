@@ -1,21 +1,24 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using FluentAssertions;
-using NUnit.Framework;
 using Whisper.net.Logger;
+using Xunit;
 
 namespace Whisper.net.Tests;
 
-public class FactoryTests
+public class FactoryTests : IClassFixture<TinyModelFixture>
 {
-    public FactoryTests()
+    private readonly TinyModelFixture model;
+
+    public FactoryTests(TinyModelFixture model)
     {
         LogProvider.Instance.OnLog += (level, message) =>
         {
             Console.WriteLine($"[{level}] {message}");
         };
+        this.model = model;
     }
 
-    [Test]
+    [Fact]
     public void CreateBuilder_WithNoModel_ShouldThrow()
     {
         Action loadingMethod = () =>
@@ -27,7 +30,7 @@ public class FactoryTests
         loadingMethod.Should().Throw<WhisperModelLoadException>();
     }
 
-    [Test]
+    [Fact]
     public void CreateBuilder_WithCorruptedModel_ShouldThrow()
     {
         Action loadingMethod = () =>
@@ -39,27 +42,27 @@ public class FactoryTests
         loadingMethod.Should().Throw<WhisperModelLoadException>();
     }
 
-    [Test]
+    [Fact]
     public void CreateBuilder_WithFileModel_ShouldReturnBuilder()
     {
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         var builder = factory.CreateBuilder();
         builder.Should().NotBeNull();
     }
 
-    [Test]
+    [Fact]
     public void CreateBuilder_WithBufferedModel_ShouldReturnBuilder()
     {
-        var buffer = File.ReadAllBytes(TestModelProvider.GgmlModelTiny);
+        var buffer = File.ReadAllBytes(model.ModelFile);
         using var factory = WhisperFactory.FromBuffer(buffer);
         var builder = factory.CreateBuilder();
         builder.Should().NotBeNull();
     }
 
-    [Test]
+    [Fact]
     public void CreateBuilder_WithDisposedFactory_ShouldThrow()
     {
-        var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        var factory = WhisperFactory.FromPath(model.ModelFile);
         factory.Dispose();
 
         Action loadingMethod = () =>

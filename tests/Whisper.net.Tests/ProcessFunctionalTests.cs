@@ -1,19 +1,19 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
 namespace Whisper.net.Tests;
 
-public class ProcessFunctionalTests
+public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
-    [Test]
+    [Fact]
     public void TestHappyFlow()
     {
         var segments = new List<SegmentData>();
         var progress = new List<int>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -36,12 +36,12 @@ public class ProcessFunctionalTests
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
-    [Test]
+    [Fact]
     public void TestCancelEncoder()
     {
         var segments = new List<SegmentData>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -59,12 +59,12 @@ public class ProcessFunctionalTests
         encoderBegins.Should().HaveCount(1);
     }
 
-    [Test]
+    [Fact]
     public async Task TestAutoDetectLanguageWithRomanian()
     {
         var segments = new List<SegmentData>();
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var processor = factory.CreateBuilder()
                         .WithLanguageDetection()
                         .WithEncoderBeginHandler((e) =>
@@ -84,12 +84,12 @@ public class ProcessFunctionalTests
         segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
     }
 
-    [Test]
+    [Fact]
     public async Task Process_WhenMultichannel_ProcessCorrectly()
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithSegmentEventHandler(segments.Add)
@@ -101,7 +101,7 @@ public class ProcessFunctionalTests
         segments.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
-    [Test]
+    [Fact]
     public async Task Process_CalledMultipleTimes_Serially_WillCompleteEverytime()
     {
 
@@ -111,7 +111,7 @@ public class ProcessFunctionalTests
 
         OnSegmentEventHandler onNewSegment = segments1.Add;
 
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithSegmentEventHandler((s) => onNewSegment(s))

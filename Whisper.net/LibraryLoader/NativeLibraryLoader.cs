@@ -11,8 +11,10 @@ public static class NativeLibraryLoader
 {
     internal static LoadResult LoadNativeLibrary()
     {
-#if IOS || MACCATALYST || TVOS || ANDROID
-        return LoadResult.Success(new DllImportsInternalNativeWhisper());
+#if IOS || MACCATALYST || TVOS
+        return LoadResult.Success(new DllImportsNativeWhisper());
+#elif ANDROID       
+        return LoadResult.Success(new DllImportsNativeWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
         if (RuntimeOptions.Instance.BypassLoading
@@ -82,7 +84,7 @@ public static class NativeLibraryLoader
         // We don't have any error, so we couldn't even find some library to load.
         if (lastError == null)
         {
-            throw new FileNotFoundException($"Native Library not found in default paths. " +
+            throw new FileNotFoundException($"Native Library not found in default paths." +
                 $"Verify you have have included the native Whisper library in your application, " +
                 $"or install the default libraries with the Whisper.net.Runtime NuGet.");
         }
@@ -114,36 +116,40 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        var assemblySearchPath = new[]
+        var assemblySearchPaths = new[]
             {
                 AppDomain.CurrentDomain.RelativeSearchPath,
+                AppDomain.CurrentDomain.BaseDirectory,
                 Path.GetDirectoryName(typeof(NativeLibraryLoader).Assembly.Location),
                 Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
-            }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
-
-        var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
-             ? "runtimes"
-             : Path.Combine(assemblySearchPath, "runtimes");
+            }.Where(it => !string.IsNullOrEmpty(it));
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
-            var runtimePath = library switch
+            foreach (var assemblySearchPath in assemblySearchPaths)
             {
-                RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
-                RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
-                RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
-                RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
-                RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
-                _ => throw new InvalidOperationException("Unknown runtime library")
-            };
+                var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
+                     ? "runtimes"
+                     : Path.Combine(assemblySearchPath, "runtimes");
+                var runtimePath = library switch
+                {
+                    RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
+                    RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
+                    RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
+                    RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
+                    RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
+                    _ => throw new InvalidOperationException("Unknown runtime library")
+                };
 
-            if (Directory.Exists(runtimePath))
-            {
-                yield return (runtimePath, library);
+                if (Directory.Exists(runtimePath))
+                {
+                    yield return (runtimePath, library);
+                }
             }
+
         }
 
 #endif
-            }
+    }
 
 }

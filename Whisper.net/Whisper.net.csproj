@@ -20,11 +20,15 @@
     <None Include="..\readme.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net6.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) Or $([MSBuild]::IsOSPlatform('Windows'))">
+  <PropertyGroup>
+    <USE_WHISPER_MAUI>TRUE</USE_WHISPER_MAUI>
+  </PropertyGroup>
+ 
+  <PropertyGroup Condition="$(USE_WHISPER_MAUI) != ''">
     <TargetFrameworks>
       net8.0;net6.0;netstandard2.0;net8.0-ios;net8.0-tvos;net8.0-maccatalyst;net8.0-android
     </TargetFrameworks>
@@ -35,6 +39,11 @@
     <PackageReference Include="System.Memory" />
     <PackageReference Include="System.IO.Compression" />
     <PackageReference Include="System.Net.Http" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="Whisper.net.Maui.Tests" />
+    <InternalsVisibleTo Include="Whisper.net.Tests" />
   </ItemGroup>
 
 </Project>

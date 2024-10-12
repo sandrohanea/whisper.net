@@ -32,8 +32,8 @@ public class LogProvider
             funcPointer = (IntPtr)onLogging;
         }
 #endif
-        nativeWhisper.Whisper_Log_Set(funcPointer, IntPtr.Zero);
         nativeWhisper.Ggml_log_set(funcPointer, IntPtr.Zero);
+        nativeWhisper.Whisper_Log_Set(funcPointer, IntPtr.Zero);
     }
 
 #if NETSTANDARD

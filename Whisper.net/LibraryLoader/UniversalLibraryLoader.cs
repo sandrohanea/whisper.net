@@ -13,7 +13,7 @@ internal class UniversalLibraryLoader : ILibraryLoader
 
     public IntPtr OpenLibrary(string fileName, bool global)
     {
-        return NativeLibrary.Load(fileName);
+        return NativeLibrary.Load(fileName, System.Reflection.Assembly.GetExecutingAssembly(), DllImportSearchPath.AssemblyDirectory);
     }
 }
 #endif

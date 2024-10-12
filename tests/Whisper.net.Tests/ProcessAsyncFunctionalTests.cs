@@ -1,12 +1,12 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
 namespace Whisper.net.Tests;
-public class ProcessAsyncFunctionalTests
+public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
-    [Test]
+    [Fact]
     public async Task TestHappyFlowAsync()
     {
         var segments = new List<SegmentData>();
@@ -14,7 +14,7 @@ public class ProcessAsyncFunctionalTests
         var progress = new List<int>();
 
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -41,7 +41,7 @@ public class ProcessAsyncFunctionalTests
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
-    [Test]
+    [Fact]
     public async Task ProcessAsync_Cancelled_WillCancellTheProcessing_AndDispose_WillWaitUntilFullyFinished()
     {
         var segments = new List<SegmentData>();
@@ -50,7 +50,7 @@ public class ProcessAsyncFunctionalTests
         TaskCanceledException? taskCanceledException = null;
 
         var encoderBegins = new List<EncoderBeginData>();
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
@@ -89,12 +89,12 @@ public class ProcessAsyncFunctionalTests
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
-    [Test]
+    [Fact]
     public async Task ProcessAsync_WhenJunkChunkExists_ProcessCorrectly()
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();
@@ -108,12 +108,12 @@ public class ProcessAsyncFunctionalTests
         segments.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
-    [Test]
+    [Fact]
     public async Task ProcessAsync_WhenMultichannel_ProcessCorrectly()
     {
         var segments = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();
@@ -127,7 +127,7 @@ public class ProcessAsyncFunctionalTests
         segments.Should().HaveCountGreaterThanOrEqualTo(1);
     }
 
-    [Test]
+    [Fact]
     public async Task ProcessAsync_CalledMultipleTimes_Serially_WillCompleteEverytime()
     {
 
@@ -135,7 +135,7 @@ public class ProcessAsyncFunctionalTests
         var segments2 = new List<SegmentData>();
         var segments3 = new List<SegmentData>();
 
-        using var factory = WhisperFactory.FromPath(TestModelProvider.GgmlModelTiny);
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
         await using var processor = factory.CreateBuilder()
                         .WithLanguage("en")
                         .Build();

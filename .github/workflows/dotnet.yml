@@ -27,19 +27,6 @@ jobs:
       with:
         merge-multiple: true
   
-    - name: Install Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'microsoft'
-        java-version: '11'
-  
-    - name: Install .NET Workloads
-      run: | 
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install ios --ignore-failed-sources
-          dotnet workload install tvos --ignore-failed-sources
-          dotnet workload install maccatalyst --ignore-failed-sources
-          
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
   
@@ -69,20 +56,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         merge-multiple: true
-
-    - name: Install Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'microsoft'
-        java-version: '11'
-
-    - name: Install .NET Workloads
-      run: | 
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install ios --ignore-failed-sources
-          dotnet workload install tvos --ignore-failed-sources
-          dotnet workload install maccatalyst --ignore-failed-sources
-          
+        
     - name: Restore dependencies
       run: dotnet restore ./Whisper.net.sln
 
@@ -111,20 +85,64 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
      
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-
-      - name: Check LDD for libwhisper
-        run: |
-           echo 'Checking ldd for libwhisper.so'
-           ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libwhisper.so
-            echo 'Checking ldd for libggml.so'
-            ldd ./Whisper.net.Tests/bin/Debug/net8.0/runtimes/linux-x64/libggml.so
-
+        
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build
 
+  dotnet-android:
+     runs-on: ubuntu-latest
+
+     steps:
+       - uses: actions/checkout@v3
+
+       - name: Setup .NET
+         uses: actions/setup-dotnet@v3
+         with:
+            dotnet-version: |
+              8.0.x
+              6.0.x
+              
+       - name: Enable KVM
+         run: |
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=k
+
+       - name: Download Artifacts
+         id: download-artifact
+         uses: actions/download-artifact@v4
+         with:
+           merge-multiple: true
+
+       - name: Install dotnet workloads
+         run: dotnet workload install maui
+         
+       - name: Install xharness
+         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json -version "10.0.0-prerelease*"
+
+       - name: Restore dependencies
+         run: dotnet restore ./Whisper.net.Maui.Tests.sln
+
+       - name: Publish android build
+         run: dotnet publish .\tests\Whisper.net.Maui.Tests\Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+
+
+       - name: Run tests
+         uses: reactivecircus/android-emulator-runner@v2
+         with:
+           api-level: 30
+           script: xharness android test --app .\tests\Whisper.net.Maui.Tests\bin\Debug\net8.0-android\com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o xharnessoutput
+
+       - name: Upload output
+         uses: actions/upload-artifact@v4
+         with:
+           name: android-test-results
+           path: |
+               xharnessoutput/*/*
