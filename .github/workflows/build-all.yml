@@ -8,6 +8,12 @@ on:
       branches: ["main"]
    pull_request:
       branches: ["main"]
+   workflow_dispatch:
+      inputs:
+         BuildGpuLibs:
+            description: 'Enable GPU libraries build and publish'
+            required: true
+            default: 'false'
 env:
    BuildGpuLibs: false
 jobs:
@@ -27,27 +33,27 @@ jobs:
       uses: ./.github/workflows/linux-native-build.yml
 
    windows-cuda:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml
 
    windows-vulkan:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-vulkan-native-build.yml
 
    windows-openvino:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-openvino-native-build.yml
 
    linux-cuda:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
 
    linux-openvino:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-openvino-native-build.yml
 
    macos-coreml:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/macos-coreml-native-build.yml
 
    dotnet-build:
@@ -69,7 +75,7 @@ jobs:
       uses: ./.github/workflows/dotnet-maui.yml
 
    pack-all:
-      if: ${{ env.BuildGpuLibs }}
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
       needs:
          - dotnet-build
          - windows-cuda
