@@ -25,7 +25,7 @@ jobs:
            vcpkg --triplet=x64-windows install opencl
 
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.11
+        uses: Jimver/cuda-toolkit@v0.2.18
         with:
           cuda: '12.1.0'
 

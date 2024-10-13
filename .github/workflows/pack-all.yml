@@ -13,7 +13,7 @@ jobs:
     env:
        USE_WHISPER_MAUI: 'TRUE'
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
   
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -48,13 +48,11 @@ jobs:
         $versionObject = $xml.Project.PropertyGroup.Version
         $version = "$versionObject".Trim()
         $runNumber = ${{ github.run_number }}
-        $previewVersion = "$version-$runNumber"
+        $previewVersion = "$version-preview$runNumber"
         Import-Module ./windows-scripts.ps1
         PackAll -Version $previewVersion
       shell: pwsh
-
-
-
+      
     - name: Publish nupkgs
       uses: actions/upload-artifact@v4
       with:
