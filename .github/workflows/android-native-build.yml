@@ -26,5 +26,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-build
-          path: "Whisper.net.Run*/android-*/*"
+          path: "runtimes/Whisper.net.Run*/android-*/*"
           retention-days: 7

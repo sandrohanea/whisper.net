@@ -36,10 +36,10 @@ linux_noavx: linux_x64_noavx linux_arm64_noavx linux_arm_noavx
 linux_cuda: linux_x64_cuda
 
 copy_metal:
-	cp whisper.cpp/ggml/src/ggml-metal.m runtimes/Whisper.net.Runtime/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
 
 copy_metal_coreml:
-	cp whisper.cpp/ggml/src/ggml-metal.m runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
 
 wasm:
 	rm -rf build/wasm

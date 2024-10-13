@@ -29,5 +29,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-noavx-build
-          path: "Whisper.net.Run*/win-*/*"
+          path: "runtimes/Whisper.net.Run*/win-*/*"
           retention-days: 7

@@ -27,5 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-build
-          path: "Whisper.net.Run*/browser-wasm/*"
+          path: "runtimes/Whisper.net.Run*/browser-wasm/*"
           retention-days: 7

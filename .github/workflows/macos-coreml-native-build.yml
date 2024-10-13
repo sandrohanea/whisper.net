@@ -22,6 +22,6 @@ jobs:
         with:
           name: mac-coreml-arm-build
           path: |
-            Whisper.net.Run*/*/*
-            Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Run*/*/*
+            runtimes/Whisper.net.Run*/*.metal
           retention-days: 7

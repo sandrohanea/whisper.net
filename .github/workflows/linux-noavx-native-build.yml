@@ -27,5 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-noavx-build
-          path: "Whisper.net.Run*/linux-*/*"
+          path: "runtimes/Whisper.net.Run*/linux-*/*"
           retention-days: 7
