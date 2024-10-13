@@ -197,6 +197,7 @@ ios_simulator_arm64:
 	cmake --build build/ios_simulator_arm64
 	mkdir -p runtimes/Whisper.net.Runtime/ios-simulator
 	cp build/ios_simulator_arm64/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libwhisper.dylib
+    cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml.dylib
 
 tvos_simulator_arm64:
 	rm -rf build/tvos_simulator_arm64
