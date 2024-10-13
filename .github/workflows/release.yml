@@ -15,6 +15,9 @@ on:
             description: 'Preview Suffix'
             required: false
             default: 'prerelease'
+env:
+   IS_PREVIEW: ${{ inputs.IsPreview }}
+   PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
 jobs:
    android:
       uses: ./.github/workflows/android-native-build.yml
@@ -72,8 +75,9 @@ jobs:
          - windows-no-avx
       uses: ./.github/workflows/pack-all.yml
       with:
-         IsPreview: ${{ github.event.inputs.IsPreview }}
-         PreviewSuffix: ${{ github.event.inputs.PreviewSuffix }}
+         IsPreview: ${{ inputs.IsPreview }}
+         PreviewSuffix: ${{ inputs.PreviewSuffix }}
+      secrets: inherit
          
    push-nuget:
       needs:
