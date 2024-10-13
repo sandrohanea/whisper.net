@@ -1,15 +1,14 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-
 #if NET8_0_OR_GREATER
 using System.Runtime.InteropServices;
 using Whisper.net.Native;
 
 namespace Whisper.net.Internals.Native.Implementations;
 /// <summary>
-/// This way of loading INativeWhisper is used on Android
+/// This way of loading INativeWhisper is using LibraruImport attribute to load the native library.
 /// </summary>
-internal partial class LibraryImportNativeLibWhisper : INativeWhisper
+internal partial class LibraryImportLibWhisper : INativeWhisper
 {
     const string libraryName = "libwhisper";
     const string ggmlLibraryName = "libggml";

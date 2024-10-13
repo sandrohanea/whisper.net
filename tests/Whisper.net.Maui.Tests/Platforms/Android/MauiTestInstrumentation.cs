@@ -5,6 +5,7 @@ using Android.Content;
 using Android.OS;
 using Android.Provider;
 using Android.Runtime;
+using Whisper.net.Tests;
 using Application = Android.App.Application;
 using Environment = Android.OS.Environment;
 namespace Whisper.net.Maui.Tests.Platforms.Android;
@@ -42,8 +43,19 @@ public class MauiTestInstrumentation : Instrumentation
         Start();
     }
 
+    private static async Task<Stream> OpenFileNameAsync(string file)
+    {
+        using var androidStream = await FileSystem.OpenAppPackageFileAsync(file);
+        var memoryStream = new MemoryStream();
+        // We need to copy it to a memory because the AndroidStream cannot read Position.
+        await androidStream.CopyToAsync(memoryStream);
+        memoryStream.Position = 0;
+        return memoryStream;
+    }
+
     public override async void OnStart()
     {
+        TestDataProvider.OpenFileStreamAsync = OpenFileNameAsync;
         base.OnStart();
 
         await _waitForApplication.Task;

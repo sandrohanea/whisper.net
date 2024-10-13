@@ -25,27 +25,16 @@
       net8.0;net6.0;net472;
     </TargetFrameworks>
   </PropertyGroup>
-  
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="junkchunk16khz.wav">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="kennedy.wav">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="multichannel.wav">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="romana.wav">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="bush.wav">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+    <None Include="..\TestData\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <LogicalName>(Filename)%(Extension)</LogicalName>
+    </None>
 	</ItemGroup>
 
 </Project>

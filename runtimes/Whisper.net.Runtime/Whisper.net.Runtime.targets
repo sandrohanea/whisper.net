@@ -129,12 +129,12 @@
   </ItemGroup>
   <ItemGroup
       Condition="$(AndroidSupportedAbis.Contains('x86_64')) or $(RuntimeIdentifiers.Contains('android-x64'))">
-    <AndroidNativeLibrary Visible="true"
+    <AndroidNativeLibrary Visible="false"
         Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
       <Link>lib\x86_64\libwhisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
-    <AndroidNativeLibrary Visible="true"
+    <AndroidNativeLibrary Visible="false"
         Include="$(MSBuildThisFileDirectory)android-x86_64\libggml.so">
       <Link>lib\x86_64\libggml.so</Link>
       <Abi>x86_64</Abi>
@@ -232,23 +232,23 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/whisper.a">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libwhisper.a">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>browser-wasm/whisper.a</TargetPath>
+      <TargetPath>browser-wasm/libwhisper.a</TargetPath>
     </None>
-    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/whisper.a" />
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libwhisper.a" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/ggml.a">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml.a">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>browser-wasm/ggml.a</TargetPath>
+      <TargetPath>browser-wasm/libggml.a</TargetPath>
     </None>
-    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/ggml.a" />
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml.a" />
   </ItemGroup>
   <!-- End Wasm -->
 

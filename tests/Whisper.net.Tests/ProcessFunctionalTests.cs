@@ -8,7 +8,7 @@ namespace Whisper.net.Tests;
 public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
     [Fact]
-    public void TestHappyFlow()
+    public async Task TestHappyFlow()
     {
         var segments = new List<SegmentData>();
         var progress = new List<int>();
@@ -26,7 +26,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
-        using var fileReader = File.OpenRead("kennedy.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader);
 
         segments.Should().HaveCountGreaterThan(0);
@@ -37,7 +37,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
     }
 
     [Fact]
-    public void TestCancelEncoder()
+    public async Task TestCancelEncoder()
     {
         var segments = new List<SegmentData>();
         var encoderBegins = new List<EncoderBeginData>();
@@ -52,7 +52,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
-        using var fileReader = File.OpenRead("kennedy.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader);
 
         segments.Should().HaveCount(0);
@@ -73,7 +73,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                             return true;
                         })
                         .Build();
-        using var fileReader = File.OpenRead("romana.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("romana.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments.Add(segment);
@@ -95,7 +95,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
-        using var fileReader = File.OpenRead("multichannel.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
         processor.Process(fileReader);
 
         segments.Should().HaveCountGreaterThanOrEqualTo(1);
@@ -117,17 +117,17 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                         .WithSegmentEventHandler((s) => onNewSegment(s))
                         .Build();
 
-        using var fileReader1 = File.OpenRead("kennedy.wav");
+        using var fileReader1 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader1);
 
         onNewSegment = segments2.Add;
 
-        using var fileReader2 = File.OpenRead("kennedy.wav");
+        using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader2);
 
         onNewSegment = segments3.Add;
 
-        using var fileReader3 = File.OpenRead("kennedy.wav");
+        using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader3);
 
         segments1.Should().BeEquivalentTo(segments2);

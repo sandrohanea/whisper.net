@@ -14,9 +14,9 @@ public static class NativeLibraryLoader
     internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS
-        return LoadResult.Success(new DllImportsNativeWhisper());
+        return LoadResult.Success(new LibraryImportInternalWhisper());
 #elif ANDROID       
-        return LoadResult.Success(new LibraryImportNativeLibWhisper());
+        return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
         if (RuntimeOptions.Instance.BypassLoading

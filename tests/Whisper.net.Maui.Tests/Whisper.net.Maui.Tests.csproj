@@ -71,6 +71,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Raw\bush.wav" />
+	  <None Remove="Resources\Raw\junkchunk16khz.wav" />
+	  <None Remove="Resources\Raw\kennedy.wav" />
+	  <None Remove="Resources\Raw\multichannel.wav" />
+	  <None Remove="Resources\Raw\romana.wav" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />

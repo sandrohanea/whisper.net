@@ -8,7 +8,7 @@ namespace Whisper.net.Tests;
 public class ProcessQuantizedTests(TinyQuantizedModelFixture model) : IClassFixture<TinyQuantizedModelFixture>
 {
     [Fact]
-    public void TestHappyFlowQuantized()
+    public async Task TestHappyFlowQuantized()
     {
         var segments = new List<SegmentData>();
         var progress = new List<int>();
@@ -25,7 +25,7 @@ public class ProcessQuantizedTests(TinyQuantizedModelFixture model) : IClassFixt
                         .WithSegmentEventHandler(segments.Add)
                         .Build();
 
-        using var fileReader = File.OpenRead("bush.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("bush.wav");
         processor.Process(fileReader);
 
         segments.Should().HaveCountGreaterThan(0);
