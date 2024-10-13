@@ -77,7 +77,7 @@ function BuildWindowsBase() {
     }
 
     if ($NoAvx) {
-        $options += "-DGGML_AVX=OFF -GGML_AVX2=OFF"
+        $options += "-DGGML_AVX=OFF -DGGML_AVX2=OFF"
         $buildDirectory += "-noavx"
         $runtimePath += ".NoAvx"
     }
