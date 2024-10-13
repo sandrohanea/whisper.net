@@ -22,7 +22,11 @@ public static class NativeLibraryLoader
         if (RuntimeOptions.Instance.BypassLoading
             || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
-            return LoadResult.Success(new DllImportsNativeWhisper());
+#if NET8_0_OR_GREATER
+            return LoadResult.Success(new LibraryImportLibWhisper());
+#else
+            return LoadResult.Success(new DllImportsNativeLibWhisper());
+#endif
         }
         return LoadLibraryComponent();
     }
