@@ -14,7 +14,7 @@ on:
          PreviewSuffix:
             description: 'Preview Suffix'
             required: false
-            default: 'prerelease'
+            default: 'preview'
 env:
    IS_PREVIEW: ${{ inputs.IsPreview }}
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
