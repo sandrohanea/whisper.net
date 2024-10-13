@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 		.github\workflows\wasm-native-build.yml = .github\workflows\wasm-native-build.yml
 		.github\workflows\windows-cuda-native-build.yml = .github\workflows\windows-cuda-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
+		.github\workflows\windows-noavx-native-build.yml = .github\workflows\windows-noavx-native-build.yml
 		.github\workflows\windows-openvino-native-build.yml = .github\workflows\windows-openvino-native-build.yml
 		.github\workflows\windows-vulkan-native-build.yml = .github\workflows\windows-vulkan-native-build.yml
 	EndProjectSection

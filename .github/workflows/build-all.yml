@@ -25,6 +25,9 @@ jobs:
 
    windows:
       uses: ./.github/workflows/windows-native-build.yml
+      
+   windows-no-avx:
+      uses: ./.github/workflows/windows-noavx-native-build.yml
 
    wasm:
       uses: ./.github/workflows/wasm-native-build.yml
@@ -46,7 +49,7 @@ jobs:
    windows-openvino:
       if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-openvino-native-build.yml
-
+      
    linux-cuda:
       if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
@@ -88,4 +91,5 @@ jobs:
          - linux-openvino
          - macos-coreml
          - linux-no-avx
+         - windows-no-avx
       uses: ./.github/workflows/pack-all.yml

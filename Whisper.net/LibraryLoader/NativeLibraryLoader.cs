@@ -1,7 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Internals.Native.Implementations;
+#if !NETSTANDARD
 using System.Runtime.Intrinsics.X86;
-
+#endif
 
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
 using System.Runtime.InteropServices;
