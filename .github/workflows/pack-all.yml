@@ -24,6 +24,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+          path: runtimes
 
       - name: Install Java
         uses: actions/setup-java@v2
