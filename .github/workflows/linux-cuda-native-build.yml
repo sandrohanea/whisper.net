@@ -4,38 +4,36 @@ on:
   workflow_dispatch:
   workflow_call:
 
-
 jobs:
   build:
-
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-        ref: ${{ github.head_ref }}
-    
-    - name: Install aarch64-linux-gnu-gcc
-      run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
 
-    - name: Install gcc-arm-linux-gnueabihf
-      run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
-    
-    - name: Install CUDA Toolkit
-      uses: Jimver/cuda-toolkit@v0.2.18
-      with:
-        cuda: '12.1.0'
-    
-    - name: Run linux
-      run: make linux_cuda
-    
-    - name: Remove CUDA installer
-      run: rm -rf cuda_installer-*
-      
-    - name: Upload Linux Cuda Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-cuda-build
-        path: 'Whisper.net.Run*/linux-*/*'
-        retention-days: 7
+      - name: Install aarch64-linux-gnu-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+
+      - name: Install gcc-arm-linux-gnueabihf
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.18
+        with:
+          cuda: "12.1.0"
+
+      - name: Run linux
+        run: make linux_cuda
+
+      - name: Remove CUDA installer
+        run: rm -rf cuda_installer-*
+
+      - name: Upload Linux Cuda Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-cuda-build
+          path: "Whisper.net.Run*/linux-*/*"
+          retention-days: 7

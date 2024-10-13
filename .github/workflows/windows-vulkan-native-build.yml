@@ -1,12 +1,11 @@
 name: Windows Vulkan native build
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   workflow_call:
 
 jobs:
   build:
-
     runs-on: windows-2022
 
     steps:
@@ -14,7 +13,7 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
-          
+
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
@@ -28,14 +27,14 @@ jobs:
           stripdown: true
 
       - name: Run Build
-        run: | 
+        run: |
           Import-Module ./windows-scripts.ps1
           BuildWindowsBase -Arch "x64" -Configuration "Release"  -Vulkan $true
         shell: pwsh
-        
+
       - name: Upload Windows Vulkan Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-vulkan-build
-          path: 'Whisper.net.Run*/win-*/*'
+          path: "Whisper.net.Run*/win-*/*"
           retention-days: 7

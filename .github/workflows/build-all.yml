@@ -4,79 +4,78 @@
 name: CI (Native + dotnet)
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+   push:
+      branches: ["main"]
+   pull_request:
+      branches: ["main"]
 env:
-  BuildGpuLibs: false
+   BuildGpuLibs: false
 jobs:
+   android:
+      uses: ./.github/workflows/android-native-build.yml
 
-  android:
-     uses: ./.github/workflows/android-native-build.yml
+   macos:
+      uses: ./.github/workflows/macos-native-build.yml
 
-  macos:
-     uses: ./.github/workflows/macos-native-build.yml
+   windows:
+      uses: ./.github/workflows/windows-native-build.yml
 
-  windows:
-     uses: ./.github/workflows/windows-native-build.yml
+   wasm:
+      uses: ./.github/workflows/wasm-native-build.yml
 
-  wasm:
-     uses: ./.github/workflows/wasm-native-build.yml
+   linux:
+      uses: ./.github/workflows/linux-native-build.yml
 
-  linux:
-     uses: ./.github/workflows/linux-native-build.yml
+   windows-cuda:
+      if: ${{ env.BuildGpuLibs }}
+      uses: ./.github/workflows/windows-cuda-native-build.yml
 
-  windows-cuda:
-     if: env.BuildGpuLibs
-     uses: ./.github/workflows/windows-cuda-native-build.yml
-
-  windows-vulkan:
-      if: env.BuildGpuLibs
+   windows-vulkan:
+      if: ${{ env.BuildGpuLibs }}
       uses: ./.github/workflows/windows-vulkan-native-build.yml
 
-  windows-openvino:
-      if: env.BuildGpuLibs
+   windows-openvino:
+      if: ${{ env.BuildGpuLibs }}
       uses: ./.github/workflows/windows-openvino-native-build.yml
 
-  linux-cuda:
-        if: env.BuildGpuLibs
-        uses: ./.github/workflows/linux-cuda-native-build.yml
-        
-  linux-openvino:
-        if: env.BuildGpuLibs
-        uses: ./.github/workflows/linux-openvino-native-build.yml
+   linux-cuda:
+      if: ${{ env.BuildGpuLibs }}
+      uses: ./.github/workflows/linux-cuda-native-build.yml
 
-  macos-coreml:
-        if: env.BuildGpuLibs
-        uses: ./.github/workflows/macos-coreml-native-build.yml
+   linux-openvino:
+      if: ${{ env.BuildGpuLibs }}
+      uses: ./.github/workflows/linux-openvino-native-build.yml
 
-  dotnet-build:
-    needs:
-     - android
-     - macos
-     - windows
-     - wasm
-     - linux
-    uses: ./.github/workflows/dotnet.yml
+   macos-coreml:
+      if: ${{ env.BuildGpuLibs }}
+      uses: ./.github/workflows/macos-coreml-native-build.yml
 
-  dotnet-maui-build-and-test:
-    needs:
-     - android
-     - macos
-     - windows
-     - wasm
-     - linux
-    uses: ./.github/workflows/dotnet-maui.yml
+   dotnet-build:
+      needs:
+         - android
+         - macos
+         - windows
+         - wasm
+         - linux
+      uses: ./.github/workflows/dotnet.yml
 
-  pack-all:
-    if: env.BuildGpuLibs
-    needs:
-     - dotnet-build
-     - windows-cuda
-     - windows-vulkan
-     - windows-openvino
-     - linux-cuda
-     - linux-openvino
-     - macos-coreml
-    uses: ./.github/workflows/pack-all.yml
+   dotnet-maui-build-and-test:
+      needs:
+         - android
+         - macos
+         - windows
+         - wasm
+         - linux
+      uses: ./.github/workflows/dotnet-maui.yml
+
+   pack-all:
+      if: ${{ env.BuildGpuLibs }}
+      needs:
+         - dotnet-build
+         - windows-cuda
+         - windows-vulkan
+         - windows-openvino
+         - linux-cuda
+         - linux-openvino
+         - macos-coreml
+      uses: ./.github/workflows/pack-all.yml

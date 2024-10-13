@@ -5,81 +5,21 @@ name: Dotnet Build and Test
 
 on:
   workflow_call:
-    
-jobs:
 
+jobs:
   dotnet-macos:
     runs-on: macos-14
-      
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          8.0.x
-          6.0.x
-        
-    - name: Download Artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        merge-multiple: true
-  
-    - name: Restore dependencies
-      run: dotnet restore ./Whisper.net.sln
-  
-    - name: Build
-      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-  
-    - name: Test
-      run: |
-        dotnet test ./Whisper.net.sln --no-build
-
-  dotnet-windows:
-    
-    runs-on: windows-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-  
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          8.0.x
-          6.0.x
-        
-    - name: Download Artifacts
-      id: download-artifact
-      uses: actions/download-artifact@v4
-      with:
-        merge-multiple: true
-        
-    - name: Restore dependencies
-      run: dotnet restore ./Whisper.net.sln
-
-    - name: Build
-      run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-
-    - name: Test
-      run: |
-        dotnet test ./Whisper.net.sln --no-build
-
-  dotnet-linux:
-     runs-on: ubuntu-latest
-
-     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-         dotnet-version: |
-           8.0.x
-           6.0.x
-          
+          dotnet-version: |
+            8.0.x
+            6.0.x
+
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4
@@ -88,10 +28,68 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-     
+
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
-        
+
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build
+
+  dotnet-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            8.0.x
+            6.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build
+
+  dotnet-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            8.0.x
+            6.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build

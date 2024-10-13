@@ -4,30 +4,28 @@ on:
   workflow_dispatch:
   workflow_call:
 
-
 jobs:
   build:
-
     runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-        ref: ${{ github.head_ref }}
-    
-    - name: Install aarch64-linux-gnu-gcc
-      run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
 
-    - name: Install gcc-arm-linux-gnueabihf
-      run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
-    
-    - name: Run linux
-      run: make linux
-    
-    - name: Upload Linux Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: linux-build
-        path: 'Whisper.net.Run*/linux-*/*'
-        retention-days: 7
+      - name: Install aarch64-linux-gnu-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+
+      - name: Install gcc-arm-linux-gnueabihf
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+
+      - name: Run linux
+        run: make linux
+
+      - name: Upload Linux Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: "Whisper.net.Run*/linux-*/*"
+          retention-days: 7

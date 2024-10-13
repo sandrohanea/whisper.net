@@ -5,93 +5,91 @@ name: Dotnet Maui Build and Test
 
 on:
   workflow_call:
-    
+
 jobs:
-
   dotnet-maui-build:
-     runs-on: macos-14
-     
-     env:
-       USE_WHISPER_MAUI: 'TRUE'
+    runs-on: macos-14
 
-     steps:
-       - uses: actions/checkout@v4
+    env:
+      USE_WHISPER_MAUI: "TRUE"
 
-       - name: Setup .NET
-         uses: actions/setup-dotnet@v3
-         with:
-            dotnet-version: |
-              8.0.x
-              
-       - name: Download Artifacts
-         id: download-artifact
-         uses: actions/download-artifact@v4
-         with:
-           merge-multiple: true
+    steps:
+      - uses: actions/checkout@v4
 
-       - name: Install dotnet workloads
-         run: |
-           dotnet workload install maui --ignore-failed-sources
-           dotnet workload install tvos --ignore-failed-sources
-         
-       - name: Install xharness
-         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-prerelease.24511.1"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            8.0.x
 
-       - name: Restore dependencies
-         run: dotnet restore ./Whisper.net.Maui.Tests.sln
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
 
-       - name: Publish android build
-         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+      - name: Install dotnet workloads
+        run: |
+          dotnet workload install maui --ignore-failed-sources
+          dotnet workload install tvos --ignore-failed-sources
 
+      - name: Install xharness
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-prerelease.24511.1"
 
-       - name: Publish ios build
-         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-ios
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
-       - name: Check ios build
-         run: |
-           ls -la ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-ios/
-           ls -la ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-ios/publish/
-         
-       - name: Upload apk and ios app
-         uses: actions/upload-artifact@v4
-         with:
-           name: maui-build-artifacts
-           path: |
-               ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
+      - name: Publish android build
+        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+
+      - name: Publish ios build
+        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-ios
+
+      - name: Check ios build
+        run: |
+          ls -la ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-ios/
+          ls -la ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-ios/publish/
+
+      - name: Upload apk and ios app
+        uses: actions/upload-artifact@v4
+        with:
+          name: maui-build-artifacts
+          path: |
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
 
   dotnet-maui-test-android:
-      runs-on: ubuntu-latest
-      needs: dotnet-maui-build
-      
-      env:
-        USE_WHISPER_MAUI: 'TRUE'
-  
-      steps:
-        - uses: actions/checkout@v4
-  
-        - name: Setup .NET
-          uses: actions/setup-dotnet@v3
-          with:
-              dotnet-version: |
-                8.0.x
-                
-        - name: Download Artifacts
-          id: download-artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: maui-build-artifacts
-            path: maui-build-artifacts
-  
-        - name: Check the contents of the artifact
-          run: ls -la ./maui-build-artifacts
+    runs-on: ubuntu-latest
+    needs: dotnet-maui-build
 
-        - name: Install xharness
-          run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+    env:
+      USE_WHISPER_MAUI: "TRUE"
 
-        - name: Run android tests
-          run: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk --output-directory=./test-results/android
-  
-        - name: Upload Maui Android xharness test results
-          uses: actions/upload-artifact@v4
-          with:
-            name: xharness-android-test-results
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: maui-build-artifacts
+          path: maui-build-artifacts
+
+      - name: Check the contents of the artifact
+        run: ls -la ./maui-build-artifacts
+
+      - name: Install xharness
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+
+      - name: Run android tests
+        run: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk --output-directory=./test-results/android
+
+      - name: Upload Maui Android xharness test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: xharness-android-test-results
