@@ -72,8 +72,8 @@ jobs:
          - windows-no-avx
       uses: ./.github/workflows/pack-all.yml
       with:
-         IsPreview: ${{ input.IsPreview }}
-         PreviewSuffix: ${{ input.PreviewSuffix }}
+         IsPreview: ${{ github.event.inputs.IsPreview }}
+         PreviewSuffix: ${{ github.event.inputs.PreviewSuffix }}
          
    push-nuget:
       needs:
