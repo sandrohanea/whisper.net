@@ -2,45 +2,56 @@ name: Windows native build
 
 on:
   workflow_dispatch:
-
+  workflow_call:
 
 jobs:
-  build:
-
+  intel-native-build:
     runs-on: windows-2019
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
-  
+
         with:
           submodules: true
           ref: ${{ github.head_ref }}
-          
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1
-        
-      - name: Install OpenCl with vcpkg
-        run: |
-           vcpkg --triplet=x64-windows install opencl
 
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: '12.1.0'
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
 
       - name: Run Build
-        run: | 
+        run: |
           Import-Module ./windows-scripts.ps1
           BuildWindowsIntel
         shell: pwsh
 
-      - name: Remove CUDA installer
-        run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
-
       - name: Upload Windows Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: 'Whisper.net.Run*/win-*/*'
+          path: "runtimes/Whisper.net.Run*/win-*/*"
+          retention-days: 7
+
+  arm-native-build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Run Build
+        run: |
+          Import-Module ./windows-scripts.ps1
+          BuildWindowsArm
+        shell: pwsh
+
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm-build
+          path: "runtimes/Whisper.net.Run*/win-*/*"
+          retention-days: 7

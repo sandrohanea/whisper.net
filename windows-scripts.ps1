@@ -1,11 +1,3 @@
-function PackAllNugets([Parameter(Mandatory = $true)] [string]$Version, [Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    New-Item -ItemType Directory -Force -Path "nupkgs"
-    nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
-    dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c $Configuration
-    nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
-}
-
 function Get-VisualStudioCMakePath() {
     $vsWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     if (-not (Test-Path $vsWherePath)) {
@@ -38,12 +30,13 @@ function Get-MSBuildPlatform($Arch) {
     return $null
 }
 
-function BuildWindowsBase() {
+function BuildWindows() {
     param(
         [Parameter(Mandatory = $true)] [string]$Arch,
         [Parameter(Mandatory = $false)] [bool]$Cuda = $false,
         [Parameter(Mandatory = $false)] [bool]$Vulkan = $false,
         [Parameter(Mandatory = $false)] [bool]$OpenVino = $false,
+        [Parameter(Mandatory = $false)] [bool]$NoAvx = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
     #if not exist "build" create the directory
@@ -62,20 +55,31 @@ function BuildWindowsBase() {
     
     $buildDirectory = "build/win-$Arch"
     $options = @("-S", ".")
+    
+    $runtimePath = "./runtimes/Whisper.net.Runtime"
 
     if ($Cuda) {
         $options += "-DGGML_CUDA=1"
         $buildDirectory += "-cuda"
+        $runtimePath += ".Cuda.Windows"
     }
 
     if ($Vulkan) {
         $options += "-DGGML_VULKAN=1"
         $buildDirectory += "-vulkan"
+        $runtimePath += ".Vulkan"
     }
     
     if ($OpenVino) {
         $options += "-DWHISPER_OPENVINO=1"
         $buildDirectory += "-openvino"
+        $runtimePath += ".OpenVino"
+    }
+
+    if ($NoAvx) {
+        $options += "-DGGML_AVX=OFF -DGGML_AVX2=OFF"
+        $buildDirectory += "-noavx"
+        $runtimePath += ".NoAvx"
     }
 
     $options += "-B"
@@ -108,19 +112,6 @@ function BuildWindowsBase() {
     cmake $options
     cmake --build $buildDirectory --config $Configuration
 
-    $runtimePath = "./Whisper.net.Runtime"
-    if ($Cuda) {
-        $runtimePath += ".Cuda.Windows"
-    }
-
-    if ($Vulkan) {
-        $runtimePath += ".Vulkan"
-    }
-
-    if ($OpenVino) {
-        $runtimePath += ".OpenVino"
-    }
-
     if (-not(Test-Path $runtimePath)) {
         New-Item -ItemType Directory -Force -Path $runtimePath
     }
@@ -136,23 +127,22 @@ function BuildWindowsBase() {
 }
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
- #   BuildWindowsBase -Arch "arm" -Configuration $Configuration;
+    BuildWindows -Arch "arm64" -Configuration $Configuration;
+ #   BuildWindows -Arch "arm" -Configuration $Configuration;
  # Arm build not working anymore with VS
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
-    BuildWindowsBase -Arch "x64" -Configuration $Configuration;
-    BuildWindowsBase -Arch "x86" -Configuration $Configuration;
+    BuildWindows -Arch "x64" -Configuration $Configuration;
+    BuildWindows -Arch "x86" -Configuration $Configuration;
 }
 
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindowsBase -Arch "arm64" -Configuration $Configuration;
-    BuildWindowsBase -Arch "arm" -Configuration $Configuration;
-    BuildWindowsBase -Arch "x64" -Cuda $true -Configuration $Configuration;
-    BuildWindowsBase -Arch "x64" -Configuration $Configuration;
-    BuildWindowsBase -Arch "x86" -Configuration $Configuration;
+    BuildWindows -Arch "arm64" -Configuration $Configuration;
+    BuildWindows -Arch "arm" -Configuration $Configuration;
+    BuildWindows -Arch "x64" -Cuda $true -Configuration $Configuration;
+    BuildWindows -Arch "x64" -Configuration $Configuration;
+    BuildWindows -Arch "x86" -Configuration $Configuration;
 }
 
 function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
@@ -160,13 +150,15 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
     if (-not(Test-Path "nupkgs")) {
         New-Item -ItemType Directory -Force -Path "nupkgs"
     }
-
+    
+    nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
-    nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.AllRutimes.nuspec -Version $Version -OutputDirectory ./nupkgs
 }

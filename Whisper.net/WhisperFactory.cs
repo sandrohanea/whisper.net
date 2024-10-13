@@ -3,7 +3,6 @@
 using Whisper.net.Internals.ModelLoader;
 using Whisper.net.LibraryLoader;
 using Whisper.net.Logger;
-using Whisper.net.Native;
 
 namespace Whisper.net;
 
@@ -24,7 +23,7 @@ public sealed class WhisperFactory : IDisposable
         var libraryLoaded = NativeLibraryLoader.LoadNativeLibrary();
         if (libraryLoaded.IsSuccess)
         {
-            LogProvider.InitializeLogging();
+            LogProvider.InitializeLogging(libraryLoaded.NativeWhisper!);
         }
         return libraryLoaded;
     }, true);
@@ -39,12 +38,12 @@ public sealed class WhisperFactory : IDisposable
         this.loader = loader;
         if (!delayInit)
         {
-            var nativeContext = loader.LoadNativeContext();
+            var nativeContext = loader.LoadNativeContext(libraryLoaded.Value.NativeWhisper!);
             contextLazy = new Lazy<IntPtr>(() => nativeContext);
         }
         else
         {
-            contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(), isThreadSafe: false);
+            contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(libraryLoaded.Value.NativeWhisper!), isThreadSafe: false);
         }
     }
 
@@ -95,7 +94,7 @@ public sealed class WhisperFactory : IDisposable
             throw new WhisperModelLoadException("Failed to load the whisper model.");
         }
 
-        return new WhisperProcessorBuilder(contextLazy.Value);
+        return new WhisperProcessorBuilder(contextLazy.Value, libraryLoaded.Value.NativeWhisper!);
     }
 
     public void Dispose()
@@ -106,7 +105,7 @@ public sealed class WhisperFactory : IDisposable
         }
         if (contextLazy.IsValueCreated && contextLazy.Value != IntPtr.Zero)
         {
-            NativeMethods.whisper_free(contextLazy.Value);
+            libraryLoaded.Value.NativeWhisper!.Whisper_Free(contextLazy.Value);
         }
         loader.Dispose();
         wasDisposed = true;

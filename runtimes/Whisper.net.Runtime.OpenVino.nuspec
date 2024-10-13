@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.OpenVino</id>
+    <title>Whisper.Net.Runtime.OpenVino</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>OpenVino dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime.OpenVino contains the native runtime libraries to enable Whisper on .NET with Whisper.net and OpenVino</description>
+    <tags>whisper;openvino;gpu;intel;</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.OpenVino\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

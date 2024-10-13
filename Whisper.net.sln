@@ -9,25 +9,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		Directory.Packages.props = Directory.Packages.props
 		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net", "Whisper.net\Whisper.net.csproj", "{5D1F57EB-AF79-419C-8DCB-E23F7BEC3E8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whisper.net.Tests", "Whisper.net.Tests\Whisper.net.Tests.csproj", "{333764F7-81DC-4425-AF5C-B438D973EE13}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C865649-4AED-4BBF-A7CA-BD68D21EF48F}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\android-native-build.yaml = .github\workflows\android-native-build.yaml
+		.github\workflows\android-native-build.yml = .github\workflows\android-native-build.yml
+		.github\workflows\build-all.yml = .github\workflows\build-all.yml
+		.github\workflows\dotnet-maui.yml = .github\workflows\dotnet-maui.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
-		.github\workflows\linux-openvino-build.yml = .github\workflows\linux-openvino-build.yml
-		.github\workflows\macos-native-build.yaml = .github\workflows\macos-native-build.yaml
-		.github\workflows\wasm-native-build.yaml = .github\workflows\wasm-native-build.yaml
-		.github\workflows\windows-arm-native-build.yml = .github\workflows\windows-arm-native-build.yml
+		.github\workflows\linux-noavx-native-build.yml = .github\workflows\linux-noavx-native-build.yml
+		.github\workflows\linux-openvino-native-build.yml = .github\workflows\linux-openvino-native-build.yml
+		.github\workflows\macos-coreml-native-build.yml = .github\workflows\macos-coreml-native-build.yml
+		.github\workflows\macos-native-build.yml = .github\workflows\macos-native-build.yml
+		.github\workflows\pack-all.yml = .github\workflows\pack-all.yml
+		.github\workflows\wasm-native-build.yml = .github\workflows\wasm-native-build.yml
+		.github\workflows\windows-cuda-native-build.yml = .github\workflows\windows-cuda-native-build.yml
 		.github\workflows\windows-native-build.yml = .github\workflows\windows-native-build.yml
-		.github\workflows\windows-openvino-build.yml = .github\workflows\windows-openvino-build.yml
-		.github\workflows\windows-vulkan-build.yml = .github\workflows\windows-vulkan-build.yml
+		.github\workflows\windows-noavx-native-build.yml = .github\workflows\windows-noavx-native-build.yml
+		.github\workflows\windows-openvino-native-build.yml = .github\workflows\windows-openvino-native-build.yml
+		.github\workflows\windows-vulkan-native-build.yml = .github\workflows\windows-vulkan-native-build.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884}"
@@ -38,20 +44,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC45AC94-3CD7-45D8-A847-2D9C06E1806A}"
 	ProjectSection(SolutionItems) = preProject
-		Whisper.net.Runtime.CoreML.nuspec = Whisper.net.Runtime.CoreML.nuspec
-		Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
-		Whisper.net.Runtime.Cuda.Linux.nuspec = Whisper.net.Runtime.Cuda.Linux.nuspec
-		Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets = Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets
-		Whisper.net.Runtime.Cuda.nuspec = Whisper.net.Runtime.Cuda.nuspec
-		Whisper.net.Runtime.Cuda.Windows.nuspec = Whisper.net.Runtime.Cuda.Windows.nuspec
-		Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets = Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets
-		Whisper.net.Runtime.nuspec = Whisper.net.Runtime.nuspec
-		Whisper.net.Runtime.OpenVino.nuspec = Whisper.net.Runtime.OpenVino.nuspec
-		Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
-		Whisper.net.Runtime\Whisper.net.Runtime.targets = Whisper.net.Runtime\Whisper.net.Runtime.targets
-		Whisper.net.Runtime.Vulkan.nuspec = Whisper.net.Runtime.Vulkan.nuspec
-		Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
+		runtimes\Whisper.net.Runtime.CoreML.nuspec = runtimes\Whisper.net.Runtime.CoreML.nuspec
+		runtimes\Whisper.net.AllRuntimes.nuspec = runtimes\Whisper.net.AllRuntimes.nuspec
+		runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
+		runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec = runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets = runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets
+		runtimes\Whisper.net.Runtime.Cuda.nuspec = runtimes\Whisper.net.Runtime.Cuda.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Windows.nuspec = runtimes\Whisper.net.Runtime.Cuda.Windows.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets = runtimes\Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets
+		runtimes\Whisper.net.Runtime.NoAvx.nuspec = runtimes\Whisper.net.Runtime.NoAvx.nuspec
+		runtimes\Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets = runtimes\Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets
+		runtimes\Whisper.net.Runtime.nuspec = runtimes\Whisper.net.Runtime.nuspec
+		runtimes\Whisper.net.Runtime.OpenVino.nuspec = runtimes\Whisper.net.Runtime.OpenVino.nuspec
+		runtimes\Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = runtimes\Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
+		runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets = runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets
+		runtimes\Whisper.net.Runtime.Vulkan.nuspec = runtimes\Whisper.net.Runtime.Vulkan.nuspec
+		runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.net.Tests", "tests\Whisper.net.Tests\Whisper.net.Tests.csproj", "{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,30 +128,30 @@ Global
 		{5D1F57EB-AF79-419C-8DCB-E23F7BEC3E8C}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
 		{5D1F57EB-AF79-419C-8DCB-E23F7BEC3E8C}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
 		{5D1F57EB-AF79-419C-8DCB-E23F7BEC3E8C}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|x64.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Debug|x86.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|x64.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|x86.ActiveCfg = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.MinSizeRel|x86.Build.0 = Debug|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|x64.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|x64.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|x86.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.Release|x86.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
-		{333764F7-81DC-4425-AF5C-B438D973EE13}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|x64.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Debug|x86.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|x64.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|x86.ActiveCfg = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.MinSizeRel|x86.Build.0 = Debug|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|x64.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|x64.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|x86.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.Release|x86.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|x86.ActiveCfg = Release|Any CPU
+		{308C8766-228B-4C72-9DA0-1F51B5CAEEDA}.RelWithDebInfo|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

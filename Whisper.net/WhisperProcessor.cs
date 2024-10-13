@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
+using Whisper.net.Internals.Native;
 using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 using Whisper.net.SamplingStrategy;
@@ -23,6 +24,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
+    private readonly INativeWhisper nativeWhisper;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
@@ -36,9 +38,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     // Id is used to identify the current instance when calling the callbacks from C++
     private readonly long myId;
 
-    internal WhisperProcessor(WhisperProcessorOptions options)
+    internal WhisperProcessor(WhisperProcessorOptions options, INativeWhisper nativeWhisper)
     {
         this.options = options;
+        this.nativeWhisper = nativeWhisper;
         myId = Interlocked.Increment(ref currentProcessorId);
 
         processorInstances[myId] = this;
@@ -89,7 +92,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="speedUp"></param>
     /// <returns></returns>
     public (string? language, float probability) DetectLanguageWithProbability(float[] samples)
     {
@@ -100,11 +102,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
     /// </summary>
     /// <param name="samples"></param>
-    /// <param name="speedUp"></param>
     /// <returns></returns>
     public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
     {
-        var probs = new float[NativeMethods.whisper_lang_max_id()];
+        var probs = new float[nativeWhisper.Whisper_Lang_Max_Id()];
 
         fixed (float* pData = probs)
         {
@@ -113,20 +114,20 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             {
                 fixed (float* pSamples = samples)
                 {
-                    NativeMethods.whisper_pcm_to_mel_with_state(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
+                    nativeWhisper.Whisper_PCM_To_Mel_With_State(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                 }
-                var langId = NativeMethods.whisper_lang_auto_detect_with_state(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
+                var langId = nativeWhisper.Whisper_Lang_Auto_Detect_With_State(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
                 {
                     return (null, 0f);
                 }
-                var languagePtr = NativeMethods.whisper_lang_str(langId);
+                var languagePtr = nativeWhisper.Whisper_Lang_Str(langId);
                 var language = Marshal.PtrToStringAnsi(languagePtr);
                 return (language, probs[langId]);
             }
             finally
             {
-                NativeMethods.whisper_free_state(state);
+                nativeWhisper.Whisper_Free_State(state);
             }
         }
     }
@@ -174,11 +175,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
             }
             finally
             {
-                NativeMethods.whisper_free_state(state);
+                nativeWhisper.Whisper_Free_State(state);
                 processingSemaphore.Release();
             }
         }
@@ -326,11 +327,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
                 try
                 {
-                    NativeMethods.whisper_full_with_state(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                    nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
                 }
                 finally
                 {
-                    NativeMethods.whisper_free_state(state);
+                    nativeWhisper.Whisper_Free_State(state);
                     processingSemaphore.Release();
                 }
             }
@@ -339,13 +340,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private IntPtr GetWhisperState()
     {
-        var state = NativeMethods.whisper_init_state(currentWhisperContext);
+        var state = nativeWhisper.Whisper_Init_State(currentWhisperContext);
         if (RuntimeOptions.Instance.LoadedLibrary == RuntimeLibrary.OpenVino)
         {
             var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
             var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);
             var cachePath = Marshal.StringToHGlobalAnsi(options.OpenVinoCacheDir);
-            NativeMethods.whisper_ctx_init_openvino_encoder_with_state(
+            nativeWhisper.Whisper_Ctx_Init_Openvino_Encoder_With_State(
                 options.ContextHandle,
                 state,
                 modelPath,
@@ -358,9 +359,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private WhisperFullParams GetWhisperParams()
     {
         var strategy = options.SamplingStrategy.GetNativeStrategy();
-        var whisperParamsRef = NativeMethods.whisper_full_default_params_by_ref(strategy);
+        var whisperParamsRef = nativeWhisper.Whisper_Full_Default_Params_By_Ref(strategy);
         var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
-        NativeMethods.whisper_free_params(whisperParamsRef);
+        nativeWhisper.Whisper_Free_Params(whisperParamsRef);
         whisperParams.Strategy = strategy;
 
         if (options.Threads.HasValue)
@@ -534,26 +535,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         whisperParams.OnEncoderBeginUserData = myIntPtrId;
         whisperParams.OnAbortUserData = myIntPtrId;
 
-#if NET6_0_OR_GREATER
-        unsafe
-        {
-            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onNewSegmentDelegate = &OnNewSegmentStatic;
-            whisperParams.OnNewSegment = (IntPtr)onNewSegmentDelegate;
-
-            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, byte> onEncoderBeginDelegate = &OnEncoderBeginStatic;
-            whisperParams.OnEncoderBegin = (IntPtr)onEncoderBeginDelegate;
-
-            delegate* unmanaged[Cdecl]<IntPtr, byte> onWhisperAbortDelegate = &OnWhisperAbortStatic;
-            whisperParams.OnAbort = (IntPtr)onWhisperAbortDelegate;
-
-            if (options.OnProgressHandlers.Count > 0)
-            {
-                delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onProgressDelegate = &OnProgressStatic;
-                whisperParams.OnProgressCallback = (IntPtr)onProgressDelegate;
-                whisperParams.OnProgressCallbackUserData = myIntPtrId;
-            }
-        }
-#else
+#if NETSTANDARD
         // For netframework, we don't have `UnmanagedCallersOnlyAttribute` so we need to use a delegate wrapped with a GC handle
         var onNewSegmentDelegate = new WhisperNewSegmentCallback(OnNewSegmentStatic);
         var gcHandle = GCHandle.Alloc(onNewSegmentDelegate);
@@ -578,12 +560,31 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             whisperParams.OnProgressCallback = Marshal.GetFunctionPointerForDelegate(onProgressDelegate);
             whisperParams.OnProgressCallbackUserData = myIntPtrId;
         }
+#else
+        unsafe
+        {
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onNewSegmentDelegate = &OnNewSegmentStatic;
+            whisperParams.OnNewSegment = (IntPtr)onNewSegmentDelegate;
+
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, byte> onEncoderBeginDelegate = &OnEncoderBeginStatic;
+            whisperParams.OnEncoderBegin = (IntPtr)onEncoderBeginDelegate;
+
+            delegate* unmanaged[Cdecl]<IntPtr, byte> onWhisperAbortDelegate = &OnWhisperAbortStatic;
+            whisperParams.OnAbort = (IntPtr)onWhisperAbortDelegate;
+
+            if (options.OnProgressHandlers.Count > 0)
+            {
+                delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onProgressDelegate = &OnProgressStatic;
+                whisperParams.OnProgressCallback = (IntPtr)onProgressDelegate;
+                whisperParams.OnProgressCallbackUserData = myIntPtrId;
+            }
+        }
 #endif
 
         return whisperParams;
     }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static byte OnWhisperAbortStatic(IntPtr userData)
@@ -597,7 +598,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return shouldCancel ? trueByte : falseByte;
     }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static void OnNewSegmentStatic(IntPtr ctx, IntPtr state, int nNew, IntPtr userData)
@@ -609,7 +610,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         processor.OnNewSegment(state);
     }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static byte OnEncoderBeginStatic(IntPtr ctx, IntPtr state, IntPtr userData)
@@ -621,7 +622,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return processor.OnEncoderBegin() ? trueByte : falseByte;
     }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
 #endif
     private static void OnProgressStatic(IntPtr ctx, IntPtr state, int progress, IntPtr userData)
@@ -676,26 +677,26 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             return;
         }
 
-        var segments = NativeMethods.whisper_full_n_segments_from_state(state);
+        var segments = nativeWhisper.Whisper_Full_N_Segments_From_State(state);
 
         while (segmentIndex < segments)
         {
-            var t1 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t1_from_state(state, segmentIndex) * 10);
-            var t0 = TimeSpan.FromMilliseconds(NativeMethods.whisper_full_get_segment_t0_from_state(state, segmentIndex) * 10);
-            var textAnsi = StringFromNativeUtf8(NativeMethods.whisper_full_get_segment_text_from_state(state, segmentIndex));
+            var t1 = TimeSpan.FromMilliseconds(nativeWhisper.Whisper_Full_Get_Segment_T1_From_State(state, segmentIndex) * 10);
+            var t0 = TimeSpan.FromMilliseconds(nativeWhisper.Whisper_Full_Get_Segment_T0_From_State(state, segmentIndex) * 10);
+            var textAnsi = StringFromNativeUtf8(nativeWhisper.Whisper_Full_Get_Segment_Text_From_State(state, segmentIndex));
 
             float minimumProbability = 0;
             float maximumProbability = 0;
             double sumProbability = 0;
-            var numberOfTokens = NativeMethods.whisper_full_n_tokens_from_state(state, segmentIndex);
-            var languageId = NativeMethods.whisper_full_lang_id_from_state(state);
-            var language = Marshal.PtrToStringAnsi(NativeMethods.whisper_lang_str(languageId));
+            var numberOfTokens = nativeWhisper.Whisper_Full_N_Tokens_From_State(state, segmentIndex);
+            var languageId = nativeWhisper.Whisper_Full_Lang_Id_From_State(state);
+            var language = Marshal.PtrToStringAnsi(nativeWhisper.Whisper_Lang_Str(languageId));
 
             if (options.ComputeProbabilities)
             {
                 for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
                 {
-                    var tokenProbability = NativeMethods.whisper_full_get_token_p_from_state(state, segmentIndex, tokenIndex);
+                    var tokenProbability = nativeWhisper.Whisper_Full_Get_Token_P_From_State(state, segmentIndex, tokenIndex);
                     sumProbability += tokenProbability;
                     if (tokenIndex == 0)
                     {
@@ -717,7 +718,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
+                var eventHandlerArgs = new SegmentData(textAnsi!, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {
@@ -733,12 +734,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    private static string StringFromNativeUtf8(IntPtr nativeUtf8)
+    private static string? StringFromNativeUtf8(IntPtr nativeUtf8)
     {
 
-#if NETSTANDARD2_1_OR_GREATER
-        return Marshal.PtrToStringUTF8(nativeUtf8);
-#else
+#if NETSTANDARD
         var len = 0;
 
         while (Marshal.ReadByte(nativeUtf8, len) != 0)
@@ -749,6 +748,8 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var buffer = new byte[len];
         Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
         return System.Text.Encoding.UTF8.GetString(buffer);
+#else
+        return Marshal.PtrToStringUTF8(nativeUtf8);
 #endif
     }
 

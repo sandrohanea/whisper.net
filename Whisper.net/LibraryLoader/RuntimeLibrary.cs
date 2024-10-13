@@ -8,5 +8,6 @@ public enum RuntimeLibrary
     Cuda,
     Vulkan,
     CoreML,
-    OpenVino
+    OpenVino,
+    CpuNoAvx
 }

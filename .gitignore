@@ -356,17 +356,20 @@ MigrationBackup/
 /src/build
 /build
 /nupkgs
-/Whisper.net.Runtime/*
-!/Whisper.net.Runtime/Whisper.net.Runtime.targets
+/runtimes/Whisper.net.Runtime/*
+!/runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets
 
-/Whisper.net.Runtime.Cuda.*/*
-!/Whisper.net.Runtime.Cuda.*/Whisper.net.Runtime.Cuda.*.targets
+/runtimes/Whisper.net.Runtime.Cuda.*/*
+!/runtimes/Whisper.net.Runtime.Cuda.*/Whisper.net.Runtime.Cuda.*.targets
 
-/Whisper.net.Runtime.Vulkan/*
+/runtimes/Whisper.net.Runtime.Vulkan/*
 !/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets
 
-/Whisper.net.Runtime.CoreML/*
-!/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets
+/runtimes/Whisper.net.Runtime.CoreML/*
+!/runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets
 
-/Whisper.net.Runtime.OpenVino/*
-!/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets
+/runtimes/Whisper.net.Runtime.OpenVino/*
+!/runtimes/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets
+
+/runtimes/Whisper.net.Runtime.NoAvx/*
+!/runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets

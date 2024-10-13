@@ -1,0 +1,61 @@
+# This workflow will pack all the nuget packages
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Pack All
+
+on:
+  workflow_call:
+
+jobs:
+  pack-nupkgs:
+    runs-on: windows-latest
+    env:
+      USE_WHISPER_MAUI: "TRUE"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: runtimes
+
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "microsoft"
+          java-version: "11"
+
+      - name: Install .NET Workloads
+        run: |
+          dotnet workload install android --ignore-failed-sources
+          dotnet workload install ios --ignore-failed-sources
+          dotnet workload install tvos --ignore-failed-sources
+          dotnet workload install maccatalyst --ignore-failed-sources
+
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+
+      - name: Pack all
+        run: |
+          $xml = [Xml] (Get-Content .\Whisper.net\Whisper.net.csproj)
+          $versionObject = $xml.Project.PropertyGroup.Version
+          $version = "$versionObject".Trim()
+          $runNumber = ${{ github.run_number }}
+          $previewVersion = "$version-preview$runNumber"
+          Import-Module ./windows-scripts.ps1
+          PackAll -Version $previewVersion
+        shell: pwsh
+
+      - name: Publish nupkgs
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkgs
+          path: |
+            nupkgs/*.nupkg

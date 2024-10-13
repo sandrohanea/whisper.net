@@ -20,27 +20,26 @@ public class LogProvider
 
     public event Action<WhisperLogLevel, string?>? OnLog;
 
-    internal static void InitializeLogging()
+    internal static void InitializeLogging(INativeWhisper nativeWhisper)
     {
         IntPtr funcPointer;
-#if NET6_0_OR_GREATER
+#if NETSTANDARD
+        funcPointer = Marshal.GetFunctionPointerForDelegate(logCallback);
+#else
         unsafe
         {
             delegate* unmanaged[Cdecl]<GgmlLogLevel, IntPtr, IntPtr, void> onLogging = &LogUnmanaged;
             funcPointer = (IntPtr)onLogging;
         }
-#else
-        funcPointer = Marshal.GetFunctionPointerForDelegate(logCallback);
 #endif
-        NativeMethods.whisper_log_set(funcPointer, IntPtr.Zero);
-        GgmlNativeMethods.ggml_log_set(funcPointer, IntPtr.Zero);
+        nativeWhisper.Ggml_log_set(funcPointer, IntPtr.Zero);
+        nativeWhisper.Whisper_Log_Set(funcPointer, IntPtr.Zero);
     }
 
-#if NET6_0_OR_GREATER
-    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
-# else
-
+#if NETSTANDARD
     private static readonly WhisperGgmlLogCallback logCallback = LogUnmanaged;
+# else
+    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
 #endif
     internal static void LogUnmanaged(GgmlLogLevel level, IntPtr message, IntPtr user_data)
     {

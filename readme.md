@@ -1,112 +1,151 @@
 # Whisper.net
+
 Open-Source Whisper.net
 
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
-Native builds:
-[![Linux](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml)
-[![Linux OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml)
-[![Windows / CUDA](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml)
-[![Windows ARM](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml)
-[![Windows OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml)
-[![Windows Vulkan](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml)
-[![MacOs](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml)
-[![Android](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml)
-[![Wasm](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml)
+## Native Builds
 
-## Getting started
+| Platform | Build Status |
+|----------|--------------|
+| Linux | [![Linux](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml) |
+| Linux OpenVINO | [![Linux OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml) |
+| Windows / CUDA | [![Windows / CUDA](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml) |
+| Windows ARM | [![Windows ARM](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml) |
+| Windows OpenVINO | [![Windows OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml) |
+| Windows Vulkan | [![Windows Vulkan](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml) |
+| MacOS | [![MacOs](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml) |
+| Android | [![Android](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml) |
+| Wasm | [![Wasm](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml) |
 
-To install Whisper.net, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+## Getting Started
 
-    PM> Install-Package Whisper.net
-    PM> Install-Package Whisper.net.Runtime
+To install Whisper.net with all the available runtimes, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
-or simply add a package reference in your csproj:
+```
+    PM> Install-Package Whisper.net.AllRuntimes
+```
+
+Or add a package reference in your `.csproj` file:
+
+```
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.0" />
+```
+
+`Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
+
+### Installing Specific Runtimes
+
+To install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, add the following package references:
 
 ```
     <PackageReference Include="Whisper.net" Version="1.7.0" />
+```
+```
     <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
 ```
 
-## GPT for whisper
+## GPT for Whisper
 
-We also have a custom-built GPT inside chatgpt, which can help you with information based on this code, previous issues and releases available [here](https://chat.openai.com/g/g-GQU8iEnAa-whisper-net-helper).
+We also have a custom-built GPT inside ChatGPT, which can help you with information based on this code, previous issues, and releases. Available [here](https://chat.openai.com/g/g-GQU8iEnAa-whisper-net-helper).
 
-Please, make sure you try to ask it before publishing a new question here, as it can be a lot faster.
+Please try to ask it before publishing a new question here, as it can help you a lot faster.
 
-## Runtime
+## Runtimes Description
 
-The runtime package, Whisper.net.Runtime, contains the native whisper.cpp library and it is required in order to run Whisper.net.
+Whisper.net comes with multiple runtimes to support different platforms and hardware acceleration. Below are the available runtimes:
 
-## CoreML Runtime
+### Whisper.net.Runtime
 
-Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
+The default runtime that uses the CPU for inference. It is available on all platforms and does not require any additional dependencies.
 
-```
-    <PackageReference Include="Whisper.net" Version="1.7.0" />
-    <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.7.0" />
-```
+Examples: [Multiple Examples here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
 
-Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
+#### Supported Platforms
 
-Using the ggml whisper models with CoreML requires an additional `mlmodelc` file to be placed alongside your whisper model.
+- Windows x86, x64, ARM64
+- Linux x64, ARM64, ARM
+- macOS x64, ARM64 (Apple Silicon)
+- Android
+- iOS
+- MacCatalyst
+- tvOS
+- WebAssembly
 
-You can download and extract these using [WhisperGgmlDownloader](https://github.com/sandrohanea/whisper.net/blob/main/Whisper.net/Ggml/WhisperGgmlDownloader.cs#L45). Check the [CoreML example](https://github.com/sandrohanea/whisper.net/blob/main/examples/CoreML/Program.cs).
+### Whisper.net.Runtime.NoAvx
 
-You can also generate these via the [whisper.cpp scripts](https://github.com/ggerganov/whisper.cpp#core-ml-support). As whisper.cpp uses filepaths to detect this folder, you must load your whisper model with a file path.
+For CPUs that do not support AVX instructions.
 
-If successful, the whisper output logs will announce:
 
-`whisper_init_state: loading Core ML model from...`
+#### Supported Platforms
 
-If not, it will announce an error and use the original core library instead.
+- Windows x86, x64, ARM64
+- Linux x64, ARM64, ARM
 
-## GPU Support
+### Whisper.net.Runtime.Cuda
 
-We support GPU acceleration with the following runtimes:
+Contains the native whisper.cpp library with NVidia CUDA support enabled.
+Example: [CUDA example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
 
- - *CUDA (NVidia):* `Whisper.net.Runtime.Cuda` => for Windows x64 and Linux x64
- - *Vulkan:* `Whisper.net.Runtime.Vulkan` => for Windows x64.
- - *OpenVINO:* `Whisper.net.Runtime.OpenVino` => for Windows x64 and Linux x64.
+#### Supported Platforms
 
-To use any of these, reference the associated nuget package.
+- Windows x64
+- Linux x64
 
-Example:
+### Whisper.net.Runtime.CoreML
 
-```
-    <PackageReference Include="Whisper.net" Version="1.7.0" />
-    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
-```
+Contains the native whisper.cpp library with Apple CoreML support enabled.
 
-Note: when using the GPU runtime, make sure you have the latest drivers and the dependency for each platform:
+Example: [CoreML example](https://github.com/sandrohanea/whisper.net/tree/main/examples/CoreML)
 
-- For Cuda, you will need NVidia Drivers with Cuda and Cublas support (minimum version 12.1.0)
-- For Vulkan, you will need [Vulkan Runtime](https://www.vulkan.org/tools#vulkan-gpu-resources)
-- For OpenVino, you will need [OpenVino Runtime](https://github.com/openvinotoolkit/openvino/releases)
+#### Supported Platforms
+
+- macOS x64, ARM64 (Apple Silicon)
+- iOS
+- MacCatalyst
+- tvOS
+
+### Whisper.net.Runtime.OpenVino
+
+Contains the native whisper.cpp library with Intel OpenVino support enabled.
+
+Example: [OpenVino Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/OpenVinoExample)
+
+#### Supported Platforms
+
+- Windows x64
+- Linux x64
+
+### Whisper.net.Runtime.Vulkan
+
+Contains the native whisper.cpp library with Vulkan support enabled.
+
+Example: [Vulkan Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/Vulkan)
+
+#### Supported Platforms
+
+- Windows x64
 
 ## Multiple Runtimes Support
 
-You can install and use multiple runtimes in the same project. For example, you can use `Whisper.net.Runtime` for Windows and `Whisper.net.Runtime.CoreML` for Apple devices.
+You can install and use multiple runtimes in the same project. The runtime will be automatically selected based on the platform you are running the application on and the availability of the native runtime.
 
-The runtime will be automatically selected based on the platform you are running the application on and the availability of the native runtime.
+The following order of priority will be used by default:
 
-The following order of priority will be used be default:
+1. `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
+2. `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
+3. `Whisper.net.Runtime.CoreML` (Apple devices)
+4. `Whisper.net.Runtime.OpenVino` (Intel devices)
+5. `Whisper.net.Runtime` (CPU inference)
+6. `Whisper.net.Runtime.NoAvx` (CPU inference without AVX support)
 
- - `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
- - `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
- - `Whisper.net.Runtime.CoreML` (Apple devices)
- - `Whisper.net.Runtime.OpenVino` (Intel devices)
- - `Whisper.net.Runtime` (CPU inference)
+To change the order or force a specific runtime, set the `RuntimeOrder` on the `RuntimeOptions`:
 
- If you want to change the order or force a specific runtime, you can do it by seting the RuntimeOrder on the RuntimeOptions.
-
- ```csharp
-     WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
- ```
+`` RuntimeOptions.SetRuntimeLibraryOrder(new[] { RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu }); ``
 
 ## Blazor and WASM
 
-Blazor is supported with both InteractivityServer and InteractivityWebAssemly. You can check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
+Blazor is supported with both InteractivityServer and InteractivityWebAssembly with the `Whisper.net.Runtime` package. Check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
 
 ## Versioning
 
@@ -116,102 +155,87 @@ However, the patch version is not tied to Whisper.cpp. For example, Whisper.net 
 
 ## Ggml Models
 
-Whisper.net uses Ggml models to perform speech recognition and translation.
+Whisper.net uses Ggml models to perform speech recognition and translation. You can find more about Ggml models [here](https://github.com/ggerganov/whisper.cpp/tree/master/models).
 
-You can find more about Ggml models [here](https://github.com/ggerganov/whisper.cpp/tree/master/models)
-
-Also, for easier integration Whisper.net provides a Downloader which is using https://huggingface.co.
+For easier integration, Whisper.net provides a Downloader using [Hugging Face](https://huggingface.co).
 
 ```csharp
-
-    var modelName = "ggml-base.bin";
-    if (!File.Exists(modelName))
-    {
-        using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Base);
-        using var fileWriter = File.OpenWrite(modelName);
-        await modelStream.CopyToAsync(fileWriter);
-    }
-
+var modelName = "ggml-base.bin";
+if (!File.Exists(modelName))
+{
+    using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Base);
+    using var fileWriter = File.OpenWrite(modelName);
+    await modelStream.CopyToAsync(fileWriter);
+}
 ```
 
 ## Usage
 
 ```csharp
+using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
 
-    using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");
+using var processor = whisperFactory.CreateBuilder()
+    .WithLanguage("auto")
+    .Build();
 
-    using var processor = whisperFactory.CreateBuilder()
-        .WithLanguage("auto")
-        .Build();
+using var fileStream = File.OpenRead(wavFileName);
 
-    using var fileStream = File.OpenRead(wavFileName);
-
-    await foreach(var result in processor.ProcessAsync(fileStream))
-    {
-        Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
-    }
+await foreach (var result in processor.ProcessAsync(fileStream))
+{
+    Console.WriteLine($"{result.Start}->{result.End}: {result.Text}");
+}
 ```
-
-## Examples
-
-Check more examples [here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
 
 ## Documentation
 
-You can find the documentation and code samples here: [https://github.com/sandrohanea/whisper.net](https://github.com/sandrohanea/whisper.net)
+You can find the documentation and code samples [here](https://github.com/sandrohanea/whisper.net).
 
 ## Building The Runtime
 
+This section describes how to build the native runtime libraries for Whisper.net.
+Normally, you would not need to build the runtime libraries yourself, as they are available as NuGet packages.
+
 The build scripts are a combination of PowerShell scripts and a Makefile. You can read each of them for the underlying `cmake` commands being used, or run them directly from the scripts.
 
-### Android:
+You can also check the github actions available [here](https://github.com/sandrohanea/whisper.net/tree/main/.github/workflows)
+
+### Android
 
 `make android`
 
-- Before running, create an environment variable for `NDK_PATH` with the path to your Android NDK. For example,
+Before running, create an environment variable for `NDK_PATH` with the path to your Android NDK. For example:
 
 `NDK_PATH=/Users/UserName/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle`
 
-### Apple:
+### Apple
 
 `make apple`
 
-- Compiling the Apple libraries requires a Mac with Xcode installed.
+Compiling the Apple libraries requires a Mac with Xcode installed.
 
-### Apple CoreML:
+### Apple CoreML
 
 `make apple_coreml`
 
-- Compiling the Apple libraries requires a Mac with Xcode installed.
+Compiling the Apple libraries requires a Mac with Xcode installed.
 
-### Linux:
+### Linux
 
 `make linux`
 
-### Windows:
+### Windows
 
-- Import the powershel module `Import-Module ./windows-scripts.ps1`
-- Run `BuildWindowsAll` to build all Windows libraries
+Import the PowerShell module:
 
+`Import-Module ./windows-scripts.ps1`
+
+Run `BuildWindowsAll` to build all Windows libraries.
+Alternatively, you can run `BuildWindows` with the desired parameters.
+
+```
+BuildWindows -Arch "x64" -Configuration "Release"  -NoAvx $true
+```
 
 ## License
 
-MIT Licence
-[https://github.com/sandrohanea/whisper.net/blob/main/LICENSE](https://github.com/sandrohanea/whisper.net/blob/main/LICENSE)
-
-## Supported platforms
-
-Whisper.net is supported on the following platforms:
-- Windows x86
-- Windows x64
-- Windows ARM64
-- Linux x64
-- Linux ARM64
-- Linux ARM
-- macOS x64
-- macOS ARM64 (Apple Silicon)
-- Android
-- iOS
-- MacCatalyst
-- tvOS
-- WebAssembly
+MIT License. See [LICENSE](https://github.com/sandrohanea/whisper.net/blob/main/LICENSE) for details.

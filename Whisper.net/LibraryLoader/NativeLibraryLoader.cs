@@ -1,7 +1,10 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
+using Whisper.net.Internals.Native.Implementations;
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
+#if !NETSTANDARD
+using System.Runtime.Intrinsics.X86;
+#endif
 using System.Runtime.InteropServices;
-using Whisper.net.Native;
 #endif
 
 namespace Whisper.net.LibraryLoader;
@@ -10,15 +13,21 @@ public static class NativeLibraryLoader
 {
     internal static LoadResult LoadNativeLibrary()
     {
-#if IOS || MACCATALYST || TVOS || ANDROID
-        return LoadResult.Success;
+#if IOS || MACCATALYST || TVOS
+        return LoadResult.Success(new LibraryImportInternalWhisper());
+#elif ANDROID       
+        return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (RuntimeOptions.Instance.BypassLoading || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
+        if (RuntimeOptions.Instance.BypassLoading
+            || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
-            return LoadResult.Success;
+#if NET8_0_OR_GREATER
+            return LoadResult.Success(new LibraryImportLibWhisper());
+#else
+            return LoadResult.Success(new DllImportsNativeLibWhisper());
+#endif
         }
-
         return LoadLibraryComponent();
     }
 
@@ -32,6 +41,7 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
+#if NETSTANDARD
         ILibraryLoader libraryLoader = platform switch
         {
             "win" => new WindowsLibraryLoader(),
@@ -39,8 +49,11 @@ public static class NativeLibraryLoader
             "linux" => new LinuxLibraryLoader(),
             _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
         };
+#else
+        var libraryLoader = new UniversalLibraryLoader();
+#endif
 
-        LoadResult? lastError = null;
+        string? lastError = null;
 
         foreach (var (runtimePath, runtimeLibrary) in GetRuntimePaths(platform))
         {
@@ -49,37 +62,41 @@ public static class NativeLibraryLoader
             {
                 continue;
             }
+            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
-            var ggmlLoadResult = libraryLoader.OpenLibrary(ggmlPath);
-
+            var ggmlLibraryHandle = libraryLoader.OpenLibrary(ggmlPath, global: true);
             // Maybe GPU is not available but we still have other runtime installed
-            if (!ggmlLoadResult.IsSuccess)
+            if (ggmlLibraryHandle == IntPtr.Zero)
             {
-                lastError = ggmlLoadResult;
+                lastError = libraryLoader.GetLastError();
                 continue;
             }
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
-            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-            var whisperLoaded = libraryLoader.OpenLibrary(whisperPath);
-
-            if (whisperLoaded.IsSuccess)
+            var whisperHandle = libraryLoader.OpenLibrary(whisperPath, global: true);
+            if (whisperHandle != IntPtr.Zero)
             {
                 RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
-                return whisperLoaded;
+#if NETSTANDARD
+                var nativeWhisper = new DllImportsNativeWhisper();
+#else
+                var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
+#endif
+
+                return LoadResult.Success(nativeWhisper);
             }
         }
 
         // We don't have any error, so we couldn't even find some library to load.
         if (lastError == null)
         {
-            throw new FileNotFoundException($"Native Library not found in default paths. " +
+            throw new FileNotFoundException($"Native Library not found in default paths." +
                 $"Verify you have have included the native Whisper library in your application, " +
                 $"or install the default libraries with the Whisper.net.Runtime NuGet.");
         }
 
         // Runtime was found but couldn't be loaded.
-        return lastError;
+        return LoadResult.Failure(lastError);
     }
 
     private static string GetLibraryPath(string platform, string libraryName, string runtimePath)
@@ -105,33 +122,45 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
-        var assemblySearchPath = new[]
+        var assemblySearchPaths = new[]
             {
                 AppDomain.CurrentDomain.RelativeSearchPath,
-                Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location),
+                AppDomain.CurrentDomain.BaseDirectory,
+                Path.GetDirectoryName(typeof(NativeLibraryLoader).Assembly.Location),
                 Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
-            }.Where(it => !string.IsNullOrEmpty(it)).FirstOrDefault();
-
-        var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
-             ? "runtimes"
-             : Path.Combine(assemblySearchPath, "runtimes");
+            }.Where(it => !string.IsNullOrEmpty(it));
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
-            var runtimePath = library switch
+#if !NETSTANDARD
+            if (library == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
             {
-                RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
-                RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
-                RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
-                RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
-                RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
-                _ => throw new InvalidOperationException("Unknown runtime library")
-            };
-
-            if (Directory.Exists(runtimePath))
-            {
-                yield return (runtimePath, library);
+                continue;
             }
+#endif
+            foreach (var assemblySearchPath in assemblySearchPaths)
+            {
+
+                var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
+                     ? "runtimes"
+                     : Path.Combine(assemblySearchPath, "runtimes");
+                var runtimePath = library switch
+                {
+                    RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
+                    RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
+                    RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
+                    RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
+                    RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
+                    RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
+                    _ => throw new InvalidOperationException("Unknown runtime library")
+                };
+
+                if (Directory.Exists(runtimePath))
+                {
+                    yield return (runtimePath, library);
+                }
+            }
+
         }
 
 #endif

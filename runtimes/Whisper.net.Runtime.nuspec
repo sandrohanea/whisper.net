@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime</id>
+    <title>Whisper.Net.Runtime</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Cross-platform dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime contains the native runtime libraries to enable Whisper on .NET apps with Whisper.Net.</description>
+    <tags>whisper;ios;android;linux;windows;macos;cross-platform</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime\**" target="build"/>
+  </files>
+</package>

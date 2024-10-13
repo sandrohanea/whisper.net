@@ -1,0 +1,40 @@
+name: Windows Vulkan native build
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  native-build:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1.0.4
+        with:
+          vulkan_version: 1.3.290.0
+          optional_components: com.lunarg.vulkan.vma
+          install_runtime: true
+          cache: true
+          stripdown: true
+
+      - name: Run Build
+        run: |
+          Import-Module ./windows-scripts.ps1
+          BuildWindows -Arch "x64" -Configuration "Release"  -Vulkan $true
+        shell: pwsh
+
+      - name: Upload Windows Vulkan Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-vulkan-build
+          path: "runtimes/Whisper.net.Run*/win-*/*"
+          retention-days: 7

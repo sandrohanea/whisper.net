@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.Internals.Native;
 using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 
@@ -15,10 +16,10 @@ internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProces
         pinnedBuffer.Free();
     }
 
-    public IntPtr LoadNativeContext()
+    public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
         var bufferLength = new UIntPtr((uint)buffer.Length);
-        return NativeMethods.whisper_init_from_buffer_with_params_no_state(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
+        return nativeWhisper.Whisper_Init_From_Buffer_With_Params_No_State(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
             new WhisperContextParams()
             {
                 UseGpu = RuntimeOptions.Instance.UseGpu ? (byte)1 : (byte)0,
