@@ -14,9 +14,6 @@ jobs:
           submodules: true
           ref: ${{ github.head_ref }}
 
-      - name: Run apple coreml build for x64
-        run: make apple_coreml_x64
-
       - name: Run apple build for x64
         run: make apple_x64
 

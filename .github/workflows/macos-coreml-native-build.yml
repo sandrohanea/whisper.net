@@ -5,7 +5,28 @@ on:
   workflow_call:
 
 jobs:
-  native-build:
+  intel-native-build:
+    runs-on: macos-13
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.head_ref }}
+
+      - name: Run apple coreml build for x64
+        run: make apple_coreml_x64
+
+      - name: Upload Mac Intel Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-intel-build
+          path: |
+            runtimes/Whisper.net.Run*/*/*
+            runtimes/Whisper.net.Run*/*.metal
+          retention-days: 7
+
+  arm-native-build:
     runs-on: macos-14
 
     steps:

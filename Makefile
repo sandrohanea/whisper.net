@@ -36,6 +36,8 @@ linux_noavx: linux_x64_noavx linux_arm64_noavx linux_arm_noavx
 linux_cuda: linux_x64_cuda
 
 copy_metal:
+    ls -la runtimes
+	ls -la runtimes/Whisper.net.Runtime
 	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
 
 copy_metal_coreml:
