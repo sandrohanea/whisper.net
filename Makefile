@@ -234,7 +234,7 @@ tvos_simulator_coreml:
 
 android_arm64-v8a:
 	rm -rf build/android-arm64-v8a
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -S . -B build/android-arm64-v8a
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -DGGML_OPENMP=OFF -S . -B build/android-arm64-v8a
 	cmake --build build/android-arm64-v8a
 	mkdir -p runtimes/Whisper.net.Runtime/android-arm64-v8a
 	cp build/android-arm64-v8a/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-arm64-v8a/libwhisper.so
@@ -242,7 +242,7 @@ android_arm64-v8a:
 
 android_x86:
 	rm -rf build/android-x86
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=x86 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -S . -B build/android-x86
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=x86 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -DGGML_OPENMP=OFF -S . -B build/android-x86
 	cmake --build build/android-x86
 	mkdir -p runtimes/Whisper.net.Runtime/android-x86
 	cp build/android-x86/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-x86/libwhisper.so
@@ -250,12 +250,9 @@ android_x86:
 
 android_x64:
 	rm -rf build/android-x86_64
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=x86_64 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -S . -B build/android-x86_64
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_ANDROID_ARCH_ABI=x86_64 -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_API=21 -DCMAKE_ANDROID_NDK=$(NDK) -DGGML_OPENMP=OFF -S . -B build/android-x86_64
 	cmake --build build/android-x86_64
 	mkdir -p runtimes/Whisper.net.Runtime/android-x86_64
-	ls -l build/linux-x64/whisper.cpp/src/
-	ls -l build/linux-x64/whisper.cpp/ggml/src/
-	find build/linux-x64/whisper.cpp/  -name libomp.so
 	cp build/android-x86_64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-x86_64/libwhisper.so
 	cp build/android-x86_64/whisper.cpp/ggml/src/libggml.so ./runtimes/Whisper.net.Runtime/android-x86_64/libggml.so
 
