@@ -23,7 +23,7 @@ jobs:
           Expand-Archive -Path openvino.zip -DestinationPath openvino
           .\openvino\w_openvino_toolkit_windows_2024.4.1.16618.643f23d1318_x86_64\setupvars.ps1
           Import-Module ./windows-scripts.ps1
-          BuildWindowsBase -Arch "x64" -Configuration "Release"  -OpenVino $true
+          BuildWindows -Arch "x64" -Configuration "Release"  -OpenVino $true
         shell: pwsh
 
       - name: Upload Windows OpenVino Build Artifacts

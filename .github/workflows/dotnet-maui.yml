@@ -80,9 +80,11 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
 
       - name: Run android tests
-        run: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk --output-directory=./test-results/android
+        run: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
 
       - name: Upload Maui Android xharness test results
         uses: actions/upload-artifact@v4
         with:
           name: xharness-android-test-results
+          path: |
+            ./test-results/*

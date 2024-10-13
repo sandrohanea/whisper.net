@@ -20,9 +20,9 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindowsBase -Arch "x64" -Configuration "Release"  -NoAvx $true
-          BuildWindowsBase -Arch "x86" -Configuration "Release"  -NoAvx $true
-          BuildWindowsBase -Arch "arm64" -Configuration "Release"  -NoAvx $true
+          BuildWindows -Arch "x64" -Configuration "Release"  -NoAvx $true
+          BuildWindows -Arch "x86" -Configuration "Release"  -NoAvx $true
+          BuildWindows -Arch "arm64" -Configuration "Release"  -NoAvx $true
         shell: pwsh
 
       - name: Upload Windows NoAvx Build Artifacts

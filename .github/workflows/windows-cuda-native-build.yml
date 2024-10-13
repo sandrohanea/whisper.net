@@ -30,7 +30,7 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindowsBase -Arch "x64" -Cuda $true -Configuration "Release";
+          BuildWindows -Arch "x64" -Cuda $true -Configuration "Release";
         shell: pwsh
 
       - name: Remove CUDA installer

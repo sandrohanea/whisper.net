@@ -29,7 +29,7 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindowsBase -Arch "x64" -Configuration "Release"  -Vulkan $true
+          BuildWindows -Arch "x64" -Configuration "Release"  -Vulkan $true
         shell: pwsh
 
       - name: Upload Windows Vulkan Build Artifacts
