@@ -1,5 +1,4 @@
 BUILD_TYPE=Release
-VERSION=1.7.0
 CMAKE_PARAMETERS=-DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 COREML_SUPPORT=$(CMAKE_PARAMETERS) -DWHISPER_COREML=ON -DWHISPER_COREML_ALLOW_FALLBACK=ON
 NDK := $(if $(strip $(NDK_PATH)),$(NDK_PATH),$(shell test -d $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle && echo $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle || echo ""))
@@ -197,7 +196,7 @@ ios_simulator_arm64:
 	cmake --build build/ios_simulator_arm64
 	mkdir -p runtimes/Whisper.net.Runtime/ios-simulator
 	cp build/ios_simulator_arm64/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libwhisper.dylib
-    cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml.dylib
+	cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml.dylib
 
 tvos_simulator_arm64:
 	rm -rf build/tvos_simulator_arm64

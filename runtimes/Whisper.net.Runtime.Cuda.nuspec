@@ -3,7 +3,7 @@
   <metadata>
     <id>Whisper.net.Runtime.Cuda</id>
     <title>Whisper.Net.Runtime.Cuda</title>
-    <version>1.7.0</version>
+    <version>$version$</version>
     <authors>Sandro Hanea</authors>
     <owners>Sandro Hanea</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,8 +13,8 @@
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>
     <dependencies>
-      <dependency id="Whisper.net.Runtime.Cuda.Windows" version="1.7.0" />
-      <dependency id="Whisper.net.Runtime.Cuda.Linux" version="1.7.0" />
+      <dependency id="Whisper.net.Runtime.Cuda.Windows" version="$version$" />
+      <dependency id="Whisper.net.Runtime.Cuda.Linux" version="$version$" />
     </dependencies>
   </metadata>
   <files>
