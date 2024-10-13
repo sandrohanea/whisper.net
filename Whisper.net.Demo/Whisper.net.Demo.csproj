@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Condition="'$(EnableCoreML)' != 'true'" Project="../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
-  <Import Condition="'$(EnableCoreML)' == 'true'" Project="../Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
+	<Import Condition="'$(EnableCoreML)' != 'true'" Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Condition="'$(EnableCoreML)' == 'true'" Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFrameworks>net8.0</TargetFrameworks>

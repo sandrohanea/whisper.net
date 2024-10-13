@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
@@ -50,6 +50,24 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Remove="lib\**" />
+	  <Compile Remove="lib\**" />
+	  <EmbeddedResource Remove="lib\**" />
+	  <MauiCss Remove="lib\**" />
+	  <MauiXaml Remove="lib\**" />
+	  <None Remove="lib\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-arm64-v8a\libggml.so" />
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-arm64-v8a\libwhisper.so" />
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86\libggml.so" />
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86\libwhisper.so" />
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86_64\libggml.so" />
+	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86_64\libwhisper.so" />
 	</ItemGroup>
 
 	<ItemGroup>

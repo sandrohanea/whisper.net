@@ -45,21 +45,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC45AC94-3CD7-45D8-A847-2D9C06E1806A}"
 	ProjectSection(SolutionItems) = preProject
-		Whisper.net.Runtime.CoreML.nuspec = Whisper.net.Runtime.CoreML.nuspec
-		Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
-		Whisper.net.Runtime.Cuda.Linux.nuspec = Whisper.net.Runtime.Cuda.Linux.nuspec
-		Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets = Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets
-		Whisper.net.Runtime.Cuda.nuspec = Whisper.net.Runtime.Cuda.nuspec
-		Whisper.net.Runtime.Cuda.Windows.nuspec = Whisper.net.Runtime.Cuda.Windows.nuspec
-		Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets = Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets
-		Whisper.net.Runtime.NoAvx.nuspec = Whisper.net.Runtime.NoAvx.nuspec
-		Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets = Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets
-		Whisper.net.Runtime.nuspec = Whisper.net.Runtime.nuspec
-		Whisper.net.Runtime.OpenVino.nuspec = Whisper.net.Runtime.OpenVino.nuspec
-		Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
-		Whisper.net.Runtime\Whisper.net.Runtime.targets = Whisper.net.Runtime\Whisper.net.Runtime.targets
-		Whisper.net.Runtime.Vulkan.nuspec = Whisper.net.Runtime.Vulkan.nuspec
-		Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
+		runtimes\Whisper.net.Runtime.CoreML.nuspec = runtimes\Whisper.net.Runtime.CoreML.nuspec
+		runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
+		runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec = runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets = runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets
+		runtimes\Whisper.net.Runtime.Cuda.nuspec = runtimes\Whisper.net.Runtime.Cuda.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Windows.nuspec = runtimes\Whisper.net.Runtime.Cuda.Windows.nuspec
+		runtimes\Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets = runtimes\Whisper.net.Runtime.Cuda.Windows\Whisper.net.Runtime.Cuda.Windows.targets
+		runtimes\Whisper.net.Runtime.NoAvx.nuspec = runtimes\Whisper.net.Runtime.NoAvx.nuspec
+		runtimes\Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets = runtimes\Whisper.net.Runtime.NoAvx\Whisper.net.Runtime.NoAvx.targets
+		runtimes\Whisper.net.Runtime.nuspec = runtimes\Whisper.net.Runtime.nuspec
+		runtimes\Whisper.net.Runtime.OpenVino.nuspec = runtimes\Whisper.net.Runtime.OpenVino.nuspec
+		runtimes\Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets = runtimes\Whisper.net.Runtime.OpenVino\Whisper.net.Runtime.OpenVino.targets
+		runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets = runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets
+		runtimes\Whisper.net.Runtime.Vulkan.nuspec = runtimes\Whisper.net.Runtime.Vulkan.nuspec
+		runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.net.Maui.Tests", "tests\Whisper.net.Maui.Tests\Whisper.net.Maui.Tests.csproj", "{2D16B02C-55D6-4B9B-B99E-A0529C407A69}"

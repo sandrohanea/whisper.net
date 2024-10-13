@@ -56,7 +56,7 @@ function BuildWindowsBase() {
     $buildDirectory = "build/win-$Arch"
     $options = @("-S", ".")
     
-    $runtimePath = "./Whisper.net.Runtime"
+    $runtimePath = "./runtimes/Whisper.net.Runtime"
 
     if ($Cuda) {
         $options += "-DGGML_CUDA=1"
@@ -151,13 +151,13 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
         New-Item -ItemType Directory -Force -Path "nupkgs"
     }
     
-    nuget pack Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
-    nuget pack Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack Whisper.net.Runtime.NoAvx.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $Version -OutputDirectory ./nupkgs
 }
