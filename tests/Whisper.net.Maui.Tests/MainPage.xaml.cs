@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Whisper.net.Internals.Native.Implementations;
+using Whisper.net.LibraryLoader;
 using Whisper.net.Logger;
 
 namespace Whisper.net.Maui.Tests;
@@ -22,10 +23,17 @@ public partial class MainPage : ContentPage
 
         try
         {
-            var dllImport = new DllImportsNativeWhisper();
-            LogProvider.InitializeLogging(dllImport);
+            var linuxLIbraryLoader = new LinuxLibraryLoader();
+            var openedLib = linuxLIbraryLoader.OpenLibrary("libggml.so", true);
+
+            if (openedLib == IntPtr.Zero)
+            {
+                var error = linuxLIbraryLoader.GetLastError();
+                CounterBtn.Text = error;
+            }
+
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             CounterBtn.Text = ex.Message;
             // ignored

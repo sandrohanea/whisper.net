@@ -1,10 +1,9 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Internals.Native.Implementations;
+#if !IOS && !MACCATALYST && !TVOS && !ANDROID
 #if !NETSTANDARD
 using System.Runtime.Intrinsics.X86;
 #endif
-
-#if !IOS && !MACCATALYST && !TVOS && !ANDROID
 using System.Runtime.InteropServices;
 #endif
 
@@ -17,7 +16,7 @@ public static class NativeLibraryLoader
 #if IOS || MACCATALYST || TVOS
         return LoadResult.Success(new DllImportsNativeWhisper());
 #elif ANDROID       
-        return LoadResult.Success(new DllImportsNativeWhisper());
+        return LoadResult.Success(new LibraryImportNativeLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
         if (RuntimeOptions.Instance.BypassLoading
