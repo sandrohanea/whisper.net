@@ -1,4 +1,5 @@
 # Whisper.net
+
 Open-Source Whisper.net
 
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
@@ -16,12 +17,19 @@ Native builds:
 
 ## Getting started
 
-To install Whisper.net, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+To install Whisper.net with all the available runtimes, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
-    PM> Install-Package Whisper.net
-    PM> Install-Package Whisper.net.Runtime
+    PM> Install-Package Whisper.net.AllRuntimes
 
 or simply add a package reference in your csproj:
+
+```
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.0" />
+```
+
+`Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
+
+If you want to install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, run the following command:
 
 ```
     <PackageReference Include="Whisper.net" Version="1.7.0" />
@@ -34,20 +42,85 @@ We also have a custom-built GPT inside chatgpt, which can help you with informat
 
 Please, make sure you try to ask it before publishing a new question here, as it can be a lot faster.
 
-## Runtime
+## Runtimes description
 
-The runtime package, Whisper.net.Runtime, contains the native whisper.cpp library and it is required in order to run Whisper.net.
+Whisper.net comes with multiple runtimes to support different platforms and hardware acceleration. The runtimes are:
 
-## CoreML Runtime
+### Whisper.net.Runtime
 
-Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes. To use it, reference the `Whisper.net.Runtime.CoreML` nuget,
+Whisper.net.Runtime is the default runtime that uses the CPU for inference. It is available on all platforms and does not require any additional dependencies. To use it alone, reference the `Whisper.net.Runtime` nuget,
+```
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
+```
+
+#### Supported platforms:
+
+- Windows x86
+- Windows x64
+- Windows ARM64
+- Linux x64
+- Linux ARM64
+- Linux ARM
+- macOS x64
+- macOS ARM64 (Apple Silicon)
+- Android
+- iOS
+- MacCatalyst
+- tvOS
+- WebAssembly
+
+### Whisper.net.Runtime.NoAvx
+
+If you are running on a CPU that does not support AVX instructions, you can use the `Whisper.net.Runtime.NoAvx` runtime. This will provide a fallback for CPUs that do not support AVX instructions.
+To use it, reference the `Whisper.net.Runtime.NoAvx` nuget,
+```
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.NoAvx" Version="1.7.0" />
+```
+
+Examples: [Multiple Examples here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
+
+#### Supported platforms:
+
+- Windows x86
+- Windows x64
+- Windows ARM64
+- Linux x64
+- Linux ARM64
+- Linux ARM
+
+### Whisper.net.Runtime.Cuda
+
+Whisper.net.Runtime.Cuda contains the native whisper.cpp library with NVidia CUDA support enabled.
+Using this on NVidia hardware can net performance improvements over the core runtimes, especially for larger models.
+To use it, reference the `Whisper.net.Runtime.Cuda` nuget,
+```
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
+```
+
+Example: [CUDA example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
+
+Note: The CUDA runtime requires NVidia drivers with CUDA and CuBLAS support (minimum version 12.1.0).
+
+#### Supported platforms:
+
+- Windows x64
+- Linux x64
+
+
+### Whisper.net.Runtime.CoreML
+
+Whisper.net.Runtime.CoreML contains the native whisper.cpp library with Apple CoreML support enabled. Using this on Apple hardware (macOS, iOS, etc.) can net performance improvements over the core runtimes.
+o use it, reference the `Whisper.net.Runtime.CoreML` nuget,
 
 ```
     <PackageReference Include="Whisper.net" Version="1.7.0" />
     <PackageReference Include="Whisper.net.Runtime.CoreML" Version="1.7.0" />
 ```
 
-Note that only the CoreML built libraries are available in this package and does not contain libraries for other platforms (Linux, Windows, etc). If you are creating a cross-platform application you can use conditional target frameworks to install the correct library package for each version.
+Example: [CoreML example](https://github.com/sandrohanea/whisper.net/tree/main/examples/CoreML)
 
 Using the ggml whisper models with CoreML requires an additional `mlmodelc` file to be placed alongside your whisper model.
 
@@ -61,28 +134,49 @@ If successful, the whisper output logs will announce:
 
 If not, it will announce an error and use the original core library instead.
 
-## GPU Support
+#### Supported platforms:
 
-We support GPU acceleration with the following runtimes:
+- macOS x64
+- macOS ARM64 (Apple Silicon)
+- iOS
+- MacCatalyst
+- tvOS
 
- - *CUDA (NVidia):* `Whisper.net.Runtime.Cuda` => for Windows x64 and Linux x64
- - *Vulkan:* `Whisper.net.Runtime.Vulkan` => for Windows x64.
- - *OpenVINO:* `Whisper.net.Runtime.OpenVino` => for Windows x64 and Linux x64.
+### Whisper.net.Runtime.OpenVino
 
-To use any of these, reference the associated nuget package.
-
-Example:
-
+Whisper.net.Runtime.OpenVino contains the native whisper.cpp library with Intel OpenVino support enabled.
+Using this on Intel hardware can net performance improvements over the core runtimes, especially for larger models.
+To use it, reference the `Whisper.net.Runtime.OpenVino` nuget,
 ```
     <PackageReference Include="Whisper.net" Version="1.7.0" />
-    <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.OpenVino" Version="1.7.0" />
 ```
 
-Note: when using the GPU runtime, make sure you have the latest drivers and the dependency for each platform:
+Example: [OpenVino Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/OpenVinoExample)
 
-- For Cuda, you will need NVidia Drivers with Cuda and Cublas support (minimum version 12.1.0)
-- For Vulkan, you will need [Vulkan Runtime](https://www.vulkan.org/tools#vulkan-gpu-resources)
-- For OpenVino, you will need [OpenVino Runtime](https://github.com/openvinotoolkit/openvino/releases)
+Note: This packages requires the [OpenVino Runtime](https://github.com/openvinotoolkit/openvino/releases) to be installed on the target machine.
+
+#### Supported platforms:
+
+- Windows x64
+- Linux x64
+
+### Whisper.net.Runtime.Vulkan
+
+Whisper.net.Runtime.Vulkan contains the native whisper.cpp library with Vulkan support enabled.
+To use it on Windows, reference the `Whisper.net.Runtime.Vulkan` nuget,
+```
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime.Vulkan" Version="1.7.0" />
+```
+
+Example: [Vulkan Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/Vulkan)
+
+Note: This packages requires the [Vulkan Runtime](https://www.vulkan.org/tools#vulkan-gpu-resources) to be installed on the target machine.
+
+#### Supported platforms:
+
+- Windows x64
 
 ## Multiple Runtimes Support
 
@@ -107,7 +201,7 @@ The following order of priority will be used be default:
 
 ## Blazor and WASM
 
-Blazor is supported with both InteractivityServer and InteractivityWebAssemly. You can check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
+Blazor is supported with both InteractivityServer and InteractivityWebAssemly with `Whisper.net.Runtime` package. You can check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
 
 ## Versioning
 
@@ -153,10 +247,6 @@ Also, for easier integration Whisper.net provides a Downloader which is using ht
     }
 ```
 
-## Examples
-
-Check more examples [here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
-
 ## Documentation
 
 You can find the documentation and code samples here: [https://github.com/sandrohanea/whisper.net](https://github.com/sandrohanea/whisper.net)
@@ -164,6 +254,8 @@ You can find the documentation and code samples here: [https://github.com/sandro
 ## Building The Runtime
 
 The build scripts are a combination of PowerShell scripts and a Makefile. You can read each of them for the underlying `cmake` commands being used, or run them directly from the scripts.
+
+You can also check the github actions available [here](https://github.com/sandrohanea/whisper.net/tree/main/.github/workflows)
 
 ### Android:
 
@@ -199,20 +291,3 @@ The build scripts are a combination of PowerShell scripts and a Makefile. You ca
 
 MIT Licence
 [https://github.com/sandrohanea/whisper.net/blob/main/LICENSE](https://github.com/sandrohanea/whisper.net/blob/main/LICENSE)
-
-## Supported platforms
-
-Whisper.net is supported on the following platforms:
-- Windows x86
-- Windows x64
-- Windows ARM64
-- Linux x64
-- Linux ARM64
-- Linux ARM
-- macOS x64
-- macOS ARM64 (Apple Silicon)
-- Android
-- iOS
-- MacCatalyst
-- tvOS
-- WebAssembly

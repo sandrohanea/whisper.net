@@ -4,6 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
+    <Version>1.7.1</Version>
     <Authors>Sandro Hanea</Authors>
     <Description>Cross-platform dotnet bindings for Whisper.</Description>
     <PackageProjectUrl>https://github.com/sandrohanea/whisper.net</PackageProjectUrl>
