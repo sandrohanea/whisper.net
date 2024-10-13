@@ -78,4 +78,4 @@ jobs:
    push-nuget:
       needs:
          - pack-all
-      uses: ./.github/workflows/push-nuget.yml
+      uses: ./.github/workflows/push-all.yml
