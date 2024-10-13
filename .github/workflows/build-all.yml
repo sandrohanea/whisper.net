@@ -87,4 +87,5 @@ jobs:
          - linux-cuda
          - linux-openvino
          - macos-coreml
+         - linux-no-avx
       uses: ./.github/workflows/pack-all.yml
