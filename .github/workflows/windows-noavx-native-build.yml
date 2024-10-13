@@ -25,7 +25,7 @@ jobs:
           BuildWindowsBase -Arch "arm64" -Configuration "Release"  -NoAvx $true
         shell: pwsh
 
-      - name: Upload Windows Vulkan Build Artifacts
+      - name: Upload Windows NoAvx Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-noavx-build

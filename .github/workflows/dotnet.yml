@@ -55,6 +55,9 @@ jobs:
         with:
           merge-multiple: true
 
+      - name: Tree Runtimes
+        run: tree runtimes
+
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
 
@@ -83,6 +86,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+
+      - name: Show all runtimes
+        run: |
+          ls -la ./runtimes
+          find ./runtimes -type f
 
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln

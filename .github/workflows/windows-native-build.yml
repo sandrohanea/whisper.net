@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: "Whisper.net.Run*/win-*/*"
+          path: "runtimes/Whisper.net.Run*/win-*/*"
           retention-days: 7
 
   arm-native-build:
