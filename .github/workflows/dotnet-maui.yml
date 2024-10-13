@@ -42,14 +42,7 @@ jobs:
 
       - name: Publish android build
         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
-
-      - name: Publish ios build
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-ios
-
-      - name: Check ios build
-        run: |
-          ls -la ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-ios/
-
+        
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:

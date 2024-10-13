@@ -45,6 +45,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC45AC94-3CD7-45D8-A847-2D9C06E1806A}"
 	ProjectSection(SolutionItems) = preProject
 		runtimes\Whisper.net.Runtime.CoreML.nuspec = runtimes\Whisper.net.Runtime.CoreML.nuspec
+		runtimes\Whisper.net.AllRuntimes.nuspec = runtimes\Whisper.net.AllRuntimes.nuspec
 		runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets = runtimes\Whisper.net.Runtime.CoreML\Whisper.net.Runtime.CoreML.targets
 		runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec = runtimes\Whisper.net.Runtime.Cuda.Linux.nuspec
 		runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets = runtimes\Whisper.net.Runtime.Cuda.Linux\Whisper.net.Runtime.Cuda.Linux.targets

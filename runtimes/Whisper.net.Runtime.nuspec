@@ -12,6 +12,7 @@
     <tags>whisper;ios;android;linux;windows;macos;cross-platform</tags>
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
   </metadata>
   <files>
     <file src="Whisper.net.Runtime\**" target="build"/>

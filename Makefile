@@ -14,6 +14,7 @@ nuget:
 	nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.AllRuntimes.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 
 clean:
 	rm -rf nupkgs

@@ -12,8 +12,10 @@
     <tags>whisper;ios;macos;cross-platform</tags>
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
   </metadata>
   <files>
     <file src="Whisper.net.Runtime.CoreML\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
   </files>
 </package>

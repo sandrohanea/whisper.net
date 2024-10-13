@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>Whisper.net.Runtime.Cuda</id>
-    <title>Whisper.Net.Runtime.Cuda</title>
+    <id>Whisper.net.AllRuntimes</id>
+    <title>Whisper.Net.AllRuntimes</title>
     <version>$version$</version>
     <authors>Sandro Hanea</authors>
     <owners>Sandro Hanea</owners>
@@ -14,8 +14,13 @@
     <license type="expression">MIT</license>
     <readme>content/readme.md</readme>
     <dependencies>
-      <dependency id="Whisper.net.Runtime.Cuda.Windows" version="$version$" />
-      <dependency id="Whisper.net.Runtime.Cuda.Linux" version="$version$" />
+      <dependency id="Whisper.net" version="$version$" />
+      <dependency id="Whisper.net.Runtime" version="$version$" />
+      <dependency id="Whisper.net.Runtime.Cuda" version="$version$" />
+      <dependency id="Whisper.net.Runtime.CoreML" version="$version$" />
+      <dependency id="Whisper.net.Runtime.NoAvx" version="$version$" />
+      <dependency id="Whisper.net.Runtime.OpenVino" version="$version$" />
+      <dependency id="Whisper.net.Runtime.Vulkan" version="$version$" />
     </dependencies>
   </metadata>
   <files>
