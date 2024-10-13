@@ -1,19 +1,20 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: CI (Native + dotnet)
+name: CD (Native + dotnet)
 
 on:
-   push:
-      branches: ["main"]
-   pull_request:
-      branches: ["main"]
    workflow_dispatch:
       inputs:
-         BuildGpuLibs:
-            description: 'Enable GPU libraries build and publish'
+         IsPreview:
+            description: 'Is Preview'
             required: true
-            default: 'false'
+            type: boolean
+            default: true
+         PreviewSuffix:
+            description: 'Preview Suffix'
+            required: false
+            default: 'prerelease'
 jobs:
    android:
       uses: ./.github/workflows/android-native-build.yml
@@ -37,43 +38,44 @@ jobs:
       uses: ./.github/workflows/linux-noavx-native-build.yml
 
    windows-cuda:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml
 
    windows-vulkan:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-vulkan-native-build.yml
 
    windows-openvino:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-openvino-native-build.yml
       
    linux-cuda:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
 
    linux-openvino:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-openvino-native-build.yml
 
    macos-coreml:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/macos-coreml-native-build.yml
-
-   dotnet-build:
+      
+   pack-all:
       needs:
          - android
          - macos
          - windows
          - wasm
          - linux
-      uses: ./.github/workflows/dotnet.yml
-
-   dotnet-maui-build-and-test:
+         - windows-cuda
+         - windows-vulkan
+         - windows-openvino
+         - linux-cuda
+         - linux-openvino
+         - macos-coreml
+         - linux-no-avx
+         - windows-no-avx
+      uses: ./.github/workflows/pack-all.yml
+      with:
+         IsPreview: ${{ input.IsPreview }}
+         PreviewSuffix: ${{ input.PreviewSuffix }}
+         
+   push-nuget:
       needs:
-         - android
-         - macos
-         - windows
-         - wasm
-         - linux
-      uses: ./.github/workflows/dotnet-maui.yml
+         - pack-all
+      uses: ./.github/workflows/push-nuget.yml

@@ -5,6 +5,13 @@ name: Pack All
 
 on:
   workflow_call:
+     inputs:
+        IsPreview:
+            required: true
+            type: boolean
+        PreviewSuffix:
+            required: false
+            type: string
 
 jobs:
   pack-nupkgs:
@@ -47,8 +54,8 @@ jobs:
           $xml = [Xml] (Get-Content .\Whisper.net\Whisper.net.csproj)
           $versionObject = $xml.Project.PropertyGroup.Version
           $version = "$versionObject".Trim()
-          $runNumber = ${{ github.run_number }}
-          $previewVersion = "$version-preview$runNumber"
+          $previewSuffix = if (${{ inputs.IsPreview }} -eq 'true') { '-${{ inputs.PreviewSuffix }}' } else { '' }
+          $previewVersion = "$version$previewSuffix"
           Import-Module ./windows-scripts.ps1
           PackAll -Version $previewVersion
         shell: pwsh
