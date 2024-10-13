@@ -160,5 +160,5 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
     nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $Version -OutputDirectory ./nupkgs
-    nuget pack runtimes/Whisper.net.AllRutimes.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.AllRuntimes.nuspec -Version $Version -OutputDirectory ./nupkgs
 }
