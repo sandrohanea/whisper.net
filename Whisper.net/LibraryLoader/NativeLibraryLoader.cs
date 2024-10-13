@@ -1,5 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Internals.Native.Implementations;
+using System.Runtime.Intrinsics.X86;
+
 
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
 using System.Runtime.InteropServices;
@@ -126,8 +128,15 @@ public static class NativeLibraryLoader
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
+#if !NETSTANDARD
+            if (library == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
+            {
+                continue;
+            }
+#endif
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
+
                 var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
                      ? "runtimes"
                      : Path.Combine(assemblySearchPath, "runtimes");
@@ -136,6 +145,7 @@ public static class NativeLibraryLoader
                     RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
                     RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
                     RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
+                    RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
                     RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
                     RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
                     _ => throw new InvalidOperationException("Unknown runtime library")

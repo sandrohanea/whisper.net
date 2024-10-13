@@ -97,11 +97,12 @@ The following order of priority will be used be default:
  - `Whisper.net.Runtime.CoreML` (Apple devices)
  - `Whisper.net.Runtime.OpenVino` (Intel devices)
  - `Whisper.net.Runtime` (CPU inference)
+ - `Whisper.net.Runtime.NoAvx` (CPU inference without AVX support)
 
  If you want to change the order or force a specific runtime, you can do it by seting the RuntimeOrder on the RuntimeOptions.
 
  ```csharp
-     WhisperFactory.Initialize(runtimeLibraryOrder: [RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
+     RuntimeOptions.SetRuntimeLibraryOrder([RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
  ```
 
 ## Blazor and WASM

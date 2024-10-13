@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.NoAvx</id>
+    <title>Whisper.Net.Runtime</title>
+    <version>1.7.0</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Cross-platform dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime.NoAvx contains the native runtime libraries to enable Whisper on .NET apps with Whisper.Net without AVX optimizations.</description>
+    <tags>whisper;ios;android;linux;windows;macos;cross-platform</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.NoAvx\**" target="build"/>
+  </files>
+</package>

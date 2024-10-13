@@ -4,7 +4,7 @@ namespace Whisper.net.LibraryLoader;
 
 public class RuntimeOptions
 {
-    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu];
+    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
     internal bool BypassLoading { get; private set; }
     internal string? LibraryPath { get; private set; }
     internal bool UseGpu { get; private set; }

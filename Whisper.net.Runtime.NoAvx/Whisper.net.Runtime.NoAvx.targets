@@ -1,0 +1,42 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-arm64/libwhisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libggml.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-arm64/libggml.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-x64/libwhisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-x64/libggml.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libwhisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-arm/libwhisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libggml.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/linux-arm/libggml.so</TargetPath>
+    </None>
+    <!-- End Linux -->
+  </ItemGroup>
+
+</Project>

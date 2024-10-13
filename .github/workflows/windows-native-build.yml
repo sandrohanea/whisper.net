@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 jobs:
-  intel-build:
+  intel-native-build:
     runs-on: windows-2019
 
     steps:
@@ -31,7 +31,7 @@ jobs:
           path: "Whisper.net.Run*/win-*/*"
           retention-days: 7
 
-  arm-build:
+  arm-native-build:
     runs-on: windows-latest
 
     steps:

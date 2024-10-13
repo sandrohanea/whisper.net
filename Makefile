@@ -36,6 +36,8 @@ apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_si
 
 linux: linux_x64 linux_arm64 linux_arm
 
+linux_noavx: linux_x64_noavx linux_arm64_noavx linux_arm_noavx
+
 linux_cuda: linux_x64_cuda
 
 copy_metal:
@@ -51,6 +53,7 @@ wasm:
 	mkdir -p Whisper.net.Runtime/browser-wasm
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./Whisper.net.Runtime/browser-wasm/whisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml.a ./Whisper.net.Runtime/browser-wasm/ggml.a
+
 
 linux_x64:
 	rm -rf build/linux-x64
@@ -83,6 +86,30 @@ linux_x64_cuda:
 	mkdir -p Whisper.net.Runtime.Cuda.Linux/linux-x64
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml.so
+    
+linux_x64_noavx:
+	rm -rf build/linux-x64-noavx
+    cmake -S . -B build/linux-x64-noavx -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_AVX=OFF -GGML_AVX2=OFF
+    cmake --build build/linux-x64-noavx --config $(BUILD_TYPE)
+    mkdir -p Whisper.net.Runtime.NoAvx.Linux/linux-x64-noavx
+    cp build/linux-x64-noavx/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.NoAvx.Linux/linux-x64-noavx/libwhisper.so
+    cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.NoAvx.Linux/linux-x64-noavx/libggml.so
+
+linux_arm64_noavx:
+    rm -rf build/linux-arm64-noavx
+    cmake -S . -B build/linux-arm64-noavx -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DGGML_AVX=OFF -GGML_AVX2=OFF
+    cmake --build build/linux-arm64-noavx --config $(BUILD_TYPE)
+    mkdir -p Whisper.net.Runtime.NoAvx.Linux/linux-arm64-noavx
+    cp build/linux-arm64-noavx/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.NoAvx.Linux/linux-arm64-noavx/libwhisper.so
+    cp build/linux-arm64-noavx/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.NoAvx.Linux/linux-arm64-noavx/libggml.so
+
+linix_arm_noavx:
+    rm -rf build/linux-arm-noavx
+    cmake -S . -B build/linux-arm-noavx -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm -DGGML_AVX=OFF -GGML_AVX2=OFF
+    cmake --build build/linux-arm-noavx --config $(BUILD_TYPE)
+    mkdir -p Whisper.net.Runtime.NoAvx.Linux/linux-arm-noavx
+    cp build/linux-arm-noavx/whisper.cpp/src/libwhisper.so ./Whisper.net.Runtime.NoAvx.Linux/linux-arm-noavx/libwhisper.so
+    cp build/linux-arm-noavx/whisper.cpp/ggml/src/libggml.so ./Whisper.net.Runtime.NoAvx.Linux/linux-arm-noavx/libggml.so
 
 linux_x64_openvino:
 	rm -rf build/linux-x64-openvino

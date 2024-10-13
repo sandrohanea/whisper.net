@@ -7,7 +7,7 @@ on:
   workflow_call:
 
 jobs:
-  pack-all:
+  pack-nupkgs:
     runs-on: windows-latest
     env:
       USE_WHISPER_MAUI: "TRUE"

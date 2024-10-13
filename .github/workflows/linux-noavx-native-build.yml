@@ -1,4 +1,4 @@
-name: Linux Cuda Native build
+name: Linux Native build Without AVX
 
 on:
   workflow_dispatch:
@@ -20,20 +20,12 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.18
-        with:
-          cuda: "12.1.0"
+      - name: Run linux_noavx
+        run: make linux_noavx
 
-      - name: Run linux
-        run: make linux_cuda
-
-      - name: Remove CUDA installer
-        run: rm -rf cuda_installer-*
-
-      - name: Upload Linux Cuda Build Artifacts
+      - name: Upload Linux Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-cuda-build
+          name: linux-noavx-build
           path: "Whisper.net.Run*/linux-*/*"
           retention-days: 7

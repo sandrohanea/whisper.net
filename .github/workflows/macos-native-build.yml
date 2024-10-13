@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 jobs:
-  intel-build:
+  intel-native-build:
     runs-on: macos-13
 
     steps:
@@ -29,7 +29,7 @@ jobs:
             Whisper.net.Run*/*.metal
           retention-days: 7
 
-  arm-build:
+  arm-native-build:
     runs-on: macos-14
 
     steps:
