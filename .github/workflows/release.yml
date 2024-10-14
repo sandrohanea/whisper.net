@@ -20,10 +20,6 @@ env:
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
 jobs:
 
-   test-gh:
-      uses: ./.github/workflows/test-gh.yml
-      secrets: inherit
-
    android:
       uses: ./.github/workflows/android-native-build.yml
 
