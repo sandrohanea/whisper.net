@@ -16,5 +16,6 @@
   </metadata>
   <files>
     <file src="Whisper.net.Runtime\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
   </files>
 </package>
