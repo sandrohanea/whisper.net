@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
     <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
     <PackageReference Include="Whisper.net" Version="1.7.0" />
     <!-- Version pinning for System.Text.Json just becasue of https://github.com/advisories/GHSA-hh2w-p6rv-4g7w warning -->
