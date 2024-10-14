@@ -19,6 +19,11 @@ env:
    IS_PREVIEW: ${{ inputs.IsPreview }}
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
 jobs:
+
+   test-gh:
+      uses: ./.github/workflows/test-gh.yml
+      secrets: inherit
+
    android:
       uses: ./.github/workflows/android-native-build.yml
 
@@ -77,9 +82,9 @@ jobs:
       with:
          IsPreview: ${{ inputs.IsPreview }}
          PreviewSuffix: ${{ inputs.PreviewSuffix }}
-      secrets: inherit
          
    push-nuget:
       needs:
          - pack-all
       uses: ./.github/workflows/push-all.yml
+      secrets: inherit

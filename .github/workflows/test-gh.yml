@@ -1,0 +1,18 @@
+# This workflow will pack all the nuget packages
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Testing Push Nuget Packages to nuget.org
+
+on:
+  workflow_call:
+
+jobs:
+  push-nupkgs:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check NUGET_API_KEY length
+        run: |
+         echo "Key length: ${#NUGET_API_KEY}"
+      
