@@ -4,19 +4,11 @@ Open-Source Whisper.net
 
 Dotnet bindings for OpenAI Whisper made possible by [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
-## Native Builds
+## Build Status
 
-| Platform | Build Status |
+| Build type | Build Status |
 |----------|--------------|
-| Linux | [![Linux](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-native-build.yml) |
-| Linux OpenVINO | [![Linux OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/linux-openvino-build.yml) |
-| Windows / CUDA | [![Windows / CUDA](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-native-build.yml) |
-| Windows ARM | [![Windows ARM](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-arm-native-build.yml) |
-| Windows OpenVINO | [![Windows OpenVINO](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-openvino-build.yml) |
-| Windows Vulkan | [![Windows Vulkan](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/windows-vulkan-build.yml) |
-| MacOS | [![MacOs](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/macos-native-build.yaml) |
-| Android | [![Android](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/android-native-build.yaml) |
-| Wasm | [![Wasm](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/wasm-native-build.yaml) |
+| CI Status (Native + dotnet) | [![CI (Native + dotnet)](https://github.com/sandrohanea/whisper.net/actions/workflows/build-all.yml/badge.svg?branch=main)](https://github.com/sandrohanea/whisper.net/actions/workflows/build-all.yml) |
 
 ## Getting Started
 
