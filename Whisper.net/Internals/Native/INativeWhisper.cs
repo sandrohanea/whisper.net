@@ -71,6 +71,12 @@ internal interface INativeWhisper : IDisposable
     public delegate void whisper_ctx_init_openvino_encoder_with_state(IntPtr context, IntPtr state, IntPtr modelPath, IntPtr device, IntPtr cacheDir);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate WhisperTokenData whisper_full_get_token_data_from_state(IntPtr state, int segmentIndex, int tokenIndex);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_full_get_token_text_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void ggml_log_set(IntPtr logCallback, IntPtr user_data);
 
     whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
@@ -94,6 +100,7 @@ internal interface INativeWhisper : IDisposable
     whisper_full_lang_id_from_state Whisper_Full_Lang_Id_From_State { get; }
     whisper_log_set Whisper_Log_Set { get; }
     whisper_ctx_init_openvino_encoder_with_state Whisper_Ctx_Init_Openvino_Encoder_With_State { get; }
-
+    whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State { get; }
+    whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; }
     ggml_log_set Ggml_log_set { get; }
 }

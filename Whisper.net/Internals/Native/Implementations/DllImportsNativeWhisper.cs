@@ -76,6 +76,12 @@ internal class DllImportsNativeWhisper : INativeWhisper
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void whisper_ctx_init_openvino_encoder_with_state(IntPtr context, IntPtr state, IntPtr modelPath, IntPtr device, IntPtr cacheDir);
 
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern WhisperTokenData whisper_full_get_token_data_from_state(IntPtr state, int segmentIndex, int tokenIndex);
+
+    [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr whisper_full_get_token_text_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
+
     [DllImport(ggmlLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void ggml_log_set(IntPtr logCallback, IntPtr user_data);
 
@@ -120,6 +126,10 @@ internal class DllImportsNativeWhisper : INativeWhisper
     public INativeWhisper.whisper_log_set Whisper_Log_Set => whisper_log_set;
 
     public INativeWhisper.whisper_ctx_init_openvino_encoder_with_state Whisper_Ctx_Init_Openvino_Encoder_With_State => whisper_ctx_init_openvino_encoder_with_state;
+
+    public INativeWhisper.whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State => whisper_full_get_token_data_from_state;
+
+    public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State => whisper_full_get_token_text_from_state;
 
     public INativeWhisper.ggml_log_set Ggml_log_set => ggml_log_set;
 

@@ -245,3 +245,18 @@ internal struct WhisperFullParams
 internal struct WhisperContext
 {
 }
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperTokenData
+{
+    public int id;
+    public int tid;
+    public float p;
+    public float plog;
+    public float pt;
+    public float ptsum;
+    public long t0;
+    public long t1;
+    public long t_dtw;
+    public float vlen;
+}
