@@ -145,8 +145,15 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => "win",
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => "linux",
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => "macos",
-            _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
+            _ => "no"
         };
+
+        if (platform == "no")
+        {
+            // This test is not relevant for mobile platforms
+            return;
+        }
+
         var architecture = RuntimeInformation.OSArchitecture switch
         {
             Architecture.X64 => "x64",
