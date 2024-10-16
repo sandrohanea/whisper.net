@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Internals.Native.Implementations;
+using Whisper.net.Utils;
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
 #if !NETSTANDARD
 using System.Runtime.Intrinsics.X86;
@@ -15,7 +16,7 @@ public static class NativeLibraryLoader
     {
 #if IOS || MACCATALYST || TVOS
         return LoadResult.Success(new LibraryImportInternalWhisper());
-#elif ANDROID       
+#elif ANDROID
         return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
@@ -129,6 +130,18 @@ public static class NativeLibraryLoader
                 Path.GetDirectoryName(typeof(NativeLibraryLoader).Assembly.Location),
                 Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
             }.Where(it => !string.IsNullOrEmpty(it));
+
+        // Remove Cuda if Cuda is not available and replace it with Cpu at the end if Cpu is not exist
+        // That helps to avoid use Cpu first if Cuda is not available, but Vulkan is available for example
+        if (RuntimeOptions.Instance.RuntimeLibraryOrder.Contains(RuntimeLibrary.Cuda) &&
+            (!CudaUtils.IsCudaAvailable() || CudaUtils.GetCudaCores() <= 0))
+        {
+            RuntimeOptions.Instance.RuntimeLibraryOrder.Remove(RuntimeLibrary.Cuda);
+            if (!RuntimeOptions.Instance.RuntimeLibraryOrder.Contains(RuntimeLibrary.Cpu))
+            {
+                RuntimeOptions.Instance.RuntimeLibraryOrder.Add(RuntimeLibrary.Cpu);
+            }
+        }
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {

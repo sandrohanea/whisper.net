@@ -45,5 +45,9 @@
     <InternalsVisibleTo Include="Whisper.net.Maui.Tests" />
     <InternalsVisibleTo Include="Whisper.net.Tests" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ManagedCuda" />
+  </ItemGroup>
 
 </Project>
