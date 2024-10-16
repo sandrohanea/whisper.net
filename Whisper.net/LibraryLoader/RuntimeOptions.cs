@@ -8,6 +8,7 @@ public class RuntimeOptions
     internal bool BypassLoading { get; private set; }
     internal string? LibraryPath { get; private set; }
     internal bool UseGpu { get; private set; }
+    internal bool UseFlashAttention { get; private set; }
     internal int GpuDevice { get; private set; }
     internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
     internal RuntimeLibrary? LoadedLibrary { get; private set; }
@@ -19,6 +20,7 @@ public class RuntimeOptions
         BypassLoading = false;
         LibraryPath = null;
         UseGpu = true;
+        UseFlashAttention = false;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
@@ -54,6 +56,17 @@ public class RuntimeOptions
     public void SetUseGpu(bool useGpu)
     {
         UseGpu = useGpu;
+    }
+
+    /// <summary>
+    /// Sets whether to use the FlashAttention for processing.
+    /// </summary>
+    /// <remarks>
+    /// By default, it is false.
+    /// </remarks>
+    public void SetUseFlashAttention(bool useFlashAttention)
+    {
+        UseFlashAttention = useFlashAttention;
     }
 
     /// <summary>
@@ -94,6 +107,7 @@ public class RuntimeOptions
         BypassLoading = false;
         LibraryPath = null;
         UseGpu = true;
+        UseFlashAttention = false;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
