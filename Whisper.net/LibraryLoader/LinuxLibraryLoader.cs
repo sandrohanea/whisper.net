@@ -18,16 +18,16 @@ internal class LinuxLibraryLoader : ILibraryLoader
     [DllImport("libdl.so.2", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError2();
 
-    public IntPtr OpenLibrary(string fileName, bool global)
+    public IntPtr OpenLibrary(string fileName)
     {
         try
         {
-            // open with rtld now + (global if true)
-            return NativeOpenLibraryLibdl2(fileName, global ? 0x00102 : 0x00002);
+            // open with rtld now + global
+            return NativeOpenLibraryLibdl2(fileName, 0x00102);
         }
         catch (DllNotFoundException)
         {
-            return NativeOpenLibraryLibdl(fileName, global ? 0x00102 : 0x00002);
+            return NativeOpenLibraryLibdl(fileName, 0x00102);
         }
     }
 

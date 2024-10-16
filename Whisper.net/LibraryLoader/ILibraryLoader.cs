@@ -4,7 +4,7 @@ namespace Whisper.net.LibraryLoader;
 
 internal interface ILibraryLoader
 {
-    IntPtr OpenLibrary(string fileName, bool global);
+    IntPtr OpenLibrary(string fileName);
 
     string GetLastError();
 }
