@@ -11,9 +11,9 @@ internal class UniversalLibraryLoader : ILibraryLoader
         return "Cannot load the library on this platform using NativeLibrary";
     }
 
-    public IntPtr OpenLibrary(string fileName)
+    public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
-        return NativeLibrary.Load(fileName, System.Reflection.Assembly.GetExecutingAssembly(), DllImportSearchPath.AssemblyDirectory);
+        return NativeLibrary.TryLoad(fileName, System.Reflection.Assembly.GetExecutingAssembly(), DllImportSearchPath.AssemblyDirectory, out libHandle);
     }
 }
 #endif

@@ -10,7 +10,7 @@ internal static class CudaHelper
     public static bool IsCudaAvailable()
     {
         INativeCuda? nativeCuda = null;
-        int cudaDevices = 0;
+        var cudaDevices = 0;
         try
         {
 #if NET6_0_OR_GREATER
