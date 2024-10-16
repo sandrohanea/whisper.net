@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Whisper.net" Version="1.7.0" />-->
+    <PackageReference Include="Whisper.net" Version="1.7.0" />
     <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
   </ItemGroup>
   
@@ -17,8 +17,4 @@
     </None>
   </ItemGroup>
   
-  <ItemGroup>
-    <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -12,9 +12,9 @@ internal class MacOsLibraryLoader : ILibraryLoader
     [DllImport("libdl.dylib", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError();
 
-    public IntPtr OpenLibrary(string fileName, bool global)
+    public IntPtr OpenLibrary(string fileName)
     {
-        return NativeOpenLibraryLibdl(fileName, global ? 0x00102 : 0x00001);
+        return NativeOpenLibraryLibdl(fileName, 0x00102);
     }
 
     public string GetLastError()
