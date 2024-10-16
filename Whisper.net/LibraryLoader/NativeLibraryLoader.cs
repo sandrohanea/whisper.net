@@ -130,14 +130,43 @@ public static class NativeLibraryLoader
                 Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
             }.Where(it => !string.IsNullOrEmpty(it));
 
+        static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform)
+        {
+
+#if !NETSTANDARD
+            // If AVX is not supported, we can't use CPU runtime on windows and linux (we should use noavx runtime instead).
+            if (runtime == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
+            {
+                return false;
+            }
+#endif
+            // If Cuda is not available, we can't use Cuda runtime (unless there is no other runtime available, where CUDA runtime can be used as a fallback to the CPU)
+            if (runtime == RuntimeLibrary.Cuda && !CudaHelper.IsCudaAvailable())
+            {
+                var cudaIndex = RuntimeOptions.Instance.RuntimeLibraryOrder.IndexOf(RuntimeLibrary.Cuda);
+
+                if (cudaIndex == RuntimeOptions.Instance.RuntimeLibraryOrder.Count - 1)
+                {
+                    // We still can use Cuda as a fallback to the CPU if it's the last runtime in the list.
+
+                    // This scenario can be used to not install 2 runtimes (CPU and Cuda) on the same host,
+                    // + override the default RuntimeLibraryOrder to have only [ Cuda ].
+                    return true;
+                }
+
+                return false;
+            }
+
+            return true;
+
+        }
+
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
-#if !NETSTANDARD
-            if (library == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
+            if (!IsRuntimeSupported(library, platform))
             {
                 continue;
             }
-#endif
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
 
@@ -165,5 +194,4 @@ public static class NativeLibraryLoader
 
 #endif
     }
-
 }
