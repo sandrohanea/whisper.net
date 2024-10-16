@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <!--<PackageReference Include="Whisper.net" Version="1.7.0" />-->
     <PackageReference Include="Whisper.net.Runtime.Cuda" Version="1.7.0" />
   </ItemGroup>
   
@@ -15,6 +15,10 @@
     <None Include="../TestData/kennedy.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
   </ItemGroup>
 
 </Project>
