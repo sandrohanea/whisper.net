@@ -10,6 +10,7 @@ internal static class CudaHelper
     public static bool IsCudaAvailable()
     {
         INativeCuda? nativeCuda = null;
+        int cudaDevices = 0;
         try
         {
 #if NET6_0_OR_GREATER
@@ -22,20 +23,21 @@ internal static class CudaHelper
                 return false;
             }
             nativeCuda = new NativeLibraryCuda(library);
+            nativeCuda.CudaGetDeviceCount(out cudaDevices);
 #else
             try
             {
                 nativeCuda = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                                 ? new DllImportNativeCuda_64_12()
                                 : new DllImportNativeLibcuda();
+                nativeCuda.CudaGetDeviceCount(out cudaDevices);
             }
             catch
             {
                 return false;
             }
 #endif
-            nativeCuda.CudaGetDeviceCount(out var count);
-            return count > 0;
+            return cudaDevices > 0;
         }
         finally
         {
