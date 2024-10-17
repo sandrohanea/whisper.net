@@ -48,6 +48,13 @@ public sealed class WhisperFactory : IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns the information about the loaded native runtime.
+    /// </summary>
+    /// <remarks>
+    /// This information includes support of the features like AVX, AVX2, AVX512, CUDA, etc.
+    /// </remarks>
+    /// <exception cref="Exception"></exception>
     public static string? GetRuntimeInfo()
     {
         if (!libraryLoaded.Value.IsSuccess)
