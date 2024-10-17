@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
-    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.7.1" />
+    <PackageReference Include="Whisper.net" Version="1.7.1" />
   </ItemGroup>
   
   <ItemGroup>
