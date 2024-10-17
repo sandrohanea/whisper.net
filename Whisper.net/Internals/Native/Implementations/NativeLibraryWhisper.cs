@@ -35,6 +35,7 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Log_Set = Marshal.GetDelegateForFunctionPointer<whisper_log_set>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_log_set)));
         Whisper_Ctx_Init_Openvino_Encoder_With_State = Marshal.GetDelegateForFunctionPointer<whisper_ctx_init_openvino_encoder_with_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_ctx_init_openvino_encoder_with_state)));
         Ggml_log_set = Marshal.GetDelegateForFunctionPointer<ggml_log_set>(NativeLibrary.GetExport(ggmlLibraryHandle, nameof(ggml_log_set)));
+        WhisperPrintSystemInfo = Marshal.GetDelegateForFunctionPointer<whisper_print_system_info>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_print_system_info)));
 
         this.whisperLibraryHandle = whisperLibraryHandle;
         this.ggmlLibraryHandle = ggmlLibraryHandle;
@@ -83,6 +84,8 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_ctx_init_openvino_encoder_with_state Whisper_Ctx_Init_Openvino_Encoder_With_State { get; }
 
     public ggml_log_set Ggml_log_set { get; }
+
+    public whisper_print_system_info WhisperPrintSystemInfo { get; }
 
     public void Dispose()
     {
