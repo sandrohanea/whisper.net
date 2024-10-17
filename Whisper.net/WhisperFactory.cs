@@ -48,7 +48,7 @@ public sealed class WhisperFactory : IDisposable
         }
     }
 
-    public static string? GetSystemInfo()
+    public static string? GetRuntimeInfo()
     {
         if (!libraryLoaded.Value.IsSuccess)
         {
