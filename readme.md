@@ -177,7 +177,15 @@ The following order of priority will be used by default:
 
 To change the order or force a specific runtime, set the `RuntimeOrder` on the `RuntimeOptions`:
 
-`` RuntimeOptions.SetRuntimeLibraryOrder(new[] { RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu }); ``
+```csharp
+RuntimeOptions.Instance.SetRuntimeLibraryOrder(new List<RuntimeLibrary>()
+{
+    RuntimeLibrary.CoreML,
+    RuntimeLibrary.OpenVino,
+    RuntimeLibrary.Cuda,
+    RuntimeLibrary.Cpu
+});
+```
 
 ## Versioning
 
