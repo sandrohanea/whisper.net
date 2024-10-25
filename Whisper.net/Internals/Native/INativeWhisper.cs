@@ -79,6 +79,9 @@ internal interface INativeWhisper : IDisposable
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void ggml_log_set(IntPtr logCallback, IntPtr user_data);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_print_system_info();
+
     whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
     whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
     whisper_free Whisper_Free { get; }
@@ -103,4 +106,6 @@ internal interface INativeWhisper : IDisposable
     whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State { get; }
     whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; }
     ggml_log_set Ggml_log_set { get; }
+
+    whisper_print_system_info WhisperPrintSystemInfo { get; }
 }

@@ -21,7 +21,7 @@ To install Whisper.net with all the available runtimes, run the following comman
 Or add a package reference in your `.csproj` file:
 
 ```
-    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.1" />
 ```
 
 `Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
@@ -31,10 +31,10 @@ Or add a package reference in your `.csproj` file:
 To install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, add the following package references:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.7.0" />
+    <PackageReference Include="Whisper.net" Version="1.7.1" />
 ```
 ```
-    <PackageReference Include="Whisper.net.Runtime" Version="1.7.0" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.7.1" />
 ```
 
 ## GPT for Whisper
@@ -51,8 +51,22 @@ Whisper.net comes with multiple runtimes to support different platforms and hard
 
 The default runtime that uses the CPU for inference. It is available on all platforms and does not require any additional dependencies.
 
-Examples: [Multiple Examples here](https://github.com/sandrohanea/whisper.net/tree/main/examples)
+#### Examples:
 
+ - [Simple usage example](https://github.com/sandrohanea/whisper.net/tree/main/examples/Simple)
+ - [Simple usage example (without Async processing) ](https://github.com/sandrohanea/whisper.net/blob/main/examples/SimpleSync/Program.cs)
+ - [NAudio integration for mp3](https://github.com/sandrohanea/whisper.net/blob/main/examples/NAudioMp3/Program.cs)
+ - [NAudio integration for resampled wav](https://github.com/sandrohanea/whisper.net/blob/main/examples/NAudioResampleWav/Program.cs)
+ - [Simple channel diarization](https://github.com/sandrohanea/whisper.net/blob/main/examples/Diarization/Program.cs)
+ - [Blazor example](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp)
+
+#### Pre-requisites
+
+ - AVX2 support on the CPU
+ - Windows: Microsoft Visual C++ Redistributable for at least Visual Studio 2019 (x64) [Download Link](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
+ - Linux: `libstdc++6`
+ - macOS: TBD
+  
 #### Supported Platforms
 
 - Windows x86, x64, ARM64
@@ -68,7 +82,12 @@ Examples: [Multiple Examples here](https://github.com/sandrohanea/whisper.net/tr
 
 For CPUs that do not support AVX instructions.
 
+#### Pre-requisites
 
+ - Windows: Microsoft Visual C++ Redistributable for at least Visual Studio 2019 (x64) [Download Link](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
+ - Linux: `libstdc++6`
+ - macOS: TBD
+ 
 #### Supported Platforms
 
 - Windows x86, x64, ARM64
@@ -77,7 +96,16 @@ For CPUs that do not support AVX instructions.
 ### Whisper.net.Runtime.Cuda
 
 Contains the native whisper.cpp library with NVidia CUDA support enabled.
-Example: [CUDA example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
+
+#### Examples
+
+ - [CUDA usage example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
+ 
+#### Pre-requisites
+
+- Everything from Whisper.net.Runtime pre-requisites
+- NVidia GPU with CUDA support
+- [CUDA Toolkit (>= 12.1)](https://developer.nvidia.com/cuda-downloads)
 
 #### Supported Platforms
 
@@ -88,7 +116,9 @@ Example: [CUDA example](https://github.com/sandrohanea/whisper.net/tree/main/exa
 
 Contains the native whisper.cpp library with Apple CoreML support enabled.
 
-Example: [CoreML example](https://github.com/sandrohanea/whisper.net/tree/main/examples/CoreML)
+#### Examples:
+
+- [CoreML example](https://github.com/sandrohanea/whisper.net/tree/main/examples/CoreML)
 
 #### Supported Platforms
 
@@ -101,7 +131,14 @@ Example: [CoreML example](https://github.com/sandrohanea/whisper.net/tree/main/e
 
 Contains the native whisper.cpp library with Intel OpenVino support enabled.
 
-Example: [OpenVino Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/OpenVinoExample)
+#### Examples
+
+- [OpenVino Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/OpenVinoExample)
+
+#### Pre-requisites
+
+- Everything from Whisper.net.Runtime pre-requisites
+- [OpenVino Toolkit (>= 2024.4)](https://github.com/openvinotoolkit/openvino)
 
 #### Supported Platforms
 
@@ -112,7 +149,14 @@ Example: [OpenVino Example](https://github.com/sandrohanea/whisper.net/tree/main
 
 Contains the native whisper.cpp library with Vulkan support enabled.
 
-Example: [Vulkan Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/Vulkan)
+#### Examples
+
+- [Vulkan Example](https://github.com/sandrohanea/whisper.net/tree/main/examples/Vulkan)
+
+#### Pre-requisites
+
+- Everything from Whisper.net.Runtime pre-requisites
+- [Vulkan Toolkit (>= 1.3.290.0)](https://vulkan.lunarg.com/sdk/home)]
 
 #### Supported Platforms
 
@@ -133,11 +177,15 @@ The following order of priority will be used by default:
 
 To change the order or force a specific runtime, set the `RuntimeOrder` on the `RuntimeOptions`:
 
-`` RuntimeOptions.SetRuntimeLibraryOrder(new[] { RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cuda, RuntimeLibrary.Cpu }); ``
-
-## Blazor and WASM
-
-Blazor is supported with both InteractivityServer and InteractivityWebAssembly with the `Whisper.net.Runtime` package. Check the Blazor example [here](https://github.com/sandrohanea/whisper.net/tree/main/examples/BlazorApp).
+```csharp
+RuntimeOptions.Instance.SetRuntimeLibraryOrder(new List<RuntimeLibrary>()
+{
+    RuntimeLibrary.CoreML,
+    RuntimeLibrary.OpenVino,
+    RuntimeLibrary.Cuda,
+    RuntimeLibrary.Cpu
+});
+```
 
 ## Versioning
 

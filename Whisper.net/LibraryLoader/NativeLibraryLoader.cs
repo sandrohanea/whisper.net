@@ -45,8 +45,7 @@ public static class NativeLibraryLoader
         ILibraryLoader libraryLoader = platform switch
         {
             "win" => new WindowsLibraryLoader(),
-            "macos" => new MacOsLibraryLoader(),
-            "linux" => new LinuxLibraryLoader(),
+            "macos" or "linux" => new LibdlLibraryLoader(),
             _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
         };
 #else
@@ -55,36 +54,44 @@ public static class NativeLibraryLoader
 
         string? lastError = null;
 
-        foreach (var (runtimePath, runtimeLibrary) in GetRuntimePaths(platform))
+        var availableRuntimes = GetRuntimePaths(platform).ToList();
+        var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
+
+        foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
+
+            if (!IsRuntimeSupported(runtimeLibrary, platform, availableRuntimeTypes))
+            {
+                continue;
+            }
+
             var ggmlPath = GetLibraryPath(platform, "ggml", runtimePath);
             if (!File.Exists(ggmlPath))
             {
                 continue;
             }
+
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
-            var ggmlLibraryHandle = libraryLoader.OpenLibrary(ggmlPath, global: true);
-            // Maybe GPU is not available but we still have other runtime installed
-            if (ggmlLibraryHandle == IntPtr.Zero)
+            if (!libraryLoader.TryOpenLibrary(ggmlPath, out var ggmlLibraryHandle))
             {
                 lastError = libraryLoader.GetLastError();
                 continue;
             }
 
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
-            var whisperHandle = libraryLoader.OpenLibrary(whisperPath, global: true);
-            if (whisperHandle != IntPtr.Zero)
+            if (!libraryLoader.TryOpenLibrary(whisperPath, out var whisperHandle))
             {
-                RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
+                continue;
+            }
+            RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
 #if NETSTANDARD
-                var nativeWhisper = new DllImportsNativeWhisper();
+            var nativeWhisper = new DllImportsNativeWhisper();
 #else
-                var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
+            var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
 #endif
 
-                return LoadResult.Success(nativeWhisper);
-            }
+            return LoadResult.Success(nativeWhisper);
         }
 
         // We don't have any error, so we couldn't even find some library to load.
@@ -111,7 +118,44 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static IEnumerable<(string, RuntimeLibrary)> GetRuntimePaths(string platform)
+    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, List<RuntimeLibrary> runtimeLibraries)
+    {
+#if !NETSTANDARD
+        // If AVX is not supported, we can't use CPU runtime on Windows and linux (we should use noavx runtime instead).
+        if (runtime == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
+        {
+            // If noavx runtime is not available, we should throw an exception, because we can't use CPU runtime without AVX support.
+            if (!runtimeLibraries.Contains(RuntimeLibrary.CpuNoAvx))
+            {
+                throw new PlatformNotSupportedException("AVX is not supported on this platform, and noavx runtime is not available." +
+                    " Install Whisper.net.Runtime.NoAvx for support on this platform.");
+            }
+            return false;
+        }
+#endif
+        // If Cuda is not available, we can't use Cuda runtime (unless there is no other runtime available, where CUDA runtime can be used as a fallback to the CPU)
+        if (runtime == RuntimeLibrary.Cuda && !CudaHelper.IsCudaAvailable())
+        {
+            var cudaIndex = runtimeLibraries.IndexOf(RuntimeLibrary.Cuda);
+
+            if (cudaIndex == RuntimeOptions.Instance.RuntimeLibraryOrder.Count - 1)
+            {
+                // We still can use Cuda as a fallback to the CPU if it's the last runtime in the list.
+                // This scenario can be used to not install 2 runtimes (CPU and Cuda) on the same host,
+                // + override the default RuntimeLibraryOrder to have only [ Cuda ].
+                // This way, the user can use Cuda if it's available, otherwise, the CPU runtime will be used.
+                // However, the cudart library should be available in the system.
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string platform)
     {
         var architecture = RuntimeInformation.OSArchitecture switch
         {
@@ -132,12 +176,6 @@ public static class NativeLibraryLoader
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
-#if !NETSTANDARD
-            if (library == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
-            {
-                continue;
-            }
-#endif
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
 
@@ -165,5 +203,4 @@ public static class NativeLibraryLoader
 
 #endif
     }
-
 }

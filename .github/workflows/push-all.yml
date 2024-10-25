@@ -5,6 +5,9 @@ name: Push Nuget Packages to nuget.org
 
 on:
   workflow_call:
+  
+permissions:
+  contents: write
 
 jobs:
   push-nupkgs:
@@ -28,3 +31,11 @@ jobs:
         run: |
               dotnet nuget push .\nupkgs\*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
 
+      - name: Get version from package
+        id: get-version
+        run: |
+              $version = (Get-ChildItem -Path nupkgs\*.nupkg | Select-Object -First 1).BaseName -replace '.*\.(\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?)', '$1'
+              git tag -a "$version" -m "Release version $version"
+              git config user.email "sandrohanea@users.noreply.github.com"
+              git config user.name "Sandro Hanea (auto)"
+              git push --tags

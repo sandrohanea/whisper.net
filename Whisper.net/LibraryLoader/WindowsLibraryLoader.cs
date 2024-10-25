@@ -10,9 +10,18 @@ internal class WindowsLibraryLoader : ILibraryLoader
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string? lpFileName);
 
-    public IntPtr OpenLibrary(string fileName, bool global)
+    public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
-        return LoadLibrary(fileName);
+        try
+        {
+            libHandle = LoadLibrary(fileName);
+            return libHandle != IntPtr.Zero;
+        }
+        catch
+        {
+            libHandle = IntPtr.Zero;
+            return false;
+        }
     }
 
     public string GetLastError()

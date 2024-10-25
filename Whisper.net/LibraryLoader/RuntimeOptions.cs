@@ -63,6 +63,17 @@ public class RuntimeOptions
     }
 
     /// <summary>
+    /// Sets whether to use the FlashAttention for processing.
+    /// </summary>
+    /// <remarks>
+    /// By default, it is false.
+    /// </remarks>
+    public void SetUseFlashAttention(bool useFlashAttention)
+    {
+        UseFlashAttention = useFlashAttention;
+    }
+
+    /// <summary>
     /// Sets the GPU device to use for processing.
     /// </summary>
     /// <remarks>
@@ -90,17 +101,6 @@ public class RuntimeOptions
     public void SetLoadedLibrary(RuntimeLibrary library)
     {
         LoadedLibrary = library;
-    }
-
-    /// <summary>
-    /// Sets whether to use flash attention.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is false.
-    /// </remarks>
-    public void SetUseFlashAttention(bool useFlashAttention)
-    {
-        UseFlashAttention = useFlashAttention;
     }
 
     /// <summary>

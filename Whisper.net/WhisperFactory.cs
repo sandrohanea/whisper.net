@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.Runtime.InteropServices;
 using Whisper.net.Internals.ModelLoader;
 using Whisper.net.LibraryLoader;
 using Whisper.net.Logger;
@@ -45,6 +46,26 @@ public sealed class WhisperFactory : IDisposable
         {
             contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(libraryLoaded.Value.NativeWhisper!), isThreadSafe: false);
         }
+    }
+
+    /// <summary>
+    /// Returns the information about the loaded native runtime.
+    /// </summary>
+    /// <remarks>
+    /// This information includes support of the features like AVX, AVX2, AVX512, CUDA, etc.
+    /// </remarks>
+    /// <exception cref="Exception"></exception>
+    public static string? GetRuntimeInfo()
+    {
+        if (!libraryLoaded.Value.IsSuccess)
+        {
+            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
+        }
+
+        var systemInfoPtr = libraryLoaded.Value.NativeWhisper!.WhisperPrintSystemInfo();
+        var systemInfoStr = Marshal.PtrToStringAnsi(systemInfoPtr);
+        Marshal.FreeHGlobal(systemInfoPtr);
+        return systemInfoStr;
     }
 
     /// <summary>
