@@ -9,6 +9,8 @@ public class RuntimeOptions
     internal string? LibraryPath { get; private set; }
     internal bool UseGpu { get; private set; }
     internal bool UseFlashAttention { get; private set; }
+    internal bool UseDtwTimeStamps { get; private set; }
+    internal int HeadsPreset { get; private set; }
     internal int GpuDevice { get; private set; }
     internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
     internal RuntimeLibrary? LoadedLibrary { get; private set; }
@@ -21,6 +23,8 @@ public class RuntimeOptions
         LibraryPath = null;
         UseGpu = true;
         UseFlashAttention = false;
+        UseDtwTimeStamps = false;
+        HeadsPreset = 0;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
@@ -100,6 +104,28 @@ public class RuntimeOptions
     }
 
     /// <summary>
+    /// Sets whether to use DTW timestamps.
+    /// </summary>
+    /// <remarks>
+    /// By default, it is false.
+    /// </remarks>
+    public void SetUseDtwTimeStamps(bool useDtw)
+    {
+        UseDtwTimeStamps = useDtw;
+    }
+
+    /// <summary>
+    /// Sets heads preset for DTW.
+    /// </summary>
+    /// <remarks>
+    /// By default, it is 0.
+    /// </remarks>
+    public void SetHeadsPreset(int headsPreset)
+    {
+        HeadsPreset = headsPreset;
+    }
+
+    /// <summary>
     /// Resets the runtime options to their default values.
     /// </summary>
     public void Reset()
@@ -108,6 +134,8 @@ public class RuntimeOptions
         LibraryPath = null;
         UseGpu = true;
         UseFlashAttention = false;
+        UseDtwTimeStamps = false;
+        HeadsPreset = 0;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }

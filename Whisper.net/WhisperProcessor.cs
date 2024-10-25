@@ -705,6 +705,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     Tid = tokenData.tid,
                     T_Dtw = tokenData.t_dtw,
                     Vlen = tokenData.vlen,
+                    P = tokenData.p,
+                    Plog = tokenData.plog,
+                    Pt = tokenData.pt,
+                    PtSum = tokenData.ptsum,
                     Text = text,
                 };
 

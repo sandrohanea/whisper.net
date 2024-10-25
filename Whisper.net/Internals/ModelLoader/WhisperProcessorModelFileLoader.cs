@@ -21,8 +21,8 @@ internal sealed class WhisperProcessorModelFileLoader(string pathModel) : IWhisp
                UseGpu = RuntimeOptions.Instance.UseGpu ? (byte)1 : (byte)0,
                FlashAttention = RuntimeOptions.Instance.UseFlashAttention ? (byte)1 : (byte)0,
                GpuDevice = RuntimeOptions.Instance.GpuDevice,
-               DtwTokenLevelTimestamp = 0,
-               HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE,
+               DtwTokenLevelTimestamp = RuntimeOptions.Instance.UseDtwTimeStamps ? (byte)1 : (byte)0,
+               HeadsPreset = (WhisperAlignmentHeadsPreset)RuntimeOptions.Instance.HeadsPreset,
                DtwNTop = -1,
                WhisperAheads = new WhisperAheads()
                {
