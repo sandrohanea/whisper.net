@@ -20,7 +20,7 @@ internal class DllImportNativeCuda_64_12 : INativeCuda
 
 internal class DllImportNativeLibcuda : INativeCuda
 {
-    public const string LibraryName = "libcudart";
+    public const string LibraryName = "libcudart.so";
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int cudaGetDeviceCount(out int count);
