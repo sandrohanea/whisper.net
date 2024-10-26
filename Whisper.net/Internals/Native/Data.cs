@@ -26,6 +26,7 @@ internal enum WhisperAlignmentHeadsPreset
     WHISPER_AHEADS_LARGE_V1,
     WHISPER_AHEADS_LARGE_V2,
     WHISPER_AHEADS_LARGE_V3,
+    WHISPER_AHEADS_LARGE_V3_TURBO
 }
 
 [StructLayout(LayoutKind.Sequential)]
