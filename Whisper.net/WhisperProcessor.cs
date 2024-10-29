@@ -710,6 +710,8 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     Pt = tokenData.pt,
                     PtSum = tokenData.ptsum,
                     Text = text,
+                    T0 = tokenData.t0,
+                    T1 = tokenData.t1
                 };
 
                 if (options.ComputeProbabilities)

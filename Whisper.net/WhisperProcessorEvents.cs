@@ -15,6 +15,20 @@ public class EncoderBeginData
 
 }
 
+/// <summary>
+/// Represents data about a recognized token.
+/// </summary>
+/// <param name="id"></param>
+/// <param name="Tid"></param>
+/// <param name="P"></param>
+/// <param name="Plog"></param>
+/// <param name="Pt"></param>
+/// <param name="PtSum"></param>
+/// <param name="T0"></param>
+/// <param name="T1"></param>
+/// <param name="T_Dtw"></param>
+/// <param name="Vlen"></param>
+/// <param name="text"></param>
 public class WhisperToken
 {
     public int Id;

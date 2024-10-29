@@ -10,7 +10,7 @@ public class RuntimeOptions
     internal bool UseGpu { get; private set; }
     internal bool UseFlashAttention { get; private set; }
     internal bool UseDtwTimeStamps { get; private set; }
-    internal int HeadsPreset { get; private set; }
+    internal WhisperAlignmentHeadsPreset HeadsPreset { get; private set; }
     internal int GpuDevice { get; private set; }
     internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
     internal RuntimeLibrary? LoadedLibrary { get; private set; }
@@ -24,7 +24,7 @@ public class RuntimeOptions
         UseGpu = true;
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
-        HeadsPreset = 0;
+        HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
@@ -118,9 +118,9 @@ public class RuntimeOptions
     /// Sets heads preset for DTW.
     /// </summary>
     /// <remarks>
-    /// By default, it is 0.
+    /// By default, it is WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE (0).
     /// </remarks>
-    public void SetHeadsPreset(int headsPreset)
+    public void SetHeadsPreset(WhisperAlignmentHeadsPreset headsPreset)
     {
         HeadsPreset = headsPreset;
     }
@@ -135,7 +135,7 @@ public class RuntimeOptions
         UseGpu = true;
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
-        HeadsPreset = 0;
+        HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
