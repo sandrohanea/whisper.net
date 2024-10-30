@@ -39,37 +39,37 @@
     </None>
     <!-- End Linux -->
     <!-- Start Windows -->
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\libwhisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-arm64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\ggml.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-arm64/ggml.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\libwhisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-x64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-x64/ggml.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\libwhisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-x86/whisper.ggml</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

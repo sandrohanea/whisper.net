@@ -54,7 +54,8 @@ function BuildWindows() {
     }
     
     $buildDirectory = "build/win-$Arch"
-    $options = @("-S", ".")
+    $options = @("-S", ".", "-DGGML_NATIVE=OFF");
+    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON");
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
 
@@ -77,7 +78,7 @@ function BuildWindows() {
     }
 
     if ($NoAvx) {
-        $options += "-DGGML_AVX=OFF -DGGML_AVX2=OFF"
+        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF");
         $buildDirectory += "-noavx"
         $runtimePath += ".NoAvx"
     }
@@ -86,6 +87,7 @@ function BuildWindows() {
     $options += $buildDirectory
     $options += "-A"
     $options += $platform
+    $options += $avxOptions
 
     if ((Test-Path $buildDirectory)) {
         Write-Host "Deleting old build files for $buildDirectory";
