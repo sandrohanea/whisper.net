@@ -26,7 +26,7 @@ internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProces
                 FlashAttention = RuntimeOptions.Instance.UseFlashAttention ? (byte)1 : (byte)0,
                 GpuDevice = RuntimeOptions.Instance.GpuDevice,
                 DtwTokenLevelTimestamp = RuntimeOptions.Instance.UseDtwTimeStamps ? (byte)1 : (byte)0,
-                HeadsPreset = (WhisperAlignmentHeadsPreset)RuntimeOptions.Instance.HeadsPreset,
+                HeadsPreset = RuntimeOptions.Instance.HeadsPreset,
                 DtwNTop = -1,
                 WhisperAheads = new WhisperAheads()
                 {
