@@ -20,6 +20,22 @@ public class LogProvider
 
     public event Action<WhisperLogLevel, string?>? OnLog;
 
+    /// <summary>
+    /// Adds a console logger that logs messages with a severity greater than or equal to the specified level.
+    /// </summary>
+    /// <param name="minLevel">The minimum severity level to log.</param>
+    public static void AddConsoleLogging(WhisperLogLevel minLevel = WhisperLogLevel.Info)
+    {
+        Instance.OnLog += (level, message) =>
+        {
+            // Higher values are less severe
+            if (level < minLevel)
+            {
+                Console.WriteLine($"[{level}] {message}");
+            }
+        };
+    }
+
     internal static void InitializeLogging(INativeWhisper nativeWhisper)
     {
         IntPtr funcPointer;

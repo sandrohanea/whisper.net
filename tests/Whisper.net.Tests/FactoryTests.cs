@@ -11,10 +11,7 @@ public class FactoryTests : IClassFixture<TinyModelFixture>
 
     public FactoryTests(TinyModelFixture model)
     {
-        LogProvider.Instance.OnLog += (level, message) =>
-        {
-            Console.WriteLine($"[{level}] {message}");
-        };
+        LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug);
         this.model = model;
     }
 
