@@ -1,5 +1,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <!-- Start Linux -->
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -37,6 +38,44 @@
       <TargetPath>runtimes/noavx/linux-arm/libggml.so</TargetPath>
     </None>
     <!-- End Linux -->
+    <!-- Start Windows -->
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-arm64/whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\ggml.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-arm64/ggml.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-x64/whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-x64/ggml.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-x86/whisper.ggml</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/noavx/win-x86/ggml.dll</TargetPath>
+    </None>
+    <!-- End Windows -->
   </ItemGroup>
 
 </Project>
