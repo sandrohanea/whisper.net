@@ -18,7 +18,7 @@ public class FactoryTests : IClassFixture<TinyModelFixture>
     [Fact]
     public void GetSupportedLanguages_ShouldReturnAll()
     {
-        var languages = WhisperFactory.FromPath(model.ModelFile).GetSupportedLanguages().ToList();
+        var languages = WhisperFactory.GetSupportedLanguages().ToList();
 
         languages.Should().HaveCount(99);
     }
