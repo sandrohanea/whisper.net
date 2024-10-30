@@ -1,8 +1,8 @@
 BUILD_TYPE=Release
 CMAKE_PARAMETERS=-DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 COREML_SUPPORT=$(CMAKE_PARAMETERS) -DWHISPER_COREML=ON -DWHISPER_COREML_ALLOW_FALLBACK=ON
-AVX_SUPPORT=-DGGML_AVX=ON -DGGML_AVX2=ON -DGGML_FMA=ON
-NOAVX_SUPPORT=-DGGML_AVX=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF
+AVX_SUPPORT=-DGGML_AVX=ON -DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON
+NOAVX_SUPPORT=-DGGML_AVX=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF
 NDK := $(if $(strip $(NDK_PATH)),$(NDK_PATH),$(shell test -d $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle && echo $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle || echo ""))
 
 nuget:
@@ -33,7 +33,7 @@ apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_si
 
 linux: linux_x64 linux_arm64 linux_arm
 
-linux_noavx: linux_x64_noavx linux_arm64_noavx linux_arm_noavx
+linux_noavx: linux_x64_noavx
 
 linux_cuda: linux_x64_cuda
 
@@ -62,7 +62,7 @@ linux_x64:
 
 linux_arm64:
 	rm -rf build/linux-arm64
-	cmake -S . -B build/linux-arm64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 $(AVX_SUPPORT)
+	cmake -S . -B build/linux-arm64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64
 	cmake --build build/linux-arm64 --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-arm64
 	cp build/linux-arm64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libwhisper.so
@@ -70,7 +70,7 @@ linux_arm64:
 
 linux_arm:
 	rm -rf build/linux-arm
-	cmake -S . -B build/linux-arm -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm $(AVX_SUPPORT)
+	cmake -S . -B build/linux-arm -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm
 	cmake --build build/linux-arm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-arm
 	cp build/linux-arm/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libwhisper.so
@@ -92,21 +92,6 @@ linux_x64_noavx:
 	cp build/linux-x64-noavx/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libwhisper.so
 	cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libggml.so
 
-linux_arm64_noavx:
-	rm -rf build/linux-arm64-noavx
-	cmake -S . -B build/linux-arm64-noavx -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 $(NOAVX_SUPPORT)
-	cmake --build build/linux-arm64-noavx --config $(BUILD_TYPE)
-	mkdir -p runtimes/Whisper.net.Runtime.NoAvx/linux-arm64
-	cp build/linux-arm64-noavx/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-arm64/libwhisper.so
-	cp build/linux-arm64-noavx/whisper.cpp/ggml/src/libggml.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-arm64/libggml.so
-
-linux_arm_noavx:
-	rm -rf build/linux-arm-noavx
-	cmake -S . -B build/linux-arm-noavx -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm $(NOAVX_SUPPORT)
-	cmake --build build/linux-arm-noavx --config $(BUILD_TYPE)
-	mkdir -p runtimes/Whisper.net.Runtime.NoAvx/linux-arm
-	cp build/linux-arm-noavx/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-arm/libwhisper.so
-	cp build/linux-arm-noavx/whisper.cpp/ggml/src/libggml.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-arm/libggml.so
 
 linux_x64_openvino:
 	rm -rf build/linux-x64-openvino
