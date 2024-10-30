@@ -55,7 +55,7 @@ function BuildWindows() {
     
     $buildDirectory = "build/win-$Arch"
     $options = @("-S", ".", "-DGGML_NATIVE=OFF");
-    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-GGML_F16C=ON");
+    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON");
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
 
@@ -78,7 +78,7 @@ function BuildWindows() {
     }
 
     if ($NoAvx) {
-        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-GGML_F16C=OFF");
+        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF");
         $buildDirectory += "-noavx"
         $runtimePath += ".NoAvx"
     }
