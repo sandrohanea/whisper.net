@@ -185,13 +185,16 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
+        var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
+        var environmentAppStartLocation = Environment.GetCommandLineArgs()[0];
+        // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
-                Path.GetDirectoryName(typeof(NativeLibraryLoader).Assembly.Location),
-                Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
-            }.Where(it => !string.IsNullOrEmpty(it));
+                string.IsNullOrWhiteSpace(assemblyLocation) ? null : Path.GetDirectoryName(assemblyLocation),
+                string.IsNullOrWhiteSpace(environmentAppStartLocation) ? null : Path.GetDirectoryName(environmentAppStartLocation)
+            }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
