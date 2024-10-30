@@ -69,6 +69,28 @@ public sealed class WhisperFactory : IDisposable
     }
 
     /// <summary>
+    /// Returns an enumerable of the supported languages.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<string> GetSupportedLanguages()
+    {
+        if (!libraryLoaded.Value.IsSuccess)
+        {
+            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
+        }
+
+        for (var i = 0; i < libraryLoaded.Value.NativeWhisper!.Whisper_Lang_Max_Id(); i++)
+        {
+            var languagePtr = libraryLoaded.Value.NativeWhisper!.Whisper_Lang_Str(i);
+            var language = Marshal.PtrToStringAnsi(languagePtr);
+            if (!string.IsNullOrEmpty(language))
+            {
+                yield return language;
+            }
+        }
+    }
+
+    /// <summary>
     /// Creates a factory that uses the ggml model from a path in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
     /// <param name="path">The path to the model.</param>
