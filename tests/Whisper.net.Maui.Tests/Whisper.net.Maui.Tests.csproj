@@ -62,15 +62,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-arm64-v8a\libggml-whisper.so" />
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-arm64-v8a\libwhisper.so" />
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86\libggml-whisper.so" />
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86\libwhisper.so" />
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86_64\libggml-whisper.so" />
-	  <AndroidNativeLibrary Remove="C:\Projects\sandrohanea\whisper.net\Whisper.net.Runtime\android-x86_64\libwhisper.so" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Remove="Resources\Raw\bush.wav" />
 	  <None Remove="Resources\Raw\junkchunk16khz.wav" />
 	  <None Remove="Resources\Raw\kennedy.wav" />

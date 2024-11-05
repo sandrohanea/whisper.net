@@ -79,7 +79,7 @@ public static class NativeLibraryLoader
                 continue;
             }
 
-            var ggmlPath = GetLibraryPath(platform, "ggml", runtimePath);
+            var ggmlPath = GetLibraryPath(platform, "ggml-whisper", runtimePath);
             if (!File.Exists(ggmlPath))
             {
                 continue;
@@ -193,10 +193,11 @@ public static class NativeLibraryLoader
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
+                string.IsNullOrWhiteSpace(RuntimeOptions.Instance.LibraryPath) ? null : Path.GetDirectoryName(RuntimeOptions.Instance.LibraryPath),
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
                 string.IsNullOrWhiteSpace(assemblyLocation) ? null : Path.GetDirectoryName(assemblyLocation),
-                string.IsNullOrWhiteSpace(environmentAppStartLocation) ? null : Path.GetDirectoryName(environmentAppStartLocation)
+                string.IsNullOrWhiteSpace(environmentAppStartLocation) ? null : Path.GetDirectoryName(environmentAppStartLocation),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
