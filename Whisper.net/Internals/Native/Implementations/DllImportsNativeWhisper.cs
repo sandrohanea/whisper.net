@@ -11,7 +11,7 @@ namespace Whisper.net.Internals.Native.Implementations;
 internal class DllImportsNativeWhisper : INativeWhisper
 {
     const string libraryName = "whisper";
-    const string ggmlLibraryName = "ggml";
+    const string ggmlLibraryName = "ggml-whisper";
 
     [DllImport(libraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_init_from_file_with_params_no_state(string path, WhisperContextParams whisperContextParams);

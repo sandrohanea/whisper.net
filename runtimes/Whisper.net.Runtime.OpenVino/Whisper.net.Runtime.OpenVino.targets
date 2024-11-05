@@ -7,11 +7,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/openvino/win-x64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/openvino/win-x64/ggml.dll</TargetPath>
+      <TargetPath>runtimes/openvino/win-x64/ggml-whisper.dll</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
       <Pack>true</Pack>
@@ -19,11 +19,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/openvino/linux-x64/libwhisper.so</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/openvino/linux-x64/libggml.so</TargetPath>
+      <TargetPath>runtimes/openvino/linux-x64/libggml-whisper.so</TargetPath>
     </None>
   </ItemGroup>
 </Project>

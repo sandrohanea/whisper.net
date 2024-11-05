@@ -170,9 +170,9 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
 
         var fileName = platform switch
         {
-            "win" => "ggml.dll",
-            "linux" => "libggml.so",
-            "macos" => "libggml.dylib",
+            "win" => "ggml-whisper.dll",
+            "linux" => "libggml-whisper.so",
+            "macos" => "libggml-whisper.dylib",
             _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
         };
 
