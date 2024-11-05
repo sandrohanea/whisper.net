@@ -7,11 +7,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/linux-x64/libwhisper.so</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/noavx/linux-x64/libggml.so</TargetPath>
+      <TargetPath>runtimes/noavx/linux-x64/libggml-whisper.so</TargetPath>
     </None>
     <!-- End Linux -->
     <!-- Start Windows -->
@@ -21,11 +21,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-x64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/noavx/win-x64/ggml.dll</TargetPath>
+      <TargetPath>runtimes/noavx/win-x64/ggml-whisper.dll</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\whisper.dll">
       <Pack>true</Pack>
@@ -33,11 +33,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/noavx/win-x86/whisper.ggml</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml.dll">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/noavx/win-x86/ggml.dll</TargetPath>
+      <TargetPath>runtimes/noavx/win-x86/ggml-whisper.dll</TargetPath>
     </None>
     <!-- End Windows -->
   </ItemGroup>
