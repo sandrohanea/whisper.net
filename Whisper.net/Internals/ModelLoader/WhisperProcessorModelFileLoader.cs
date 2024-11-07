@@ -22,7 +22,7 @@ internal sealed class WhisperProcessorModelFileLoader(string pathModel) : IWhisp
                FlashAttention = RuntimeOptions.Instance.UseFlashAttention ? (byte)1 : (byte)0,
                GpuDevice = RuntimeOptions.Instance.GpuDevice,
                DtwTokenLevelTimestamp = RuntimeOptions.Instance.UseDtwTimeStamps ? (byte)1 : (byte)0,
-               HeadsPreset = RuntimeOptions.Instance.HeadsPreset,
+               HeadsPreset = (WhisperAlignmentHeadsPreset)RuntimeOptions.Instance.HeadsPreset,
                DtwNTop = -1,
                WhisperAheads = new WhisperAheads()
                {

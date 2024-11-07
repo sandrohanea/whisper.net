@@ -1,5 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using Whisper.net.Ggml;
+
 namespace Whisper.net.LibraryLoader;
 
 public class RuntimeOptions
@@ -24,7 +26,7 @@ public class RuntimeOptions
         UseGpu = true;
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
-        HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE;
+        HeadsPreset = WhisperAlignmentHeadsPreset.None;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
@@ -118,7 +120,7 @@ public class RuntimeOptions
     /// Sets heads preset for DTW.
     /// </summary>
     /// <remarks>
-    /// By default, it is WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE (0).
+    /// By default, it is WhisperAlignmentHeadsPreset.None (0).
     /// </remarks>
     public void SetHeadsPreset(WhisperAlignmentHeadsPreset headsPreset)
     {
@@ -135,7 +137,7 @@ public class RuntimeOptions
         UseGpu = true;
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
-        HeadsPreset = WhisperAlignmentHeadsPreset.WHISPER_AHEADS_NONE;
+        HeadsPreset = WhisperAlignmentHeadsPreset.None;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }

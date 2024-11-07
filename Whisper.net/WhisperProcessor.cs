@@ -702,16 +702,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 tokens[tokenIndex] = new()
                 {
                     Id = tokenData.id,
-                    Tid = tokenData.tid,
-                    T_Dtw = tokenData.t_dtw,
-                    Vlen = tokenData.vlen,
-                    P = tokenData.p,
-                    Plog = tokenData.plog,
-                    Pt = tokenData.pt,
-                    PtSum = tokenData.ptsum,
+                    TimestampId = tokenData.tid,
+                    DtwTimestamp = tokenData.t_dtw,
+                    VoiceLen = tokenData.vlen,
+                    Probability = tokenData.p,
+                    ProbabilityLog = tokenData.plog,
+                    TimestampProbability = tokenData.pt,
+                    TimestampProbabilitySum = tokenData.ptsum,
                     Text = text,
-                    T0 = tokenData.t0,
-                    T1 = tokenData.t1
+                    Start = tokenData.t0,
+                    End = tokenData.t1
                 };
 
                 if (options.ComputeProbabilities)
