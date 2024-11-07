@@ -31,10 +31,7 @@ public sealed class WhisperFactory : IDisposable
 
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
     {
-        if (!libraryLoaded.Value.IsSuccess)
-        {
-            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
-        }
+        CheckLibraryLoaded();
 
         this.loader = loader;
         if (!delayInit)
@@ -57,15 +54,31 @@ public sealed class WhisperFactory : IDisposable
     /// <exception cref="Exception"></exception>
     public static string? GetRuntimeInfo()
     {
-        if (!libraryLoaded.Value.IsSuccess)
-        {
-            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
-        }
+        CheckLibraryLoaded();
 
         var systemInfoPtr = libraryLoaded.Value.NativeWhisper!.WhisperPrintSystemInfo();
         var systemInfoStr = Marshal.PtrToStringAnsi(systemInfoPtr);
         Marshal.FreeHGlobal(systemInfoPtr);
         return systemInfoStr;
+    }
+
+    /// <summary>
+    /// Returns an enumerable of the supported languages.
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<string> GetSupportedLanguages()
+    {
+        CheckLibraryLoaded();
+
+        for (var i = 0; i < libraryLoaded.Value.NativeWhisper!.Whisper_Lang_Max_Id(); i++)
+        {
+            var languagePtr = libraryLoaded.Value.NativeWhisper!.Whisper_Lang_Str(i);
+            var language = Marshal.PtrToStringAnsi(languagePtr);
+            if (!string.IsNullOrEmpty(language))
+            {
+                yield return language;
+            }
+        }
     }
 
     /// <summary>
@@ -130,5 +143,13 @@ public sealed class WhisperFactory : IDisposable
         }
         loader.Dispose();
         wasDisposed = true;
+    }
+
+    private static void CheckLibraryLoaded()
+    {
+        if (!libraryLoaded.Value.IsSuccess)
+        {
+            throw new Exception($"Failed to load native whisper library. Error: {libraryLoaded.Value.ErrorMessage}");
+        }
     }
 }

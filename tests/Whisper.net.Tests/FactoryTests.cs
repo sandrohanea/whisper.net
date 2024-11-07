@@ -16,6 +16,14 @@ public class FactoryTests : IClassFixture<TinyModelFixture>
     }
 
     [Fact]
+    public void GetSupportedLanguages_ShouldReturnAll()
+    {
+        var languages = WhisperFactory.GetSupportedLanguages().ToList();
+
+        languages.Should().HaveCount(99);
+    }
+
+    [Fact]
     public void CreateBuilder_WithNoModel_ShouldThrow()
     {
         Action loadingMethod = () =>

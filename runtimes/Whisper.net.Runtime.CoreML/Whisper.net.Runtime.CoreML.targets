@@ -14,11 +14,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.coreml.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml.dylib</TargetPath>
+      <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
   </ItemGroup>
   <ItemGroup
@@ -29,11 +29,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml.dylib</TargetPath>
+      <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libwhisper.coreml.dylib">
       <Pack>true</Pack>
@@ -49,11 +49,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/maccatalyst/libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/maccatalyst/libggml.dylib</TargetPath>
+      <TargetPath>runtimes/maccatalyst/libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libwhisper.coreml.dylib">
       <Pack>true</Pack>
@@ -69,11 +69,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml.dylib</TargetPath>
+      <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libwhisper.coreml.dylib">
       <Pack>true</Pack>
@@ -89,11 +89,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml.dylib</TargetPath>
+      <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false"
       Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.coreml.dylib">
@@ -126,11 +126,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/coreml/macos-x64/libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/coreml/macos-x64/libggml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-x64/libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
@@ -144,11 +144,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/coreml/macos-arm64/libwhisper.dylib</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libggml.dylib">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/coreml/macos-arm64/libggml.dylib</TargetPath>
+      <TargetPath>runtimes/coreml/macos-arm64/libggml-whisper.dylib</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.coreml.dylib">
       <Pack>true</Pack>
