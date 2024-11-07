@@ -692,9 +692,29 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             var languageId = nativeWhisper.Whisper_Full_Lang_Id_From_State(state);
             var language = Marshal.PtrToStringAnsi(nativeWhisper.Whisper_Lang_Str(languageId));
 
-            if (options.ComputeProbabilities)
+            var tokens = new WhisperToken[numberOfTokens];
+
+            for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
             {
-                for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
+                var tokenData = nativeWhisper.Whisper_Full_Get_Token_Data_From_State(state, segmentIndex, tokenIndex);
+                var text = StringFromNativeUtf8(nativeWhisper.Whisper_Full_Get_Token_Text_From_State(currentWhisperContext, state, segmentIndex, tokenIndex));
+
+                tokens[tokenIndex] = new()
+                {
+                    Id = tokenData.id,
+                    TimestampId = tokenData.tid,
+                    DtwTimestamp = tokenData.t_dtw,
+                    VoiceLen = tokenData.vlen,
+                    Probability = tokenData.p,
+                    ProbabilityLog = tokenData.plog,
+                    TimestampProbability = tokenData.pt,
+                    TimestampProbabilitySum = tokenData.ptsum,
+                    Text = text,
+                    Start = tokenData.t0,
+                    End = tokenData.t1
+                };
+
+                if (options.ComputeProbabilities)
                 {
                     var tokenProbability = nativeWhisper.Whisper_Full_Get_Token_P_From_State(state, segmentIndex, tokenIndex);
                     sumProbability += tokenProbability;
@@ -718,7 +738,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi!, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!);
+                var eventHandlerArgs = new SegmentData(textAnsi!, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!, tokens);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {

@@ -76,6 +76,12 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     [LibraryImport(libraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial void whisper_ctx_init_openvino_encoder_with_state(IntPtr context, IntPtr state, IntPtr modelPath, IntPtr device, IntPtr cacheDir);
 
+    [LibraryImport(libraryName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial WhisperTokenData whisper_full_get_token_data_from_state(IntPtr state, int segmentIndex, int tokenIndex);
+
+    [LibraryImport(libraryName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial IntPtr whisper_full_get_token_text_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
+
     [LibraryImport(ggmlLibraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial void ggml_log_set(IntPtr logCallback, IntPtr user_data);
 
@@ -123,6 +129,10 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     public INativeWhisper.whisper_log_set Whisper_Log_Set => whisper_log_set;
 
     public INativeWhisper.whisper_ctx_init_openvino_encoder_with_state Whisper_Ctx_Init_Openvino_Encoder_With_State => whisper_ctx_init_openvino_encoder_with_state;
+
+    public INativeWhisper.whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State => whisper_full_get_token_data_from_state;
+
+    public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State => whisper_full_get_token_text_from_state;
 
     public INativeWhisper.ggml_log_set Ggml_log_set => ggml_log_set;
 

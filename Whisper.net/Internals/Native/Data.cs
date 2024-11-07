@@ -26,6 +26,7 @@ internal enum WhisperAlignmentHeadsPreset
     WHISPER_AHEADS_LARGE_V1,
     WHISPER_AHEADS_LARGE_V2,
     WHISPER_AHEADS_LARGE_V3,
+    WHISPER_AHEADS_LARGE_V3_TURBO
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -244,4 +245,19 @@ internal struct WhisperFullParams
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperContext
 {
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperTokenData
+{
+    public int id;
+    public int tid;
+    public float p;
+    public float plog;
+    public float pt;
+    public float ptsum;
+    public long t0;
+    public long t1;
+    public long t_dtw;
+    public float vlen;
 }

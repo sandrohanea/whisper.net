@@ -16,6 +16,24 @@ public class EncoderBeginData
 }
 
 /// <summary>
+/// Represents data about a recognized token.
+/// </summary>
+public class WhisperToken
+{
+    public int Id;
+    public int TimestampId;
+    public float Probability;
+    public float ProbabilityLog;
+    public float TimestampProbability;
+    public float TimestampProbabilitySum;
+    public long Start;
+    public long End;
+    public long DtwTimestamp;
+    public float VoiceLen;
+    public string? Text;
+}
+
+/// <summary>
 /// Represents data about a recognized segment.
 /// </summary>
 /// <param name="text"></param>
@@ -25,7 +43,7 @@ public class EncoderBeginData
 /// <param name="maxProbability"></param>
 /// <param name="probability"></param>
 /// <param name="language"></param>
-public class SegmentData(string text, TimeSpan start, TimeSpan end, float minProbability, float maxProbability, float probability, string language)
+public class SegmentData(string text, TimeSpan start, TimeSpan end, float minProbability, float maxProbability, float probability, string language, WhisperToken[] tokens)
 {
 
     /// <summary>
@@ -71,4 +89,9 @@ public class SegmentData(string text, TimeSpan start, TimeSpan end, float minPro
     /// Gets the language of the current segment.
     /// </summary>
     public string Language { get; } = language;
+
+    /// <summary>
+    /// The tokens of the current segment.
+    /// </summary>
+    public WhisperToken[] Tokens { get; } = tokens;
 }
