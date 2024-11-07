@@ -15,6 +15,11 @@ on:
             description: 'Preview Suffix'
             required: false
             default: 'preview'
+         PushToNuget:
+            description: 'Push to Nuget'
+            required: true
+            type: boolean
+            default: true
 env:
    IS_PREVIEW: ${{ inputs.IsPreview }}
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
@@ -84,6 +89,7 @@ jobs:
          PreviewSuffix: ${{ inputs.PreviewSuffix }}
          
    push-nuget:
+      if: ${{ inputs.PushToNuget }}
       needs:
          - pack-all
       uses: ./.github/workflows/push-all.yml

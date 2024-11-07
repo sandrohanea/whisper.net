@@ -62,10 +62,10 @@ The default runtime that uses the CPU for inference. It is available on all plat
 
 #### Pre-requisites
 
- - AVX2 support on the CPU
  - Windows: Microsoft Visual C++ Redistributable for at least Visual Studio 2019 (x64) [Download Link](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
  - Linux: `libstdc++6`
  - macOS: TBD
+ - For x86/x64 platforms, the CPU must support AVX, AVX2, FMA and F16C instructions. If your CPU does not support these instructions, you'll need to use the `Whisper.net.Runtime.NoAvx` runtime instead.
   
 #### Supported Platforms
 

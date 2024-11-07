@@ -6,11 +6,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/cuda/linux-x64/libwhisper.so</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda/linux-x64/libggml.so</TargetPath>
+      <TargetPath>runtimes/cuda/linux-x64/libggml-whisper.so</TargetPath>
     </None>
   </ItemGroup>
 </Project>

@@ -35,7 +35,7 @@ jobs:
         id: get-version
         run: |
               $version = (Get-ChildItem -Path nupkgs\*.nupkg | Select-Object -First 1).BaseName -replace '.*\.(\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?)', '$1'
-              git tag -a "$version" -m "Release version $version"
               git config user.email "sandrohanea@users.noreply.github.com"
               git config user.name "Sandro Hanea (auto)"
+              git tag -a "$version" -m "Release version $version"
               git push --tags

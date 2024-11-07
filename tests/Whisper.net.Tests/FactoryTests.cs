@@ -11,11 +11,16 @@ public class FactoryTests : IClassFixture<TinyModelFixture>
 
     public FactoryTests(TinyModelFixture model)
     {
-        LogProvider.Instance.OnLog += (level, message) =>
-        {
-            Console.WriteLine($"[{level}] {message}");
-        };
+        LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug);
         this.model = model;
+    }
+
+    [Fact]
+    public void GetSupportedLanguages_ShouldReturnAll()
+    {
+        var languages = WhisperFactory.GetSupportedLanguages().ToList();
+
+        languages.Should().HaveCount(99);
     }
 
     [Fact]

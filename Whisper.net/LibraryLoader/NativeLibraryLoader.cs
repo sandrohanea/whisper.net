@@ -1,5 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Internals.Native.Implementations;
+using Whisper.net.Logger;
+
 #if !IOS && !MACCATALYST && !TVOS && !ANDROID
 #if !NETSTANDARD
 using System.Runtime.Intrinsics.X86;
@@ -14,8 +16,10 @@ public static class NativeLibraryLoader
     internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS
+        LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportInternalWhisper for whisper librar for ios.");
         return LoadResult.Success(new LibraryImportInternalWhisper());
 #elif ANDROID       
+        LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper librar for Android.");
         return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
@@ -23,8 +27,10 @@ public static class NativeLibraryLoader
             || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
 #if NET8_0_OR_GREATER
+            LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new LibraryImportLibWhisper());
 #else
+            LogProvider.Log(WhisperLogLevel.Debug, "Using DllImportsNativeLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new DllImportsNativeLibWhisper());
 #endif
         }
@@ -38,7 +44,16 @@ public static class NativeLibraryLoader
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => "win",
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => "linux",
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => "macos",
-            _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
+            _ => throw new PlatformNotSupportedException($"Unsupported OS Version")
+        };
+
+        var architecture = RuntimeInformation.OSArchitecture switch
+        {
+            Architecture.X64 => "x64",
+            Architecture.X86 => "x86",
+            Architecture.Arm => "arm",
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException($"Unsupported architecture: {RuntimeInformation.OSArchitecture}")
         };
 
 #if NETSTANDARD
@@ -54,18 +69,17 @@ public static class NativeLibraryLoader
 
         string? lastError = null;
 
-        var availableRuntimes = GetRuntimePaths(platform).ToList();
+        var availableRuntimes = GetRuntimePaths(architecture, platform).ToList();
         var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
 
         foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
-
-            if (!IsRuntimeSupported(runtimeLibrary, platform, availableRuntimeTypes))
+            if (!IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
             {
                 continue;
             }
 
-            var ggmlPath = GetLibraryPath(platform, "ggml", runtimePath);
+            var ggmlPath = GetLibraryPath(platform, "ggml-whisper", runtimePath);
             if (!File.Exists(ggmlPath))
             {
                 continue;
@@ -73,21 +87,30 @@ public static class NativeLibraryLoader
 
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
+            LogProvider.Log(WhisperLogLevel.Debug, $"Trying to load ggml library from {ggmlPath}");
             if (!libraryLoader.TryOpenLibrary(ggmlPath, out var ggmlLibraryHandle))
             {
                 lastError = libraryLoader.GetLastError();
+                LogProvider.Log(WhisperLogLevel.Debug, $"Failed to load ggml library from {ggmlPath}. Error: {lastError}");
                 continue;
             }
 
+            LogProvider.Log(WhisperLogLevel.Debug, $"Trying to load whisper library from {whisperPath}");
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
             if (!libraryLoader.TryOpenLibrary(whisperPath, out var whisperHandle))
             {
+                lastError = libraryLoader.GetLastError();
+                LogProvider.Log(WhisperLogLevel.Debug, $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
                 continue;
             }
+
+            LogProvider.Log(WhisperLogLevel.Debug, $"Successfully loaded whisper library from {whisperPath}");
             RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
 #if NETSTANDARD
+            LogProvider.Log(WhisperLogLevel.Debug, $"Using DllImportsNativeWhisper for whisper library");
             var nativeWhisper = new DllImportsNativeWhisper();
 #else
+            LogProvider.Log(WhisperLogLevel.Debug, $"Using NativeLibraryWhisper for whisper library");
             var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
 #endif
 
@@ -118,12 +141,17 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, List<RuntimeLibrary> runtimeLibraries)
+    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture, List<RuntimeLibrary> runtimeLibraries)
     {
+        LogProvider.Log(WhisperLogLevel.Debug, $"Checking if runtime {runtime} is supported on the platform: {platform}");
 #if !NETSTANDARD
         // If AVX is not supported, we can't use CPU runtime on Windows and linux (we should use noavx runtime instead).
-        if (runtime == RuntimeLibrary.Cpu && (platform == "win" || platform == "linux") && !Avx.IsSupported && !Avx2.IsSupported)
+        if (runtime == RuntimeLibrary.Cpu
+            && (platform == "win" || platform == "linux")
+            && (architecture == "x86" || architecture == "x64")
+            && (!Avx.IsSupported || !Avx2.IsSupported || !Fma.IsSupported))
         {
+            LogProvider.Log(WhisperLogLevel.Debug, $"No AVX, AVX2 or Fma support is identified on this host. AVX: {Avx.IsSupported} AVX2: {Avx2.IsSupported} FMA: {Fma.IsSupported}");
             // If noavx runtime is not available, we should throw an exception, because we can't use CPU runtime without AVX support.
             if (!runtimeLibraries.Contains(RuntimeLibrary.CpuNoAvx))
             {
@@ -145,9 +173,12 @@ public static class NativeLibraryLoader
                 // + override the default RuntimeLibraryOrder to have only [ Cuda ].
                 // This way, the user can use Cuda if it's available, otherwise, the CPU runtime will be used.
                 // However, the cudart library should be available in the system.
+                LogProvider.Log(WhisperLogLevel.Debug, "Cuda runtime is not available, but it's the last runtime in the list. " +
+                    "It will be used as a fallback to the CPU runtime.");
                 return true;
             }
 
+            LogProvider.Log(WhisperLogLevel.Debug, "Cuda driver is not available or no cuda device is identified.");
             return false;
         }
 
@@ -155,30 +186,24 @@ public static class NativeLibraryLoader
 
     }
 
-    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string platform)
+    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture, string platform)
     {
-        var architecture = RuntimeInformation.OSArchitecture switch
-        {
-            Architecture.X64 => "x64",
-            Architecture.X86 => "x86",
-            Architecture.Arm => "arm",
-            Architecture.Arm64 => "arm64",
-            _ => throw new PlatformNotSupportedException($"Unsupported OS platform, architecture: {RuntimeInformation.OSArchitecture}")
-        };
-
+        var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
+        var environmentAppStartLocation = Environment.GetCommandLineArgs()[0];
+        // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
+                string.IsNullOrWhiteSpace(RuntimeOptions.Instance.LibraryPath) ? null : Path.GetDirectoryName(RuntimeOptions.Instance.LibraryPath),
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
-                Path.GetDirectoryName(typeof(NativeLibraryLoader).Assembly.Location),
-                Path.GetDirectoryName(Environment.GetCommandLineArgs()[0])
-            }.Where(it => !string.IsNullOrEmpty(it));
+                string.IsNullOrWhiteSpace(assemblyLocation) ? null : Path.GetDirectoryName(assemblyLocation),
+                string.IsNullOrWhiteSpace(environmentAppStartLocation) ? null : Path.GetDirectoryName(environmentAppStartLocation),
+            }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
-
                 var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
                      ? "runtimes"
                      : Path.Combine(assemblySearchPath, "runtimes");
@@ -192,10 +217,15 @@ public static class NativeLibraryLoader
                     RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
                     _ => throw new InvalidOperationException("Unknown runtime library")
                 };
+                LogProvider.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
 
                 if (Directory.Exists(runtimePath))
                 {
                     yield return (runtimePath, library);
+                }
+                else
+                {
+                    LogProvider.Log(WhisperLogLevel.Debug, $"Runtime directory for {library} not found in {runtimePath}");
                 }
             }
 

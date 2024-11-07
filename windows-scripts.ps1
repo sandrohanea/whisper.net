@@ -54,7 +54,8 @@ function BuildWindows() {
     }
     
     $buildDirectory = "build/win-$Arch"
-    $options = @("-S", ".")
+    $options = @("-S", ".", "-DGGML_NATIVE=OFF");
+    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON");
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
 
@@ -77,7 +78,7 @@ function BuildWindows() {
     }
 
     if ($NoAvx) {
-        $options += "-DGGML_AVX=OFF -DGGML_AVX2=OFF"
+        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF");
         $buildDirectory += "-noavx"
         $runtimePath += ".NoAvx"
     }
@@ -86,6 +87,7 @@ function BuildWindows() {
     $options += $buildDirectory
     $options += "-A"
     $options += $platform
+    $options += $avxOptions
 
     if ((Test-Path $buildDirectory)) {
         Write-Host "Deleting old build files for $buildDirectory";
@@ -123,7 +125,7 @@ function BuildWindows() {
     }
 
     Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
-    Move-Item "$buildDirectory/bin/Release/ggml.dll" "$runtimePath/ggml.dll" -Force
+    Move-Item "$buildDirectory/bin/Release/ggml-whisper.dll" "$runtimePath/ggml-whisper.dll" -Force
 }
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {

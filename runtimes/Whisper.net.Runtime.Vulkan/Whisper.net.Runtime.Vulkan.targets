@@ -7,11 +7,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/vulkan/win-x64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml.dll">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/vulkan/win-x64/ggml.dll</TargetPath>
+      <TargetPath>runtimes/vulkan/win-x64/ggml-whisper.dll</TargetPath>
     </None>
   </ItemGroup>
 </Project>

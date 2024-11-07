@@ -1,4 +1,4 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
+# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
 cmake_minimum_required (VERSION 3.8)
@@ -13,3 +13,5 @@ project ("Whisper.net")
 
 # Include sub-projects.
 add_subdirectory ("whisper.cpp")
+
+set_target_properties(ggml PROPERTIES OUTPUT_NAME "ggml-whisper")
