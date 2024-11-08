@@ -193,11 +193,11 @@ public static class NativeLibraryLoader
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
-                string.IsNullOrWhiteSpace(RuntimeOptions.Instance.LibraryPath) ? null : Path.GetDirectoryName(RuntimeOptions.Instance.LibraryPath),
+                GetSafeDirectoryName(RuntimeOptions.Instance.LibraryPath),
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
-                string.IsNullOrWhiteSpace(assemblyLocation) ? null : Path.GetDirectoryName(assemblyLocation),
-                string.IsNullOrWhiteSpace(environmentAppStartLocation) ? null : Path.GetDirectoryName(environmentAppStartLocation),
+                GetSafeDirectoryName(assemblyLocation),
+                GetSafeDirectoryName(environmentAppStartLocation),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
@@ -230,7 +230,25 @@ public static class NativeLibraryLoader
             }
 
         }
+    }
 
+    private static string? GetSafeDirectoryName(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+
+        try
+        {
+            return Path.GetDirectoryName(path);
+        }
+        catch (Exception ex)
+        {
+            LogProvider.Log(WhisperLogLevel.Debug, $"Failed to get directory name from path: {path}. Error: {ex.Message}");
+            return null;
+        }
 #endif
     }
+
 }
