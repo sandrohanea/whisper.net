@@ -140,7 +140,7 @@ public sealed class WhisperFactory : IDisposable
             return;
         }
 
-        // Even if the Lazy is not initialized, we still need to free the context if it was eagerly initialized.
+        // Even if the Lazy value was not created, we still need to free the context if it was eagerly initialized.
         if ((contextLazy.IsValueCreated || isEagerlyInitialized) && contextLazy.Value != IntPtr.Zero)
         {
             libraryLoaded.Value.NativeWhisper!.Whisper_Free(contextLazy.Value);
