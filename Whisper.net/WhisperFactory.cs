@@ -39,7 +39,12 @@ public sealed class WhisperFactory : IDisposable
         {
             var nativeContext = loader.LoadNativeContext(libraryLoaded.Value.NativeWhisper!);
             isEagerlyInitialized = true;
+
+#if NET8_0_OR_GREATER
+            contextLazy = new Lazy<IntPtr>(nativeContext);
+#else
             contextLazy = new Lazy<IntPtr>(() => nativeContext);
+#endif
         }
         else
         {
