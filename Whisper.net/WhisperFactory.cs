@@ -17,6 +17,7 @@ public sealed class WhisperFactory : IDisposable
 {
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
+    private readonly bool isEagerlyInitialized;
     private bool wasDisposed;
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
@@ -37,7 +38,13 @@ public sealed class WhisperFactory : IDisposable
         if (!delayInit)
         {
             var nativeContext = loader.LoadNativeContext(libraryLoaded.Value.NativeWhisper!);
+            isEagerlyInitialized = true;
+
+#if NET8_0_OR_GREATER
+            contextLazy = new Lazy<IntPtr>(nativeContext);
+#else
             contextLazy = new Lazy<IntPtr>(() => nativeContext);
+#endif
         }
         else
         {
@@ -137,7 +144,9 @@ public sealed class WhisperFactory : IDisposable
         {
             return;
         }
-        if (contextLazy.IsValueCreated && contextLazy.Value != IntPtr.Zero)
+
+        // Even if the Lazy value was not created, we still need to free the context if it was eagerly initialized.
+        if ((contextLazy.IsValueCreated || isEagerlyInitialized) && contextLazy.Value != IntPtr.Zero)
         {
             libraryLoaded.Value.NativeWhisper!.Whisper_Free(contextLazy.Value);
         }
