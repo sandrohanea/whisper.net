@@ -86,7 +86,7 @@ jobs:
               'Whisper.net/WhisperProcessorBuilder.cs',
               'Whisper.net/WhisperFactory.cs',
               'Whisper.net/WhisperProcessor.cs',
-              'Whisper.net/LibraryLoader/RuntimeOptions.cs'
+              'Whisper.net/LibraryLoader/RuntimeOptions.cs',
               'examples/Simple/Program.cs',
               'examples/NAudioResampleWav/Program.cs',
               'examples/ParallelExecution/Program.cs'
