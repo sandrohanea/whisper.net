@@ -2,7 +2,7 @@ name: Collect data for ChatGPT assistant
 
 on:
   workflow_dispatch:
-  
+
 permissions:
   issues: read
   contents: read
@@ -15,100 +15,82 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
       - name: Collect GitHub issue and release data
+        shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python <<EOF
-          import requests
-          import os
+          $repo = $env:GITHUB_REPOSITORY
+          $token = $env:GITHUB_TOKEN
+          $headers = @{ "Authorization" = "token $token" }
+          $repoRoot = $env:GITHUB_WORKSPACE
 
-          repo = os.getenv('GITHUB_REPOSITORY')
-          token = os.getenv('GITHUB_TOKEN')
-          headers = {'Authorization': f'token {token}'}
-          repo_root = os.getenv('GITHUB_WORKSPACE')
-        
           # Collect issues
-          issues = []
-          page = 1
-          while True:
-              response = requests.get(f'https://api.github.com/repos/{repo}/issues', headers=headers, params={'state': 'all', 'page': page, 'per_page': 100})
-              data = response.json()
-              if not data:
-                  break
-              issues.extend(data)
-              page += 1
+          $issues = @()
+          $page = 1
+          do {
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/issues?state=all&page=$page&per_page=100" -Headers $headers
+            if ($response.Count -eq 0) { break }
+            $issues += $response
+            $page++
+          } while ($true)
 
-          with open('issues.md', 'w') as f:
-              for issue in issues:
-                  f.write(f"## #{issue['number']} - {issue['title']}\n")
-                  f.write(f"{issue['body']}\n\n")
-                  
-                  comments_url = issue['comments_url']
-                  comments_response = requests.get(comments_url, headers=headers)
-                  comments = comments_response.json()
-                  
-                  if comments:
-                      f.write("### Comments:\n")
-                      for comment in comments:
-                          f.write(f"- **{comment['user']['login']}**: {comment['body']}\n")
-                      f.write("\n")
+          Out-File -FilePath "issues.md" -Encoding utf8 -InputObject ""
+          foreach ($issue in $issues) {
+            Add-Content -Path "issues.md" -Value "## #$($issue.number) - $($issue.title)`n$($issue.body)`n"
+            
+            $commentsUrl = $issue.comments_url
+            $comments = Invoke-RestMethod -Uri $commentsUrl -Headers $headers
+            
+            if ($comments.Count -gt 0) {
+              Add-Content -Path "issues.md" -Value "### Comments:`n"
+              foreach ($comment in $comments) {
+                Add-Content -Path "issues.md" -Value "- **$($comment.user.login)**: $($comment.body)`n"
+              }
+              Add-Content -Path "issues.md" -Value "`n"
+            }
+          }
 
           # Collect releases
-          releases = []
-          page = 1
-          while True:
-              response = requests.get(f'https://api.github.com/repos/{repo}/releases', headers=headers, params={'page': page, 'per_page': 100})
-              data = response.json()
-              if not data:
-                  break
-              releases.extend(data)
-              page += 1
+          $releases = @()
+          $page = 1
+          do {
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases?page=$page&per_page=100" -Headers $headers
+            if ($response.Count -eq 0) { break }
+            $releases += $response
+            $page++
+          } while ($true)
 
-          with open('releases.md', 'w') as f:
-              for release in releases:
-                  f.write(f"## {release['tag_name']} - {release['name']}\n")
-                  f.write(f"{release['body']}\n\n")
+          Out-File -FilePath "releases.md" -Encoding utf8 -InputObject ""
+          foreach ($release in $releases) {
+            Add-Content -Path "releases.md" -Value "## $($release.tag_name) - $($release.name)`n$($release.body)`n"
+          }
 
-          
           # Collect important code snippets
-          important_files = [
-              'Whisper.net/LibraryLoader/NativeLibraryLoader.cs',
-              'Whisper.net/WhisperProcessorBuilder.cs',
-              'Whisper.net/WhisperFactory.cs',
-              'Whisper.net/WhisperProcessor.cs',
-              'Whisper.net/LibraryLoader/RuntimeOptions.cs',
-              'examples/Simple/Program.cs',
-              'examples/NAudioResampleWav/Program.cs',
-              'examples/ParallelExecution/Program.cs'
-          ]
+          $importantFiles = @(
+            "Whisper.net/LibraryLoader/NativeLibraryLoader.cs",
+            "Whisper.net/WhisperProcessorBuilder.cs",
+            "Whisper.net/WhisperFactory.cs",
+            "Whisper.net/WhisperProcessor.cs",
+            "Whisper.net/LibraryLoader/RuntimeOptions.cs",
+            "examples/Simple/Program.cs",
+            "examples/NAudioResampleWav/Program.cs",
+            "examples/ParallelExecution/Program.cs"
+          )
 
-          with open('code_snippets.md', 'w') as f:
-              for file_path in important_files:
-                      f.write(f"## {file_path}\n")
-                      full_path = os.path.join(repo_root, file_path)
-                      print(f"Checking path: {full_path}")
-                      if os.path.exists(full_path):
-                          with open(full_path, 'r', encoding='utf-8') as code_file:
-                              f.write("```csharp\n")
-                              f.write(code_file.read())
-                              f.write("\n```\n\n")
-                      else:
-                          f.write("```csharp\n")
-                          f.write("// File not found.\n")
-                          f.write("```\n\n")
+          Out-File -FilePath "code_snippets.md" -Encoding utf8 -InputObject ""
+          foreach ($filePath in $importantFiles) {
+            Add-Content -Path "code_snippets.md" -Value "## $filePath`n"
+            $fullPath = Join-Path -Path $repoRoot -ChildPath $filePath
+            Write-Output "Checking path: $fullPath" # Debugging
 
-          EOF
+            if (Test-Path $fullPath) {
+              $content = Get-Content -Path $fullPath -Raw
+              Add-Content -Path "code_snippets.md" -Value "```csharp`n$content`n```"
+            } else {
+              Add-Content -Path "code_snippets.md" -Value "```csharp`n// File not found.`n```"
+            }
+          }
 
       - name: Upload data artifact
         uses: actions/upload-artifact@v4
