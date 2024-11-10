@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -97,6 +97,7 @@ jobs:
               for file_path in important_files:
                       f.write(f"## {file_path}\n")
                       full_path = os.path.join(repo_root, file_path)
+                      print(f"Checking path: {full_path}")
                       if os.path.exists(full_path):
                           with open(full_path, 'r', encoding='utf-8') as code_file:
                               f.write("```csharp\n")
@@ -110,7 +111,7 @@ jobs:
           EOF
 
       - name: Upload data artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: data
           path: "*.md"
