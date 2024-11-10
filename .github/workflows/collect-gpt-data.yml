@@ -1,5 +1,4 @@
 name: Collect data for ChatGPT assistant
-description: Collects issues, code and releases inside this repo to be provided as context to the ChatGPT assistant.
 
 on:
   workflow_dispatch:
