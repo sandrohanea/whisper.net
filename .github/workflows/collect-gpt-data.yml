@@ -5,9 +5,10 @@ on:
   
 permissions:
   issues: read
+  contents: read
 
 jobs:
- collect-issues:
+  collect-data:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Collect issues
+      - name: Collect GitHub issue and release data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -35,6 +36,8 @@ jobs:
           repo = os.getenv('GITHUB_REPOSITORY')
           token = os.getenv('GITHUB_TOKEN')
           headers = {'Authorization': f'token {token}'}
+          
+          # Collect issues
           issues = []
           page = 1
           while True:
@@ -59,10 +62,48 @@ jobs:
                       for comment in comments:
                           f.write(f"- **{comment['user']['login']}**: {comment['body']}\n")
                       f.write("\n")
+
+          # Collect releases
+          releases = []
+          page = 1
+          while True:
+              response = requests.get(f'https://api.github.com/repos/{repo}/releases', headers=headers, params={'page': page, 'per_page': 100})
+              data = response.json()
+              if not data:
+                  break
+              releases.extend(data)
+              page += 1
+
+          with open('releases.md', 'w') as f:
+              for release in releases:
+                  f.write(f"## {release['tag_name']} - {release['name']}\n")
+                  f.write(f"{release['body']}\n\n")
+
+          
+          # Collect important code snippets
+          important_files = [
+              'Whisper.net/LibraryLoader/NativeLibraryLoader.cs',
+              'Whisper.net/WhisperProcessorBuilder.cs',
+              'Whisper.net/WhisperFactory.cs',
+              'Whisper.net/WhisperProcessor.cs',
+              'Whisper.net/LibraryLoader/RuntimeOptions.cs'
+              'examples/Simple/Program.cs',
+              'examples/NAudioResampleWav/Program.cs',
+              'examples/ParallelExecution/Program.cs'
+          ]
+
+          with open('code_snippets.md', 'w') as f:
+              for file_path in important_files:
+                  f.write(f"## {file_path}\n")
+                  with open(file_path, 'r', encoding='utf-8') as code_file:
+                      f.write("```csharp\n")
+                      f.write(code_file.read())
+                      f.write("\n```\n\n")
+
           EOF
 
-      - name: Upload issues artifact
+      - name: Upload data artifact
         uses: actions/upload-artifact@v3
         with:
-          name: issues
-          path: issues.md
+          name: data
+          path: *.md
