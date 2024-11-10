@@ -85,10 +85,12 @@ jobs:
             Write-Output "Checking path: $fullPath" # Debugging
 
             if (Test-Path $fullPath) {
-              $content = Get-Content -Path $fullPath -Raw
-              Add-Content -Path "code_snippets.md" -Value "```csharp`n$content`n```"
+              $content = Get-Content -Path $fullPath -Raw | Out-String
+              Add-Content -Path "code_snippets.md" -Value "```csharp"
+              Add-Content -Path "code_snippets.md" -Value $content
+              Add-Content -Path "code_snippets.md" -Value "```n"
             } else {
-              Add-Content -Path "code_snippets.md" -Value "```csharp`n// File not found.`n```"
+              Write-Error "File not found: $fullPath" exit 1 # Fail the script if a file is not found 
             }
           }
 
