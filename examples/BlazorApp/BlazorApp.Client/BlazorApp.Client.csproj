@@ -14,7 +14,7 @@
     <PackageReference Include="Whisper.net.Runtime" Version="1.7.2" />
     <PackageReference Include="Whisper.net" Version="1.7.2" />
     <!-- Version pinning for System.Text.Json just becasue of https://github.com/advisories/GHSA-hh2w-p6rv-4g7w warning -->
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
