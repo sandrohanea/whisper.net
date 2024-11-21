@@ -3,8 +3,8 @@
   <Import Condition="'$(EnableCoreML)' == 'true'" Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net8.0</TargetFrameworks>
-		<LangVersion>10</LangVersion>
+		<TargetFrameworks>net9.0</TargetFrameworks>
+		<LangVersion>13</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

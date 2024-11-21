@@ -3,9 +3,9 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<LangVersion>12</LangVersion>
+		<LangVersion>13</LangVersion>
 		<IsTestProject>true</IsTestProject>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,7 +22,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <TargetFrameworks>
-      net8.0;net6.0;net472;
+      net8.0;net9.0;net472;
     </TargetFrameworks>
   </PropertyGroup>
 
