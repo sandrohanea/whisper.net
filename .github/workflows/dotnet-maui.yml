@@ -83,6 +83,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          arch: x86_64
           script: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
           
       - name: Upload Maui Android xharness test results

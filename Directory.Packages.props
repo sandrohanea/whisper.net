@@ -15,10 +15,8 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.24564.1" />
     <PackageVersion Include="xunit.assert" Version="2.9.2" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.4.0" />
-    <PackageVersion Include="Microsoft.ML.OnnxRuntimeGenAI.Cuda" Version="0.4.0" />
   </ItemGroup>
 </Project>
