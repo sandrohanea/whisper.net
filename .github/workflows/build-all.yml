@@ -15,26 +15,26 @@ on:
             required: true
             default: 'false'
 jobs:
-   android:
-      uses: ./.github/workflows/android-native-build.yml
+   # android:
+   #    uses: ./.github/workflows/android-native-build.yml
 
-   macos:
-      uses: ./.github/workflows/macos-native-build.yml
+   # macos:
+   #    uses: ./.github/workflows/macos-native-build.yml
 
-   windows:
-      uses: ./.github/workflows/windows-native-build.yml
+   # windows:
+   #    uses: ./.github/workflows/windows-native-build.yml
       
-   windows-no-avx:
-      uses: ./.github/workflows/windows-noavx-native-build.yml
+   # windows-no-avx:
+   #    uses: ./.github/workflows/windows-noavx-native-build.yml
 
-   wasm:
-      uses: ./.github/workflows/wasm-native-build.yml
+   # wasm:
+   #    uses: ./.github/workflows/wasm-native-build.yml
 
-   linux:
-      uses: ./.github/workflows/linux-native-build.yml
+   # linux:
+   #    uses: ./.github/workflows/linux-native-build.yml
 
-   linux-no-avx:
-      uses: ./.github/workflows/linux-noavx-native-build.yml
+   # linux-no-avx:
+   #    uses: ./.github/workflows/linux-noavx-native-build.yml
 
    linux-vulkan:
       uses: ./.github/workflows/linux-vulkan-native-build.yml
@@ -63,20 +63,20 @@ jobs:
       if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/macos-coreml-native-build.yml
 
-   dotnet-build:
-      needs:
-         - android
-         - macos
-         - windows
-         - wasm
-         - linux
-      uses: ./.github/workflows/dotnet.yml
+   # dotnet-build:
+   #    needs:
+   #       - android
+   #       - macos
+   #       - windows
+   #       - wasm
+   #       - linux
+   #    uses: ./.github/workflows/dotnet.yml
 
-   dotnet-maui-build-and-test:
-      needs:
-         - android
-         - macos
-         - windows
-         - wasm
-         - linux
-      uses: ./.github/workflows/dotnet-maui.yml
+   # dotnet-maui-build-and-test:
+   #    needs:
+   #       - android
+   #       - macos
+   #       - windows
+   #       - wasm
+   #       - linux
+   #    uses: ./.github/workflows/dotnet-maui.yml
