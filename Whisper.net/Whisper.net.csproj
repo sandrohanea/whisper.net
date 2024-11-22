@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>12</LangVersion>
+    <LangVersion>13</LangVersion>
     <Version>1.7.3</Version>
     <Authors>Sandro Hanea</Authors>
     <Description>Cross-platform dotnet bindings for Whisper.</Description>
@@ -30,7 +30,7 @@
  
   <PropertyGroup Condition="$(USE_WHISPER_MAUI) != ''">
     <TargetFrameworks>
-      net8.0;net6.0;netstandard2.0;net8.0-ios;net8.0-tvos;net8.0-maccatalyst;net8.0-android
+      net8.0;net9.0;netstandard2.0;net8.0-ios;net8.0-tvos;net8.0-maccatalyst;net8.0-android;net9.0-ios;net9.0-tvos;net9.0-maccatalyst;net9.0-android
     </TargetFrameworks>
   </PropertyGroup>
 

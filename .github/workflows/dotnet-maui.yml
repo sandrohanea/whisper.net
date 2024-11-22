@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.x
+            9.0.x
 
       - name: Download Artifacts
         id: download-artifact
@@ -38,14 +38,14 @@ jobs:
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
       - name: Publish android build
-        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net8.0-android -p:EmbedAssembliesIntoApk=true
+        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:
           name: maui-build-artifacts
           path: |
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net8.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
 
   dotnet-maui-test-android:
     runs-on: ubuntu-latest
@@ -83,6 +83,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          arch: x86_64
           script: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
           
       - name: Upload Maui Android xharness test results
