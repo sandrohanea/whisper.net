@@ -33,9 +33,9 @@ jobs:
         run: |
           make linux_vulkan
 
-      - name: Upload Linux OpenVino Build Artifacts
+      - name: Upload Linux Vulkan Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-openvino-build
+          name: linux-vulkan-build
           path: "runtimes/Whisper.net.Run*/linux-*/*"
           retention-days: 7
