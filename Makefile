@@ -58,6 +58,8 @@ linux_x64:
 	cmake -S . -B build/linux-x64 -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 $(AVX_SUPPORT)
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-x64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libwhisper.so
 	cp build/linux-x64/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libggml-whisper.so
 
@@ -66,6 +68,8 @@ linux_arm64:
 	cmake -S . -B build/linux-arm64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64
 	cmake --build build/linux-arm64 --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-arm64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-arm64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libwhisper.so
 	cp build/linux-arm64/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libggml-whisper.so
 
@@ -74,6 +78,8 @@ linux_arm:
 	cmake -S . -B build/linux-arm -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=arm
 	cmake --build build/linux-arm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-arm
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-arm/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libwhisper.so
 	cp build/linux-arm/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-whisper.so
 
@@ -82,6 +88,8 @@ linux_x64_cuda:
 	cmake -S . -B build/linux-x64-cuda -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-cuda --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-whisper.so
 
@@ -90,6 +98,8 @@ linux_x64_noavx:
 	cmake -S . -B build/linux-x64-noavx -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 $(NOAVX_SUPPORT)
 	cmake --build build/linux-x64-noavx --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.NoAvx/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-x64-noavx/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libwhisper.so
 	cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libggml-whisper.so
 
@@ -99,14 +109,18 @@ linux_x64_openvino:
 	cmake -S . -B build/linux-x64-openvino -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWHISPER_OPENVINO=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-openvino --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.OpenVino/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-x64-openvino/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libwhisper.so
 	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libggml-whisper.so
 
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
-	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWHISPER_VULKAN=ON $(AVX_SUPPORT)
+	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_VULKAN=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
 	cp build/linux-x64-vulkan/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libwhisper.so
 	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-whisper.so
 
