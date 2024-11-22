@@ -119,10 +119,10 @@ linux_x64_vulkan:
 	echo 'Vulkan SDK'
 	echo $(VULKAN_SDK)
 	ls -l $(VULKAN_SDK)
-	ls -l $(VULKAN_SDK)/lib
-	ls -l $(VULKAN_SDK)/include
-	export Vulkan_LIBRARY=$(VULKAN_SDK)/lib/libvulkan.so
-	export Vulkan_INCLUDE_DIR=$(VULKAN_SDK)/include
+	ls -l $(VULKAN_SDK)/x86_64/lib
+	ls -l $(VULKAN_SDK)/x86_64/include
+	export Vulkan_LIBRARY=$(VULKAN_SDK)/x86_64/lib/libvulkan.so
+	export Vulkan_INCLUDE_DIR=$(VULKAN_SDK)/x86_64/include
 	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_VULKAN=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
