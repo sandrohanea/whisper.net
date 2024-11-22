@@ -10,7 +10,7 @@ namespace Whisper.net.Internals.Native.Implementations;
 /// </summary>
 internal partial class LibraryImportInternalWhisper : INativeWhisper
 {
-    const string libraryName = "_Internal";
+    const string libraryName = "__Internal";
 
     [LibraryImport(libraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr whisper_init_from_file_with_params_no_state(string path, WhisperContextParams whisperContextParams);
