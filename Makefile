@@ -37,6 +37,8 @@ linux_noavx: linux_x64_noavx
 
 linux_cuda: linux_x64_cuda
 
+linux_vulkan: linux_x64_vulkan
+
 copy_metal:
 	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
 
@@ -50,7 +52,6 @@ wasm:
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
-
 
 linux_x64:
 	rm -rf build/linux-x64
@@ -100,6 +101,14 @@ linux_x64_openvino:
 	mkdir -p runtimes/Whisper.net.Runtime.OpenVino/linux-x64
 	cp build/linux-x64-openvino/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libwhisper.so
 	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libggml-whisper.so
+
+linux_x64_vulkan:
+	rm -rf build/linux-x64-vulkan
+	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWHISPER_VULKAN=ON $(AVX_SUPPORT)
+	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
+	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
+	cp build/linux-x64-vulkan/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libwhisper.so
+	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-whisper.so
 
 macos_x64:
 	rm -rf build/macos-x64
