@@ -117,7 +117,7 @@ linux_x64_openvino:
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
 	sh "$(VULKAN_SDK)/setup-env.sh"  && \
-	export PATH="/home/runner/work/whisper.net/whisper.net/build/linux-x64-vulkan:$(VULKAN_SDK)/x86_64/bin:$(PATH)"  && \
+	export PATH="/home/runner/work/whisper.net/whisper.net/build/linux-x64-vulkan/whisper.cpp/bin:$(VULKAN_SDK)/x86_64/bin:$(PATH)"  && \
 	echo "$(PATH)"  && \
 	cmake -S . -B build/linux-x64-vulkan -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR="$(VULKAN_SDK)/x86_64/include" -DVulkan_LIBRARY="$(VULKAN_SDK)/x86_64/lib/libvulkan.so" $(AVX_SUPPORT)
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
