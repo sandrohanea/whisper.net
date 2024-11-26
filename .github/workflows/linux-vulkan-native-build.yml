@@ -28,6 +28,11 @@ jobs:
           install_runtime: true
           cache: true
           stripdown: true
+
+      - name: Set Vulkan variables
+        run: |
+          echo "$(VULKAN_SDK)/x86_64/bin" >> $GITHUB_PATH
+          echo "$(VULKAN_SDK)/x86_64/bin" >> $GITHUB_PATH
           
       - name: Run linux
         run: |
