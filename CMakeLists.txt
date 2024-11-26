@@ -21,8 +21,3 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Android")
   target_link_options(ggml PRIVATE "-Wl,-z,max-page-size=16384")
   target_link_options(whisper PRIVATE "-Wl,-z,max-page-size=16384")
 endif()
-
-# Set the installation directory for the target
-install(TARGETS vulkan-shaders-gen
-    RUNTIME DESTINATION build/vulkan/bin
-)
