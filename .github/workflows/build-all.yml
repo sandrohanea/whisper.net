@@ -36,6 +36,10 @@ jobs:
    linux-no-avx:
       uses: ./.github/workflows/linux-noavx-native-build.yml
 
+   linux-vulkan:
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
+      uses: ./.github/workflows/linux-vulkan-native-build.yml
+
    windows-cuda:
       if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml

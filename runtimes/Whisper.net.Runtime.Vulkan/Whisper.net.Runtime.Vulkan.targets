@@ -14,4 +14,18 @@
       <TargetPath>runtimes/vulkan/win-x64/ggml-whisper.dll</TargetPath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/vulkan/linux-x64/libwhisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/vulkan/linux-x64/libggml-whisper.so</TargetPath>
+    </None>
+  </ItemGroup>
 </Project>

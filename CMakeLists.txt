@@ -15,3 +15,9 @@ project ("Whisper.net")
 add_subdirectory ("whisper.cpp")
 
 set_target_properties(ggml PROPERTIES OUTPUT_NAME "ggml-whisper")
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+  # Set alignment to 16 KB. See https://developer.android.com/guide/practices/page-sizes#cmake
+  target_link_options(ggml PRIVATE "-Wl,-z,max-page-size=16384")
+  target_link_options(whisper PRIVATE "-Wl,-z,max-page-size=16384")
+endif()
