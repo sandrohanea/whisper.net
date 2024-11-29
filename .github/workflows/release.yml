@@ -64,6 +64,10 @@ jobs:
 
    linux-openvino:
       uses: ./.github/workflows/linux-openvino-native-build.yml
+      
+   linux-vulkan:
+      if: ${{ inputs.BuildGpuLibs == 'true' }}
+      uses: ./.github/workflows/linux-vulkan-native-build.yml
 
    macos-coreml:
       uses: ./.github/workflows/macos-coreml-native-build.yml
@@ -78,11 +82,12 @@ jobs:
          - windows-cuda
          - windows-vulkan
          - windows-openvino
+         - windows-no-avx
          - linux-cuda
          - linux-openvino
-         - macos-coreml
          - linux-no-avx
-         - windows-no-avx
+         - linux-vulkan
+         - macos-coreml
       uses: ./.github/workflows/pack-all.yml
       with:
          IsPreview: ${{ inputs.IsPreview }}
