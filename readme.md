@@ -21,7 +21,7 @@ To install Whisper.net with all the available runtimes, run the following comman
 Or add a package reference in your `.csproj` file:
 
 ```
-    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.2" />
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.3" />
 ```
 
 `Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
@@ -31,10 +31,10 @@ Or add a package reference in your `.csproj` file:
 To install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, add the following package references:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.7.2" />
+    <PackageReference Include="Whisper.net" Version="1.7.3" />
 ```
 ```
-    <PackageReference Include="Whisper.net.Runtime" Version="1.7.2" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.7.3" />
 ```
 
 ## GPT for Whisper
