@@ -13,6 +13,7 @@ public class RuntimeOptions
     internal bool UseFlashAttention { get; private set; }
     internal bool UseDtwTimeStamps { get; private set; }
     internal WhisperAlignmentHeadsPreset HeadsPreset { get; private set; }
+    internal WhisperAlignmentHead[]? CustomAlignmentHeads { get; private set; }
     internal int GpuDevice { get; private set; }
     internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
     internal RuntimeLibrary? LoadedLibrary { get; private set; }
@@ -27,6 +28,7 @@ public class RuntimeOptions
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
         HeadsPreset = WhisperAlignmentHeadsPreset.None;
+        CustomAlignmentHeads = null;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
@@ -128,6 +130,17 @@ public class RuntimeOptions
     }
 
     /// <summary>
+    /// Sets custom attention heads array for DTW. 
+    /// </summary>
+    /// <remarks>
+    /// By default, it is null. Required when using DTW with models which don't have a matching WhisperAlignmentHeadsPreset.
+    /// </remarks>
+    public void SetAlignmentHeads(WhisperAlignmentHead[]? alignmentHeads)
+    {
+        CustomAlignmentHeads = alignmentHeads;
+    }
+
+    /// <summary>
     /// Resets the runtime options to their default values.
     /// </summary>
     public void Reset()
@@ -138,6 +151,7 @@ public class RuntimeOptions
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
         HeadsPreset = WhisperAlignmentHeadsPreset.None;
+        CustomAlignmentHeads = null;
         RuntimeLibraryOrder = defaultRuntimeOrder;
         GpuDevice = 0;
     }
