@@ -10,15 +10,23 @@ namespace Whisper.net.Internals.ModelLoader;
 internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProcessorModelLoader
 {
     private readonly GCHandle pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+    private GCHandle aheadsHandle;
 
     public void Dispose()
     {
         pinnedBuffer.Free();
+        if (aheadsHandle.IsAllocated)
+        {
+            aheadsHandle.Free();
+        }
     }
 
     public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
         var bufferLength = new UIntPtr((uint)buffer.Length);
+
+        var aHeads = WhisperProcessorModelFileLoader.GetWhisperAlignmentHeads(RuntimeOptions.Instance.CustomAlignmentHeads, ref aheadsHandle);
+
         return nativeWhisper.Whisper_Init_From_Buffer_With_Params_No_State(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
             new WhisperContextParams()
             {
@@ -28,11 +36,7 @@ internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProces
                 DtwTokenLevelTimestamp = RuntimeOptions.Instance.UseDtwTimeStamps ? (byte)1 : (byte)0,
                 HeadsPreset = (WhisperAlignmentHeadsPreset)RuntimeOptions.Instance.HeadsPreset,
                 DtwNTop = -1,
-                WhisperAheads = new WhisperAheads()
-                {
-                    NHeads = 0,
-                    Heads = IntPtr.Zero
-                },
+                WhisperAheads = aHeads,
                 Dtw_mem_size = 1024 * 1024 * 128,
             });
     }

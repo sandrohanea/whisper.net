@@ -36,3 +36,9 @@ public enum WhisperAlignmentHeadsPreset
     LargeV3,
     LargeV3Turbo
 }
+
+public struct WhisperAlignmentHead
+{
+    public int TextLayer;
+    public int Head;
+}
