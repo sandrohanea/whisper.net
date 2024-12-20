@@ -18,10 +18,7 @@ public class Program
         var modelFileName = "ggml-largev3.bin";
         var wavFileName = "kennedy.wav";
 
-        LogProvider.OnLog += (level, message) =>
-        {
-            Console.Write($"{level}: {message}");
-        };
+        using var whisperLogger = LogProvider.AddConsoleLogging(WhisperLogLevel.Debug);
 
         // This section detects whether the "ggml-largev3.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))

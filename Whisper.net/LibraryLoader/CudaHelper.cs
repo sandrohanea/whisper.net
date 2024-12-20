@@ -10,7 +10,7 @@ internal static class CudaHelper
 {
     public static bool IsCudaAvailable()
     {
-        LogProvider.Log(WhisperLogLevel.Debug, "Checking for CUDA availability.");
+        WhisperLogger.Log(WhisperLogLevel.Debug, "Checking for CUDA availability.");
         INativeCuda? nativeCuda = null;
         var cudaDevices = 0;
         try
@@ -22,7 +22,7 @@ internal static class CudaHelper
 
             if (!NativeLibrary.TryLoad(libName, out var library))
             {
-                LogProvider.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
+                WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
                 return false;
             }
             nativeCuda = new NativeLibraryCuda(library);
@@ -37,11 +37,11 @@ internal static class CudaHelper
             }
             catch
             {
-                LogProvider.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
+                WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
                 return false;
             }
 #endif
-            LogProvider.Log(WhisperLogLevel.Debug, $"NUmber of CUDA devices found: {cudaDevices}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"NUmber of CUDA devices found: {cudaDevices}");
             return cudaDevices > 0;
         }
         finally

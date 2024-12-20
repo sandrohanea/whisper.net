@@ -10,18 +10,23 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;
+    
+    private readonly List<IDisposable> loggers = [];
 
     public FactoryTests(TinyModelFixture model, ITestOutputHelper output)
     {
-        LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug);
-        LogProvider.OnLog += OnLog;
+        loggers.Add(LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug));
+        loggers.Add(LogProvider.AddLogger(OnLog));
         this.model = model;
         this.output = output;
     }
 
     public void Dispose()
     {
-        LogProvider.OnLog -= OnLog;
+        foreach (var logger in loggers)
+        {
+            logger.Dispose();
+        }
     }
 
     [Fact]

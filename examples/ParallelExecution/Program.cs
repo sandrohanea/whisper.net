@@ -21,10 +21,7 @@ public class Program
         }
 
         // Optional logging from the native library
-        LogProvider.OnLog += (level, message) =>
-        {
-            Console.Write($"{level}: {message}");
-        };
+        using var whisperLogger = LogProvider.AddConsoleLogging(WhisperLogLevel.Debug);
 
         // This section creates the whisperFactory object which is used to create the processor object.
         using var whisperFactory = WhisperFactory.FromPath("ggml-base.bin");

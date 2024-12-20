@@ -19,10 +19,10 @@ public class Program
         var modelFileName = "ggml-base.bin";
         var wavFileName = "kennedy.wav";
 
-        LogProvider.OnLog += (level, message) =>
+        using var whisperLogger = LogProvider.AddLogger((level, message) =>
         {
             Console.Write($"{level}: {message}");
-        };
+        });
 
         // Optional set the order of the runtimes:
         RuntimeOptions.RuntimeLibraryOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cpu];
