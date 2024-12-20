@@ -19,13 +19,13 @@ public class Program
         var modelFileName = "ggml-base.bin";
         var wavFileName = "kennedy.wav";
 
-        LogProvider.Instance.OnLog += (level, message) =>
+        LogProvider.OnLog += (level, message) =>
         {
             Console.Write($"{level}: {message}");
         };
 
         // Optional set the order of the runtimes:
-        RuntimeOptions.Instance.SetRuntimeLibraryOrder([RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
+        RuntimeOptions.RuntimeLibraryOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cpu];
 
         // This section detects whether the "ggml-base.bin" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))

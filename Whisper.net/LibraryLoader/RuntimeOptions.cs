@@ -2,72 +2,36 @@
 
 namespace Whisper.net.LibraryLoader;
 
-public class RuntimeOptions
+/// <summary>
+/// Provides options for configuring the Whisper runtime.
+/// </summary>
+/// <remarks>
+/// Setting values in this class will affect the behavior of the Whisper runtime only if they are done before any <seealso cref="WhisperFactory"/> is created.
+/// </remarks>
+public static class RuntimeOptions
 {
     private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
-    internal bool BypassLoading { get; private set; }
-    internal string? LibraryPath { get; private set; }
-
-    internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
-    internal RuntimeLibrary? LoadedLibrary { get; private set; }
-
-    public static RuntimeOptions Instance { get; } = new();
-
-    private RuntimeOptions()
-    {
-        BypassLoading = false;
-        LibraryPath = null;
-        RuntimeLibraryOrder = defaultRuntimeOrder;
-    }
 
     /// <summary>
-    /// Sets a custom path to the Whisper native library.
+    /// Gets or sets a custom path to the Whisper native library.
+    /// </summary>
+    public static string? LibraryPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets the order of the runtime libraries to use for processing.
     /// </summary>
     /// <remarks>
-    /// By default it is null and automatic path is inferred from the current platform.
+    /// The default order is [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx].
     /// </remarks>
-    public void SetLibraryPath(string? path)
-    {
-        LibraryPath = path;
-    }
+    public static List<RuntimeLibrary> RuntimeLibraryOrder { get; set; } = defaultRuntimeOrder;
 
     /// <summary>
-    /// Bypasses the automatic loading of the Whisper native library.
+    /// Gets or sets the library that was loaded by the runtime.
     /// </summary>
     /// <remarks>
-    /// By default, it is false.
+    /// Setting a custom value will bypass the automatic loading of the Whisper native library.
+    /// If no custom value is used, the library will be loaded automatically based on the <see cref="RuntimeLibraryOrder"/> and the available libraries on the system.
+    /// Once a library is loaded, it will be used for all subsequent processing.
     /// </remarks>
-    public void SetBypassLoading(bool bypass)
-    {
-        BypassLoading = bypass;
-    }
-
-    /// <summary>
-    /// Sets the order of the runtime libraries to use for processing.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu].
-    /// </remarks>
-    public void SetRuntimeLibraryOrder(List<RuntimeLibrary> order)
-    {
-        RuntimeLibraryOrder = order;
-    }
-
-    /// <summary>
-    /// Sets the loaded library if it was loaded manually.
-    /// </summary>
-    public void SetLoadedLibrary(RuntimeLibrary library)
-    {
-        LoadedLibrary = library;
-    }
-
-    /// <summary>
-    /// Resets the runtime options to their default values.
-    /// </summary>
-    public void Reset()
-    {
-        BypassLoading = false;
-        LibraryPath = null;
-        RuntimeLibraryOrder = defaultRuntimeOrder;
-    }
+    public static RuntimeLibrary? LoadedLibrary { get; set; }
 }

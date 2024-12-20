@@ -23,7 +23,7 @@ public static class NativeLibraryLoader
         return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (RuntimeOptions.Instance.BypassLoading
+        if (RuntimeOptions.LoadedLibrary.HasValue
             || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
 #if NET8_0_OR_GREATER
@@ -105,7 +105,7 @@ public static class NativeLibraryLoader
             }
 
             LogProvider.Log(WhisperLogLevel.Debug, $"Successfully loaded whisper library from {whisperPath}");
-            RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
+            RuntimeOptions.LoadedLibrary = runtimeLibrary;
 #if NETSTANDARD
             LogProvider.Log(WhisperLogLevel.Debug, $"Using DllImportsNativeWhisper for whisper library");
             var nativeWhisper = new DllImportsNativeWhisper();
@@ -166,7 +166,7 @@ public static class NativeLibraryLoader
         {
             var cudaIndex = runtimeLibraries.IndexOf(RuntimeLibrary.Cuda);
 
-            if (cudaIndex == RuntimeOptions.Instance.RuntimeLibraryOrder.Count - 1)
+            if (cudaIndex == RuntimeOptions.RuntimeLibraryOrder.Count - 1)
             {
                 // We still can use Cuda as a fallback to the CPU if it's the last runtime in the list.
                 // This scenario can be used to not install 2 runtimes (CPU and Cuda) on the same host,
@@ -193,14 +193,14 @@ public static class NativeLibraryLoader
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
-                GetSafeDirectoryName(RuntimeOptions.Instance.LibraryPath),
+                GetSafeDirectoryName(RuntimeOptions.LibraryPath),
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
                 GetSafeDirectoryName(assemblyLocation),
                 GetSafeDirectoryName(environmentAppStartLocation),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
-        foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
+        foreach (var library in RuntimeOptions.RuntimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {

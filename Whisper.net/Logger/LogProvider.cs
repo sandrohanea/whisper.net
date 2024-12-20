@@ -5,20 +5,9 @@ using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 
 namespace Whisper.net.Logger;
-public class LogProvider
+public static class LogProvider
 {
-
-    private LogProvider()
-    {
-
-    }
-
-    /// <summary>
-    /// Returns the singleton instance of the <see cref="LogProvider"/> class used to log messages from the Whisper library.
-    /// </summary>
-    public static LogProvider Instance { get; } = new();
-
-    public event Action<WhisperLogLevel, string?>? OnLog;
+    public static event Action<WhisperLogLevel, string?>? OnLog;
 
     /// <summary>
     /// Adds a console logger that logs messages with a severity greater than or equal to the specified level.
@@ -26,7 +15,7 @@ public class LogProvider
     /// <param name="minLevel">The minimum severity level to log.</param>
     public static void AddConsoleLogging(WhisperLogLevel minLevel = WhisperLogLevel.Info)
     {
-        Instance.OnLog += (level, message) =>
+        OnLog += (level, message) =>
         {
             // Higher values are less severe
             if (level < minLevel)
@@ -72,6 +61,6 @@ public class LogProvider
 
     internal static void Log(WhisperLogLevel level, string? message)
     {
-        Instance.OnLog?.Invoke(level, message);
+        OnLog?.Invoke(level, message);
     }
 }

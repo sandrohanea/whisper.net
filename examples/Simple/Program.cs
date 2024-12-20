@@ -24,7 +24,7 @@ public class Program
         }
 
         // Optional logging from the native library
-        LogProvider.Instance.OnLog += (level, message) =>
+        LogProvider.OnLog += (level, message) =>
         {
             Console.Write($"{level}: {message}");
         };

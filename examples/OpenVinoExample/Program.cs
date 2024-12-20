@@ -19,7 +19,7 @@ public class Program
         var wavFileName = "kennedy.wav";
         var encoderDirectoryName = "ggml-small-encoder";
 
-        LogProvider.Instance.OnLog += (level, message) =>
+        LogProvider.OnLog += (level, message) =>
         {
             Console.Write($"{level}: {message}");
         };

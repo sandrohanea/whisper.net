@@ -17,7 +17,7 @@ public class Program
         var modelFileName = "ggml-base.bin";
         var wavFileName = "kennedy.wav";
 
-        LogProvider.Instance.OnLog += (level, message) =>
+        LogProvider.OnLog += (level, message) =>
         {
             Console.Write($"{level}: {message}");
         };
