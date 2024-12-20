@@ -30,8 +30,6 @@ internal sealed class WhisperProcessorModelFileLoader : IWhisperProcessorModelLo
 
     public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
-        ModelLoaderUtils.GetWhisperAlignmentHeads(options.CustomAlignmentHeads, out var aheadsHandle);
-
         return nativeWhisper.Whisper_Init_From_File_With_Params_No_State(pathModel,
            new WhisperContextParams()
            {

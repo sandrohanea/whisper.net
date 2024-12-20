@@ -27,7 +27,7 @@ internal static class ModelLoaderUtils
             WhisperAlignmentHeadsPreset.LargeV2 => NativeHeadsPreset.WHISPER_AHEADS_LARGE_V2,
             WhisperAlignmentHeadsPreset.LargeV3 => NativeHeadsPreset.WHISPER_AHEADS_LARGE_V3,
             WhisperAlignmentHeadsPreset.LargeV3Turbo => NativeHeadsPreset.WHISPER_AHEADS_LARGE_V3_TURBO,
-            _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, "The given preset is not supported yet.")
         };
     }
 
