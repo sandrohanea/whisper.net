@@ -2,17 +2,31 @@
 using FluentAssertions;
 using Whisper.net.Logger;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Whisper.net.Tests;
 
-public class FactoryTests : IClassFixture<TinyModelFixture>
+public class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
+    private readonly ITestOutputHelper output;
 
-    public FactoryTests(TinyModelFixture model)
+    public FactoryTests(TinyModelFixture model, ITestOutputHelper output)
     {
         LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug);
+        LogProvider.Instance.OnLog += Instance_OnLog;
         this.model = model;
+        this.output = output;
+    }
+
+    public void Dispose()
+    {
+        LogProvider.Instance.OnLog -= Instance_OnLog;
+    }
+
+    private void Instance_OnLog(WhisperLogLevel arg1, string? arg2)
+    {
+        output.WriteLine($"[Whisper.net] {arg1}: {arg2}");
     }
 
     [Fact]
