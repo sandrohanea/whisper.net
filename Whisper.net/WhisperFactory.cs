@@ -89,6 +89,19 @@ public sealed class WhisperFactory : IDisposable
     }
 
     /// <summary>
+    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="path">The path to the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public static WhisperFactory FromPath(string path)
+    {
+        return FromPath(path, WhisperFactoryOptions.Default);
+    }
+
+    /// <summary>
     /// Creates a factory that uses the ggml model from a path in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
     /// <param name="path">The path to the model.</param>
@@ -97,9 +110,22 @@ public sealed class WhisperFactory : IDisposable
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromPath(string path, WhisperFactoryOptions options = default)
+    public static WhisperFactory FromPath(string path, WhisperFactoryOptions options)
     {
         return new WhisperFactory(new WhisperProcessorModelFileLoader(path, options), options.DelayInitialization);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="buffer">The buffer with the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public static WhisperFactory FromBuffer(byte[] buffer)
+    {
+        return FromBuffer(buffer, WhisperFactoryOptions.Default);
     }
 
     /// <summary>
@@ -111,7 +137,7 @@ public sealed class WhisperFactory : IDisposable
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromBuffer(byte[] buffer, WhisperFactoryOptions options = default)
+    public static WhisperFactory FromBuffer(byte[] buffer, WhisperFactoryOptions options)
     {
         return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, options), options.DelayInitialization);
     }
