@@ -42,7 +42,7 @@ jobs:
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results
-          path: **/TestResults.trx
+          path: ./**/TestResults.trx
           reporter: dotnet-trx
 
   dotnet-windows:
@@ -80,7 +80,7 @@ jobs:
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results
-          path: **/TestResults.trx
+          path: ./**/TestResults.trx
           reporter: dotnet-trx
 
   dotnet-linux:
@@ -118,5 +118,5 @@ jobs:
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results
-          path: **/TestResults.trx
+          path: ./**/TestResults.trx
           reporter: dotnet-trx
