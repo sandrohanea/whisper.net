@@ -80,7 +80,7 @@ internal struct WhisperAhead
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperAheads
 {
-    public nuint NHeads;
+    public UIntPtr NHeads;
     public IntPtr Heads;
 }
 
@@ -94,7 +94,7 @@ internal struct WhisperContextParams
     public WhisperAlignmentHeadsPreset HeadsPreset;
     public int DtwNTop;
     public WhisperAheads WhisperAheads;
-    public nuint Dtw_mem_size;
+    public UIntPtr Dtw_mem_size;
 }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -235,9 +235,9 @@ internal struct WhisperFullParams
 
     public IntPtr WhisperGrammarElement;
 
-    public nuint NGrammarRules;
+    public UIntPtr NGrammarRules;
 
-    public nuint StartGrammarRule;
+    public UIntPtr StartGrammarRule;
 
     public float GrammarPenalty;
 }

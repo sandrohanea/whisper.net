@@ -89,31 +89,57 @@ public sealed class WhisperFactory : IDisposable
     }
 
     /// <summary>
-    /// Creates a factory that uses the ggml model from a path in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
     /// <param name="path">The path to the model.</param>
-    /// <param name="delayInitialization">A value indicating if the model should be loaded right away or during the first <see cref="CreateBuilder"/> call.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromPath(string path, bool delayInitialization = false)
+    public static WhisperFactory FromPath(string path)
     {
-        return new WhisperFactory(new WhisperProcessorModelFileLoader(path), delayInitialization);
+        return FromPath(path, WhisperFactoryOptions.Default);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses the ggml model from a path in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="path">The path to the model.</param>
+    /// <param name="options">The options for the factory and the loading of the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public static WhisperFactory FromPath(string path, WhisperFactoryOptions options)
+    {
+        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, options), options.DelayInitialization);
     }
 
     /// <summary>
     /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
     /// <param name="buffer">The buffer with the model.</param>
-    /// <param name="delayInitialization">A value indicating if the model should be loaded right away or during the first <see cref="CreateBuilder"/> call.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromBuffer(byte[] buffer, bool delayInitialization = false)
+    public static WhisperFactory FromBuffer(byte[] buffer)
     {
-        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer), delayInitialization);
+        return FromBuffer(buffer, WhisperFactoryOptions.Default);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="buffer">The buffer with the model.</param>
+    /// <param name="options">Thhe options for the factory and the loading of the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <remarks>
+    /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
+    /// </remarks>
+    public static WhisperFactory FromBuffer(byte[] buffer, WhisperFactoryOptions options)
+    {
+        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, options), options.DelayInitialization);
     }
 
     /// <summary>
@@ -124,10 +150,14 @@ public sealed class WhisperFactory : IDisposable
     /// <exception cref="WhisperModelLoadException">Throws if the model couldn't be loaded.</exception>
     public WhisperProcessorBuilder CreateBuilder()
     {
+#if NET8_0_OR_GREATER
+        ObjectDisposedException.ThrowIf(wasDisposed, this);
+#else
         if (wasDisposed)
         {
             throw new ObjectDisposedException(nameof(WhisperFactory));
         }
+#endif
 
         var context = contextLazy.Value;
         if (context == IntPtr.Zero)

@@ -1,7 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using Whisper.net.Ggml;
-
 namespace Whisper.net.LibraryLoader;
 
 public class RuntimeOptions
@@ -9,12 +7,7 @@ public class RuntimeOptions
     private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
     internal bool BypassLoading { get; private set; }
     internal string? LibraryPath { get; private set; }
-    internal bool UseGpu { get; private set; }
-    internal bool UseFlashAttention { get; private set; }
-    internal bool UseDtwTimeStamps { get; private set; }
-    internal WhisperAlignmentHeadsPreset HeadsPreset { get; private set; }
-    internal WhisperAlignmentHead[]? CustomAlignmentHeads { get; private set; }
-    internal int GpuDevice { get; private set; }
+
     internal List<RuntimeLibrary> RuntimeLibraryOrder { get; private set; }
     internal RuntimeLibrary? LoadedLibrary { get; private set; }
 
@@ -24,13 +17,7 @@ public class RuntimeOptions
     {
         BypassLoading = false;
         LibraryPath = null;
-        UseGpu = true;
-        UseFlashAttention = false;
-        UseDtwTimeStamps = false;
-        HeadsPreset = WhisperAlignmentHeadsPreset.None;
-        CustomAlignmentHeads = null;
         RuntimeLibraryOrder = defaultRuntimeOrder;
-        GpuDevice = 0;
     }
 
     /// <summary>
@@ -56,39 +43,6 @@ public class RuntimeOptions
     }
 
     /// <summary>
-    /// Sets whether to use the GPU for processing.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is true.
-    /// </remarks>
-    public void SetUseGpu(bool useGpu)
-    {
-        UseGpu = useGpu;
-    }
-
-    /// <summary>
-    /// Sets whether to use the FlashAttention for processing.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is false.
-    /// </remarks>
-    public void SetUseFlashAttention(bool useFlashAttention)
-    {
-        UseFlashAttention = useFlashAttention;
-    }
-
-    /// <summary>
-    /// Sets the GPU device to use for processing.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is 0.
-    /// </remarks>
-    public void SetGpuDevice(int device)
-    {
-        GpuDevice = device;
-    }
-
-    /// <summary>
     /// Sets the order of the runtime libraries to use for processing.
     /// </summary>
     /// <remarks>
@@ -108,52 +62,12 @@ public class RuntimeOptions
     }
 
     /// <summary>
-    /// Sets whether to use DTW timestamps.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is false.
-    /// </remarks>
-    public void SetUseDtwTimeStamps(bool useDtw)
-    {
-        UseDtwTimeStamps = useDtw;
-    }
-
-    /// <summary>
-    /// Sets heads preset for DTW.
-    /// </summary>
-    /// <remarks>
-    /// By default, it is WhisperAlignmentHeadsPreset.None (0).
-    /// </remarks>
-    public void SetHeadsPreset(WhisperAlignmentHeadsPreset headsPreset)
-    {
-        HeadsPreset = headsPreset;
-    }
-
-    /// <summary>
-    /// Sets custom attention heads array for DTW. 
-    /// </summary>
-    /// <remarks>
-    /// By default, it is null. Required when using DTW with models which don't have a matching WhisperAlignmentHeadsPreset.
-    /// </remarks>
-    public void SetAlignmentHeads(WhisperAlignmentHead[]? alignmentHeads)
-    {
-        CustomAlignmentHeads = alignmentHeads;
-    }
-
-    /// <summary>
     /// Resets the runtime options to their default values.
     /// </summary>
     public void Reset()
     {
         BypassLoading = false;
         LibraryPath = null;
-        UseGpu = true;
-        UseFlashAttention = false;
-        UseDtwTimeStamps = false;
-        HeadsPreset = WhisperAlignmentHeadsPreset.None;
-        CustomAlignmentHeads = null;
         RuntimeLibraryOrder = defaultRuntimeOrder;
-        GpuDevice = 0;
     }
-
 }

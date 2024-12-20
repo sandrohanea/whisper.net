@@ -2,42 +2,50 @@
 
 using System.Runtime.InteropServices;
 using Whisper.net.Internals.Native;
-using Whisper.net.LibraryLoader;
 using Whisper.net.Native;
 
 namespace Whisper.net.Internals.ModelLoader;
 
-internal class WhisperProcessorModelBufferLoader(byte[] buffer) : IWhisperProcessorModelLoader
+internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
 {
-    private readonly GCHandle pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-    private GCHandle aheadsHandle;
+    private readonly GCHandle pinnedBuffer;
+    private readonly WhisperAheads aHeads;
+    private readonly GCHandle? aheadsHandle;
+    private readonly UIntPtr bufferLength;
+
+    private readonly WhisperFactoryOptions options;
+
+    public WhisperProcessorModelBufferLoader(byte[] buffer, WhisperFactoryOptions options)
+    {
+        this.options = options;
+
+        pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        aHeads = ModelLoaderUtils.GetWhisperAlignmentHeads(options.CustomAlignmentHeads, out aheadsHandle);
+        bufferLength = new UIntPtr((uint)buffer.Length);
+    }
 
     public void Dispose()
     {
         pinnedBuffer.Free();
-        if (aheadsHandle.IsAllocated)
+        if (aheadsHandle.HasValue)
         {
-            aheadsHandle.Free();
+            aheadsHandle.Value.Free();
         }
     }
 
     public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
-        var bufferLength = new UIntPtr((uint)buffer.Length);
-
-        var aHeads = WhisperProcessorModelFileLoader.GetWhisperAlignmentHeads(RuntimeOptions.Instance.CustomAlignmentHeads, ref aheadsHandle);
-
         return nativeWhisper.Whisper_Init_From_Buffer_With_Params_No_State(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
             new WhisperContextParams()
             {
-                UseGpu = RuntimeOptions.Instance.UseGpu ? (byte)1 : (byte)0,
-                FlashAttention = RuntimeOptions.Instance.UseFlashAttention ? (byte)1 : (byte)0,
-                GpuDevice = RuntimeOptions.Instance.GpuDevice,
-                DtwTokenLevelTimestamp = RuntimeOptions.Instance.UseDtwTimeStamps ? (byte)1 : (byte)0,
-                HeadsPreset = (WhisperAlignmentHeadsPreset)RuntimeOptions.Instance.HeadsPreset,
-                DtwNTop = -1,
+                UseGpu = options.UseGpu.AsByte(),
+                FlashAttention = options.UseFlashAttention.AsByte(),
+                GpuDevice = options.GpuDevice,
+                DtwTokenLevelTimestamp = options.UseDtwTimeStamps.AsByte(),
+                HeadsPreset = ModelLoaderUtils.Map(options.HeadsPreset),
+                DtwNTop = options.DtwNTop,
                 WhisperAheads = aHeads,
-                Dtw_mem_size = 1024 * 1024 * 128,
+                Dtw_mem_size = new UIntPtr(options.DtwMemSize),
             });
     }
 }
