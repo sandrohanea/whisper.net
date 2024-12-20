@@ -45,9 +45,16 @@ jobs:
         uses: dorny/test-reporter@v1.9.1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Whisper.net Linux Test Results
+          name: Whisper.net MacOs Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
+          
+      - name: Upload trx files
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-macos
+          path: ./**/*.trx
+          retention-days: 7
 
   dotnet-windows:
     runs-on: windows-latest
@@ -83,10 +90,17 @@ jobs:
         uses: dorny/test-reporter@v1.9.1
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: Whisper.net Linux Test Results
+          name: Whisper.net Windows Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
 
+      - name: Upload trx files
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-windows
+          path: ./**/*.trx
+          retention-days: 7
+        
   dotnet-linux:
     runs-on: ubuntu-latest
 
@@ -124,3 +138,11 @@ jobs:
           name: Whisper.net Linux Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
+
+      - name: Upload trx files
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-linux
+          path: ./**/*.trx
+          retention-days: 7
+        
