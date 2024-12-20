@@ -35,7 +35,15 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build
+          dotnet test ./Whisper.net.sln --no-build  --logger "trx;LogFileName=TestResults.trx"
+          
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.9.1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Whisper.net Linux Test Results
+          path: **/TestResults.trx
+          reporter: dotnet-trx
 
   dotnet-windows:
     runs-on: windows-latest
@@ -65,7 +73,15 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build
+          dotnet test ./Whisper.net.sln --no-build --logger "trx;LogFileName=TestResults.trx"
+          
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.9.1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Whisper.net Linux Test Results
+          path: **/TestResults.trx
+          reporter: dotnet-trx
 
   dotnet-linux:
     runs-on: ubuntu-latest
@@ -95,4 +111,12 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build
+          dotnet test ./Whisper.net.sln --no-build --logger "trx;LogFileName=TestResults.trx"
+                        
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.9.1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Whisper.net Linux Test Results
+          path: **/TestResults.trx
+          reporter: dotnet-trx
