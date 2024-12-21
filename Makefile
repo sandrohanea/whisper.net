@@ -50,8 +50,8 @@ wasm:
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 	cmake --build build/wasm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
-	find . -n libggml-cpu-whisper.a
-	find . -n libggml-cpu-whisper.a
+	find . -name libggml-cpu-whisper.a
+	find . -name libggml-cpu-whisper.a
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a
@@ -62,8 +62,8 @@ linux_x64:
 	cmake -S . -B build/linux-x64 -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 $(AVX_SUPPORT)
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-x64
-	find . -n libggml-cpu-whisper.so
-	find . -n libggml-base-whisper.so
+	find . -name libggml-cpu-whisper.so
+	find . -name libggml-base-whisper.so
 	echo 'LDD VERSION'
 	ldd --version
 	cp build/linux-x64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libwhisper.so
@@ -100,9 +100,9 @@ linux_x64_cuda:
 	cmake -S . -B build/linux-x64-cuda -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-cuda --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
-	find . -n libggml-cpu-whisper.so
-	find . -n libggml-base-whisper.so
-	find . -n libggml-cuda-whisper.so
+	find . -name libggml-cpu-whisper.so
+	find . -name libggml-base-whisper.so
+	find . -name libggml-cuda-whisper.so
 	echo 'LDD VERSION'
 	ldd --version
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
@@ -143,9 +143,9 @@ linux_x64_vulkan:
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
 	echo 'LDD VERSION'
-	find . -n libggml-cpu-whisper.so
-	find . -n libggml-base-whisper.so
-	find . -n libggml-vulkan-whisper.so
+	find . -name libggml-cpu-whisper.so
+	find . -name libggml-base-whisper.so
+	find . -name libggml-vulkan-whisper.so
 	ldd --version
 	cp build/linux-x64-vulkan/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libwhisper.so
 	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-whisper.so
