@@ -168,6 +168,7 @@ macos_arm64:
 	cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/macos-arm64
 	cmake --build build/macos-arm64
 	mkdir -p runtimes/Whisper.net.Runtime/macos-arm64
+	find . -name libggml-metal-whisper.dylib
 	cp build/macos-arm64/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libwhisper.dylib
 	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-whisper.dylib
 	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-base-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-base-whisper.dylib
