@@ -6,27 +6,27 @@ using Xunit.Abstractions;
 
 namespace Whisper.net.Tests;
 
-public class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
+public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;
+    
+    private readonly List<IDisposable> loggers = [];
 
     public FactoryTests(TinyModelFixture model, ITestOutputHelper output)
     {
-        LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug);
-        LogProvider.Instance.OnLog += Instance_OnLog;
+        loggers.Add(LogProvider.AddConsoleLogging(minLevel: WhisperLogLevel.Debug));
+        loggers.Add(LogProvider.AddLogger(OnLog));
         this.model = model;
         this.output = output;
     }
 
     public void Dispose()
     {
-        LogProvider.Instance.OnLog -= Instance_OnLog;
-    }
-
-    private void Instance_OnLog(WhisperLogLevel arg1, string? arg2)
-    {
-        output.WriteLine($"[Whisper.net] {arg1}: {arg2}");
+        foreach (var logger in loggers)
+        {
+            logger.Dispose();
+        }
     }
 
     [Fact]
@@ -90,5 +90,17 @@ public class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
         };
 
         loadingMethod.Should().Throw<ObjectDisposedException>();
+    }
+
+    private void OnLog(WhisperLogLevel logLevel, string? message)
+    {
+        try
+        {
+            output.WriteLine($"[Whisper.net] {logLevel}: {message}");
+        }
+        catch
+        {
+            // Might be that some tests were not disposed yet and will still receive log events resulting in errors
+        }
     }
 }

@@ -51,6 +51,7 @@ jobs:
           
       - name: Upload trx files
         uses: actions/upload-artifact@v4
+        if: success() || failure()    # run this step even if previous step failed
         with:
           name: test-results-macos
           path: ./**/*.trx
@@ -96,6 +97,7 @@ jobs:
 
       - name: Upload trx files
         uses: actions/upload-artifact@v4
+        if: success() || failure()    # run this step even if previous step failed
         with:
           name: test-results-windows
           path: ./**/*.trx
@@ -141,6 +143,7 @@ jobs:
 
       - name: Upload trx files
         uses: actions/upload-artifact@v4
+        if: success() || failure()    # run this step even if previous step failed
         with:
           name: test-results-linux
           path: ./**/*.trx

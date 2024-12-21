@@ -5,35 +5,37 @@ using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 
 namespace Whisper.net.Logger;
-public class LogProvider
+public static class LogProvider
 {
-
-    private LogProvider()
-    {
-
-    }
-
-    /// <summary>
-    /// Returns the singleton instance of the <see cref="LogProvider"/> class used to log messages from the Whisper library.
-    /// </summary>
-    public static LogProvider Instance { get; } = new();
-
-    public event Action<WhisperLogLevel, string?>? OnLog;
-
     /// <summary>
     /// Adds a console logger that logs messages with a severity greater than or equal to the specified level.
     /// </summary>
     /// <param name="minLevel">The minimum severity level to log.</param>
-    public static void AddConsoleLogging(WhisperLogLevel minLevel = WhisperLogLevel.Info)
+    /// <returns>
+    /// Returns a disposable object that can be used to remove the logger.
+    /// </returns>
+    public static IDisposable AddConsoleLogging(WhisperLogLevel minLevel = WhisperLogLevel.Info)
     {
-        Instance.OnLog += (level, message) =>
+        return new WhisperLogger((level, message) =>
         {
             // Higher values are less severe
             if (level < minLevel)
             {
                 Console.WriteLine($"[{level}] {message}");
             }
-        };
+        });
+    }
+
+    /// <summary>
+    /// Adds a logger that logs messages with a custom action.
+    /// </summary>
+    /// <param name="logAction">The action to log.</param>
+    /// <returns>
+    /// Returns a disposable object that can be used to remove the logger.
+    /// </returns>
+    public static IDisposable AddLogger(Action<WhisperLogLevel, string?> logAction)
+    {
+        return new WhisperLogger(logAction);
     }
 
     internal static void InitializeLogging(INativeWhisper nativeWhisper)
@@ -67,11 +69,6 @@ public class LogProvider
             _ => WhisperLogLevel.Info
         };
 
-        Log(managedLevel, messageString);
-    }
-
-    internal static void Log(WhisperLogLevel level, string? message)
-    {
-        Instance.OnLog?.Invoke(level, message);
+        WhisperLogger.Log(managedLevel, messageString);
     }
 }

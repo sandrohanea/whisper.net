@@ -33,10 +33,11 @@ public class Program
         }
 
         // Optional logging from the native library
-        LogProvider.Instance.OnLog += (level, message) =>
+        
+        using var whisperLogger = LogProvider.AddLogger((level, message) =>
         {
             Console.Write($"{level}: {message}");
-        };
+        });
 
         // This section creates the whisperFactory object which is used to create the processor object.
         using var whisperFactory = WhisperFactory.FromPath(modelFileName);

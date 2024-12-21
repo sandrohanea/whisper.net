@@ -341,7 +341,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private IntPtr GetWhisperState()
     {
         var state = nativeWhisper.Whisper_Init_State(currentWhisperContext);
-        if (RuntimeOptions.Instance.LoadedLibrary == RuntimeLibrary.OpenVino)
+        if (RuntimeOptions.LoadedLibrary == RuntimeLibrary.OpenVino)
         {
             var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
             var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);

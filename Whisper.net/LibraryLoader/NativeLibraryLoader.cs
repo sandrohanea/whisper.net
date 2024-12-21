@@ -16,21 +16,21 @@ public static class NativeLibraryLoader
     internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS
-        LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportInternalWhisper for whisper librar for ios.");
+        WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportInternalWhisper for whisper librar for ios.");
         return LoadResult.Success(new LibraryImportInternalWhisper());
 #elif ANDROID       
-        LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper librar for Android.");
+        WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper librar for Android.");
         return LoadResult.Success(new LibraryImportLibWhisper());
 #else
         // If the user has handled loading the library themselves, we don't need to do anything.
-        if (RuntimeOptions.Instance.BypassLoading
+        if (RuntimeOptions.LoadedLibrary.HasValue
             || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
         {
 #if NET8_0_OR_GREATER
-            LogProvider.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper library with bypassed loading.");
+            WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new LibraryImportLibWhisper());
 #else
-            LogProvider.Log(WhisperLogLevel.Debug, "Using DllImportsNativeLibWhisper for whisper library with bypassed loading.");
+            WhisperLogger.Log(WhisperLogLevel.Debug, "Using DllImportsNativeLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new DllImportsNativeLibWhisper());
 #endif
         }
@@ -87,30 +87,30 @@ public static class NativeLibraryLoader
 
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
 
-            LogProvider.Log(WhisperLogLevel.Debug, $"Trying to load ggml library from {ggmlPath}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load ggml library from {ggmlPath}");
             if (!libraryLoader.TryOpenLibrary(ggmlPath, out var ggmlLibraryHandle))
             {
                 lastError = libraryLoader.GetLastError();
-                LogProvider.Log(WhisperLogLevel.Debug, $"Failed to load ggml library from {ggmlPath}. Error: {lastError}");
+                WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load ggml library from {ggmlPath}. Error: {lastError}");
                 continue;
             }
 
-            LogProvider.Log(WhisperLogLevel.Debug, $"Trying to load whisper library from {whisperPath}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load whisper library from {whisperPath}");
             // Ggml was loaded, for this runtimePath, we need to load whisper as well
             if (!libraryLoader.TryOpenLibrary(whisperPath, out var whisperHandle))
             {
                 lastError = libraryLoader.GetLastError();
-                LogProvider.Log(WhisperLogLevel.Debug, $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
+                WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
                 continue;
             }
 
-            LogProvider.Log(WhisperLogLevel.Debug, $"Successfully loaded whisper library from {whisperPath}");
-            RuntimeOptions.Instance.SetLoadedLibrary(runtimeLibrary);
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Successfully loaded whisper library from {whisperPath}");
+            RuntimeOptions.LoadedLibrary = runtimeLibrary;
 #if NETSTANDARD
-            LogProvider.Log(WhisperLogLevel.Debug, $"Using DllImportsNativeWhisper for whisper library");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Using DllImportsNativeWhisper for whisper library");
             var nativeWhisper = new DllImportsNativeWhisper();
 #else
-            LogProvider.Log(WhisperLogLevel.Debug, $"Using NativeLibraryWhisper for whisper library");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Using NativeLibraryWhisper for whisper library");
             var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
 #endif
 
@@ -143,7 +143,7 @@ public static class NativeLibraryLoader
 
     private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture, List<RuntimeLibrary> runtimeLibraries)
     {
-        LogProvider.Log(WhisperLogLevel.Debug, $"Checking if runtime {runtime} is supported on the platform: {platform}");
+        WhisperLogger.Log(WhisperLogLevel.Debug, $"Checking if runtime {runtime} is supported on the platform: {platform}");
 #if !NETSTANDARD
         // If AVX is not supported, we can't use CPU runtime on Windows and linux (we should use noavx runtime instead).
         if (runtime == RuntimeLibrary.Cpu
@@ -151,7 +151,7 @@ public static class NativeLibraryLoader
             && (architecture == "x86" || architecture == "x64")
             && (!Avx.IsSupported || !Avx2.IsSupported || !Fma.IsSupported))
         {
-            LogProvider.Log(WhisperLogLevel.Debug, $"No AVX, AVX2 or Fma support is identified on this host. AVX: {Avx.IsSupported} AVX2: {Avx2.IsSupported} FMA: {Fma.IsSupported}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"No AVX, AVX2 or Fma support is identified on this host. AVX: {Avx.IsSupported} AVX2: {Avx2.IsSupported} FMA: {Fma.IsSupported}");
             // If noavx runtime is not available, we should throw an exception, because we can't use CPU runtime without AVX support.
             if (!runtimeLibraries.Contains(RuntimeLibrary.CpuNoAvx))
             {
@@ -166,19 +166,19 @@ public static class NativeLibraryLoader
         {
             var cudaIndex = runtimeLibraries.IndexOf(RuntimeLibrary.Cuda);
 
-            if (cudaIndex == RuntimeOptions.Instance.RuntimeLibraryOrder.Count - 1)
+            if (cudaIndex == RuntimeOptions.RuntimeLibraryOrder.Count - 1)
             {
                 // We still can use Cuda as a fallback to the CPU if it's the last runtime in the list.
                 // This scenario can be used to not install 2 runtimes (CPU and Cuda) on the same host,
                 // + override the default RuntimeLibraryOrder to have only [ Cuda ].
                 // This way, the user can use Cuda if it's available, otherwise, the CPU runtime will be used.
                 // However, the cudart library should be available in the system.
-                LogProvider.Log(WhisperLogLevel.Debug, "Cuda runtime is not available, but it's the last runtime in the list. " +
+                WhisperLogger.Log(WhisperLogLevel.Debug, "Cuda runtime is not available, but it's the last runtime in the list. " +
                     "It will be used as a fallback to the CPU runtime.");
                 return true;
             }
 
-            LogProvider.Log(WhisperLogLevel.Debug, "Cuda driver is not available or no cuda device is identified.");
+            WhisperLogger.Log(WhisperLogLevel.Debug, "Cuda driver is not available or no cuda device is identified.");
             return false;
         }
 
@@ -193,14 +193,14 @@ public static class NativeLibraryLoader
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
-                GetSafeDirectoryName(RuntimeOptions.Instance.LibraryPath),
+                GetSafeDirectoryName(RuntimeOptions.LibraryPath),
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
                 GetSafeDirectoryName(assemblyLocation),
                 GetSafeDirectoryName(environmentAppStartLocation),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
-        foreach (var library in RuntimeOptions.Instance.RuntimeLibraryOrder)
+        foreach (var library in RuntimeOptions.RuntimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
@@ -217,7 +217,7 @@ public static class NativeLibraryLoader
                     RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
                     _ => throw new InvalidOperationException("Unknown runtime library")
                 };
-                LogProvider.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
+                WhisperLogger.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
 
                 if (Directory.Exists(runtimePath))
                 {
@@ -225,7 +225,7 @@ public static class NativeLibraryLoader
                 }
                 else
                 {
-                    LogProvider.Log(WhisperLogLevel.Debug, $"Runtime directory for {library} not found in {runtimePath}");
+                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Runtime directory for {library} not found in {runtimePath}");
                 }
             }
 
@@ -245,7 +245,7 @@ public static class NativeLibraryLoader
         }
         catch (Exception ex)
         {
-            LogProvider.Log(WhisperLogLevel.Debug, $"Failed to get directory name from path: {path}. Error: {ex.Message}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to get directory name from path: {path}. Error: {ex.Message}");
             return null;
         }
 #endif

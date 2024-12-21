@@ -19,10 +19,7 @@ public class Program
         var wavFileName = "kennedy.wav";
         var encoderDirectoryName = "ggml-small-encoder";
 
-        LogProvider.Instance.OnLog += (level, message) =>
-        {
-            Console.Write($"{level}: {message}");
-        };
+        using var whisperLogger = LogProvider.AddConsoleLogging(WhisperLogLevel.Debug);
 
         // This section detects whether the "ggml-small" file exists in our project disk. If it doesn't, it downloads it from the internet
         if (!File.Exists(modelFileName))

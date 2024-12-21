@@ -175,16 +175,16 @@ The following order of priority will be used by default:
 5. `Whisper.net.Runtime` (CPU inference)
 6. `Whisper.net.Runtime.NoAvx` (CPU inference without AVX support)
 
-To change the order or force a specific runtime, set the `RuntimeOrder` on the `RuntimeOptions`:
+To change the order or force a specific runtime, set the `RuntimeLibraryOrder` on the `RuntimeOptions`:
 
 ```csharp
-RuntimeOptions.Instance.SetRuntimeLibraryOrder(new List<RuntimeLibrary>()
-{
+RuntimeOptions.RuntimeLibraryOrder = 
+[
     RuntimeLibrary.CoreML,
     RuntimeLibrary.OpenVino,
     RuntimeLibrary.Cuda,
     RuntimeLibrary.Cpu
-});
+];
 ```
 
 ## Versioning
