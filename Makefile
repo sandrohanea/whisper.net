@@ -40,10 +40,10 @@ linux_cuda: linux_x64_cuda
 linux_vulkan: linux_x64_vulkan
 
 copy_metal:
-	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
 
 copy_metal_coreml:
-	cp whisper.cpp/ggml/src/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
+	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
 
 wasm:
 	rm -rf build/wasm
