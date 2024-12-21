@@ -14,12 +14,30 @@ project ("Whisper.net")
 # Include sub-projects.
 add_subdirectory ("whisper.cpp")
 
-set_target_properties(ggml PROPERTIES OUTPUT_NAME "ggml-whisper")
-set_target_properties(ggml-cpu PROPERTIES OUTPUT_NAME "ggml-cpu-whisper")
-set_target_properties(ggml-base PROPERTIES OUTPUT_NAME "ggml-base-whisper")
-set_target_properties(ggml-cuda PROPERTIES OUTPUT_NAME "ggml-cuda-whisper")
-set_target_properties(ggml-vulkan PROPERTIES OUTPUT_NAME "ggml-vulkan-whisper")
-set_target_properties(ggml-metal PROPERTIES OUTPUT_NAME "ggml-metal-whisper")
+if(TARGET ggml)
+    set_target_properties(ggml PROPERTIES OUTPUT_NAME "ggml-whisper")
+endif()
+
+if(TARGET ggml-cpu)
+    set_target_properties(ggml-cpu PROPERTIES OUTPUT_NAME "ggml-cpu-whisper")
+endif()
+
+if(TARGET ggml-base)
+    set_target_properties(ggml-base PROPERTIES OUTPUT_NAME "ggml-base-whisper")
+endif()
+
+if(TARGET ggml-cuda)
+    set_target_properties(ggml-cuda PROPERTIES OUTPUT_NAME "ggml-cuda-whisper")
+endif()
+
+if(TARGET ggml-vulkan)
+    set_target_properties(ggml-vulkan PROPERTIES OUTPUT_NAME "ggml-vulkan-whisper")
+endif()
+
+if(TARGET ggml-metal)
+    set_target_properties(ggml-metal PROPERTIES OUTPUT_NAME "ggml-metal-whisper")
+endif()
+
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
   # Set alignment to 16 KB. See https://developer.android.com/guide/practices/page-sizes#cmake
