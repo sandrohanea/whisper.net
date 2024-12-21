@@ -50,18 +50,26 @@ wasm:
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 	cmake --build build/wasm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
+	find . -n libggml-cpu-whisper.a
+	find . -n libggml-cpu-whisper.a
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
+	cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a
+	cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a
 
 linux_x64:
 	rm -rf build/linux-x64
 	cmake -S . -B build/linux-x64 -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 $(AVX_SUPPORT)
 	cmake --build build/linux-x64 --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/linux-x64
+	find . -n libggml-cpu-whisper.so
+	find . -n libggml-base-whisper.so
 	echo 'LDD VERSION'
 	ldd --version
 	cp build/linux-x64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libwhisper.so
 	cp build/linux-x64/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libggml-whisper.so
+	cp build/linux-x64/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime/linux-x64/libggml-cpu-whisper.so
 
 linux_arm64:
 	rm -rf build/linux-arm64
@@ -72,6 +80,8 @@ linux_arm64:
 	ldd --version
 	cp build/linux-arm64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libwhisper.so
 	cp build/linux-arm64/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libggml-whisper.so
+	cp build/linux-arm64/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libggml-base-whisper.so
+	cp build/linux-arm64/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm64/libggml-cpu-whisper.so
 
 linux_arm:
 	rm -rf build/linux-arm
@@ -82,16 +92,24 @@ linux_arm:
 	ldd --version
 	cp build/linux-arm/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libwhisper.so
 	cp build/linux-arm/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-whisper.so
+	cp build/linux-arm/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-base-whisper.so
+	cp build/linux-arm/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-cpu-whisper.so
 
 linux_x64_cuda:
 	rm -rf build/linux-x64-cuda
 	cmake -S . -B build/linux-x64-cuda -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON $(AVX_SUPPORT)
 	cmake --build build/linux-x64-cuda --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
+	find . -n libggml-cpu-whisper.so
+	find . -n libggml-base-whisper.so
+	find . -n libggml-cuda-whisper.so
 	echo 'LDD VERSION'
 	ldd --version
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-whisper.so
+	cp build/linux-arm/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-base-whisper.so
+	cp build/linux-arm/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-cpu-whisper.so
+	cp build/linux-arm/whisper.cpp/ggml/src/libggml-cuda-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-cuda-whisper.so
 
 linux_x64_noavx:
 	rm -rf build/linux-x64-noavx
@@ -102,6 +120,8 @@ linux_x64_noavx:
 	ldd --version
 	cp build/linux-x64-noavx/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libwhisper.so
 	cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libggml-whisper.so
+	cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64-noavx/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.NoAvx/linux-x64/libggml-cpu-whisper.so
 
 
 linux_x64_openvino:
@@ -113,6 +133,8 @@ linux_x64_openvino:
 	ldd --version
 	cp build/linux-x64-openvino/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libwhisper.so
 	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libggml-whisper.so
+	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64-openvino/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.OpenVino/linux-x64/libggml-cpu-whisper.so
 
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
@@ -121,9 +143,15 @@ linux_x64_vulkan:
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
 	echo 'LDD VERSION'
+	find . -n libggml-cpu-whisper.so
+	find . -n libggml-base-whisper.so
+	find . -n libggml-vulkan-whisper.so
 	ldd --version
 	cp build/linux-x64-vulkan/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libwhisper.so
 	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-whisper.so
+	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-cpu-whisper.so
+	cp build/linux-x64-vulkan/whisper.cpp/ggml/src/libggml-vulkan-whisper.so ./runtimes/Whisper.net.Runtime.Vulkan/linux-x64/libggml-vulkan-whisper.so
 
 macos_x64:
 	rm -rf build/macos-x64
@@ -132,6 +160,8 @@ macos_x64:
 	mkdir -p runtimes/Whisper.net.Runtime/macos-x64
 	cp build/macos-x64/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime/macos-x64/libwhisper.dylib
 	cp build/macos-x64/whisper.cpp/ggml/src/libggml-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-x64/libggml-whisper.dylib
+	cp build/macos-x64/whisper.cpp/ggml/src/libggml-base-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-x64/libggml-base-whisper.dylib
+	cp build/macos-x64/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-x64/libggml-cpu-whisper.dylib
 
 macos_arm64:
 	rm -rf build/macos-arm64
@@ -140,6 +170,9 @@ macos_arm64:
 	mkdir -p runtimes/Whisper.net.Runtime/macos-arm64
 	cp build/macos-arm64/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libwhisper.dylib
 	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-whisper.dylib
+	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-base-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-base-whisper.dylib
+	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-cpu-whisper.dylib
+	cp build/macos-arm64/whisper.cpp/ggml/src/libggml-metal-whisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libggml-metal-whisper.dylib
 
 macos_x64_coreml:
 	rm -rf build/macos-x64-coreml
@@ -149,6 +182,8 @@ macos_x64_coreml:
 	cp build/macos-x64-coreml/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-x64/libwhisper.dylib
 	cp build/macos-x64-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-x64/libggml-whisper.dylib
 	cp build/macos-x64-coreml/whisper.cpp/src/libwhisper.coreml.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-x64/libwhisper.coreml.dylib
+	cp build/macos-x64-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-x64/libggml-base-whisper.dylib
+	cp build/macos-x64-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-x64/libggml-cpu-whisper.dylib
 
 macos_arm64_coreml:
 	rm -rf build/macos-arm64-coreml
@@ -158,6 +193,9 @@ macos_arm64_coreml:
 	cp build/macos-arm64-coreml/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.dylib
 	cp build/macos-arm64-coreml/whisper.cpp/src/libwhisper.coreml.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.coreml.dylib
 	cp build/macos-arm64-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libggml-whisper.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libggml-base-whisper.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libggml-cpu-whisper.dylib
+	cp build/macos-arm64-coreml/whisper.cpp/ggml/src/libggml-metal-whisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libggml-metal-whisper.dylib
 
 ios:
 	rm -rf build/ios
@@ -166,6 +204,9 @@ ios:
 	mkdir -p runtimes/Whisper.net.Runtime/ios-device
 	cp build/ios/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/ios-device/libwhisper.dylib
 	cp build/ios/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime/ios-device/libggml-whisper.dylib
+	cp build/ios/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime/ios-device/libggml-base-whisper.dylib
+	cp build/ios/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/ios-device/libggml-cpu-whisper.dylib
+	cp build/ios/whisper.cpp/ggml/src/libggml-metal-whisper.dylib runtimes/Whisper.net.Runtime/ios-device/libggml-metal-whisper.dylib
 
 ios_coreml:
 	rm -rf build/ios-coreml
@@ -175,6 +216,8 @@ ios_coreml:
 	cp build/ios-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libwhisper.coreml.dylib
 	cp build/ios-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libwhisper.dylib
 	cp build/ios-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libggml-whisper.dylib
+	cp build/ios-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libggml-base-whisper.dylib
+	cp build/ios-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libggml-cpu-whisper.dylib
 
 maccatalyst_arm64:
 	rm -rf build/maccatalyst_arm64
@@ -183,6 +226,8 @@ maccatalyst_arm64:
 	mkdir -p runtimes/Whisper.net.Runtime/maccatalyst
 	cp build/maccatalyst_arm64/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/maccatalyst/libwhisper.dylib
 	cp build/maccatalyst_arm64/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime/maccatalyst/libggml-whisper.dylib
+	cp build/maccatalyst_arm64/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime/maccatalyst/libggml-base-whisper.dylib
+	cp build/maccatalyst_arm64/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/maccatalyst/libggml-cpu-whisper.dylib
 
 maccatalyst_arm64_coreml:
 	rm -rf build/maccatalyst-arm64-coreml
@@ -192,6 +237,8 @@ maccatalyst_arm64_coreml:
 	cp build/maccatalyst-arm64-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.coreml.dylib
 	cp build/maccatalyst-arm64-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/maccatalyst/libwhisper.dylib
 	cp build/maccatalyst-arm64-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/maccatalyst/libggml-whisper.dylib
+	cp build/maccatalyst-arm64-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/maccatalyst/libggml-base-whisper.dylib
+	cp build/maccatalyst-arm64-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/maccatalyst/libggml-cpu-whisper.dylib
 
 ios_simulator_coreml:
 	rm -rf build/ios-simulator-coreml
@@ -201,6 +248,8 @@ ios_simulator_coreml:
 	cp build/ios-simulator-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.coreml.dylib
 	cp build/ios-simulator-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-simulator/libwhisper.dylib
 	cp build/ios-simulator-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-simulator/libggml-whisper.dylib
+	cp build/ios-simulator-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-simulator/libggml-base-whisper.dylib
+	cp build/ios-simulator-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/ios-simulator/libggml-cpu-whisper.dylib
 
 ios_simulator_arm64:
 	rm -rf build/ios_simulator_arm64
@@ -209,6 +258,8 @@ ios_simulator_arm64:
 	mkdir -p runtimes/Whisper.net.Runtime/ios-simulator
 	cp build/ios_simulator_arm64/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libwhisper.dylib
 	cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml-whisper.dylib
+	cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml-base-whisper.dylib
+	cp build/ios_simulator_arm64/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/ios-simulator/libggml-cpu-whisper.dylib
 
 tvos_simulator_arm64:
 	rm -rf build/tvos_simulator_arm64
@@ -216,6 +267,9 @@ tvos_simulator_arm64:
 	cmake --build build/tvos_simulator_arm64
 	mkdir -p runtimes/Whisper.net.Runtime/tvos-simulator
 	cp build/tvos_simulator_arm64/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/tvos-simulator/libwhisper.dylib
+	cp build/tvos_simulator_arm64/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime/tvos-simulator/libggml-whisper.dylib
+	cp build/tvos_simulator_arm64/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime/tvos-simulator/libggml-base-whisper.dylib
+	cp build/tvos_simulator_arm64/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/tvos-simulator/libggml-cpu-whisper.dylib
 
 tvos:
 	rm -rf build/tvos
@@ -224,6 +278,8 @@ tvos:
 	mkdir -p runtimes/Whisper.net.Runtime/tvos-device
 	cp build/tvos/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libwhisper.dylib
 	cp build/tvos/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-whisper.dylib
+	cp build/tvos/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-base-whisper.dylib
+	cp build/tvos/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-cpu-whisper.dylib
 
 tvos_coreml:
 	rm -rf build/tvos-coreml
@@ -233,6 +289,8 @@ tvos_coreml:
 	cp build/tvos-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libwhisper.coreml.dylib
 	cp build/tvos-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libwhisper.dylib
 	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib  runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-whisper.dylib
+	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-base-whisper.dylib
+	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-cpu-whisper.dylib
 
 tvos_simulator_coreml:
 	rm -rf build/tvos-simulator-coreml
@@ -242,6 +300,8 @@ tvos_simulator_coreml:
 	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.coreml.dylib
 	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.dylib
 	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-whisper.dylib
+	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-base-whisper.dylib
+	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-cpu-whisper.dylib
 
 android_arm64-v8a:
 	rm -rf build/android-arm64-v8a
@@ -250,6 +310,8 @@ android_arm64-v8a:
 	mkdir -p runtimes/Whisper.net.Runtime/android-arm64-v8a
 	cp build/android-arm64-v8a/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-arm64-v8a/libwhisper.so
 	cp build/android-arm64-v8a/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/android-arm64-v8a/libggml-whisper.so
+	cp build/android-arm64-v8a/whisper.cpp/ggml/src/libggml-base-whisper.so runtimes/Whisper.net.Runtime/android-arm64-v8a/libggml-base-whisper.so
+	cp build/android-arm64-v8a/whisper.cpp/ggml/src/libggml-cpu-whisper.so runtimes/Whisper.net.Runtime/android-arm64-v8a/libggml-cpu-whisper.so
 
 android_x86:
 	rm -rf build/android-x86
@@ -258,6 +320,8 @@ android_x86:
 	mkdir -p runtimes/Whisper.net.Runtime/android-x86
 	cp build/android-x86/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-x86/libwhisper.so
 	cp build/android-x86/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/android-x86/libggml-whisper.so
+	cp build/android-x86/whisper.cpp/ggml/src/libggml-base-whisper.so runtimes/Whisper.net.Runtime/android-x86/libggml-base-whisper.so
+	cp build/android-x86/whisper.cpp/ggml/src/libggml-cpu-whisper.so runtimes/Whisper.net.Runtime/android-x86/libggml-cpu-whisper.so
 
 android_x64:
 	rm -rf build/android-x86_64
@@ -266,6 +330,8 @@ android_x64:
 	mkdir -p runtimes/Whisper.net.Runtime/android-x86_64
 	cp build/android-x86_64/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime/android-x86_64/libwhisper.so
 	cp build/android-x86_64/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime/android-x86_64/libggml-whisper.so
+	cp build/android-x86_64/whisper.cpp/ggml/src/libggml-base-whisper.so runtimes/Whisper.net.Runtime/android-x86_64/libggml-base-whisper.so
+	cp build/android-x86_64/whisper.cpp/ggml/src/libggml-cpu-whisper.so runtimes/Whisper.net.Runtime/android-x86_64/libggml-cpu-whisper.so
 
 xcframework:
 	mkdir -p output/lib
