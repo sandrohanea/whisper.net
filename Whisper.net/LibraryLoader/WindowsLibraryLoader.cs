@@ -1,5 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
-
+#if NETSTANDARD
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
@@ -30,3 +30,4 @@ internal class WindowsLibraryLoader : ILibraryLoader
         return new Win32Exception(errorCode).Message;
     }
 }
+#endif
