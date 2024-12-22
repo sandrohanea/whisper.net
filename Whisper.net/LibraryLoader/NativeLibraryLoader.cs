@@ -13,8 +13,6 @@ namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
-    private static readonly List<string> dependencyOrder = ["ggml-base-whisper", "ggml-cpu-whisper", "ggml-blas-whisper", "ggml-metal-whisper", "ggml-cuda-whisper", "ggml-vulkan-whisper", "ggml-whisper"];
-
     internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS
@@ -38,6 +36,8 @@ public static class NativeLibraryLoader
         }
         return LoadLibraryComponent();
     }
+
+    private static readonly string[] dependencyOrder = ["ggml-base-whisper", "ggml-cpu-whisper", "ggml-blas-whisper", "ggml-metal-whisper", "ggml-cuda-whisper", "ggml-vulkan-whisper", "ggml-whisper"];
 
     private static LoadResult LoadLibraryComponent()
     {
@@ -87,10 +87,30 @@ public static class NativeLibraryLoader
                 continue;
             }
 
-            if (!TryLoadDependencies(platform, runtimePath, libraryLoader, out lastError, out var dependenciesHandle))
+            List<IntPtr> dependenciesHandles = [];
+            lastError = null;
+            // We need to use this special order to load the dependencies in the correct order.
+            foreach (var dependency in dependencyOrder)
             {
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Couldn't load dependencies at {runtimePath}. Error: {lastError}");
-                continue;
+                // We only try to load it if it's available in the directory
+                var dependencyPath = GetLibraryPath(platform, dependency, runtimePath);
+                if (File.Exists(dependencyPath))
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Loading dependency at {dependencyPath}");
+                    if (!libraryLoader.TryOpenLibrary(dependencyPath, out var dependencyHandle))
+                    {
+                        // We cannot open one of the dependencies, we need to close all the opened dependencies and return false.
+                        lastError = libraryLoader.GetLastError();
+                        WhisperLogger.Log(WhisperLogLevel.Debug, $"Couldn't load dependency at {dependencyPath}. Received: {lastError}");
+                        foreach (var handle in dependenciesHandles)
+                        {
+                            libraryLoader.CloseLibrary(handle);
+                        }
+                        dependenciesHandles.Clear();
+                        continue;
+                    }
+                    dependenciesHandles.Add(dependencyHandle);
+                }
             }
 
             WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load whisper library from {whisperPath}");
@@ -99,7 +119,7 @@ public static class NativeLibraryLoader
             {
                 lastError = libraryLoader.GetLastError();
                 // We couldn't load the whisper library, we need to close all the dependencies and continue to the next runtime.
-                foreach (var dependency in dependenciesHandle)
+                foreach (var dependency in dependenciesHandles)
                 {
                     libraryLoader.CloseLibrary(dependency);
                 }
@@ -233,36 +253,6 @@ public static class NativeLibraryLoader
             }
 
         }
-    }
-
-    private static bool TryLoadDependencies(string platform, string runtimePath, ILibraryLoader libraryLoader, out string? lastError, out List<IntPtr> dependenciesHandles)
-    {
-        dependenciesHandles = [];
-        lastError = null;
-        // We need to use this special order to load the dependencies in the correct order.
-        foreach (var dependency in dependencyOrder)
-        {
-            // We only try to load it if it's available in the directory
-            var dependencyPath = GetLibraryPath(platform, dependency, runtimePath);
-            if (File.Exists(dependencyPath))
-            {
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Loading dependency at {dependencyPath}");
-                if (!libraryLoader.TryOpenLibrary(dependencyPath, out var dependencyHandle))
-                {
-                    // We cannot open one of the dependencies, we need to close all the opened dependencies and return false.
-                    lastError = libraryLoader.GetLastError();
-                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Couldn't load dependency at {dependencyPath}. Received: {lastError}");
-                    foreach (var handle in dependenciesHandles)
-                    {
-                        libraryLoader.CloseLibrary(handle);
-                    }
-                    dependenciesHandles.Clear();
-                    return false;
-                }
-                dependenciesHandles.Add(dependencyHandle);
-            }
-        }
-        return true;
     }
 
     private static string? GetSafeDirectoryName(string? path)
