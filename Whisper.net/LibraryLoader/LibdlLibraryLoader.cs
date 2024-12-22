@@ -12,6 +12,14 @@ internal class LibdlLibraryLoader : ILibraryLoader
     [DllImport("libdl", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError();
 
+    [DllImport("libdl", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlclose")]
+    public static extern int NativeCloseLibraryLibdl(IntPtr handle);
+
+    public void CloseLibrary(IntPtr handle)
+    {
+        NativeCloseLibraryLibdl(handle);
+    }
+
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
         try

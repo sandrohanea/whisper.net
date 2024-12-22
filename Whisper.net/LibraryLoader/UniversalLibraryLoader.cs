@@ -8,12 +8,15 @@ namespace Whisper.net.LibraryLoader;
 internal class UniversalLibraryLoader : ILibraryLoader
 {
     private readonly Assembly whisperAssembly;
-    private string? libPath;
 
     public UniversalLibraryLoader()
     {
-        this.whisperAssembly = typeof(UniversalLibraryLoader).Assembly;
-        NativeLibrary.SetDllImportResolver(whisperAssembly, CustomDllImportResolver);
+        whisperAssembly = typeof(UniversalLibraryLoader).Assembly;
+    }
+
+    public void CloseLibrary(nint handle)
+    {
+        NativeLibrary.Free(handle);
     }
 
     public string GetLastError()
@@ -23,21 +26,7 @@ internal class UniversalLibraryLoader : ILibraryLoader
 
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
-        libPath = Path.GetDirectoryName(fileName);
-        return NativeLibrary.TryLoad(fileName, whisperAssembly, DllImportSearchPath.LegacyBehavior, out libHandle);
-    }
-
-    private nint CustomDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-    {
-        var libName = Path.GetFileNameWithoutExtension(libraryName);
-        if (!libName.EndsWith("whisper") || string.IsNullOrEmpty(libPath))
-        {
-            return NativeLibrary.Load(libraryName);
-        }
-
-        var fileExtension = Path.GetExtension(libraryName);
-        var libFullPath = Path.Combine(libPath, $"{libName}.{fileExtension}");
-        return NativeLibrary.Load(libFullPath);
+        return NativeLibrary.TryLoad(fileName, whisperAssembly, null, out libHandle);
     }
 }
 #endif

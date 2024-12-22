@@ -10,6 +10,14 @@ internal class WindowsLibraryLoader : ILibraryLoader
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string? lpFileName);
 
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern bool FreeLibrary(IntPtr hModule);
+
+    public void CloseLibrary(nint handle)
+    {
+        FreeLibrary(handle);
+    }
+
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
         try
