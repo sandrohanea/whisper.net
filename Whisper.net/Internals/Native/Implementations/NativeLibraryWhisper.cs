@@ -9,9 +9,8 @@ namespace Whisper.net.Internals.Native.Implementations;
 internal class NativeLibraryWhisper : INativeWhisper
 {
     private readonly IntPtr whisperLibraryHandle;
-    private readonly IntPtr ggmlLibraryHandle;
 
-    public NativeLibraryWhisper(IntPtr whisperLibraryHandle, IntPtr ggmlLibraryHandle)
+    public NativeLibraryWhisper(IntPtr whisperLibraryHandle)
     {
         Whisper_Init_From_File_With_Params_No_State = Marshal.GetDelegateForFunctionPointer<whisper_init_from_file_with_params_no_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_init_from_file_with_params_no_state)));
         Whisper_Init_From_Buffer_With_Params_No_State = Marshal.GetDelegateForFunctionPointer<whisper_init_from_buffer_with_params_no_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_init_from_buffer_with_params_no_state)));
@@ -39,7 +38,6 @@ internal class NativeLibraryWhisper : INativeWhisper
         WhisperPrintSystemInfo = Marshal.GetDelegateForFunctionPointer<whisper_print_system_info>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_print_system_info)));
 
         this.whisperLibraryHandle = whisperLibraryHandle;
-        this.ggmlLibraryHandle = ggmlLibraryHandle;
     }
 
     public whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
@@ -93,7 +91,6 @@ internal class NativeLibraryWhisper : INativeWhisper
     public void Dispose()
     {
         NativeLibrary.Free(whisperLibraryHandle);
-        NativeLibrary.Free(ggmlLibraryHandle);
     }
 }
 #endif

@@ -79,19 +79,9 @@ public static class NativeLibraryLoader
                 continue;
             }
 
-            var ggmlPath = GetLibraryPath(platform, "ggml-whisper", runtimePath);
-            if (!File.Exists(ggmlPath))
-            {
-                continue;
-            }
-
             var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-
-            WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load ggml library from {ggmlPath}");
-            if (!libraryLoader.TryOpenLibrary(ggmlPath, out var ggmlLibraryHandle))
+            if (!File.Exists(whisperPath))
             {
-                lastError = libraryLoader.GetLastError();
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load ggml library from {ggmlPath}. Error: {lastError}");
                 continue;
             }
 
@@ -111,7 +101,7 @@ public static class NativeLibraryLoader
             var nativeWhisper = new DllImportsNativeWhisper();
 #else
             WhisperLogger.Log(WhisperLogLevel.Debug, $"Using NativeLibraryWhisper for whisper library");
-            var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
+            var nativeWhisper = new NativeLibraryWhisper(whisperHandle);
 #endif
 
             return LoadResult.Success(nativeWhisper);
