@@ -38,6 +38,9 @@ if(TARGET ggml-metal)
     set_target_properties(ggml-metal PROPERTIES OUTPUT_NAME "ggml-metal-whisper")
 endif()
 
+if(TARGET ggml-blas)
+    set_target_properties(ggml-blas PROPERTIES OUTPUT_NAME "ggml-blas-whisper")
+endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
   # Set alignment to 16 KB. See https://developer.android.com/guide/practices/page-sizes#cmake
