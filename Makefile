@@ -100,9 +100,9 @@ linux_x64_cuda:
 	ldd --version
 	cp build/linux-x64-cuda/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libwhisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-whisper.so
-	cp build/linux-arm/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-base-whisper.so
-	cp build/linux-arm/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-cpu-whisper.so
-	cp build/linux-arm/whisper.cpp/ggml/src/ggml-cuda/libggml-cuda-whisper.so ./runtimes/Whisper.net.Runtime/linux-arm/libggml-cuda-whisper.so
+	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-cpu-whisper.so
+	cp build/linux-x64-cuda/whisper.cpp/ggml/src/ggml-cuda/libggml-cuda-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-cuda-whisper.so
 
 linux_x64_noavx:
 	rm -rf build/linux-x64-noavx
