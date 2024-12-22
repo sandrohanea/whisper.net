@@ -36,7 +36,6 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Ctx_Init_Openvino_Encoder_With_State = Marshal.GetDelegateForFunctionPointer<whisper_ctx_init_openvino_encoder_with_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_ctx_init_openvino_encoder_with_state)));
         Whisper_Full_Get_Token_Data_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_data_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_data_from_state)));
         Whisper_Full_Get_Token_Text_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_text_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_text_from_state)));
-        Ggml_log_set = Marshal.GetDelegateForFunctionPointer<ggml_log_set>(NativeLibrary.GetExport(ggmlLibraryHandle, nameof(ggml_log_set)));
         WhisperPrintSystemInfo = Marshal.GetDelegateForFunctionPointer<whisper_print_system_info>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_print_system_info)));
 
         this.whisperLibraryHandle = whisperLibraryHandle;
@@ -88,8 +87,6 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State { get; }
 
     public whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; }
-
-    public ggml_log_set Ggml_log_set { get; }
 
     public whisper_print_system_info WhisperPrintSystemInfo { get; }
 
