@@ -37,11 +37,16 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
-      - name: Publish android build
+      - name: Build android
         run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
-      - name: Publish ios build
-        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
+      - name: Build ios-simulator
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
+
+      - name: Find built apps
+        run: |
+            find ./tests/Whisper.net.Maui.Tests/bin/ -name "*.apk"
+            find ./tests/Whisper.net.Maui.Tests/bin/ -name "*.app"
 
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
