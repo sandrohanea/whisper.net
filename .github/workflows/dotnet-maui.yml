@@ -38,10 +38,10 @@ jobs:
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
         
       - name: Build ios-simulator
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
 
       - name: Build android
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-android -p:EmbedAssembliesIntoApk=true
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
       - name: Find built apps
         run: |
@@ -102,3 +102,34 @@ jobs:
           name: xharness-android-test-results
           path: |
             ./test-results/*
+
+  dotnet-maui-test-ios:
+    runs-on: macos-14
+    needs: dotnet-maui-build
+    
+    env:
+      USE_WHISPER_MAUI: "TRUE"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: maui-build-artifacts
+          path: maui-build-artifacts
+          
+      - name: Install xharness
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+
+
+      - name: run ios tests
+        run: xharness apple test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests.app --output-directory=./test-results/ios --target=ios-simulator-64
+
