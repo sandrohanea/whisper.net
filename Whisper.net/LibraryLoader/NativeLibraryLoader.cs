@@ -212,7 +212,6 @@ public static class NativeLibraryLoader
     private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture, string platform)
     {
         var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
-        var environmentAppStartLocation = Environment.GetCommandLineArgs()[0];
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
@@ -220,7 +219,7 @@ public static class NativeLibraryLoader
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
                 GetSafeDirectoryName(assemblyLocation),
-                GetSafeDirectoryName(environmentAppStartLocation),
+                GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.RuntimeLibraryOrder)

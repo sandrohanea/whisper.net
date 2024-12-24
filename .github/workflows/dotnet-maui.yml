@@ -8,7 +8,7 @@ on:
 
 jobs:
   dotnet-maui-build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     env:
       USE_WHISPER_MAUI: "TRUE"
@@ -38,10 +38,10 @@ jobs:
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
         
       - name: Build ios-simulator
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
 
       - name: Build android
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
       - name: Find built apps
         run: |
@@ -104,7 +104,7 @@ jobs:
             ./test-results/*
 
   dotnet-maui-test-ios:
-    runs-on: macos-14
+    runs-on: macos-15
     needs: dotnet-maui-build
     
     env:
@@ -132,4 +132,10 @@ jobs:
 
       - name: run ios tests
         run: xharness apple test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests.app --output-directory=./test-results/ios --target=ios-simulator-64
-
+        
+      - name: Upload Maui iOS xharness test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: xharness-ios-test-results
+          path: |
+            ./test-results/*
