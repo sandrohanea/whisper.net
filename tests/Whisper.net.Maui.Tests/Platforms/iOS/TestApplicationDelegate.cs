@@ -12,7 +12,7 @@ namespace Whisper.net.Maui.Tests.Platforms.iOS;
 [Register(nameof(TestApplicationDelegate))]
 public class TestApplicationDelegate : UIApplicationDelegate
 {
-    public override UIWindow Window { get; set; }
+    public override UIWindow? Window { get; set; }
 
     public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
     {
