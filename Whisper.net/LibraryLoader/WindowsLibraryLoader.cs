@@ -1,5 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
-
+#if NETSTANDARD
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
@@ -9,6 +9,14 @@ internal class WindowsLibraryLoader : ILibraryLoader
 {
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string? lpFileName);
+
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern bool FreeLibrary(IntPtr hModule);
+
+    public void CloseLibrary(nint handle)
+    {
+        FreeLibrary(handle);
+    }
 
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {
@@ -30,3 +38,4 @@ internal class WindowsLibraryLoader : ILibraryLoader
         return new Win32Exception(errorCode).Message;
     }
 }
+#endif

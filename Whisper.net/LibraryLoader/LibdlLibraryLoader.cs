@@ -6,11 +6,19 @@ namespace Whisper.net.LibraryLoader;
 
 internal class LibdlLibraryLoader : ILibraryLoader
 {
-    [DllImport("libdl", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlopen")]
+    [DllImport("libdl", CharSet = CharSet.Auto, EntryPoint = "dlopen")]
     public static extern IntPtr NativeOpenLibraryLibdl(string? filename, int flags);
 
-    [DllImport("libdl", ExactSpelling = true, CharSet = CharSet.Auto, EntryPoint = "dlerror")]
+    [DllImport("libdl", CharSet = CharSet.Auto, EntryPoint = "dlerror")]
     public static extern IntPtr GetLoadError();
+
+    [DllImport("libdl", CharSet = CharSet.Auto, EntryPoint = "dlclose")]
+    public static extern int NativeCloseLibraryLibdl(IntPtr handle);
+
+    public void CloseLibrary(IntPtr handle)
+    {
+        NativeCloseLibraryLibdl(handle);
+    }
 
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
     {

@@ -27,7 +27,7 @@ jobs:
           retention-days: 7
 
   arm-native-build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4

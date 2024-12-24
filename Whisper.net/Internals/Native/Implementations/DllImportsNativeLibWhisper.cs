@@ -79,9 +79,6 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_full_get_token_text_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
 
-    [DllImport(NativeConstants.LibGgmlWhisperLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern void ggml_log_set(IntPtr logCallback, IntPtr user_data);
-
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr whisper_print_system_info();
 
@@ -130,8 +127,6 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     public INativeWhisper.whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State => whisper_full_get_token_data_from_state;
 
     public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State => whisper_full_get_token_text_from_state;
-
-    public INativeWhisper.ggml_log_set Ggml_log_set => ggml_log_set;
 
     public INativeWhisper.whisper_print_system_info WhisperPrintSystemInfo => whisper_print_system_info;
 

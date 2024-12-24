@@ -50,7 +50,6 @@ public static class LogProvider
             funcPointer = (IntPtr)onLogging;
         }
 #endif
-        nativeWhisper.Ggml_log_set(funcPointer, IntPtr.Zero);
         nativeWhisper.Whisper_Log_Set(funcPointer, IntPtr.Zero);
     }
 

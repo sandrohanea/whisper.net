@@ -12,5 +12,23 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/cuda/win-x64/ggml-whisper.dll</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-base-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/win-x64/ggml-base-whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cpu-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/win-x64/ggml-cpu-whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cuda-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/cuda/win-x64/ggml-cuda-whisper.dll</TargetPath>
+    </None>
   </ItemGroup>
 </Project>

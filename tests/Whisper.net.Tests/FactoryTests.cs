@@ -10,7 +10,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;
-    
+
     private readonly List<IDisposable> loggers = [];
 
     public FactoryTests(TinyModelFixture model, ITestOutputHelper output)
