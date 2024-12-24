@@ -22,6 +22,10 @@ jobs:
           dotnet-version: |
             9.0.x
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+          
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4
