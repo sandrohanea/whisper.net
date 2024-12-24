@@ -118,6 +118,11 @@ jobs:
         with:
           dotnet-version: |
             8.0.x
+                steps:
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
 
       - name: Download Artifacts
         id: download-artifact
