@@ -17,6 +17,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+    <MtouchLink>None</MtouchLink>
 
 		<!-- Display name -->
 		<ApplicationTitle>Whisper.net.Maui.Tests</ApplicationTitle>

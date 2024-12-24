@@ -36,13 +36,13 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
-
-      - name: Build android
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
       - name: Build ios-simulator
         run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:RunAOTCompilation=false -p:CodesignKey="" -p:CodesignProvision=""
 
+      - name: Build android
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Release -f net9.0-android -p:EmbedAssembliesIntoApk=true
+        
       - name: Find built apps
         run: |
             find ./tests/Whisper.net.Maui.Tests/bin/ -name "*.apk"
