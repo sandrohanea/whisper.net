@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -30,7 +30,7 @@
 		<ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
     <None Include="..\TestData\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>(Filename)%(Extension)</LogicalName>

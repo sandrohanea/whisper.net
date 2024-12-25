@@ -341,14 +341,9 @@
     </AndroidNativeLibrary>
   </ItemGroup>
   <!-- End Android -->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
-    <!-- Start MacOS-->
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)/ggml-metal.metal">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-arm64/ggml-metal.metal</TargetPath>
-    </None>
+  <!-- Start MacOS-->
+  <ItemGroup
+    Condition="$(TargetFramework.Contains('-macos')) == true or $(TargetFramework.Contains('-')) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -420,8 +415,10 @@
       <TargetPath>runtimes/macos-arm64/libggml-metal-whisper.dylib</TargetPath>
     </None>
 
-    <!-- End MacOs -->
-    <!-- Start Linux-->
+  </ItemGroup>
+  <!-- End MacOs -->
+  <!-- Start Linux-->
+  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -496,9 +493,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-arm/libggml-cpu-whisper.so</TargetPath>
     </None>
-
-    <!-- End Linux -->
   </ItemGroup>
+  <!-- End Linux -->
   <!-- Start Wasm-->
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">
     <WasmBuildNative Condition="'$(WasmBuildNative)' == ''">true</WasmBuildNative>
@@ -541,7 +537,6 @@
     </None>
     <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a" />
   </ItemGroup>
-
   <!-- End Wasm -->
 
   <!-- Metal Maui asset for maccatalyst, ios, tvos and their simulators -->
@@ -551,7 +546,7 @@
   </ItemGroup>
 
   <!-- Metal Copy For MacOS -->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
+  <ItemGroup Condition="$(TargetFramework.Contains('-macos')) == true or $(TargetFramework.Contains('-')) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
