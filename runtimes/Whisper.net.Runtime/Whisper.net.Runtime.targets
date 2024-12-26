@@ -443,7 +443,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-arm64/libggml-base-whisper.so</TargetPath>
     </None>
-
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -468,7 +467,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-x64/libggml-base-whisper.so</TargetPath>
     </None>
-
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>

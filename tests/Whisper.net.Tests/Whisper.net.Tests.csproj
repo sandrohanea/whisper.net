@@ -31,10 +31,19 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
+    
     <None Include="..\TestData\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>(Filename)%(Extension)</LogicalName>
     </None>
 	</ItemGroup>
+  
+  <Target Name="LogCopiedFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <Message Text="Copied file: %(None.Identity)" Importance="high" Condition="'%(None.CopyToOutputDirectory)' == 'PreserveNewest'" />
+  </Target>
+  
+  <Target Name="LogConditionHit" BeforeTargets="BeforeBuild" Condition="$(TargetFramework.Contains('-')) == false">
+    <Message Text="Condition '$(TargetFramework.Contains('-')) == false' was hit." Importance="high" />
+  </Target>
 
 </Project>
