@@ -7,13 +7,6 @@ public class Program
     // This is the main entry point of the application.
     static void Main(string[] args)
     {
-        if (args?.Length > 0) // usually means this is from xharness
-        {
-            UIApplication.Main(args, null, typeof(TestApplicationDelegate));
-        }
-        else
-        {
-            UIApplication.Main(args, null, typeof(AppDelegate));
-        }
+        UIApplication.Main(args, null, typeof(TestApplicationDelegate));
     }
 }
