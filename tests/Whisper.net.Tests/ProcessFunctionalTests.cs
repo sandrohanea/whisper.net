@@ -37,7 +37,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
-    [Fact]
+    [PlatformFact("ios")]
     public async Task TestCancelEncoder()
     {
         var segments = new List<SegmentData>();
