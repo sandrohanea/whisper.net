@@ -28,6 +28,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(USE_WHISPER_MAUI_TESTS) != ''">
+    <ApplicationId>com.companyname.whisper.net.tests</ApplicationId>
     <TargetFrameworks>
       net9.0-ios;net9.0-android
     </TargetFrameworks>
