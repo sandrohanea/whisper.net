@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+	<Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''" Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -27,19 +27,11 @@
     </TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(USE_WHISPER_MAUI_TESTS) != ''">
-    <ApplicationId>com.companyname.whisper.net.tests</ApplicationId>
-    <TargetFrameworks>
-      net9.0-ios;net9.0-android
-    </TargetFrameworks>
-  </PropertyGroup>
-  
 	<ItemGroup>
 		<ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
-    
+	<ItemGroup Condition="$(USE_WHISPER_MAUI_TESTS) == ''">
     <None Include="..\TestData\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>(Filename)%(Extension)</LogicalName>
