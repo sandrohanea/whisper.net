@@ -12,6 +12,7 @@ jobs:
 
     env:
       USE_WHISPER_MAUI: "TRUE"
+      USE_WHISPER_MAUI_TESTS: "TRUE"
 
     steps:
       - uses: actions/checkout@v4

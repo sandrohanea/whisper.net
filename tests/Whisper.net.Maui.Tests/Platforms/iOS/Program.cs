@@ -1,8 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using UIKit;
-using Whisper.net.Maui.Tests.Platforms.iOS;
 
-namespace Whisper.net.Maui.Tests;
+namespace Whisper.net.Maui.Tests.Platforms.iOS;
 public class Program
 {
     // This is the main entry point of the application.
@@ -11,7 +10,6 @@ public class Program
         if (args?.Length > 0) // usually means this is from xharness
         {
             UIApplication.Main(args, null, typeof(TestApplicationDelegate));
-
         }
         else
         {
