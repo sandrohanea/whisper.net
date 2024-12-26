@@ -37,6 +37,8 @@ public static class NativeLibraryLoader
         return LoadLibraryComponent();
     }
 
+    private static readonly string[] dependencyOrder = ["ggml-base-whisper", "ggml-cpu-whisper", "ggml-blas-whisper", "ggml-metal-whisper", "ggml-cuda-whisper", "ggml-vulkan-whisper", "ggml-whisper"];
+
     private static LoadResult LoadLibraryComponent()
     {
         var platform = Environment.OSVersion.Platform switch
@@ -79,20 +81,36 @@ public static class NativeLibraryLoader
                 continue;
             }
 
-            var ggmlPath = GetLibraryPath(platform, "ggml-whisper", runtimePath);
-            if (!File.Exists(ggmlPath))
+            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
+            if (!File.Exists(whisperPath))
             {
                 continue;
             }
 
-            var whisperPath = GetLibraryPath(platform, "whisper", runtimePath);
-
-            WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load ggml library from {ggmlPath}");
-            if (!libraryLoader.TryOpenLibrary(ggmlPath, out var ggmlLibraryHandle))
+            List<IntPtr> dependenciesHandles = [];
+            lastError = null;
+            // We need to use this special order to load the dependencies in the correct order.
+            foreach (var dependency in dependencyOrder)
             {
-                lastError = libraryLoader.GetLastError();
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load ggml library from {ggmlPath}. Error: {lastError}");
-                continue;
+                // We only try to load it if it's available in the directory
+                var dependencyPath = GetLibraryPath(platform, dependency, runtimePath);
+                if (File.Exists(dependencyPath))
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Loading dependency at {dependencyPath}");
+                    if (!libraryLoader.TryOpenLibrary(dependencyPath, out var dependencyHandle))
+                    {
+                        // We cannot open one of the dependencies, we need to close all the opened dependencies and return false.
+                        lastError = libraryLoader.GetLastError();
+                        WhisperLogger.Log(WhisperLogLevel.Debug, $"Couldn't load dependency at {dependencyPath}. Received: {lastError}");
+                        foreach (var handle in dependenciesHandles)
+                        {
+                            libraryLoader.CloseLibrary(handle);
+                        }
+                        dependenciesHandles.Clear();
+                        continue;
+                    }
+                    dependenciesHandles.Add(dependencyHandle);
+                }
             }
 
             WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load whisper library from {whisperPath}");
@@ -100,6 +118,11 @@ public static class NativeLibraryLoader
             if (!libraryLoader.TryOpenLibrary(whisperPath, out var whisperHandle))
             {
                 lastError = libraryLoader.GetLastError();
+                // We couldn't load the whisper library, we need to close all the dependencies and continue to the next runtime.
+                foreach (var dependency in dependenciesHandles)
+                {
+                    libraryLoader.CloseLibrary(dependency);
+                }
                 WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
                 continue;
             }
@@ -111,7 +134,7 @@ public static class NativeLibraryLoader
             var nativeWhisper = new DllImportsNativeWhisper();
 #else
             WhisperLogger.Log(WhisperLogLevel.Debug, $"Using NativeLibraryWhisper for whisper library");
-            var nativeWhisper = new NativeLibraryWhisper(whisperHandle, ggmlLibraryHandle);
+            var nativeWhisper = new NativeLibraryWhisper(whisperHandle);
 #endif
 
             return LoadResult.Success(nativeWhisper);
@@ -189,7 +212,6 @@ public static class NativeLibraryLoader
     private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture, string platform)
     {
         var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
-        var environmentAppStartLocation = Environment.GetCommandLineArgs()[0];
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
             {
@@ -197,7 +219,7 @@ public static class NativeLibraryLoader
                 AppDomain.CurrentDomain.RelativeSearchPath,
                 AppDomain.CurrentDomain.BaseDirectory,
                 GetSafeDirectoryName(assemblyLocation),
-                GetSafeDirectoryName(environmentAppStartLocation),
+                GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
             }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.RuntimeLibraryOrder)

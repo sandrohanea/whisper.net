@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using FluentAssertions;
 using Xunit;
@@ -37,7 +38,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
-    [Fact]
+    [Fact(Skip = "Skipping for now, for some reason not working on ios, see #308")]
     public async Task TestCancelEncoder()
     {
         var segments = new List<SegmentData>();

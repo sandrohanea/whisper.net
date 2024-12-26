@@ -1,5 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Whisper.net.Runtime cannot be referenced in MAUI ios dependency project that is only targetting net8.0 or net9.0 as it will copy the runtimes for linux, mac and windows and will cause the build to fail. -->
+	<Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''" Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -20,6 +21,7 @@
 		</PackageReference>
 	</ItemGroup>
 
+
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <TargetFrameworks>
       net8.0;net9.0;net472;
@@ -30,11 +32,12 @@
 		<ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
+  <!-- Files cannot be copied without PublishFolderType on MAUI, and test data is embedded as MauiAsset there -->
+	<ItemGroup Condition="$(USE_WHISPER_MAUI_TESTS) == ''">
     <None Include="..\TestData\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <LogicalName>(Filename)%(Extension)</LogicalName>
     </None>
 	</ItemGroup>
-
+  
 </Project>

@@ -11,7 +11,7 @@ using Environment = Android.OS.Environment;
 namespace Whisper.net.Maui.Tests.Platforms.Android;
 
 [Instrumentation(Name = "com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation")]
-public class MauiTestInstrumentation : Instrumentation
+public class MauiTestInstrumentation(IntPtr handle, JniHandleOwnership transfer) : Instrumentation(handle, transfer)
 {
     public IServiceProvider Services { get; private set; } = null!;
     readonly TaskCompletionSource<Application> _waitForApplication = new();
@@ -28,12 +28,6 @@ public class MauiTestInstrumentation : Instrumentation
         {
             _waitForApplication.SetResult(app);
         }
-    }
-
-    public MauiTestInstrumentation(IntPtr handle, JniHandleOwnership transfer)
-        : base(handle, transfer)
-    {
-
     }
 
     public override void OnCreate(Bundle? arguments)
@@ -106,7 +100,7 @@ public class MauiTestInstrumentation : Instrumentation
 
         else
         {
-            
+
             var downloads = Environment.DirectoryDownloads!;
             var relative = Path.Combine(downloads, "com.companyname.whisper.net.maui.tests", guid);
 
@@ -114,7 +108,7 @@ public class MauiTestInstrumentation : Instrumentation
             values.Put(MediaStore.IMediaColumns.DisplayName, name);
             values.Put(MediaStore.IMediaColumns.MimeType, "text/xml");
             values.Put(MediaStore.IMediaColumns.RelativePath, relative);
-            
+
             var resolver = Context!.ContentResolver!;
             var uri = resolver.Insert(MediaStore.Downloads.ExternalContentUri, values)!;
             using (var dest = resolver.OpenOutputStream(uri)!)

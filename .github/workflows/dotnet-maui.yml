@@ -8,10 +8,11 @@ on:
 
 jobs:
   dotnet-maui-build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     env:
       USE_WHISPER_MAUI: "TRUE"
+      USE_WHISPER_MAUI_TESTS: "TRUE"
 
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +23,10 @@ jobs:
           dotnet-version: |
             9.0.x
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+          
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4
@@ -36,15 +41,19 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
+        
+      - name: Build ios-simulator
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
 
-      - name: Publish android build
-        run: dotnet publish ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
+      - name: Build android
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:
           name: maui-build-artifacts
           path: |
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app
             ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
 
   dotnet-maui-test-android:
@@ -69,7 +78,7 @@ jobs:
         with:
           name: maui-build-artifacts
           path: maui-build-artifacts
-
+          
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -84,12 +93,54 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
+          script: xharness android test --app=./maui-build-artifacts/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
           
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: xharness-android-test-results
+          path: |
+            ./test-results/*
+
+  dotnet-maui-test-ios:
+    runs-on: macos-15
+    needs: dotnet-maui-build
+    
+    env:
+      USE_WHISPER_MAUI: "TRUE"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: maui-build-artifacts
+          path: maui-build-artifacts
+          
+      - name: Install xharness
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+
+
+      - name: run ios tests
+        run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64
+        
+      - name: Upload Maui iOS xharness test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xharness-ios-test-results
           path: |
             ./test-results/*

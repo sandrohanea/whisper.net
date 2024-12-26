@@ -126,6 +126,17 @@ function BuildWindows() {
 
     Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
     Move-Item "$buildDirectory/bin/Release/ggml-whisper.dll" "$runtimePath/ggml-whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/Release/ggml-base-whisper.dll" "$runtimePath/ggml-base-whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/Release/ggml-cpu-whisper.dll" "$runtimePath/ggml-cpu-whisper.dll" -Force
+
+    if ($Cuda) {
+        Move-Item "$buildDirectory/bin/Release/ggml-cuda-whisper.dll" "$runtimePath/ggml-cuda-whisper.dll" -Force
+    }
+
+    if ($Vulkan) {
+        Move-Item "$buildDirectory/bin/Release/ggml-vulkan-whisper.dll" "$runtimePath/ggml-vulkan-whisper.dll" -Force
+    }
+
 }
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {

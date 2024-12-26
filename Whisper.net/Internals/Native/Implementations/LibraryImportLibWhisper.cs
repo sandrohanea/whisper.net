@@ -10,7 +10,6 @@ namespace Whisper.net.Internals.Native.Implementations;
 /// </summary>
 internal partial class LibraryImportLibWhisper : INativeWhisper
 {
-
     [LibraryImport(NativeConstants.LibWhisperLibraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr whisper_init_from_file_with_params_no_state(string path, WhisperContextParams whisperContextParams);
 
@@ -80,9 +79,6 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     [LibraryImport(NativeConstants.LibWhisperLibraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr whisper_full_get_token_text_from_state(IntPtr context, IntPtr state, int segmentIndex, int tokenIndex);
 
-    [LibraryImport(NativeConstants.LibGgmlWhisperLibraryName, StringMarshalling = StringMarshalling.Utf8)]
-    public static partial void ggml_log_set(IntPtr logCallback, IntPtr user_data);
-
     [LibraryImport(NativeConstants.LibWhisperLibraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr whisper_print_system_info();
 
@@ -131,8 +127,6 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     public INativeWhisper.whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State => whisper_full_get_token_data_from_state;
 
     public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State => whisper_full_get_token_text_from_state;
-
-    public INativeWhisper.ggml_log_set Ggml_log_set => ggml_log_set;
 
     public INativeWhisper.whisper_print_system_info WhisperPrintSystemInfo => whisper_print_system_info;
 

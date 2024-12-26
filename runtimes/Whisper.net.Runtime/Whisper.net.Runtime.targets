@@ -1,6 +1,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup
-      Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
+    Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -13,10 +13,31 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
+    </None>
   </ItemGroup>
-  
+
   <ItemGroup
-      Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
+    Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -29,7 +50,34 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)ios-device\libggml-metal-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-metal-whisper.dylib</TargetPath>
+    </None>
+
   </ItemGroup>
+
   <ItemGroup Condition="$(TargetFramework.Contains('-maccatalyst')) == true ">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libwhisper.dylib">
       <Pack>true</Pack>
@@ -43,7 +91,28 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
+    </None>
   </ItemGroup>
+
   <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvos-'))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libwhisper.dylib">
       <Pack>true</Pack>
@@ -57,7 +126,36 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-metal-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-metal-whisper.dylib</TargetPath>
+    </None>
+
   </ItemGroup>
+
   <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvossimulator-'))">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.dylib">
       <Pack>true</Pack>
@@ -71,10 +169,31 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
+    </None>
   </ItemGroup>
   <!-- Start Windows -->
   <ItemGroup
-      Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
+    Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -87,6 +206,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/win-arm64/ggml-whisper.dll</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\ggml-base-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-arm64/ggml-base-whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\ggml-cpu-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-arm64/ggml-cpu-whisper.dll</TargetPath>
+    </None>
+
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -99,6 +231,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/win-x64/ggml-whisper.dll</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-base-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-x64/ggml-base-whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cpu-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-x64/ggml-cpu-whisper.dll</TargetPath>
+    </None>
+
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -111,57 +256,94 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/win-x86/ggml-whisper.dll</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml-base-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-x86/ggml-base-whisper.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml-cpu-whisper.dll">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/win-x86/ggml-cpu-whisper.dll</TargetPath>
+    </None>
   </ItemGroup>
   <!-- End Windows -->
   <!-- Start Android-->
   <ItemGroup
-      Condition="$(AndroidSupportedAbis.Contains('x86')) or $(RuntimeIdentifiers.Contains('android-x86'))">
+    Condition="$(AndroidSupportedAbis.Contains('x86')) or $(RuntimeIdentifiers.Contains('android-x86'))">
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-x86\libwhisper.so">
+      Include="$(MSBuildThisFileDirectory)android-x86\libwhisper.so">
       <Link>lib\x86\libwhisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-x86\libggml-whisper.so">
+      Include="$(MSBuildThisFileDirectory)android-x86\libggml-whisper.so">
       <Link>lib\x86\libggml-whisper.so</Link>
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-x86\libggml-base-whisper.so">
+      <Link>lib\x86\libggml-base-whisper.so</Link>
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-x86\libggml-cpu-whisper.so">
+      <Link>lib\x86\libggml-cpu-whisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
   </ItemGroup>
   <ItemGroup
-      Condition="$(AndroidSupportedAbis.Contains('x86_64')) or $(RuntimeIdentifiers.Contains('android-x64'))">
+    Condition="$(AndroidSupportedAbis.Contains('x86_64')) or $(RuntimeIdentifiers.Contains('android-x64'))">
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
+      Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
       <Link>lib\x86_64\libwhisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-whisper.so">
+      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-whisper.so">
       <Link>lib\x86_64\libggml-whisper.so</Link>
+      <Abi>x86_64</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-base-whisper.so">
+      <Link>lib\x86_64\libggml-base-whisper.so</Link>
+      <Abi>x86_64</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-cpu-whisper.so">
+      <Link>lib\x86_64\libggml-cpu-whisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
   </ItemGroup>
   <ItemGroup
-      Condition="$(AndroidSupportedAbis.Contains('arm64-v8a')) or $(RuntimeIdentifiers.Contains('android-arm64'))">
+    Condition="$(AndroidSupportedAbis.Contains('arm64-v8a')) or $(RuntimeIdentifiers.Contains('android-arm64'))">
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libwhisper.so">
+      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libwhisper.so">
       <Link>lib\armv8\libwhisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-        Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-whisper.so">
+      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-whisper.so">
       <Link>lib\armv8\libggml-whisper.so</Link>
+      <Abi>arm64-v8a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-base-whisper.so">
+      <Link>lib\armv8\libggml-base-whisper.so</Link>
+      <Abi>arm64-v8a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Visible="false"
+      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-cpu-whisper.so">
+      <Link>lib\armv8\libggml-cpu-whisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
   </ItemGroup>
   <!-- End Android -->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
-    <!-- Start MacOS-->
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)/ggml-metal.metal">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/macos-arm64/ggml-metal.metal</TargetPath>
-    </None>
+  <!-- Start MacOS-->
+  <ItemGroup
+    Condition="$(TargetFramework.Contains('-macos')) == true or $(TargetFramework.Contains('-')) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -174,6 +356,25 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/macos-x64/libggml-whisper.dylib</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-x64/libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-x64/libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-x64/libggml-blas-whisper.dylib</TargetPath>
+    </None>
+
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -186,8 +387,38 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/macos-arm64/libggml-whisper.dylib</TargetPath>
     </None>
-    <!-- End MacOs -->
-    <!-- Start Linux-->
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-cpu-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-arm64/libggml-cpu-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-base-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-arm64/libggml-base-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-blas-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-arm64/libggml-blas-whisper.dylib</TargetPath>
+    </None>
+    <None Visible="false"
+      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-metal-whisper.dylib">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/macos-arm64/libggml-metal-whisper.dylib</TargetPath>
+    </None>
+
+  </ItemGroup>
+  <!-- End MacOs -->
+  <!-- Start Linux-->
+  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -199,6 +430,18 @@
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-arm64/libggml-whisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libggml-cpu-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-arm64/libggml-cpu-whisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libggml-base-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-arm64/libggml-base-whisper.so</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
       <Pack>true</Pack>
@@ -212,6 +455,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-x64/libggml-whisper.so</TargetPath>
     </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-x64/libggml-cpu-whisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-base-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-x64/libggml-base-whisper.so</TargetPath>
+    </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -224,8 +479,20 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/linux-arm/libggml-whisper.so</TargetPath>
     </None>
-    <!-- End Linux -->
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libggml-base-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-arm/libggml-base-whisper.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm\libggml-cpu-whisper.so">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-arm/libggml-cpu-whisper.so</TargetPath>
+    </None>
   </ItemGroup>
+  <!-- End Linux -->
   <!-- Start Wasm-->
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true'">
     <WasmBuildNative Condition="'$(WasmBuildNative)' == ''">true</WasmBuildNative>
@@ -250,15 +517,34 @@
     </None>
     <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-whisper.a" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>browser-wasm/libggml-cpu-whisper.a</TargetPath>
+    </None>
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>browser-wasm/libggml-base-whisper.a</TargetPath>
+    </None>
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a" />
+  </ItemGroup>
   <!-- End Wasm -->
 
   <!-- Metal Maui asset for maccatalyst, ios, tvos and their simulators -->
-  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvos-')) or $(RuntimeIdentifier.StartsWith('tvossimulator-')) or (('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.'))) or $(TargetFramework.Contains('-maccatalyst')) == true or (('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
+  <ItemGroup
+    Condition="$(RuntimeIdentifier.StartsWith('tvos-')) or $(RuntimeIdentifier.StartsWith('tvossimulator-')) or (('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.'))) or $(TargetFramework.Contains('-maccatalyst')) == true or (('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
     <MauiAsset Include="$(MSBuildThisFileDirectory)\ggml-metal.metal" LogicalName="ggml-metal.metal" />
   </ItemGroup>
 
   <!-- Metal Copy For MacOS -->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
+  <ItemGroup Condition="$(TargetFramework.Contains('-macos')) == true or $(TargetFramework.Contains('-')) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>

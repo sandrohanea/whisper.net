@@ -428,7 +428,6 @@ public class WhisperProcessorBuilder
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// Default value is 0.6f.
-    /// Note: Not implemented in native code.
     /// </remarks>
     public WhisperProcessorBuilder WithNoSpeechThreshold(float noSpeechThreshold)
     {
