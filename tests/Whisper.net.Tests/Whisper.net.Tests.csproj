@@ -43,6 +43,7 @@
   </Target>
   
   <Target Name="LogConditionHit" BeforeTargets="BeforeBuild" Condition="$(TargetFramework.Contains('-')) == false">
+    <Message Text="Target Framework: '$(TargetFramework)' is detected." Importance="high" />
     <Message Text="Condition '$(TargetFramework.Contains('-')) == false' was hit." Importance="high" />
   </Target>
 
