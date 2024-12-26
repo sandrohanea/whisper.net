@@ -48,18 +48,13 @@ jobs:
       - name: Build android
         run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
         
-      - name: Find built apps
-        run: |
-            find ./tests/Whisper.net.Maui.Tests/bin/ -name "*.apk"
-            find ./tests/Whisper.net.Maui.Tests/bin/ -name "*.app"
-
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:
           name: maui-build-artifacts
           path: |
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app
             ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-ios/com.companyname.whisper.net.maui.tests.app
 
   dotnet-maui-test-android:
     runs-on: ubuntu-latest
@@ -83,7 +78,7 @@ jobs:
         with:
           name: maui-build-artifacts
           path: maui-build-artifacts
-
+          
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -98,7 +93,7 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: xharness android test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
+          script: xharness android test --app=./maui-build-artifacts/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
           
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
@@ -123,8 +118,7 @@ jobs:
         with:
           dotnet-version: |
             8.0.x
-                steps:
-
+            
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.2'
@@ -141,7 +135,7 @@ jobs:
 
 
       - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/com.companyname.whisper.net.maui.tests.app --output-directory=./test-results/ios --target=ios-simulator-64
+        run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64
         
       - name: Upload Maui iOS xharness test results
         uses: actions/upload-artifact@v4
