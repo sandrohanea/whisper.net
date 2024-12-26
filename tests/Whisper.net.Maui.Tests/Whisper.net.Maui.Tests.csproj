@@ -19,7 +19,6 @@
 		<Nullable>enable</Nullable>
     <MtouchLink>None</MtouchLink>
     <RunAOTCompilation>False</RunAOTCompilation>
-    <PublishTrimmed>False</PublishTrimmed>
 
 		<!-- Display name -->
 		<ApplicationTitle>Whisper.net.Maui.Tests</ApplicationTitle>
