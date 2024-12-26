@@ -61,6 +61,7 @@ public class TestApplicationDelegate : UIApplicationDelegate
         protected override TestRunner GetTestRunner(LogWriter logWriter)
         {
             var testRunner = base.GetTestRunner(logWriter);
+            testRunner.SkipCategories(["SkipOnIos"]);
             return testRunner;
         }
     }
