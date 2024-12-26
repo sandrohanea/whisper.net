@@ -138,6 +138,7 @@ jobs:
         run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64
         
       - name: Upload Maui iOS xharness test results
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: xharness-ios-test-results
