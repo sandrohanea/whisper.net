@@ -53,7 +53,7 @@ jobs:
         run: |
           $xml = [Xml] (Get-Content .\Whisper.net\Whisper.net.csproj)
           $versionObject = $xml.Project.PropertyGroup.Version
-          $version = "$versionObject".Trim()
+          $version = "$versionObject".Split('-')[0].Trim()
           $previewSuffix = if ('${{ inputs.IsPreview }}' -eq 'true') { '-${{ inputs.PreviewSuffix }}' } else { '' }
           $previewVersion = "$version$previewSuffix"
           Import-Module ./windows-scripts.ps1
