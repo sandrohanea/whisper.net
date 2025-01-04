@@ -123,9 +123,9 @@ public sealed class WhisperFactory : IDisposable
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromMemory(Memory<byte> memory)
+    public static WhisperFactory FromBuffer(Memory<byte> memory)
     {
-        return FromMemory(memory, WhisperFactoryOptions.Default);
+        return FromBuffer(memory, WhisperFactoryOptions.Default);
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public sealed class WhisperFactory : IDisposable
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromMemory(Memory<byte> memory, WhisperFactoryOptions options)
+    public static WhisperFactory FromBuffer(Memory<byte> memory, WhisperFactoryOptions options)
     {
         return new WhisperFactory(new WhisperProcessorModelMemoryLoader(memory, options), options.DelayInitialization);
     }

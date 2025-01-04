@@ -38,7 +38,7 @@ void LanguageIdentification(Options opt)
     var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
     // Same factory can be used by multiple task to create processors.
-    using var factory = WhisperFactory.FromMemory(bufferedModel);
+    using var factory = WhisperFactory.FromBuffer(bufferedModel);
 
     var builder = factory.CreateBuilder()
        .WithLanguage(opt.Language);
