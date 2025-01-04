@@ -116,30 +116,30 @@ public sealed class WhisperFactory : IDisposable
     }
 
     /// <summary>
-    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// Creates a factory that uses the ggml model from a buffer in memory in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
-    /// <param name="buffer">The buffer with the model.</param>
+    /// <param name="memory">The memory buffer with the model.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromBuffer(byte[] buffer)
+    public static WhisperFactory FromBuffer(Memory<byte> memory)
     {
-        return FromBuffer(buffer, WhisperFactoryOptions.Default);
+        return FromBuffer(memory, WhisperFactoryOptions.Default);
     }
 
     /// <summary>
-    /// Creates a factory that uses the ggml model from a buffer in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// Creates a factory that uses the ggml model from a buffer in memory in order to create <seealso cref="WhisperProcessorBuilder"/>.
     /// </summary>
-    /// <param name="buffer">The buffer with the model.</param>
+    /// <param name="memory">The memory buffer with the model.</param>
     /// <param name="options">Thhe options for the factory and the loading of the model.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
     /// If you don't know where to find a ggml model, you can use <seealso cref="Ggml.WhisperGgmlDownloader"/> which is downloading a model from huggingface.co.
     /// </remarks>
-    public static WhisperFactory FromBuffer(byte[] buffer, WhisperFactoryOptions options)
+    public static WhisperFactory FromBuffer(Memory<byte> memory, WhisperFactoryOptions options)
     {
-        return new WhisperFactory(new WhisperProcessorModelBufferLoader(buffer, options), options.DelayInitialization);
+        return new WhisperFactory(new WhisperProcessorModelMemoryLoader(memory, options), options.DelayInitialization);
     }
 
     /// <summary>

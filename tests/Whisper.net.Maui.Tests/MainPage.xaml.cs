@@ -24,7 +24,7 @@ public partial class MainPage : ContentPage
             await mauiStream.CopyToAsync(audioFileStream);
             audioFileStream.Seek(0, SeekOrigin.Begin);
 
-            using var whisperFactory = WhisperFactory.FromBuffer(memoryStream.ToArray());
+            using var whisperFactory = WhisperFactory.FromBuffer(memoryStream.GetBuffer().AsMemory(0, (int)memoryStream.Length));
             var whisperBuilder = whisperFactory.CreateBuilder();
             using var whisperProcessor = whisperBuilder.Build();
             LblResult.Text = string.Empty;
