@@ -1,41 +1,41 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.Buffers;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 
 namespace Whisper.net.Internals.ModelLoader;
 
-internal class WhisperProcessorModelBufferLoader : IWhisperProcessorModelLoader
+internal class WhisperProcessorModelMemoryLoader : IWhisperProcessorModelLoader
 {
-    private readonly GCHandle pinnedBuffer;
+    private readonly MemoryHandle pinnedMemory;
     private readonly WhisperAheads aHeads;
     private readonly GCHandle? aheadsHandle;
     private readonly UIntPtr bufferLength;
 
     private readonly WhisperFactoryOptions options;
 
-    public WhisperProcessorModelBufferLoader(byte[] buffer, WhisperFactoryOptions options)
+    public WhisperProcessorModelMemoryLoader(Memory<byte> buffer, WhisperFactoryOptions options)
     {
         this.options = options;
-
-        pinnedBuffer = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        pinnedMemory = buffer.Pin();
         aHeads = ModelLoaderUtils.GetWhisperAlignmentHeads(options.CustomAlignmentHeads, out aheadsHandle);
         bufferLength = new UIntPtr((uint)buffer.Length);
     }
 
     public void Dispose()
     {
-        pinnedBuffer.Free();
+        pinnedMemory.Dispose();
         if (aheadsHandle.HasValue)
         {
             aheadsHandle.Value.Free();
         }
     }
 
-    public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
+    public unsafe IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
-        return nativeWhisper.Whisper_Init_From_Buffer_With_Params_No_State(pinnedBuffer.AddrOfPinnedObject(), bufferLength,
+        return nativeWhisper.Whisper_Init_From_Buffer_With_Params_No_State((IntPtr)pinnedMemory.Pointer, bufferLength,
             new WhisperContextParams()
             {
                 UseGpu = options.UseGpu.AsByte(),

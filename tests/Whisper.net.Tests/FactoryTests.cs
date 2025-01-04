@@ -70,10 +70,10 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
     }
 
     [Fact]
-    public void CreateBuilder_WithBufferedModel_ShouldReturnBuilder()
+    public void CreateBuilder_WithMemoryModel_ShouldReturnBuilder()
     {
-        var buffer = File.ReadAllBytes(model.ModelFile);
-        using var factory = WhisperFactory.FromBuffer(buffer);
+        var memoryBuffer = File.ReadAllBytes(model.ModelFile);
+        using var factory = WhisperFactory.FromMemory(memoryBuffer);
         var builder = factory.CreateBuilder();
         builder.Should().NotBeNull();
     }

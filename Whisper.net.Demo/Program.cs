@@ -9,7 +9,6 @@ await Parser.Default.ParseArguments<Options>(args)
     .WithParsedAsync(Demo);
 
 async Task Demo(Options opt)
-
 {
     if (!File.Exists(opt.ModelName))
     {
@@ -39,7 +38,7 @@ void LanguageIdentification(Options opt)
     var bufferedModel = File.ReadAllBytes(opt.ModelName);
 
     // Same factory can be used by multiple task to create processors.
-    using var factory = WhisperFactory.FromBuffer(bufferedModel);
+    using var factory = WhisperFactory.FromMemory(bufferedModel);
 
     var builder = factory.CreateBuilder()
        .WithLanguage(opt.Language);
