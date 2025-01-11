@@ -28,6 +28,8 @@ function BuildWindows() {
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DGGML_NATIVE=OFF"
+        "-CMAKE_C_FLAGS_DEBUG='-gcodeview'"
+        "-CMAKE_CXX_FLAGS_DEBUG='-gcodeview'"
     )
     
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")

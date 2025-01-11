@@ -19,10 +19,7 @@ jobs:
         id: install_ninja
         run: |
           choco install ninja
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
+          
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
