@@ -39,14 +39,13 @@ function BuildWindows() {
         [Parameter(Mandatory = $false)] [bool]$NoAvx = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
-    #if not exist "build" create the directory
+    # Ensure the build directory exists
     if (!(Test-Path "build")) {
         New-Item -ItemType Directory -Force -Path "build"
     }
 
     Write-Host "Building Windows binaries for $Arch with cuda: $Cuda"
 
-    
     $platform = Get-MSBuildPlatform $Arch
     if ([string]::IsNullOrEmpty($platform)) {
         Write-Host "Unknown architecture $Arch"
@@ -58,6 +57,14 @@ function BuildWindows() {
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON");
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
+
+    # Configure toolchain for ARM builds to use CLANG
+    if ($Arch -eq "arm64" -or $Arch -eq "arm") {
+        $options += "-DCMAKE_C_COMPILER=clang"
+        $options += "-DCMAKE_CXX_COMPILER=clang++"
+        $options += "-T ClangCL"  # Use CLANG toolset
+        Write-Host "Using CLANG for ARM build: $Arch"
+    }
 
     if ($Cuda) {
         $options += "-DGGML_CUDA=1"
@@ -90,13 +97,13 @@ function BuildWindows() {
     $options += $avxOptions
 
     if ((Test-Path $buildDirectory)) {
-        Write-Host "Deleting old build files for $buildDirectory";
+        Write-Host "Deleting old build files for $buildDirectory"
         Remove-Item -Force -Recurse -Path $buildDirectory
     }
 
     $cmakePath = (Get-Command cmake -ErrorAction SilentlyContinue).Source
     if ([string]::IsNullOrEmpty($cmakePath)) {
-        # CMake is not defined in the system's path, search for it in Visual Studio
+        # Search for CMake in Visual Studio
         $visualStudioPath = Get-VisualStudioCMakePath
         if ([string]::IsNullOrEmpty($visualStudioPath)) {
             Write-Host "CMake is not found in the system or Visual Studio."
@@ -107,8 +114,7 @@ function BuildWindows() {
 
     New-Item -ItemType Directory -Force -Path $buildDirectory
 
-    # call CMake to generate the makefiles
-    
+    # Call CMake to generate the build files
     Write-Host "Running 'cmake $options'"
 
     cmake $options
@@ -141,8 +147,7 @@ function BuildWindows() {
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
     BuildWindows -Arch "arm64" -Configuration $Configuration;
- #   BuildWindows -Arch "arm" -Configuration $Configuration;
- # Arm build not working anymore with VS
+    BuildWindows -Arch "arm" -Configuration $Configuration;
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
