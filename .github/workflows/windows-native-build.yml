@@ -14,6 +14,11 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
+          
+      - name: Install Ninja
+        id: install_ninja
+        run: |
+          choco install ninja
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -39,6 +44,11 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
+          
+      - name: Install Ninja
+        id: install_ninja
+        run: |
+          choco install ninja
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
