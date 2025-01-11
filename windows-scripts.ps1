@@ -62,7 +62,6 @@ function BuildWindows() {
     if ($Arch -eq "arm64" -or $Arch -eq "arm") {
         $options += "-DCMAKE_C_COMPILER=clang"
         $options += "-DCMAKE_CXX_COMPILER=clang++"
-        $options += "-T ClangCL"  # Use CLANG toolset
         Write-Host "Using CLANG for ARM build: $Arch"
     }
 
