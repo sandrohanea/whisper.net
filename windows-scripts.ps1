@@ -22,33 +22,22 @@ function BuildWindows() {
     $options = @(
         "-S", ".", 
         "-G", "Ninja Multi-Config",
-        "-DCMAKE_C_COMPILER=clang",
-        "-DCMAKE_CXX_COMPILER=clang++",
         "-DGGML_NATIVE=OFF",
         "-DCMAKE_SYSTEM_NAME=Windows"
     )
 
     if ($Arch -eq "arm64") {
-        $archCFlags = "-march=armv8.7-a -fvectorize -ffp-model=fast -fno-finite-math-only"
-        $warnCFlags = "-Wno-format -Wno-unused-variable -Wno-unused-function -Wno-gnu-zero-variadic-macro-arguments"
-
-        $options += "-DCMAKE_SYSTEM_PROCESSOR=arm64"
-        $options += "-DCMAKE_C_COMPILER_TARGET=arm64-pc-windows-msvc"
-        $options += "-DCMAKE_CXX_COMPILER_TARGET=arm64-pc-windows-msvc"
-        $options += "-DCMAKE_C_FLAGS_INIT=""$archCFlags $warnCFlags"""
-        $options += "-DCMAKE_CXX_FLAGS_INIT=""$archCFlags $warnCFlags"""
+        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/arm64-windows-llvm.cmake"
     }
 
     if ($Arch -eq 'x64') {
-        $options += "-DCMAKE_SYSTEM_PROCESSOR=x86_64 "
-        $options += "-DCMAKE_C_FLAGS_INIT=""-march=native"""
-        $options += "-DCMAKE_CXX_FLAGS_INIT=""-march=native"""
+        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/x64-windows-llvm.cmake"
+
     }
 
     if ($Arch -eq 'x86') {
-        $options += "-DCMAKE_SYSTEM_PROCESSOR=i686"
-        $options += "-DCMAKE_C_FLAGS_INIT=""-march=native"""
-        $options += "-DCMAKE_CXX_FLAGS_INIT=""-march=native"""
+        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/x86-windows-llvm.cmake"
+
     }
 
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
