@@ -25,20 +25,8 @@ function BuildWindows() {
         "-DGGML_NATIVE=OFF",
         "-DCMAKE_SYSTEM_NAME=Windows"
     )
-
-    if ($Arch -eq "arm64") {
-        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/arm64-windows-llvm.cmake"
-    }
-
-    if ($Arch -eq 'x64') {
-        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/x64-windows-llvm.cmake"
-
-    }
-
-    if ($Arch -eq 'x86') {
-        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/x86-windows-llvm.cmake"
-
-    }
+    
+    $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/$Arch-windows-llvm.cmake"
 
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
     
