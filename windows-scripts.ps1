@@ -18,20 +18,39 @@ function BuildWindows() {
 
     Write-Host "Building Windows binaries for $Arch (using Clang + Ninja) with cuda: $Cuda"
 
-    # Since we're using Ninja + Clang, we no longer rely on MSBuild platform architecture settings.
-    # We'll still use $Arch for naming build folders, if desired.
-    $buildDirectory = "build/win-clang-$Arch"
+    $buildDirectory = "build/win-$Arch"
     $options = @(
         "-S", ".", 
-        # Use Ninja generator
-        "-G", "Ninja",
+        "-G", "Ninja Multi-Config",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
-        "-DGGML_NATIVE=OFF"
-        "-CMAKE_C_FLAGS_DEBUG='-gcodeview'"
-        "-CMAKE_CXX_FLAGS_DEBUG='-gcodeview'"
+        "-DGGML_NATIVE=OFF",
+        "-DCMAKE_SYSTEM_NAME=Windows"
     )
-    
+
+    if ($Arch -eq "arm64") {
+        $archCFlags = "-march=armv8.7-a -fvectorize -ffp-model=fast -fno-finite-math-only"
+        $warnCFlags = "-Wno-format -Wno-unused-variable -Wno-unused-function -Wno-gnu-zero-variadic-macro-arguments"
+
+        $options += "-DCMAKE_SYSTEM_PROCESSOR=arm64"
+        $options += "-DCMAKE_C_COMPILER_TARGET=arm64-pc-windows-msvc"
+        $options += "-DCMAKE_CXX_COMPILER_TARGET=arm64-pc-windows-msvc"
+        $options += "-DCMAKE_C_FLAGS_INIT=""$archCFlags $warnCFlags"""
+        $options += "-DCMAKE_CXX_FLAGS_INIT=""$archCFlags $warnCFlags"""
+    }
+
+    if ($Arch -eq 'x64') {
+        $options += "-DCMAKE_SYSTEM_PROCESSOR=x86_64 "
+        $options += "-DCMAKE_C_FLAGS_INIT=""-march=native"""
+        $options += "-DCMAKE_CXX_FLAGS_INIT=""-march=native"""
+    }
+
+    if ($Arch -eq 'x86') {
+        $options += "-DCMAKE_SYSTEM_PROCESSOR=i686"
+        $options += "-DCMAKE_C_FLAGS_INIT=""-march=native"""
+        $options += "-DCMAKE_CXX_FLAGS_INIT=""-march=native"""
+    }
+
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
@@ -122,7 +141,6 @@ function BuildWindows() {
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
     BuildWindows -Arch "arm64" -Configuration $Configuration
-    BuildWindows -Arch "arm"   -Configuration $Configuration
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
