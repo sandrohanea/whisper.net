@@ -22,8 +22,7 @@ function BuildWindows() {
     $options = @(
         "-S", ".", 
         "-G", "Ninja Multi-Config",
-        "-DGGML_NATIVE=OFF",
-        "-DCMAKE_SYSTEM_NAME=Windows"
+        "-DGGML_NATIVE=OFF"
     )
     
     $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/$Arch-windows-llvm.cmake"
