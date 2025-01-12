@@ -13,7 +13,7 @@ async Task Demo(Options opt)
     if (!File.Exists(opt.ModelName))
     {
         Console.WriteLine($"Downloading Model {opt.ModelName}");
-        using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(opt.ModelType);
+        using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(opt.ModelType);
         using var fileWriter = File.OpenWrite(opt.ModelName);
         await modelStream.CopyToAsync(fileWriter);
     }

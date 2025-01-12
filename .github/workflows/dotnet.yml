@@ -10,6 +10,9 @@ permissions:
   contents: read
   checks: write
 
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
 jobs:
   dotnet-macos:
     runs-on: macos-15
@@ -85,7 +88,7 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build --logger "trx"
+          dotnet test ./Whisper.net.sln --no-build --logger "trx" -v diag
           
       - name: Test Reporter
         uses: dorny/test-reporter@v1.9.1

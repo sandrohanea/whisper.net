@@ -193,7 +193,7 @@ macos_arm64_coreml:
 
 ios:
 	rm -rf build/ios
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="iphoneos" -S . -B build/ios
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="iphoneos" -DCMAKE_SYSTEM_NAME=iOS -S . -B build/ios
 	cmake --build build/ios
 	mkdir -p runtimes/Whisper.net.Runtime/ios-device
 	cp build/ios/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/ios-device/libwhisper.dylib
@@ -274,7 +274,7 @@ tvos_simulator_arm64:
 
 tvos:
 	rm -rf build/tvos
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvos" -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvos" -DCMAKE_SYSTEM_NAME=tvOS -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos
 	cmake --build build/tvos
 	mkdir -p runtimes/Whisper.net.Runtime/tvos-device
 	cp build/tvos/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libwhisper.dylib
