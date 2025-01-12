@@ -38,7 +38,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
@@ -84,11 +84,11 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build --logger "trx" -v diag
+          dotnet test ./Whisper.net.sln --no-build --logger "trx"
           
       - name: Test Reporter
         uses: dorny/test-reporter@v1.9.1
@@ -130,7 +130,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
