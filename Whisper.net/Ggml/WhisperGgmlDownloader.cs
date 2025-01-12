@@ -9,6 +9,15 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
             () => new WhisperGgmlDownloader(new() { Timeout = TimeSpan.FromHours(1) })
         );
 
+    /// <summary>
+    /// The default instance of the downloader, which uses an unauthenticated client with a 1 hour timeout.
+    /// </summary>
+    /// <remarks>
+    /// If running in an environment where the default timeout is not sufficient or
+    /// multiple requests are being made from the same IP address (e.g. Github Actions with public runners),
+    /// consider creating a new instance of the downloader with a custom <see cref="HttpClient"/> instance.
+    /// The HttpClient should have a longer timeout and, if necessary, an authorization header with a Hugging Face token.
+    /// </remarks>
     public static WhisperGgmlDownloader Default { get; } = defaultInstance.Value;
 
     /// <summary>
