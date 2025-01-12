@@ -33,15 +33,10 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
         var modelName = GetModelName(type);
 
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/{subdirectory}/{modelName}.bin";
-
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
     }
 
@@ -55,13 +50,10 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
     {
         var modelName = GetModelName(type);
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/openvino/{modelName}-encoder.zip";
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
     }
 
@@ -90,14 +82,10 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
         var modelName = GetModelName(type);
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/coreml/{modelName}-encoder.zip";
 
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
     }
 

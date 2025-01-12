@@ -44,7 +44,7 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
                     },
                     Timeout = TimeSpan.FromHours(1)
                 });
-        var model = await downloader.GetGgmlModelAsync(type, quantizationType);
+        using var model = await downloader.GetGgmlModelAsync(type, quantizationType);
         using var fileWriter = File.OpenWrite(ggmlModelPath);
         await model.CopyToAsync(fileWriter);
         return ggmlModelPath;
