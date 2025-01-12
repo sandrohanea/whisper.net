@@ -1,5 +1,33 @@
 
+function Get-VisualStudioCMakePath() {
+    $vsWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+    if (-not (Test-Path $vsWherePath)) {
+        return $null
+    }
 
+    $vsWhereOutput = & $vsWherePath -latest -requires Microsoft.Component.MSBuild -property installationPath
+    if (-not ([string]::IsNullOrEmpty($vsWhereOutput))) {
+        $cmakePath = Join-Path $vsWhereOutput 'Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin'
+        if (Test-Path $cmakePath) {
+            return $cmakePath
+        }
+    }
+
+    return $null
+}
+
+function Get-MSBuildPlatform($Arch) {
+    $platforms = @{
+        "x64"   = "x64"
+        "x86"   = "Win32"
+    }
+
+    if ($platforms.ContainsKey($Arch)) {
+        return $platforms[$Arch]
+    }
+
+    return $null
+}
 
 function BuildWindows() {
     param(
@@ -21,13 +49,31 @@ function BuildWindows() {
     $buildDirectory = "build/win-$Arch"
     $options = @(
         "-S", ".", 
-        "-G", "Ninja Multi-Config",
         "-DGGML_NATIVE=OFF"
     )
     
-    $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/$Arch-windows-llvm.cmake"
 
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
+
+    if ($NoAvx) {
+        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF")
+        $buildDirectory += "-noavx"
+        $runtimePath += ".NoAvx"
+    }
+
+    if($Arch -eq "arm64") {
+        $options += "-G"
+        $options += "Ninja Multi-Config"
+        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/$Arch-windows-llvm.cmake"
+    }
+    else {
+        $platform = Get-MSBuildPlatform $Arch
+        $options += "-A"
+        $options += $platform
+
+        # Add AVX flags
+        $options += $avxOptions
+    }
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
 
@@ -49,14 +95,6 @@ function BuildWindows() {
         $runtimePath += ".OpenVino"
     }
 
-    if ($NoAvx) {
-        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF")
-        $buildDirectory += "-noavx"
-        $runtimePath += ".NoAvx"
-    }
-
-    # Add AVX flags
-    $options += $avxOptions
 
     # Specify the out-of-source build directory
     $options += "-B"
