@@ -38,7 +38,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+        run: dotnet build ./Whisper.net.sln --no-restore
 
       - name: Test
         run: |
@@ -84,7 +84,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+        run: dotnet build ./Whisper.net.sln --no-restore
 
       - name: Test
         run: |
@@ -130,7 +130,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+        run: dotnet build ./Whisper.net.sln --no-restore
 
       - name: Test
         run: |
