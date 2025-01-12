@@ -76,6 +76,7 @@ jobs:
          - wasm
          - linux
       uses: ./.github/workflows/dotnet.yml
+      secrets: inherit
 
    dotnet-maui-build-and-test:
       needs:
@@ -85,3 +86,4 @@ jobs:
          - wasm
          - linux
       uses: ./.github/workflows/dotnet-maui.yml
+      secrets: inherit

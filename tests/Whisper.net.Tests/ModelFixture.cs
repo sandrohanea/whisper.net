@@ -28,8 +28,20 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
 
     private static async Task<string> DownloadModelAsync(GgmlType type, QuantizationType quantizationType = QuantizationType.NoQuantization)
     {
+        var huggingFaceToken = Environment.GetEnvironmentVariable("HF_TOKEN");
         var ggmlModelPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.bin");
-        var model = await WhisperGgmlDownloader.GetGgmlModelAsync(type, quantizationType);
+        var downloader = string.IsNullOrEmpty(huggingFaceToken)
+            ? WhisperGgmlDownloader.Default
+            : new(
+                new()
+                {
+                    DefaultRequestHeaders =
+                    {
+                        { "Authorization", $"Bearer {huggingFaceToken}" }
+                    },
+                    Timeout = TimeSpan.FromHours(1)
+                });
+        var model = await downloader.GetGgmlModelAsync(type, quantizationType);
         using var fileWriter = File.OpenWrite(ggmlModelPath);
         await model.CopyToAsync(fileWriter);
         return ggmlModelPath;

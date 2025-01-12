@@ -16,7 +16,7 @@ public partial class MainPage : ContentPage
         try
         {
             using var memoryStream = new MemoryStream();
-            using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Tiny, QuantizationType.Q4_0);
+            using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(GgmlType.Tiny, QuantizationType.Q4_0);
             await modelStream.CopyToAsync(memoryStream);
             using var mauiStream = await FileSystem.OpenAppPackageFileAsync("kennedy.wav");
             var audioFileStream = new MemoryStream();
