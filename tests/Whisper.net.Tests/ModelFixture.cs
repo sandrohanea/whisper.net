@@ -30,6 +30,9 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
     {
         var huggingFaceToken = Environment.GetEnvironmentVariable("HF_TOKEN");
         var ggmlModelPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.bin");
+
+        // If you have a Hugging Face token, you can use it to download the model (to avoid rate limiting)
+        // Otherwise, the default downloader will be used
         var downloader = string.IsNullOrEmpty(huggingFaceToken)
             ? WhisperGgmlDownloader.Default
             : new(
