@@ -362,6 +362,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var whisperParamsRef = nativeWhisper.Whisper_Full_Default_Params_By_Ref(strategy);
         var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
         nativeWhisper.Whisper_Free_Params(whisperParamsRef);
+        throw new Exception("Identified number of threads:" + whisperParams.Threads.ToString());
         whisperParams.Strategy = strategy;
 
         if (options.Threads.HasValue)
