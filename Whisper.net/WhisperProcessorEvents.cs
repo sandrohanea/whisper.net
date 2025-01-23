@@ -43,7 +43,16 @@ public class WhisperToken
 /// <param name="maxProbability"></param>
 /// <param name="probability"></param>
 /// <param name="language"></param>
-public class SegmentData(string text, TimeSpan start, TimeSpan end, float minProbability, float maxProbability, float probability, string language, WhisperToken[] tokens)
+public class SegmentData(
+    string text,
+    TimeSpan start,
+    TimeSpan end,
+    float minProbability,
+    float maxProbability,
+    float probability,
+    float noSpeechProbability,
+    string language,
+    WhisperToken[] tokens)
 {
 
     /// <summary>
@@ -94,4 +103,6 @@ public class SegmentData(string text, TimeSpan start, TimeSpan end, float minPro
     /// The tokens of the current segment.
     /// </summary>
     public WhisperToken[] Tokens { get; } = tokens;
+
+    public float NoSpeechProbability { get; } = noSpeechProbability;
 }

@@ -1,12 +1,24 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System.IO.Compression;
-
 namespace Whisper.net.Ggml;
 
-public static class WhisperGgmlDownloader
+public class WhisperGgmlDownloader(HttpClient httpClient)
 {
-    private static readonly Lazy<HttpClient> httpClient = new(() => new HttpClient() { Timeout = Timeout.InfiniteTimeSpan });
+    private static readonly Lazy<WhisperGgmlDownloader> defaultInstance = new
+        (
+            () => new WhisperGgmlDownloader(new() { Timeout = TimeSpan.FromHours(1) })
+        );
+
+    /// <summary>
+    /// The default instance of the downloader, which uses an unauthenticated client with a 1 hour timeout.
+    /// </summary>
+    /// <remarks>
+    /// If running in an environment where the default timeout is not sufficient or
+    /// multiple requests are being made from the same IP address (e.g. Github Actions with public runners),
+    /// consider creating a new instance of the downloader with a custom <see cref="HttpClient"/> instance.
+    /// The HttpClient should have a longer timeout and, if necessary, an authorization header with a Hugging Face token.
+    /// </remarks>
+    public static WhisperGgmlDownloader Default { get; } = defaultInstance.Value;
 
     /// <summary>
     /// Gets the download stream for the model
@@ -15,21 +27,16 @@ public static class WhisperGgmlDownloader
     /// <param name="quantization">The quantization of the model.</param>
     /// <param name="cancellationToken">A cancellation token used to cancell the request to huggingface.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static async Task<Stream> GetGgmlModelAsync(GgmlType type, QuantizationType quantization = QuantizationType.NoQuantization, CancellationToken cancellationToken = default)
+    public async Task<Stream> GetGgmlModelAsync(GgmlType type, QuantizationType quantization = QuantizationType.NoQuantization, CancellationToken cancellationToken = default)
     {
         var subdirectory = GetQuantizationSubdirectory(quantization);
         var modelName = GetModelName(type);
 
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/{subdirectory}/{modelName}.bin";
-
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
     }
 
@@ -39,17 +46,14 @@ public static class WhisperGgmlDownloader
     /// <param name="type">The type of the model which needs to be downloaded.</param>
     /// <param name="cancellationToken">A cancellation token used to stop the request to huggingface.</param>
     /// <returns></returns>
-    public static async Task<Stream> GetEncoderOpenVinoModelAsync(GgmlType type, CancellationToken cancellationToken = default)
+    public async Task<Stream> GetEncoderOpenVinoModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/openvino/{modelName}-encoder.zip";
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
     }
 
@@ -58,7 +62,7 @@ public static class WhisperGgmlDownloader
     /// </summary>
     /// <param name="type"> The type of the model which needs to be loaded</param>
     /// <returns></returns>
-    public static string GetOpenVinoManifestFileName(GgmlType type)
+    public string GetOpenVinoManifestFileName(GgmlType type)
     {
         var modelName = GetModelName(type);
         return $"{modelName}-encoder.xml";
@@ -73,35 +77,16 @@ public static class WhisperGgmlDownloader
     /// Needs to be extracted on in the same directory as the ggml model, also ggml model needs to be loaded using file path, not stream.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
+    public async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
         var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/coreml/{modelName}-encoder.zip";
 
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await httpClient.Value.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
 #if NETSTANDARD
-        return await response.Content.ReadAsStreamAsync();
+        return await httpClient.GetStreamAsync(url);
 #else
-        return await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await httpClient.GetStreamAsync(url, cancellationToken);
 #endif
-    }
-
-    /// <summary>
-    /// Extracts the given zip stream to the given path.
-    /// </summary>
-    /// <param name="zipStream">The zip stream to be extracted.</param>
-    /// <param name="path">The path.</param>
-    /// <remarks>
-    /// In order to work, you'll need to provide the same path as the ggml model.
-    /// </remarks>
-    /// <returns></returns>
-    public static async Task ExtractToPath(this Task<Stream> zipStream, string path)
-    {
-        using var zipArchive = new ZipArchive(await zipStream, ZipArchiveMode.Read);
-        zipArchive.ExtractToDirectory(path);
     }
 
     private static string GetModelName(GgmlType type)

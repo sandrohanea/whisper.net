@@ -1,3 +1,4 @@
+
 function Get-VisualStudioCMakePath() {
     $vsWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     if (-not (Test-Path $vsWherePath)) {
@@ -19,8 +20,6 @@ function Get-MSBuildPlatform($Arch) {
     $platforms = @{
         "x64"   = "x64"
         "x86"   = "Win32"
-        "arm64" = "ARM64"
-        "arm"   = "ARM"
     }
 
     if ($platforms.ContainsKey($Arch)) {
@@ -39,23 +38,42 @@ function BuildWindows() {
         [Parameter(Mandatory = $false)] [bool]$NoAvx = $false,
         [Parameter(Mandatory = $false)] [string]$Configuration = "Release"
     )
-    #if not exist "build" create the directory
+
+    # Ensure the build directory exists
     if (!(Test-Path "build")) {
         New-Item -ItemType Directory -Force -Path "build"
     }
 
-    Write-Host "Building Windows binaries for $Arch with cuda: $Cuda"
+    Write-Host "Building Windows binaries for $Arch (using Clang + Ninja) with cuda: $Cuda"
 
-    
-    $platform = Get-MSBuildPlatform $Arch
-    if ([string]::IsNullOrEmpty($platform)) {
-        Write-Host "Unknown architecture $Arch"
-        return
-    }
-    
     $buildDirectory = "build/win-$Arch"
-    $options = @("-S", ".", "-DGGML_NATIVE=OFF");
-    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON");
+    $options = @(
+        "-S", ".", 
+        "-DGGML_NATIVE=OFF"
+    )
+    
+
+    $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
+
+    if ($NoAvx) {
+        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF")
+        $buildDirectory += "-noavx"
+        $runtimePath += ".NoAvx"
+    }
+
+    if($Arch -eq "arm64") {
+        $options += "-G"
+        $options += "Ninja Multi-Config"
+        $options += "-DCMAKE_TOOLCHAIN_FILE=cmake/$Arch-windows-llvm.cmake"
+    }
+    else {
+        $platform = Get-MSBuildPlatform $Arch
+        $options += "-A"
+        $options += $platform
+
+        # Add AVX flags
+        $options += $avxOptions
+    }
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
 
@@ -77,26 +95,21 @@ function BuildWindows() {
         $runtimePath += ".OpenVino"
     }
 
-    if ($NoAvx) {
-        $avxOptions = @("-DGGML_AVX=OFF", "-DGGML_AVX2=OFF", "-DGGML_FMA=OFF", "-DGGML_F16C=OFF");
-        $buildDirectory += "-noavx"
-        $runtimePath += ".NoAvx"
-    }
 
+    # Specify the out-of-source build directory
     $options += "-B"
     $options += $buildDirectory
-    $options += "-A"
-    $options += $platform
-    $options += $avxOptions
 
-    if ((Test-Path $buildDirectory)) {
-        Write-Host "Deleting old build files for $buildDirectory";
+    # Clean up any old build directory if desired
+    if (Test-Path $buildDirectory) {
+        Write-Host "Deleting old build files for $buildDirectory"
         Remove-Item -Force -Recurse -Path $buildDirectory
     }
 
+    # Ensure CMake is available. This part is optional if you already have cmake in your PATH.
     $cmakePath = (Get-Command cmake -ErrorAction SilentlyContinue).Source
     if ([string]::IsNullOrEmpty($cmakePath)) {
-        # CMake is not defined in the system's path, search for it in Visual Studio
+        # Attempt to locate CMake in Visual Studio
         $visualStudioPath = Get-VisualStudioCMakePath
         if ([string]::IsNullOrEmpty($visualStudioPath)) {
             Write-Host "CMake is not found in the system or Visual Studio."
@@ -105,25 +118,27 @@ function BuildWindows() {
         $env:Path += ";$visualStudioPath"
     }
 
+    # Create fresh build directory
     New-Item -ItemType Directory -Force -Path $buildDirectory
 
-    # call CMake to generate the makefiles
-    
-    Write-Host "Running 'cmake $options'"
-
+    # Call CMake to generate the build files
+    Write-Host "Running: cmake $($options -join ' ')"
     cmake $options
+
+    # Build with the specified configuration
+    Write-Host "Building with configuration $Configuration"
     cmake --build $buildDirectory --config $Configuration
 
+    # Create final output directories
     if (-not(Test-Path $runtimePath)) {
         New-Item -ItemType Directory -Force -Path $runtimePath
     }
-
     $runtimePath += "/win-$Arch"
-    
     if (-not(Test-Path $runtimePath)) {
         New-Item -ItemType Directory -Force -Path $runtimePath
     }
 
+    # Copy the generated DLLs (assuming same folder structure/names)
     Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
     Move-Item "$buildDirectory/bin/Release/ggml-whisper.dll" "$runtimePath/ggml-whisper.dll" -Force
     Move-Item "$buildDirectory/bin/Release/ggml-base-whisper.dll" "$runtimePath/ggml-base-whisper.dll" -Force
@@ -136,26 +151,23 @@ function BuildWindows() {
     if ($Vulkan) {
         Move-Item "$buildDirectory/bin/Release/ggml-vulkan-whisper.dll" "$runtimePath/ggml-vulkan-whisper.dll" -Force
     }
-
 }
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindows -Arch "arm64" -Configuration $Configuration;
- #   BuildWindows -Arch "arm" -Configuration $Configuration;
- # Arm build not working anymore with VS
+    BuildWindows -Arch "arm64" -Configuration $Configuration
 }
 
 function BuildWindowsIntel([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindows -Arch "x64" -Configuration $Configuration;
-    BuildWindows -Arch "x86" -Configuration $Configuration;
+    BuildWindows -Arch "x64" -Configuration $Configuration
+    BuildWindows -Arch "x86" -Configuration $Configuration
 }
 
 function BuildWindowsAll([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
-    BuildWindows -Arch "arm64" -Configuration $Configuration;
-    BuildWindows -Arch "arm" -Configuration $Configuration;
-    BuildWindows -Arch "x64" -Cuda $true -Configuration $Configuration;
-    BuildWindows -Arch "x64" -Configuration $Configuration;
-    BuildWindows -Arch "x86" -Configuration $Configuration;
+    BuildWindows -Arch "arm64" -Configuration $Configuration
+    BuildWindows -Arch "arm"   -Configuration $Configuration
+    BuildWindows -Arch "x64"   -Cuda $true    -Configuration $Configuration
+    BuildWindows -Arch "x64"   -Configuration $Configuration
+    BuildWindows -Arch "x86"   -Configuration $Configuration
 }
 
 function PackAll([Parameter(Mandatory = $true)] [string]$Version) {

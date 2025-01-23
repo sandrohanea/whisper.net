@@ -13,10 +13,12 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.head_ref }}
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-        
+          
+      - name: Install Ninja
+        id: install_ninja
+        run: |
+          choco install ninja
+          
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1

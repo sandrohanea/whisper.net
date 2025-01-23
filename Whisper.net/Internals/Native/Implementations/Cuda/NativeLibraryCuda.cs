@@ -1,5 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using System.Runtime.InteropServices;
 using static Whisper.net.Internals.Native.INativeCuda;
 
