@@ -13,7 +13,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.25074.1" />
+    <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.25103.1" />
     <PackageVersion Include="xunit.assert" Version="2.9.3" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
