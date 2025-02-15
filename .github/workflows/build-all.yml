@@ -22,6 +22,9 @@ on:
      - cron: '40 17 * * 0'
 
 jobs:
+   codeql-github-actions:
+      uses: ./.github/workflows/codeql-github-actions.yml
+
    android:
       uses: ./.github/workflows/android-native-build.yml
 

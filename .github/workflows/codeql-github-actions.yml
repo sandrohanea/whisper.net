@@ -1,0 +1,28 @@
+name: Dotnet Build and Test
+
+permissions:
+  contents: read
+  checks: write
+  security-events: write
+
+on:
+  workflow_call:
+
+jobs:
+   codeql-github:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: actions
+          build-mode: none
+
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:actions"
