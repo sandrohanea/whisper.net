@@ -12,4 +12,6 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-For security bugs or any other vulnerability, please report them to sandro@echosharp.net and not as github issues.
+For security bugs or any other vulnerability, please report them privately using github.
+
+[Find more about privately reporting a vulnerability](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability)
