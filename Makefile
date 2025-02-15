@@ -29,7 +29,7 @@ apple_x64: copy_metal macos_x64
 apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
 
 apple_coreml_x64: copy_metal_coreml macos_x64_coreml
-apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml tvos_simulator_coreml tvos_coreml
+apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml 
 
 linux: linux_x64 linux_arm64 linux_arm
 
@@ -205,7 +205,7 @@ ios:
 
 ios_coreml:
 	rm -rf build/ios-coreml
-	cmake $(COREML_SUPPORT) -DCMAKE_OSX_ARCHITECTURES="arm64" -DGGML_METAL=OFF -DCMAKE_OSX_SYSROOT="iphoneos" -S . -B build/ios-coreml
+	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="iphoneos" -DGGML_METAL=OFF -DCMAKE_SYSTEM_NAME=iOS  -S . -B build/ios-coreml
 	cmake --build build/ios-coreml
 	mkdir -p runtimes/Whisper.net.Runtime.CoreML/ios-device
 	cp build/ios-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/ios-device/libwhisper.coreml.dylib
@@ -274,7 +274,7 @@ tvos_simulator_arm64:
 
 tvos:
 	rm -rf build/tvos
-	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvos" -DCMAKE_SYSTEM_NAME=tvOS -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos
+	cmake $(CMAKE_PARAMETERS) -DCMAKE_OSX_SYSROOT="appletvos" -DCMAKE_SYSTEM_NAME=tvOS -S . -B build/tvos
 	cmake --build build/tvos
 	mkdir -p runtimes/Whisper.net.Runtime/tvos-device
 	cp build/tvos/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libwhisper.dylib
@@ -283,30 +283,6 @@ tvos:
 	cp build/tvos/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-cpu-whisper.dylib
 	cp build/tvos/whisper.cpp/ggml/src/ggml-blas/libggml-blas-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-blas-whisper.dylib
 	cp build/tvos/whisper.cpp/ggml/src/ggml-metal/libggml-metal-whisper.dylib runtimes/Whisper.net.Runtime/tvos-device/libggml-metal-whisper.dylib
-
-tvos_coreml:
-	rm -rf build/tvos-coreml
-	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="appletvos" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64" -S . -B build/tvos-coreml
-	cmake --build build/tvos-coreml
-	mkdir -p runtimes/Whisper.net.Runtime.CoreML/tvos-device
-	cp build/tvos-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libwhisper.coreml.dylib
-	cp build/tvos-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libwhisper.dylib
-	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib  runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-whisper.dylib
-	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-base-whisper.dylib
-	cp build/tvos-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-cpu-whisper.dylib
-	cp build/tvos-coreml/whisper.cpp/ggml/src/ggml-blas/libggml-blas-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-device/libggml-blas-whisper.dylib
-
-tvos_simulator_coreml:
-	rm -rf build/tvos-simulator-coreml
-	cmake $(COREML_SUPPORT) -DCMAKE_OSX_SYSROOT="appletvsimulator" -DGGML_METAL=OFF -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -S . -B build/tvos-simulator-coreml
-	cmake --build build/tvos-simulator-coreml
-	mkdir -p runtimes/Whisper.net.Runtime.CoreML/tvos-simulator
-	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.coreml.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.coreml.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/src/libwhisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libwhisper.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-whisper.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-base-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-base-whisper.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/libggml-cpu-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-cpu-whisper.dylib
-	cp build/tvos-simulator-coreml/whisper.cpp/ggml/src/ggml-blas/libggml-blas-whisper.dylib runtimes/Whisper.net.Runtime.CoreML/tvos-simulator/libggml-blas-whisper.dylib
 
 android_arm64-v8a:
 	rm -rf build/android-arm64-v8a

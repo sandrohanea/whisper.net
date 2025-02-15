@@ -125,7 +125,6 @@ Contains the native whisper.cpp library with Apple CoreML support enabled.
 - macOS x64, ARM64 (Apple Silicon)
 - iOS
 - MacCatalyst
-- tvOS
 
 ### Whisper.net.Runtime.OpenVino
 
