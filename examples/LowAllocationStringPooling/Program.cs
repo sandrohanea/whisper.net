@@ -32,7 +32,7 @@ public class Program
         // This section creates the processor object which is used to process the audio file, it uses language `auto` to detect the language of the audio file.
         using var processor = whisperFactory.CreateBuilder()
             .WithLanguage("auto")
-            .WithStringPooling()
+            .WithStringPool()
             .Build();
 
         using var fileStream = File.OpenRead(wavFileName);
