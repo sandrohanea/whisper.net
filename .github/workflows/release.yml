@@ -3,6 +3,8 @@
 
 name: CD (Native + dotnet)
 
+permissions:
+    contents: write
 on:
    workflow_dispatch:
       inputs:

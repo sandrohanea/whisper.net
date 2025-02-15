@@ -1,5 +1,8 @@
 name: Windows native build Without AVX
 
+permissions:
+    contents: read
+
 on:
   workflow_dispatch:
   workflow_call:

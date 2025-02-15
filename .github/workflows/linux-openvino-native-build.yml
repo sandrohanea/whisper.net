@@ -1,5 +1,8 @@
 name: Linux OpenVino native build
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
   workflow_call:

@@ -1,5 +1,8 @@
 name: Linux Native build Without AVX
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
   workflow_call:

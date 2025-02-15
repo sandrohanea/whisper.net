@@ -3,12 +3,13 @@
 
 name: Dotnet Build and Test
 
-on:
-  workflow_call:
-  
 permissions:
   contents: read
   checks: write
+
+on:
+  workflow_call:
+  
 
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -45,7 +46,7 @@ jobs:
           dotnet test ./Whisper.net.sln --no-build  --logger "trx"
           
       - name: Test Reporter
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net MacOs Test Results
@@ -91,7 +92,7 @@ jobs:
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
           
       - name: Test Reporter
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net Windows Test Results
@@ -137,7 +138,7 @@ jobs:
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
                         
       - name: Test Reporter
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results

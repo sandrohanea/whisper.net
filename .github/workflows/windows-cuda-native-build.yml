@@ -1,5 +1,8 @@
 name: Windows Cuda native build
 
+permissions:
+    contents: read
+
 on:
   workflow_dispatch:
   workflow_call:
@@ -16,14 +19,14 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce
 
       - name: Install OpenCl with vcpkg
         run: |
           vcpkg --triplet=x64-windows install opencl
 
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.18
+        uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
         with:
           cuda: "12.1.0"
 

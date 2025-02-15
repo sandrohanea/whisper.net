@@ -3,6 +3,9 @@
 
 name: Pack All
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
      inputs:
