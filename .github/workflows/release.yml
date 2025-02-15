@@ -25,9 +25,6 @@ on:
 env:
    IS_PREVIEW: ${{ inputs.IsPreview }}
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
- 
-permissions:
-  contents: write
 
 jobs:
 
