@@ -95,7 +95,14 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-
+        
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          build-mode: manual
+    
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
@@ -118,7 +125,12 @@ jobs:
           name: test-results-windows
           path: ./**/*.trx
           retention-days: 7
-        
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+          
   dotnet-linux:
     runs-on: ubuntu-latest
 
