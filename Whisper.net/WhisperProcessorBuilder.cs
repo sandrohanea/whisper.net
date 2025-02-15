@@ -469,6 +469,23 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
+    /// Adds the functionlity of pooling the strings that are generated reducing the number of allocations.
+    /// </summary>
+    /// <remarks>
+    /// When using this option designed for high-performance use-cases,
+    /// ensure that you're returning the <seealso cref="SegmentData"/> object back to the <seealso cref="WhisperProcessor"/>
+    /// using the method <see cref="WhisperProcessor.Return(SegmentData)"/>.
+    ///
+    /// By default, this option is disabled.
+    /// </remarks>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithStringPooling(bool useStringPooling = true)
+    {
+        whisperProcessorOptions.UseStringPooling = useStringPooling;
+        return this;
+    }
+
+    /// <summary>
     /// Configures the processor to use the Greedy Sampling strategy.
     /// </summary>
     /// <returns>A new <seealso cref="GreedySamplingStrategyBuilder"/> for configuring the <seealso cref="GreedySamplingStrategy"/></returns>

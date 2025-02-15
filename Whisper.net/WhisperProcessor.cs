@@ -27,6 +27,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private readonly INativeWhisper nativeWhisper;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
+    private readonly StringPool stringPool = new();
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
@@ -274,6 +275,22 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     public IAsyncEnumerable<SegmentData> ProcessAsync(float[] samples, CancellationToken cancellationToken = default)
     {
         return ProcessAsync(samples.AsMemory(), cancellationToken);
+    }
+
+    /// <summary>
+    /// Returns the strings in the given <paramref name="segmentData"/> to the string pool.
+    /// </summary>
+    /// <remarks>
+    /// This method should be used when <seealso cref="WhisperProcessorBuilder.WithStringPooling(bool)"/> was activated.
+    /// Once a <paramref name="segmentData"/> is returned, the string values inside it (e.g. <seealso cref="SegmentData.Text"/>) might be changed.
+    /// </remarks>
+    public void Return(SegmentData segmentData)
+    {
+        stringPool.ReturnString(segmentData.Text);
+        foreach (var token in segmentData.Tokens)
+        {
+            stringPool.ReturnString(token?.Text);
+        }
     }
 
     public void Dispose()
@@ -764,7 +781,17 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    private static string? StringFromNativeUtf8(IntPtr nativeUtf8)
+    private string? StringFromNativeUtf8(IntPtr nativeUtf8)
+    {
+        if (options.UseStringPooling)
+        {
+            return stringPool.GetStringUtf8(nativeUtf8);
+        }
+
+        return DefaultStringFromNativeUtf8(nativeUtf8);
+    }
+
+    private static string? DefaultStringFromNativeUtf8(IntPtr nativeUtf8)
     {
 
 #if NETSTANDARD
