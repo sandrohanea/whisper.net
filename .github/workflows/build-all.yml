@@ -5,6 +5,7 @@ name: CI (Native + dotnet)
 permissions:
   contents: read
   checks: write
+  security-events: write
 
 on:
    push:
