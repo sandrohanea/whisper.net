@@ -42,7 +42,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp
+          languages: csharp,actions
           build-mode: manual
     
       - name: Build
@@ -72,6 +72,11 @@ jobs:
           name: test-results-macos
           path: ./**/*.trx
           retention-days: 7
+      - name: Perform CodeQL Analysis on Github Actions
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:actions"
+          
 
   dotnet-windows:
     runs-on: windows-latest
@@ -100,7 +105,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp
+          languages: csharp,actions
           build-mode: manual
     
       - name: Build
@@ -130,6 +135,11 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"
+
+      - name: Perform CodeQL Analysis on Github Actions
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:actions"
           
   dotnet-linux:
     runs-on: ubuntu-latest
