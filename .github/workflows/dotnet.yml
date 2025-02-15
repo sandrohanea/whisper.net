@@ -37,7 +37,14 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-
+        
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          build-mode: manual
+    
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
@@ -53,6 +60,11 @@ jobs:
           path: ./**/*.trx
           reporter: dotnet-trx
           
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
+
       - name: Upload trx files
         uses: actions/upload-artifact@v4
         if: success() || failure()    # run this step even if previous step failed

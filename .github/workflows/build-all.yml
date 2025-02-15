@@ -17,6 +17,8 @@ on:
             description: 'Enable GPU libraries build and publish'
             required: true
             default: 'false'
+   schedule:
+     - cron: '40 17 * * 0'
 
 jobs:
    android:
