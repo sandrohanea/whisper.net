@@ -3,11 +3,11 @@
 
 name: Push Nuget Packages to nuget.org
 
-on:
-  workflow_call:
-  
 permissions:
   contents: write
+
+on:
+  workflow_call:
 
 jobs:
   push-nupkgs:

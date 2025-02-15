@@ -1,5 +1,8 @@
 name: Wasm Native build
 
+permissions:
+    contents: read
+
 on:
   workflow_dispatch:
   workflow_call:
@@ -15,7 +18,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install Emscripten
-        uses: mymindstorm/setup-emsdk@v13
+        uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
       - name: Run wasm build
         run: make wasm

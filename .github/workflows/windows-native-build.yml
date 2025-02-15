@@ -1,5 +1,8 @@
 name: Windows native build
 
+permissions:
+    contents: read
+
 on:
   workflow_dispatch:
   workflow_call:

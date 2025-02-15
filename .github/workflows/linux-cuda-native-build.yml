@@ -1,5 +1,8 @@
 name: Linux Cuda Native build
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
   workflow_call:
@@ -21,7 +24,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.18
+        uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
         with:
           cuda: "12.1.0"
 

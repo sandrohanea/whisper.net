@@ -1,5 +1,8 @@
 name: Linux Vulkan native build
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
   workflow_call:
@@ -21,7 +24,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1.0.4
+        uses: jakoch/install-vulkan-sdk-action@40216eed6cafc7df0be5eb80620a9f0e7c7104f9
         with:
           vulkan_version: 1.3.290.0
           optional_components: com.lunarg.vulkan.vma

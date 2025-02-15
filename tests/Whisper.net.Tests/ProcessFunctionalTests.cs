@@ -1,9 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System.ComponentModel;
 using System.Runtime.InteropServices;
-using FluentAssertions;
 using Xunit;
+using static Whisper.net.Tests.ProcessAsyncFunctionalTests;
 
 namespace Whisper.net.Tests;
 
@@ -31,11 +30,13 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader);
 
-        segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCount(1);
-        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
+        Assert.True(segments.Count >= 1);
+        Assert.True(encoderBegins.Count >= 1);
+        Assert.True(progress.SequenceEqual(progress.OrderBy(s => s)));
 
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
+        Assert.True(progress.Count >= 1);
+
+        Assert.Contains(segments, s => s.Text.Contains("nation should commit"));
     }
 
     [Fact(Skip = "Skipping for now, for some reason not working on ios, see #308")]
@@ -57,8 +58,8 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader);
 
-        segments.Should().HaveCount(0);
-        encoderBegins.Should().HaveCount(1);
+        Assert.True(segments.Count == 0);
+        Assert.Single(encoderBegins);
     }
 
     [Fact]
@@ -80,10 +81,11 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         {
             segments.Add(segment);
         }
-        segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCountGreaterThanOrEqualTo(1);
-        segments.Should().AllSatisfy(s => s.Language.Should().Be("ro"));
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("efectua"));
+
+        Assert.True(segments.Count >= 1);
+        Assert.True(encoderBegins.Count >= 1);
+        Assert.True(segments.All(s => s.Language == "ro"));
+        Assert.Contains(segments, s => s.Text.Contains("efectua"));
     }
 
     [Fact]
@@ -100,7 +102,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
         processor.Process(fileReader);
 
-        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+        Assert.True(segments.Count >= 1);
     }
 
     [Fact]
@@ -132,8 +134,8 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader3);
 
-        segments1.Should().BeEquivalentTo(segments2);
-        segments2.Should().BeEquivalentTo(segments3);
+        Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
+        Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
     }
 
     [Theory]
@@ -200,10 +202,11 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         processor.Process(fileReader);
 
-        segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCount(1);
-        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
+        Assert.True(segments.Count > 0);
+        Assert.Single(encoderBegins);
 
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
+        Assert.Equal(progress, progress.OrderBy(p => p));
+        Assert.True(progress.Count > 1);
+        Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
     }
 }
