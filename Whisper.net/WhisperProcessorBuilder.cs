@@ -12,14 +12,16 @@ public class WhisperProcessorBuilder
 {
     private readonly WhisperProcessorOptions whisperProcessorOptions;
     private readonly INativeWhisper nativeWhisper;
+    private readonly IStringPool stringPool;
 
-    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper)
+    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper, IStringPool stringPool)
     {
         whisperProcessorOptions = new WhisperProcessorOptions()
         {
             ContextHandle = context
         };
         this.nativeWhisper = nativeWhisper;
+        this.stringPool = stringPool;
     }
 
     /// <summary>
@@ -477,11 +479,25 @@ public class WhisperProcessorBuilder
     /// using the method <see cref="WhisperProcessor.Return(SegmentData)"/>.
     ///
     /// By default, this option is disabled.
+    /// When calling this method with null, a default implementation of <seealso cref="IStringPool"/> will be used (reshared between all processors created for the <seealso cref="WhisperFactory"/>.
     /// </remarks>
     /// <returns>An instance to the same builder.</returns>
-    public WhisperProcessorBuilder WithStringPooling(bool useStringPooling = true)
+    public WhisperProcessorBuilder WithStringPool(IStringPool? stringPool = null)
     {
-        whisperProcessorOptions.UseStringPooling = useStringPooling;
+        whisperProcessorOptions.StringPool = stringPool ?? this.stringPool;
+        return this;
+    }
+
+    /// <summary>
+    /// Disables the string pooling.
+    /// </summary>
+    /// <remarks>
+    /// This will disable the pooling of strings that are generated (have effect only if <seealso cref="WithStringPool"/> was called).
+    /// </remarks>
+    /// <returns>An instance to the same builder.</returns>
+    public WhisperProcessorBuilder WithoutStringPool()
+    {
+        whisperProcessorOptions.StringPool = null;
         return this;
     }
 

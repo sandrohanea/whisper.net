@@ -27,7 +27,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private readonly INativeWhisper nativeWhisper;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
-    private readonly StringPool stringPool = new();
     private WhisperFullParams whisperParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
@@ -286,10 +285,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// </remarks>
     public void Return(SegmentData segmentData)
     {
-        stringPool.ReturnString(segmentData.Text);
+        options.StringPool?.ReturnString(segmentData.Text);
         foreach (var token in segmentData.Tokens)
         {
-            stringPool.ReturnString(token?.Text);
+            options.StringPool?.ReturnString(token?.Text);
         }
     }
 
@@ -783,9 +782,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private string? StringFromNativeUtf8(IntPtr nativeUtf8)
     {
-        if (options.UseStringPooling)
+        if (options.StringPool != null)
         {
-            return stringPool.GetStringUtf8(nativeUtf8);
+            return options.StringPool.GetStringUtf8(nativeUtf8);
         }
 
         return DefaultStringFromNativeUtf8(nativeUtf8);

@@ -4,7 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-internal class StringPool
+namespace Whisper.net.Internals;
+internal class StringPool : IStringPool
 {
     // Pool is organized by allocated capacity.
     // The keys (capacities) are kept in sorted order.
@@ -18,11 +19,11 @@ internal class StringPool
     /// <summary>
     /// Converts a native UTF8 pointer (null-terminated) into a pooled string.
     /// </summary>
-    public unsafe string GetStringUtf8(IntPtr nativePointer)
+    public unsafe string? GetStringUtf8(IntPtr nativePointer)
     {
         if (nativePointer == IntPtr.Zero)
         {
-            throw new ArgumentNullException(nameof(nativePointer));
+            return null;
         }
 
         // Determine the length in bytes by scanning for the null terminator.
@@ -70,6 +71,31 @@ internal class StringPool
         }
 
         return candidate;
+    }
+
+    /// <summary>
+    /// Returns a string to the pool for later reuse.
+    /// All strings created by the pool are re‑pooled for future use.
+    /// </summary>
+    public void ReturnString(string? returnedString)
+    {
+        if (returnedString is null)
+        {
+            return;
+        }
+
+        // Only pool strings that we have tracked.
+        if (!stringCapacities.TryGetValue(returnedString, out var capacity))
+        {
+            return;
+        }
+
+        if (!pool.TryGetValue(capacity, out var stack))
+        {
+            stack = new Stack<string>();
+            pool[capacity] = stack;
+        }
+        stack.Push(returnedString);
     }
 
     /// <summary>
@@ -144,31 +170,6 @@ internal class StringPool
         }
 
         return candidate;
-    }
-
-    /// <summary>
-    /// Returns a string to the pool for later reuse.
-    /// All strings created by the pool are re‑pooled for future use.
-    /// </summary>
-    public void ReturnString(string? returnedString)
-    {
-        if (returnedString is null)
-        {
-            return;
-        }
-
-        // Only pool strings that we have tracked.
-        if (!stringCapacities.TryGetValue(returnedString, out var capacity))
-        {
-            return;
-        }
-
-        if (!pool.TryGetValue(capacity, out var stack))
-        {
-            stack = new Stack<string>();
-            pool[capacity] = stack;
-        }
-        stack.Push(returnedString);
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.Internals;
 using Whisper.net.Internals.ModelLoader;
 using Whisper.net.LibraryLoader;
 using Whisper.net.Logger;
@@ -18,6 +19,7 @@ public sealed class WhisperFactory : IDisposable
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private readonly bool isEagerlyInitialized;
+    private readonly StringPool stringPool = new();
     private bool wasDisposed;
 
     private static readonly Lazy<LoadResult> libraryLoaded = new(() =>
@@ -165,7 +167,7 @@ public sealed class WhisperFactory : IDisposable
             throw new WhisperModelLoadException("Failed to load the whisper model.");
         }
 
-        return new WhisperProcessorBuilder(contextLazy.Value, libraryLoaded.Value.NativeWhisper!);
+        return new WhisperProcessorBuilder(contextLazy.Value, libraryLoaded.Value.NativeWhisper!, stringPool);
     }
 
     public void Dispose()

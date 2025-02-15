@@ -84,5 +84,5 @@ internal sealed class WhisperProcessorOptions
 
     public bool ComputeProbabilities { get; set; }
 
-    public bool UseStringPooling { get; set; }
+    public IStringPool? StringPool { get; set; }
 }
