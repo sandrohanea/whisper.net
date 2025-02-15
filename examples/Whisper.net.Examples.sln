@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenVinoExample", "OpenVino
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelExecution", "ParallelExecution\ParallelExecution.csproj", "{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowAllocationStringPooling", "LowAllocationStringPooling\LowAllocationStringPooling.csproj", "{DA0823B4-C9C2-45DC-AC38-A07F4B57804B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D1415B0-80BD-40D1-8D55-7CE3A3BABC1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA0823B4-C9C2-45DC-AC38-A07F4B57804B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA0823B4-C9C2-45DC-AC38-A07F4B57804B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA0823B4-C9C2-45DC-AC38-A07F4B57804B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA0823B4-C9C2-45DC-AC38-A07F4B57804B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

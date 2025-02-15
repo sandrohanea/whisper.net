@@ -83,4 +83,6 @@ internal sealed class WhisperProcessorOptions
     public WhisperAbortEventHandler? WhisperAbortEventHandler { get; set; }
 
     public bool ComputeProbabilities { get; set; }
+
+    public IStringPool? StringPool { get; set; }
 }

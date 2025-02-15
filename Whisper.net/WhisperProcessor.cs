@@ -276,6 +276,22 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return ProcessAsync(samples.AsMemory(), cancellationToken);
     }
 
+    /// <summary>
+    /// Returns the strings in the given <paramref name="segmentData"/> to the string pool.
+    /// </summary>
+    /// <remarks>
+    /// This method should be used when <seealso cref="WhisperProcessorBuilder.WithStringPooling(bool)"/> was activated.
+    /// Once a <paramref name="segmentData"/> is returned, the string values inside it (e.g. <seealso cref="SegmentData.Text"/>) might be changed.
+    /// </remarks>
+    public void Return(SegmentData segmentData)
+    {
+        options.StringPool?.ReturnString(segmentData.Text);
+        foreach (var token in segmentData.Tokens)
+        {
+            options.StringPool?.ReturnString(token?.Text);
+        }
+    }
+
     public void Dispose()
     {
         if (processingSemaphore.CurrentCount == 0)
@@ -764,7 +780,17 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
-    private static string? StringFromNativeUtf8(IntPtr nativeUtf8)
+    private string? StringFromNativeUtf8(IntPtr nativeUtf8)
+    {
+        if (options.StringPool != null)
+        {
+            return options.StringPool.GetStringUtf8(nativeUtf8);
+        }
+
+        return DefaultStringFromNativeUtf8(nativeUtf8);
+    }
+
+    private static string? DefaultStringFromNativeUtf8(IntPtr nativeUtf8)
     {
 
 #if NETSTANDARD
