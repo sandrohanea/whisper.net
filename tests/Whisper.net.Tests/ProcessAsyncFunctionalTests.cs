@@ -1,10 +1,9 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using FluentAssertions;
 using Xunit;
 
 namespace Whisper.net.Tests;
-public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
+public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowAsync()
@@ -32,13 +31,12 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture
             segmentsEnumerated.Add(data);
         }
 
-        segmentsEnumerated.Should().BeEquivalentTo(segments);
-
-        segments.Should().HaveCountGreaterThan(0);
-        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
-        encoderBegins.Should().HaveCount(1);
-
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
+        Assert.Equal(segments, segmentsEnumerated);
+        Assert.True(segments.Count > 0);
+        Assert.True(progress.SequenceEqual(progress.OrderBy(x => x)));
+        Assert.True(progress.Count > 1);
+        Assert.Single(encoderBegins);
+        Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
     [Fact]
@@ -80,13 +78,11 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture
 
         await processor.DisposeAsync();
 
-        segmentsEnumerated.Should().BeEmpty();
-
-        segments.Should().HaveCount(1);
-        encoderBegins.Should().HaveCount(1);
-        taskCanceledException.Should().NotBeNull();
-
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("nation should commit"));
+        Assert.Empty(segmentsEnumerated);
+        Assert.Single( segments);
+        Assert.Single( encoderBegins);
+        Assert.NotNull(taskCanceledException);
+        Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
     }
 
     [Fact]
@@ -105,7 +101,7 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture
             segments.Add(segment);
         }
 
-        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+        Assert.True(segments.Count >= 1);
     }
 
     [Fact]
@@ -124,13 +120,12 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture
             segments.Add(segment);
         }
 
-        segments.Should().HaveCountGreaterThanOrEqualTo(1);
+        Assert.True(segments.Count >= 1);
     }
 
     [Fact]
     public async Task ProcessAsync_CalledMultipleTimes_Serially_WillCompleteEverytime()
     {
-
         var segments1 = new List<SegmentData>();
         var segments2 = new List<SegmentData>();
         var segments3 = new List<SegmentData>();
@@ -158,7 +153,9 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture
             segments3.Add(segment);
         }
 
-        segments1.Should().BeEquivalentTo(segments2);
-        segments2.Should().BeEquivalentTo(segments3);
+        Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
+        Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
+
     }
+
 }

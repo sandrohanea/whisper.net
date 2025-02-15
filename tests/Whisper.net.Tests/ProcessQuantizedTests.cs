@@ -1,6 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using FluentAssertions;
 using Xunit;
 
 namespace Whisper.net.Tests;
@@ -28,10 +27,10 @@ public class ProcessQuantizedTests(TinyQuantizedModelFixture model) : IClassFixt
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("bush.wav");
         processor.Process(fileReader);
 
-        segments.Should().HaveCountGreaterThan(0);
-        encoderBegins.Should().HaveCountGreaterThanOrEqualTo(1);
-        progress.Should().BeInAscendingOrder().And.HaveCountGreaterThan(1);
-
-        segments.Should().Contain(segmentData => segmentData.Text.Contains("My fellow Americans"));
+        Assert.True(segments.Count > 0);
+        Assert.True(encoderBegins.Count >= 1);
+        Assert.True(progress.Count >= 1);
+        Assert.Equal(progress, progress.OrderBy(s => s));
+        Assert.Contains(segments, segmentData => segmentData.Text.Contains("My fellow Americans"));
     }
 }

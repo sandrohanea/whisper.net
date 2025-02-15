@@ -1,5 +1,4 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
-using FluentAssertions;
 using Whisper.net.Logger;
 using Xunit;
 using Xunit.Abstractions;
@@ -34,7 +33,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
     {
         var languages = WhisperFactory.GetSupportedLanguages().ToList();
 
-        languages.Should().HaveCount(99);
+        Assert.Equal(99, languages.Count);
     }
 
     [Fact]
@@ -46,7 +45,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
                 .CreateBuilder();
         };
 
-        loadingMethod.Should().Throw<WhisperModelLoadException>();
+        Assert.Throws<WhisperModelLoadException>(() => loadingMethod());
     }
 
     [Fact]
@@ -58,7 +57,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
                 .CreateBuilder();
         };
 
-        loadingMethod.Should().Throw<WhisperModelLoadException>();
+        Assert.Throws<WhisperModelLoadException>(loadingMethod);
     }
 
     [Fact]
@@ -66,7 +65,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
     {
         using var factory = WhisperFactory.FromPath(model.ModelFile);
         var builder = factory.CreateBuilder();
-        builder.Should().NotBeNull();
+        Assert.NotNull(builder);
     }
 
     [Fact]
@@ -75,7 +74,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
         var memoryBuffer = File.ReadAllBytes(model.ModelFile);
         using var factory = WhisperFactory.FromBuffer(memoryBuffer);
         var builder = factory.CreateBuilder();
-        builder.Should().NotBeNull();
+        Assert.NotNull(builder);
     }
 
     [Fact]
@@ -89,7 +88,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
             factory.CreateBuilder();
         };
 
-        loadingMethod.Should().Throw<ObjectDisposedException>();
+        Assert.Throws<ObjectDisposedException>(loadingMethod);
     }
 
     private void OnLog(WhisperLogLevel logLevel, string? message)
