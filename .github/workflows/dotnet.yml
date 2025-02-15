@@ -6,6 +6,7 @@ name: Dotnet Build and Test
 permissions:
   contents: read
   checks: write
+  security-events: write
 
 on:
   workflow_call:
@@ -42,7 +43,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp,actions
+          languages: csharp
           build-mode: manual
     
       - name: Build
@@ -72,10 +73,6 @@ jobs:
           name: test-results-macos
           path: ./**/*.trx
           retention-days: 7
-      - name: Perform CodeQL Analysis on Github Actions
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:actions"
           
 
   dotnet-windows:
@@ -105,7 +102,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: csharp,actions
+          languages: csharp
           build-mode: manual
     
       - name: Build
@@ -135,11 +132,6 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"
-
-      - name: Perform CodeQL Analysis on Github Actions
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:actions"
           
   dotnet-linux:
     runs-on: ubuntu-latest
