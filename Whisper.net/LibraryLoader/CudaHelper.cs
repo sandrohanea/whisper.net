@@ -15,7 +15,7 @@ internal static class CudaHelper
         var cudaDevices = 0;
         try
         {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             var libName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                                ? DllImportNativeCuda_64_12.LibraryName // Only 64-bit Windows is supported for now
                                : DllImportNativeLibcuda.LibraryName;

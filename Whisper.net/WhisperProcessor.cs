@@ -691,6 +691,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             var numberOfTokens = nativeWhisper.Whisper_Full_N_Tokens_From_State(state, segmentIndex);
             var languageId = nativeWhisper.Whisper_Full_Lang_Id_From_State(state);
             var language = Marshal.PtrToStringAnsi(nativeWhisper.Whisper_Lang_Str(languageId));
+            var noSpeechProbability = nativeWhisper.Whisper_Full_Get_Segment_No_Speech_Prob_From_State(state, segmentIndex);
 
             var tokens = new WhisperToken[numberOfTokens];
 
@@ -738,7 +739,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (!string.IsNullOrEmpty(textAnsi))
             {
-                var eventHandlerArgs = new SegmentData(textAnsi!, t0, t1, minimumProbability, maximumProbability, (float)(sumProbability / numberOfTokens), language!, tokens);
+                var eventHandlerArgs = new SegmentData(
+                    textAnsi!,
+                    t0,
+                    t1,
+                    minimumProbability,
+                    maximumProbability,
+                    (float)(sumProbability / numberOfTokens),
+                    noSpeechProbability,
+                    language!,
+                    tokens);
 
                 foreach (var handler in options.OnSegmentEventHandlers)
                 {

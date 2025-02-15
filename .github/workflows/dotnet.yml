@@ -10,6 +10,9 @@ permissions:
   contents: read
   checks: write
 
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
 jobs:
   dotnet-macos:
     runs-on: macos-15

@@ -125,7 +125,6 @@ Contains the native whisper.cpp library with Apple CoreML support enabled.
 - macOS x64, ARM64 (Apple Silicon)
 - iOS
 - MacCatalyst
-- tvOS
 
 ### Whisper.net.Runtime.OpenVino
 
@@ -203,7 +202,7 @@ For easier integration, Whisper.net provides a Downloader using [Hugging Face](h
 var modelName = "ggml-base.bin";
 if (!File.Exists(modelName))
 {
-    using var modelStream = await WhisperGgmlDownloader.GetGgmlModelAsync(GgmlType.Base);
+    using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(GgmlType.Base);
     using var fileWriter = File.OpenWrite(modelName);
     await modelStream.CopyToAsync(fileWriter);
 }

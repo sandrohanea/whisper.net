@@ -36,6 +36,7 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Full_Get_Token_Data_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_data_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_data_from_state)));
         Whisper_Full_Get_Token_Text_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_text_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_text_from_state)));
         WhisperPrintSystemInfo = Marshal.GetDelegateForFunctionPointer<whisper_print_system_info>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_print_system_info)));
+        Whisper_Full_Get_Segment_No_Speech_Prob_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_segment_no_speech_prob_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_segment_no_speech_prob_from_state)));
 
         this.whisperLibraryHandle = whisperLibraryHandle;
     }
@@ -87,6 +88,8 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; }
 
     public whisper_print_system_info WhisperPrintSystemInfo { get; }
+
+    public whisper_full_get_segment_no_speech_prob_from_state Whisper_Full_Get_Segment_No_Speech_Prob_From_State { get; }
 
     public void Dispose()
     {

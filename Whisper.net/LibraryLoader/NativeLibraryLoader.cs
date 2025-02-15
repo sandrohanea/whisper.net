@@ -49,13 +49,13 @@ public static class NativeLibraryLoader
             _ => throw new PlatformNotSupportedException($"Unsupported OS Version")
         };
 
-        var architecture = RuntimeInformation.OSArchitecture switch
+        var architecture = RuntimeInformation.ProcessArchitecture switch
         {
             Architecture.X64 => "x64",
             Architecture.X86 => "x86",
             Architecture.Arm => "arm",
             Architecture.Arm64 => "arm64",
-            _ => throw new PlatformNotSupportedException($"Unsupported architecture: {RuntimeInformation.OSArchitecture}")
+            _ => throw new PlatformNotSupportedException($"Unsupported process architecture: {RuntimeInformation.ProcessArchitecture}")
         };
 
 #if NETSTANDARD

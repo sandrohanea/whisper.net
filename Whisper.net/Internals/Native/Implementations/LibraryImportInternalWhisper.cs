@@ -82,6 +82,9 @@ internal partial class LibraryImportInternalWhisper : INativeWhisper
     [LibraryImport(NativeConstants.InternalLibraryName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr whisper_print_system_info();
 
+    [LibraryImport(NativeConstants.InternalLibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial float whisper_full_get_segment_no_speech_prob_from_state(IntPtr state, int index);
+
     public INativeWhisper.whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State => whisper_init_from_file_with_params_no_state;
 
     public INativeWhisper.whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State => whisper_init_from_buffer_with_params_no_state;
@@ -129,6 +132,8 @@ internal partial class LibraryImportInternalWhisper : INativeWhisper
     public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State => whisper_full_get_token_text_from_state;
 
     public INativeWhisper.whisper_print_system_info WhisperPrintSystemInfo => whisper_print_system_info;
+
+    public INativeWhisper.whisper_full_get_segment_no_speech_prob_from_state Whisper_Full_Get_Segment_No_Speech_Prob_From_State => whisper_full_get_segment_no_speech_prob_from_state;
 
     public void Dispose()
     {
