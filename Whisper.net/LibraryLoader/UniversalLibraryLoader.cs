@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 #if !NETSTANDARD
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -21,7 +22,8 @@ internal class UniversalLibraryLoader : ILibraryLoader
 
     public string GetLastError()
     {
-        return "Cannot load the library on this platform using NativeLibrary";
+        var pinvokeError = Marshal.GetLastPInvokeErrorMessage();
+        return $"Cannot load the library on this platform using NativeLibrary. PInvokeError: {pinvokeError}";
     }
 
     public bool TryOpenLibrary(string fileName, out IntPtr libHandle)
