@@ -35,7 +35,9 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                 }
                 else
                 {
-                    throw new Exception("The dynamic entry was not of type string");
+                    var type = entry.GetType();
+                    var genericArgs = type.GetGenericArguments();
+                    throw new Exception($"The dynamic entry was not of type string but {type.Name} with {genericArgs?.FirstOrDefault()?.Name}");
                 }
             }
         }
