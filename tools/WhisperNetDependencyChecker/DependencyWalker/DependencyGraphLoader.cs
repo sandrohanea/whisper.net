@@ -168,6 +168,26 @@ internal class DependencyGraphLoader
                 return true;
             }
         }
+        else if (OperatingSystem.IsMacOS())
+        {
+            var macSystemLibs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+             {
+                "libSystem.B.dylib",
+                "libc++.1.dylib",
+                "Accelerate",
+                "Foundation",
+                "Metal",
+                "MetalKit",
+                "CoreFoundation",
+                "libobjc.A.dylib"
+            };
+
+            if (macSystemLibs.Contains(libraryName))
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 }

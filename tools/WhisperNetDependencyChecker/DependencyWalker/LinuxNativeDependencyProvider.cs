@@ -2,7 +2,6 @@
 
 using ELFSharp.ELF;
 using ELFSharp.ELF.Sections;
-using ELFSharp.ELF.Segments;
 
 namespace WhisperNetDependencyChecker.DependencyWalker;
 
@@ -16,20 +15,22 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
             yield break;
         }
 
-        var dynamicSection = elfFile.Segments
-            .FirstOrDefault(seg => seg.Type == SegmentType.Dynamic);
+        // Try to get the dynamic section (usually named ".dynamic")
+        var dynamicSection = elfFile.Sections
+            .FirstOrDefault(sec => sec.Name == ".dynamic") as IDynamicSection;
 
         if (dynamicSection == null)
         {
             yield break;
         }
 
-        foreach (var entry in ((IDynamicSection)dynamicSection).Entries)
+        foreach (var entry in dynamicSection.Entries)
         {
             if (entry.Tag == DynamicTag.Needed)
             {
+                // entry.ToString() should yield the library name.
                 var libName = entry.ToString();
-                if (libName != null)
+                if (!string.IsNullOrEmpty(libName))
                 {
                     yield return libName;
                 }
