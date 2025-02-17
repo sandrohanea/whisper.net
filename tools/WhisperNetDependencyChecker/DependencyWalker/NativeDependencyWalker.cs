@@ -55,11 +55,12 @@ internal class NativeDependencyWalker
             if (!NativeLibrary.TryLoad(fullPath, out var handle))
             {
                 var pinvokeError = Marshal.GetLastPInvokeErrorMessage();
+                var checkIfAlreadyLoaded = NativeLibraryChecker.IsLibraryLoaded(Path.GetFileName(fullPath));
                 yield return new LoadLibResult()
                 {
                     LibraryName = libName,
                     LibraryPath = fullPath,
-                    LoadError = $"Couldn't load the native library on this system. PInvoke: {pinvokeError}",
+                    LoadError = $"Couldn't load the native library on this system. PInvoke: {pinvokeError}. Different version loaded: {checkIfAlreadyLoaded}",
                     WasLoaded = false
                 };
                 continue;

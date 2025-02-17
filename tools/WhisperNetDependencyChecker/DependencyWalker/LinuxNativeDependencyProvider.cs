@@ -33,12 +33,6 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                 {
                     yield return stringEntry.Value;
                 }
-                else
-                {
-                    var type = entry.GetType();
-                    var genericArgs = type.GetGenericArguments();
-                    throw new Exception($"The dynamic entry was not of type string but {type.Name} with {genericArgs?.FirstOrDefault()?.Name}");
-                }
             }
         }
     }
