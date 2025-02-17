@@ -11,7 +11,7 @@ internal class MacOsNativeDependencyProvider : INativeDependencyProvider
         var macho = MachOReader.Load(nativeLibPath);
         foreach (var lib in macho.GetCommandsOfType<LoadDylib>())
         {
-            yield return lib.Name;
+            yield return Path.GetFileName(lib.Name);
         }
     }
 }
