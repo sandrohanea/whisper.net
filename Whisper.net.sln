@@ -19,12 +19,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\android-native-build.yml = .github\workflows\android-native-build.yml
 		.github\workflows\build-all.yml = .github\workflows\build-all.yml
+		.github\workflows\codeql-github-actions.yml = .github\workflows\codeql-github-actions.yml
 		.github\workflows\dotnet-maui.yml = .github\workflows\dotnet-maui.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
 		.github\workflows\linux-noavx-native-build.yml = .github\workflows\linux-noavx-native-build.yml
 		.github\workflows\linux-openvino-native-build.yml = .github\workflows\linux-openvino-native-build.yml
+		.github\workflows\linux-vulkan-native-build.yml = .github\workflows\linux-vulkan-native-build.yml
 		.github\workflows\macos-coreml-native-build.yml = .github\workflows\macos-coreml-native-build.yml
 		.github\workflows\macos-native-build.yml = .github\workflows\macos-native-build.yml
 		.github\workflows\pack-all.yml = .github\workflows\pack-all.yml
@@ -191,7 +193,6 @@ Global
 		{5C865649-4AED-4BBF-A7CA-BD68D21EF48F} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
 		{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
 		{CC45AC94-3CD7-45D8-A847-2D9C06E1806A} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
-		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {2C8F58A8-37D9-4E96-AE73-B3B37AEC10C1}
 		{ECCEC1B5-0D56-4866-A330-9D0249544603} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
