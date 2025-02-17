@@ -12,4 +12,8 @@
     <PackageReference Include="ELFSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
+  </ItemGroup>
+
 </Project>
