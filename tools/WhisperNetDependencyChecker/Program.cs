@@ -80,12 +80,14 @@ foreach (var assemblySearchPath in assemblySearchPaths)
         if (success)
         {
             Console.WriteLine("Successfully loaded from runtime path");
-            break;
+            return 0;
         }
         Console.WriteLine("Failed to load from runtime path");
         Console.WriteLine();
     }
 }
+
+return 1;
 
 static string GetLibraryPath(string platform, string libraryName, string runtimePath)
 {
