@@ -28,11 +28,14 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
         {
             if (entry.Tag == DynamicTag.Needed)
             {
-                // entry.ToString() should yield the library name.
-                var libName = entry.ToString();
-                if (!string.IsNullOrEmpty(libName))
+                // Cast the entry to a generic dynamic entry to get the dependency name.
+                if (entry is DynamicEntry<string> stringEntry)
                 {
-                    yield return libName;
+                    yield return stringEntry.Value;
+                }
+                else
+                {
+                    throw new Exception("The dynamic entry was not of type string");
                 }
             }
         }
