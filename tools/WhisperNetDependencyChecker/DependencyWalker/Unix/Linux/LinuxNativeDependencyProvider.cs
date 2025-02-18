@@ -18,6 +18,8 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
         // Try to get the dynamic section (usually named ".dynamic")
         var dynamicSection = elfFile.Sections
             .FirstOrDefault(sec => sec.Name == ".dynamic") as IDynamicSection;
+        var stringTable = elfFile.Sections
+            .FirstOrDefault(sec => sec.Name == ".dynstr") as IStringTable;
 
         var stringTable = elfFile.Sections
             .FirstOrDefault(sec => sec.Name == ".dynstr") as IStringTable;
@@ -54,6 +56,11 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                     {
                         Console.WriteLine("String: " + t);
                     }
+                }
+
+                if (entry is DynamicEntry<long> longEntry && stringTable != null)
+                {
+                    yield return stringTable[longEntry.Value];
                 }
             }
         }
