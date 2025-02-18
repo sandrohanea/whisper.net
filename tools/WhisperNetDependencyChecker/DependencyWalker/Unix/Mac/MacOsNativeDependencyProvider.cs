@@ -2,7 +2,7 @@
 
 using ELFSharp.MachO;
 
-namespace WhisperNetDependencyChecker.DependencyWalker;
+namespace WhisperNetDependencyChecker.DependencyWalker.Unix.Mac;
 
 internal class MacOsNativeDependencyProvider : INativeDependencyProvider
 {

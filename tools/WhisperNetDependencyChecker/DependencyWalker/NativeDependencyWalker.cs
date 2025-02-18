@@ -1,14 +1,19 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.LibraryLoader;
+using WhisperNetDependencyChecker.DependencyWalker.Unix;
+using WhisperNetDependencyChecker.DependencyWalker.Unix.Linux;
+using WhisperNetDependencyChecker.DependencyWalker.Unix.Mac;
+using WhisperNetDependencyChecker.DependencyWalker.Windows;
 
 namespace WhisperNetDependencyChecker.DependencyWalker;
 
 internal class NativeDependencyWalker
 {
     private readonly DependencyGraphLoader dependencyGraphLoader;
-
-    public NativeDependencyWalker()
+    private readonly INativeLibraryLoader nativeLibraryLoader;
+    public NativeDependencyWalker(bool useUniversalLibLoader =false)
     {
         INativeDependencyProvider nativeDependencyProvider = RuntimeInformation.OSArchitecture switch
         {
@@ -24,6 +29,16 @@ internal class NativeDependencyWalker
             _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => new UnixLibraryPathProvider(),
             _ => throw new NotImplementedException("Unsupported OS Platform")
         };
+
+        nativeLibraryLoader = useUniversalLibLoader
+            ? new UniversalLibraryLoader()
+            : RuntimeInformation.OSArchitecture switch
+            {
+                _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => new WindowsLibraryLoader(),
+                _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => new LibdlLibraryLoader(),
+                _ => throw new NotImplementedException("Unsupported OS Platform")
+            };
+
         dependencyGraphLoader = new DependencyGraphLoader(nativeDependencyProvider, knownPathProvider);
     }
 
@@ -52,9 +67,9 @@ internal class NativeDependencyWalker
             }
 
             // Try loading the library.
-            if (!NativeLibrary.TryLoad(fullPath, out var handle))
+            if (!nativeLibraryLoader.TryOpenLibrary(fullPath, out var handle))
             {
-                var pinvokeError = Marshal.GetLastPInvokeErrorMessage();
+                var pinvokeError = nativeLibraryLoader.GetLastError();
                 var checkIfAlreadyLoaded = NativeLibraryChecker.IsLibraryLoaded(Path.GetFileName(fullPath));
                 yield return new LoadLibResult()
                 {

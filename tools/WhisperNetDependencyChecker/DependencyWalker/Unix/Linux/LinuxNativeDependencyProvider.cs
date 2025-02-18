@@ -3,7 +3,7 @@
 using ELFSharp.ELF;
 using ELFSharp.ELF.Sections;
 
-namespace WhisperNetDependencyChecker.DependencyWalker;
+namespace WhisperNetDependencyChecker.DependencyWalker.Unix.Linux;
 
 internal class LinuxNativeDependencyProvider : INativeDependencyProvider
 {
@@ -19,6 +19,9 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
         var dynamicSection = elfFile.Sections
             .FirstOrDefault(sec => sec.Name == ".dynamic") as IDynamicSection;
 
+        var stringTable = elfFile.Sections
+            .FirstOrDefault(sec => sec.Name == ".dynstr") as IStringTable;
+
         if (dynamicSection == null)
         {
             yield break;
@@ -32,6 +35,25 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                 if (entry is DynamicEntry<string> stringEntry)
                 {
                     yield return stringEntry.Value;
+                    continue;
+                }
+
+                Console.WriteLine("Entry was of type: " + entry.GetType());
+                var val = entry switch
+                {
+                    DynamicEntry<ulong> dulong => (long)dulong.Value,
+                    DynamicEntry<uint> duint => duint.Value,
+                    DynamicEntry<long> dlong => dlong.Value,
+                    _ => -1
+                };
+
+                if(val != -1)
+                {
+                    Console.WriteLine($"{entry.Tag} {val}");
+                    foreach (var t in stringTable?.Strings ?? [])
+                    {
+                        Console.WriteLine("String: " + t);
+                    }
                 }
             }
         }

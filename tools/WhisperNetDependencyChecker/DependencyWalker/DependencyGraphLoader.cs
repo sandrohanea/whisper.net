@@ -3,13 +3,13 @@
 namespace WhisperNetDependencyChecker.DependencyWalker;
 internal class DependencyGraphLoader
 {
-    private readonly INativeDependencyProvider _depProvider;
-    private readonly IKnownLibraryPathProvider _knownPathProvider;
+    private readonly INativeDependencyProvider depProvider;
+    private readonly IKnownLibraryPathProvider knownPathProvider;
 
     public DependencyGraphLoader(INativeDependencyProvider depProvider, IKnownLibraryPathProvider knownPathProvider)
     {
-        _depProvider = depProvider;
-        _knownPathProvider = knownPathProvider;
+        this.depProvider = depProvider;
+        this.knownPathProvider = knownPathProvider;
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ internal class DependencyGraphLoader
         visited.Add(libName);
 
         // Get dependencies from the provider and filter out known system libraries.
-        var dependencies = _depProvider
+        var dependencies = depProvider
             .GetDependencies(libPath)
             .Where(dep => !ShouldSkipDependency(dep))
             .ToList();
@@ -76,7 +76,7 @@ internal class DependencyGraphLoader
         }
 
         // 2. Check each known path.
-        foreach (var knownPath in _knownPathProvider.GetKnownPaths())
+        foreach (var knownPath in knownPathProvider.GetKnownPaths())
         {
             var candidate = Path.Combine(knownPath, libraryName);
             if (File.Exists(candidate))

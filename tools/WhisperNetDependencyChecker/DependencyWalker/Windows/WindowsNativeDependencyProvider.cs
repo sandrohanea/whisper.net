@@ -2,7 +2,7 @@
 
 using System.Reflection.PortableExecutable;
 
-namespace WhisperNetDependencyChecker.DependencyWalker;
+namespace WhisperNetDependencyChecker.DependencyWalker.Windows;
 internal class WindowsNativeDependencyProvider : INativeDependencyProvider
 {
     public IEnumerable<string> GetDependencies(string nativeLibPath)
@@ -51,7 +51,7 @@ internal class WindowsNativeDependencyProvider : INativeDependencyProvider
 
             if (rva >= sectionStartRVA && rva < sectionEndRVA)
             {
-                return (rva - sectionStartRVA) + section.PointerToRawData;
+                return rva - sectionStartRVA + section.PointerToRawData;
             }
         }
 

@@ -1,6 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-namespace WhisperNetDependencyChecker.DependencyWalker;
+namespace WhisperNetDependencyChecker.DependencyWalker.Unix;
 
 internal class UnixLibraryPathProvider : IKnownLibraryPathProvider
 {
