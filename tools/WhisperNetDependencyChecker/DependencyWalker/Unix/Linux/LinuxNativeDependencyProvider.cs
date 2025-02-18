@@ -21,9 +21,6 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
         var stringTable = elfFile.Sections
             .FirstOrDefault(sec => sec.Name == ".dynstr") as IStringTable;
 
-        var stringTable = elfFile.Sections
-            .FirstOrDefault(sec => sec.Name == ".dynstr") as IStringTable;
-
         if (dynamicSection == null)
         {
             yield break;
@@ -49,18 +46,13 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                     _ => -1
                 };
 
-                if(val != -1)
+                if (val != -1)
                 {
                     Console.WriteLine($"{entry.Tag} {val}");
                     foreach (var t in stringTable?.Strings ?? [])
                     {
                         Console.WriteLine("String: " + t);
                     }
-                }
-
-                if (entry is DynamicEntry<long> longEntry && stringTable != null)
-                {
-                    yield return stringTable[longEntry.Value];
                 }
             }
         }
