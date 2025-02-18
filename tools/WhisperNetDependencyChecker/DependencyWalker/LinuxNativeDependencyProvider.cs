@@ -36,9 +36,9 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                     yield return stringEntry.Value;
                 }
 
-                if (entry is DynamicEntry<long> ulongEntry && stringTable != null)
+                if (entry is DynamicEntry<long> longEntry && stringTable != null)
                 {
-                    yield return stringTable[ulongEntry.Value];
+                    yield return stringTable[longEntry.Value];
                 }
             }
         }
