@@ -8,5 +8,6 @@ internal class UnixLibraryPathProvider : IKnownLibraryPathProvider
     {
         yield return "/usr/lib";
         yield return "/usr/local/lib";
+        yield return "/usr/lib32";
     }
 }
