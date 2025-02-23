@@ -109,7 +109,7 @@ internal class LibdlLibraryLoader : INativeLibraryLoader
         }
     }
 
-    private string GetError(IntPtr error)
+    private static string GetError(IntPtr error)
     {
         return Marshal.PtrToStringAnsi(error) ?? "Unknown error";
     }
