@@ -193,7 +193,12 @@ internal class DependencyGraphLoader
              {
                 "libdl.so.2",
                 "libpthread.so.0",
-                "ld-linux.so.2"
+                "ld-linux.so.2",
+                "libc.so.6",
+                "libm.so.6",
+                "libgcc_s.so.1",
+                "libstdc++.so.6",
+                "libgomp.so.1"
             };
 
             if (linuxLibs.Contains(libraryName))
