@@ -49,24 +49,6 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                     var uintIndex = (long)uintEntry.Value;
                     yield return stringTable[uintIndex];
                 }
-
-                Console.WriteLine("Entry was of type: " + entry.GetType());
-                var val = entry switch
-                {
-                    DynamicEntry<ulong> dulong => (long)dulong.Value,
-                    DynamicEntry<uint> duint => duint.Value,
-                    DynamicEntry<long> dlong => dlong.Value,
-                    _ => -1
-                };
-
-                if (val != -1)
-                {
-                    Console.WriteLine($"{entry.Tag} {val}");
-                    foreach (var t in stringTable?.Strings ?? [])
-                    {
-                        Console.WriteLine("String: " + t);
-                    }
-                }
             }
         }
     }
