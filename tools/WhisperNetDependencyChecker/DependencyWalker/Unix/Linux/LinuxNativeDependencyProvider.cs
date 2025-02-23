@@ -44,6 +44,12 @@ internal class LinuxNativeDependencyProvider : INativeDependencyProvider
                     continue;
                 }
 
+                if (entry is DynamicEntry<uint> uintEntry && stringTable != null)
+                {
+                    var uintIndex = (long)uintEntry.Value;
+                    yield return stringTable[uintIndex];
+                }
+
                 Console.WriteLine("Entry was of type: " + entry.GetType());
                 var val = entry switch
                 {

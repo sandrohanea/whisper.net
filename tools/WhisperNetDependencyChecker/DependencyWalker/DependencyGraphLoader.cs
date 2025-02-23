@@ -189,7 +189,15 @@ internal class DependencyGraphLoader
         }
         else
         {
+            var linuxLibs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+             {
+                "libdl.so.2"
+            };
 
+            if (linuxLibs.Contains(libraryName))
+            {
+                return true;
+            }
         }
         return false;
     }
