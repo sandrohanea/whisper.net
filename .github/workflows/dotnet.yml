@@ -161,7 +161,13 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-        
+
+      - name: Check dependency locations
+        run: |
+          whereis libdl.so.2
+          whereis libstdc++.so.6
+          whereis libm.so.6
+
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
         

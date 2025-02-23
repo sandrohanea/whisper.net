@@ -187,7 +187,10 @@ internal class DependencyGraphLoader
                 return true;
             }
         }
+        else
+        {
 
+        }
         return false;
     }
 }
