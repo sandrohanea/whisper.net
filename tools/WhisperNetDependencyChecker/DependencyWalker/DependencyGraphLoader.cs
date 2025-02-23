@@ -191,7 +191,8 @@ internal class DependencyGraphLoader
         {
             var linuxLibs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
              {
-                "libdl.so.2"
+                "libdl.so.2",
+                "libpthread.so.0"
             };
 
             if (linuxLibs.Contains(libraryName))
