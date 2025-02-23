@@ -167,6 +167,7 @@ jobs:
           whereis libc.so.6
           whereis libm.so.6
           whereis ld-linux.so.2
+          whereis libgomp.so.1
         
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
