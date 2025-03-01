@@ -38,6 +38,9 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
+
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
         
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -98,6 +101,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
         
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
+        
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -155,7 +161,10 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-
+        
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
+        
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
