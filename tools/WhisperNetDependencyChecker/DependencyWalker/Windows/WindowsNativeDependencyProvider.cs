@@ -7,6 +7,7 @@ internal class WindowsNativeDependencyProvider : INativeDependencyProvider
 {
     public IEnumerable<string> GetDependencies(string nativeLibPath)
     {
+        Console.WriteLine("Extracting dependencies from " + nativeLibPath);
         using var fs = new FileStream(nativeLibPath, FileMode.Open, FileAccess.Read);
         using var peReader = new PEReader(fs);
 
@@ -36,6 +37,7 @@ internal class WindowsNativeDependencyProvider : INativeDependencyProvider
 
             var nameOffset = RvaToOffset(peHeaders, nameRVA);
             var libName = ReadNullTerminatedString(readerContent, nameOffset);
+            Console.WriteLine("Extracted dependency: " + libName);
             yield return libName;
 
             pos += 20; // Move to next import descriptor
