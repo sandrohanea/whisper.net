@@ -47,7 +47,6 @@ jobs:
       uses: ./.github/workflows/linux-noavx-native-build.yml
 
    linux-vulkan:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-vulkan-native-build.yml
 
    windows-cuda:
