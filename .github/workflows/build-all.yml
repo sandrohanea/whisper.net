@@ -14,8 +14,8 @@ on:
       branches: ["main"]
    workflow_dispatch:
       inputs:
-         BuildGpuLibs:
-            description: 'Enable GPU libraries build and publish'
+         BuildCuda:
+            description: 'Enable CUDA runtimes libraries build.'
             required: true
             default: 'false'
    schedule:
@@ -50,27 +50,23 @@ jobs:
       uses: ./.github/workflows/linux-vulkan-native-build.yml
 
    windows-cuda:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
+      if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml
 
    windows-vulkan:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-vulkan-native-build.yml
 
    windows-openvino:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/windows-openvino-native-build.yml
       
    linux-cuda:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
+      if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
 
    linux-openvino:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/linux-openvino-native-build.yml
 
    macos-coreml:
-      if: ${{ inputs.BuildGpuLibs == 'true' }}
       uses: ./.github/workflows/macos-coreml-native-build.yml
 
    dotnet-build:
