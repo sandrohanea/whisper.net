@@ -19,7 +19,7 @@ public static class LogProvider
         return new WhisperLogger((level, message) =>
         {
             // Higher values are less severe
-            if (level < minLevel)
+            if (level <= minLevel)
             {
                 Console.WriteLine($"[{level}] {message}");
             }
