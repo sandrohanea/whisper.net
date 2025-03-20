@@ -73,6 +73,11 @@ function BuildWindows() {
 
         # Add AVX flags
         $options += $avxOptions
+
+        if ($platform -eq "Win32")
+        {
+            $options += "-DGGML_BMI2";
+        }
     }
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
