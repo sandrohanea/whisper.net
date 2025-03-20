@@ -188,9 +188,11 @@ RuntimeOptions.RuntimeLibraryOrder =
 
 ## Versioning
 
-Each version of Whisper.net is tied to a specific version of Whisper.cpp. The version of Whisper.net is the same as the version of Whisper it is based on. For example, Whisper.net 1.2.0 is based on Whisper.cpp 1.2.0.
+Whisper.net follows semantic versioning.
 
-However, the patch version is not tied to Whisper.cpp. For example, Whisper.net 1.2.1 is based on Whisper.cpp 1.2.0 and Whisper.net 1.7.0 is based on Whisper.cpp 1.7.1.
+Starting from version `1.8.0`, Whisper.net does not follow the same versioning scheme as `whisper.cpp`, which creates releases based on specific commits in their `master` branch (e.g., b2254, b2255).
+
+To track the `whisper.cpp` version used in a specific Whisper.net release, you can check the `whisper.cpp` submodule. The commit hash for the tag associated with the release will indicate the corresponding `whisper.cpp` version.
 
 ## Ggml Models
 
