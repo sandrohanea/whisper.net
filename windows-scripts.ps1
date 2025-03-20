@@ -76,7 +76,7 @@ function BuildWindows() {
 
         if ($platform -eq "Win32")
         {
-            $options += "-DGGML_BMI2";
+            $options += "-DGGML_BMI2=OFF";
         }
     }
     
