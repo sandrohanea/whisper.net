@@ -4,9 +4,9 @@ namespace Whisper.net.Logger;
 public enum WhisperLogLevel
 {
     None = 0,
-    Info = 1,
+    Error = 1,
     Warning = 2,
-    Error = 3,
-    Debug = 4,
-    Cont = 5
+    Info = 3,
+    Cont = 4,
+    Debug = 5
 }
