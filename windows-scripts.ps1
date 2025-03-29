@@ -73,6 +73,11 @@ function BuildWindows() {
 
         # Add AVX flags
         $options += $avxOptions
+
+        if ($platform -eq "Win32")
+        {
+            $options += "-DGGML_BMI2=OFF";
+        }
     }
     
     $runtimePath = "./runtimes/Whisper.net.Runtime"
@@ -85,6 +90,7 @@ function BuildWindows() {
 
     if ($Vulkan) {
         $options += "-DGGML_VULKAN=1"
+        $options += "-DGGML_VULKAN_COOPMAT_GLSLC_SUPPORT=ON"
         $buildDirectory += "-vulkan"
         $runtimePath += ".Vulkan"
     }
