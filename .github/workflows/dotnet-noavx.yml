@@ -15,6 +15,7 @@ on:
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
   USE_WHISPER_NOAVX_TESTS: true
+  VSTEST_CONNECTION_TIMEOUT : 600
 
 jobs:
 
@@ -63,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: test-results-windows
+          name: test-results-windows-noavx
           path: ./**/*.trx
           retention-days: 7
 
@@ -112,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success() || failure()    # run this step even if previous step failed
         with:
-          name: test-results-linux
+          name: test-results-linux-noavx
           path: ./**/*.trx
           retention-days: 7
 
