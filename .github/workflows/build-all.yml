@@ -69,6 +69,13 @@ jobs:
    macos-coreml:
       uses: ./.github/workflows/macos-coreml-native-build.yml
 
+   dotnet-noavx:
+     needs:
+       - windows-no-avx
+       - linux-no-avx
+     uses: ./.github/workflows/dotnet-noavx.yml
+     secrets: inherit
+
    dotnet-build:
       needs:
          - android
