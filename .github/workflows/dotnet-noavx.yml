@@ -41,6 +41,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
 
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
+
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
@@ -88,7 +91,7 @@ jobs:
         run: dotnet restore ./Whisper.net.sln
 
       - name: Run Dependency Checker
-        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
 
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
