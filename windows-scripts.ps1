@@ -48,10 +48,10 @@ function BuildWindows() {
 
     $buildDirectory = "build/win-$Arch"
     $options = @(
-        "-S", ".", 
+        "-S", ".",
         "-DGGML_NATIVE=OFF"
     )
-    
+    $runtimePath = "./runtimes/Whisper.net.Runtime"
 
     $avxOptions = @("-DGGML_AVX=ON", "-DGGML_AVX2=ON", "-DGGML_FMA=ON", "-DGGML_F16C=ON")
 
@@ -79,8 +79,6 @@ function BuildWindows() {
             $options += "-DGGML_BMI2=OFF";
         }
     }
-    
-    $runtimePath = "./runtimes/Whisper.net.Runtime"
 
     if ($Cuda) {
         $options += "-DGGML_CUDA=1"
@@ -94,7 +92,7 @@ function BuildWindows() {
         $buildDirectory += "-vulkan"
         $runtimePath += ".Vulkan"
     }
-    
+
     if ($OpenVino) {
         $options += "-DWHISPER_OPENVINO=1"
         $buildDirectory += "-openvino"
@@ -181,7 +179,7 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
     if (-not(Test-Path "nupkgs")) {
         New-Item -ItemType Directory -Force -Path "nupkgs"
     }
-    
+
     nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
     dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
     nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs

@@ -38,6 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 		.github\workflows\windows-noavx-native-build.yml = .github\workflows\windows-noavx-native-build.yml
 		.github\workflows\windows-openvino-native-build.yml = .github\workflows\windows-openvino-native-build.yml
 		.github\workflows\windows-vulkan-native-build.yml = .github\workflows\windows-vulkan-native-build.yml
+		.github\workflows\dotnet-noavx.yml = .github\workflows\dotnet-noavx.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{52C6C243-3BD7-41CF-A0B0-1DE31AC2C884}"

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Whisper.net.LibraryLoader;
 using WhisperNetDependencyChecker.DependencyWalker;
 
-var library = RuntimeLibrary.Cpu;
+var library = args.Length > 0 ? Enum.Parse<RuntimeLibrary>(args[0]) : RuntimeLibrary.Cpu;
 
 var dependencyProvider = new NativeDependencyWalker();
 

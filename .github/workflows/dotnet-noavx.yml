@@ -1,0 +1,119 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Dotnet NoAvx Build and Test
+
+permissions:
+  contents: read
+  checks: write
+  security-events: write
+
+on:
+  workflow_call:
+
+
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  USE_WHISPER_NOAVX_TESTS: true
+  VSTEST_CONNECTION_TIMEOUT : 600
+
+jobs:
+
+  dotnet-noavx-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: runtimes
+
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
+
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build --logger "trx"
+
+      - name: Test Reporter
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Whisper.net Windows Test Results
+          path: ./**/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload trx files
+        uses: actions/upload-artifact@v4
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: test-results-windows-noavx
+          path: ./**/*.trx
+          retention-days: 7
+
+  dotnet-noavx-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: runtimes
+
+      - name: Restore dependencies
+        run: dotnet restore ./Whisper.net.sln
+
+      - name: Run Dependency Checker
+        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
+
+      - name: Build
+        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+
+      - name: Test
+        run: |
+          dotnet test ./Whisper.net.sln --no-build --logger "trx"
+
+      - name: Test Reporter
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Whisper.net Linux Test Results
+          path: ./**/*.trx
+          reporter: dotnet-trx
+
+      - name: Upload trx files
+        uses: actions/upload-artifact@v4
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: test-results-linux-noavx
+          path: ./**/*.trx
+          retention-days: 7
+
