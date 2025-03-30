@@ -88,7 +88,6 @@ function BuildWindows() {
 
     if ($Vulkan) {
         $options += "-DGGML_VULKAN=1"
-        $options += "-DGGML_VULKAN_COOPMAT_GLSLC_SUPPORT=ON"
         $buildDirectory += "-vulkan"
         $runtimePath += ".Vulkan"
     }
