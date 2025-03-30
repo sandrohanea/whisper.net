@@ -1,22 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <!-- Whisper.net.Runtime cannot be referenced in MAUI ios dependency project that is only targetting net8.0 or net9.0 as it will copy the runtimes for linux, mac and windows and will cause the build to fail. -->
-  <Import Condition="$(USE_WHISPER_COREML_TESTS) != ''"
-          Project="../../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
 
   <Import Condition="$(USE_WHISPER_NOAVX_TESTS) != ''"
           Project="../../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
 
-  <Import Condition="$(USE_WHISPER_OPENVINO_TESTS) == ''"
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets" />
-  
-  <Import Condition="$(USE_WHISPER_VULKAN_TESTS) == ''"
+
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets" />
 
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
-      AND $(USE_WHISPER_NOAVX_TESTS) == ''
-      AND $(USE_WHISPER_COREML_TESTS) == ''
-      AND $(USE_WHISPER_OPENVINO_TESTS) == ''
-      AND $(USE_WHISPER_VULKAN_TESTS) == ''"
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 
 	<PropertyGroup>

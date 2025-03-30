@@ -87,7 +87,6 @@ jobs:
          - linux-vulkan
          - windows-openvino
          - linux-openvino
-         - macos-coreml
       uses: ./.github/workflows/dotnet.yml
       secrets: inherit
 
