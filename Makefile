@@ -132,7 +132,7 @@ linux_x64_openvino:
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
 	echo "Path is: `$(PATH)`"
-	cmake -S . -B build/linux-x64-vulkan -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR="$(VULKAN_SDK)/include" -DVulkan_LIBRARY="$(VULKAN_SDK)/lib/libvulkan.so" -DGGML_VULKAN_COOPMAT_GLSLC_SUPPORT=ON $(AVX_SUPPORT) 
+	cmake -S . -B build/linux-x64-vulkan -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR="$(VULKAN_SDK)/include" -DVulkan_LIBRARY="$(VULKAN_SDK)/lib/libvulkan.so" $(AVX_SUPPORT) 
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
 	echo 'LDD VERSION'
