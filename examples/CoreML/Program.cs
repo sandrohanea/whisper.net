@@ -28,12 +28,12 @@ public class Program
         if (!Directory.Exists(coreMlModelcName))
         {
             // Note: The modelc directory needs to be extracted at the same level as the "ggml-base.bin" file (and the current executable).
-            await WhisperGgmlDownloader.GetEncoderCoreMLModelAsync(ggmlType)
+            await WhisperGgmlDownloader.Default.GetEncoderCoreMLModelAsync(ggmlType)
                                        .ExtractToPath(".");
         }
 
         // Optional logging from the native library
-        
+
         using var whisperLogger = LogProvider.AddLogger((level, message) =>
         {
             Console.Write($"{level}: {message}");

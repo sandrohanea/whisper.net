@@ -31,7 +31,7 @@ public class Program
         if (!Directory.Exists(encoderDirectoryName))
         {
             // Note: The encoder directory needs to be extracted
-            await WhisperGgmlDownloader.GetEncoderOpenVinoModelAsync(ggmlType)
+            await WhisperGgmlDownloader.Default.GetEncoderOpenVinoModelAsync(ggmlType)
                                        .ExtractToPath(encoderDirectoryName);
         }
 
@@ -39,7 +39,7 @@ public class Program
         using var whisperFactory = WhisperFactory.FromPath(modelFileName);
 
         // We need to get the path to the xml encoder manifest file
-        var xmlEncoderManifest = Path.Combine(encoderDirectoryName, WhisperGgmlDownloader.GetOpenVinoManifestFileName(ggmlType));
+        var xmlEncoderManifest = Path.Combine(encoderDirectoryName, WhisperGgmlDownloader.Default.GetOpenVinoManifestFileName(ggmlType));
 
         // This section creates the processor object which is used to process the audio file, it uses language `auto` to detect the language of the audio file.
         using var processor = whisperFactory.CreateBuilder()
