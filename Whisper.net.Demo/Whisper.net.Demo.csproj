@@ -1,9 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Condition="'$(EnableCoreML)' != 'true'" Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
-  <Import Condition="'$(EnableCoreML)' == 'true'" Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
-	<PropertyGroup>
+	<Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Condition="'$(EnableCoreML)' == 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
+  <Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) != ''"
+          Project="../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+
+  <PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net9.0</TargetFrameworks>
+		<TargetFramework>net9.0</TargetFramework>
 		<LangVersion>13</LangVersion>
 	</PropertyGroup>
 
