@@ -21,7 +21,7 @@ To install Whisper.net with all the available runtimes, run the following comman
 Or add a package reference in your `.csproj` file:
 
 ```
-    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.7.4" />
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.8.1" />
 ```
 
 `Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
@@ -31,10 +31,10 @@ Or add a package reference in your `.csproj` file:
 To install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, add the following package references:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.7.4" />
+    <PackageReference Include="Whisper.net" Version="1.8.1" />
 ```
 ```
-    <PackageReference Include="Whisper.net.Runtime" Version="1.7.4" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.8.1" />
 ```
 
 ## GPT for Whisper
@@ -66,7 +66,7 @@ The default runtime that uses the CPU for inference. It is available on all plat
  - Linux: `libstdc++6`, `glibc 2.31`
  - macOS: TBD
  - For x86/x64 platforms, the CPU must support AVX, AVX2, FMA and F16C instructions. If your CPU does not support these instructions, you'll need to use the `Whisper.net.Runtime.NoAvx` runtime instead.
-  
+
 #### Supported Platforms
 
 - Windows x86, x64, ARM64
@@ -87,7 +87,7 @@ For CPUs that do not support AVX instructions.
  - Windows: Microsoft Visual C++ Redistributable for at least Visual Studio 2019 (x64) [Download Link](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
  - Linux: `libstdc++6`, `glibc 2.31`
  - macOS: TBD
- 
+
 #### Supported Platforms
 
 - Windows x86, x64, ARM64
@@ -100,7 +100,7 @@ Contains the native whisper.cpp library with NVidia CUDA support enabled.
 #### Examples
 
  - [CUDA usage example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
- 
+
 #### Pre-requisites
 
 - Everything from Whisper.net.Runtime pre-requisites
@@ -177,7 +177,7 @@ The following order of priority will be used by default:
 To change the order or force a specific runtime, set the `RuntimeLibraryOrder` on the `RuntimeOptions`:
 
 ```csharp
-RuntimeOptions.RuntimeLibraryOrder = 
+RuntimeOptions.RuntimeLibraryOrder =
 [
     RuntimeLibrary.CoreML,
     RuntimeLibrary.OpenVino,
