@@ -33,7 +33,7 @@ jobs:
 
    windows:
       uses: ./.github/workflows/windows-native-build.yml
-      
+
    windows-no-avx:
       uses: ./.github/workflows/windows-noavx-native-build.yml
 
@@ -58,7 +58,7 @@ jobs:
 
    windows-openvino:
       uses: ./.github/workflows/windows-openvino-native-build.yml
-      
+
    linux-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
@@ -76,6 +76,11 @@ jobs:
          - windows
          - wasm
          - linux
+         - windows-vulkan
+         - linux-vulkan
+         - windows-openvino
+         - linux-openvino
+         - macos-coreml
       uses: ./.github/workflows/dotnet.yml
       secrets: inherit
 
