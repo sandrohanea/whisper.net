@@ -9,5 +9,4 @@ internal interface INativeCuda : IDisposable
     public delegate int cudaGetDeviceCount(out int count);
 
     cudaGetDeviceCount CudaGetDeviceCount { get; }
-
 }

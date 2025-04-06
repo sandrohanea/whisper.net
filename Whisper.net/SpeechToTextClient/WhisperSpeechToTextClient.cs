@@ -108,16 +108,15 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
                 processorBuilder.WithLanguage(options!.SpeechLanguage!);
             }
 
-            if (GetAdditionalProperty<int>("AudioContextSize", options!, out var audioContextSize))
+            if (GetAdditionalProperty<int>(SpeechToTextOptionsExtensions.AudioContextSizeKey, options!, out var audioContextSize))
             {
                 processorBuilder.WithAudioContextSize(audioContextSize);
             }
 
-            if (GetAdditionalProperty<bool>("BeamSearchSamplingStrategy", options!, out var beamSearchSamplingStrategy) && beamSearchSamplingStrategy)
+            if (GetAdditionalProperty<bool>(SpeechToTextOptionsExtensions.BeamSearchSamplingStrategyKey, options!, out var beamSearchSamplingStrategy) && beamSearchSamplingStrategy)
             {
                 processorBuilder.WithBeamSearchSamplingStrategy();
             }
-
 
             /*
             processorBuilder.WithDuration(options?.Duration ?? TimeSpan.MinValue);

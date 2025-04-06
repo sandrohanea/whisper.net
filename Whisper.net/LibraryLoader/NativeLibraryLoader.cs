@@ -250,7 +250,6 @@ public static class NativeLibraryLoader
                     WhisperLogger.Log(WhisperLogLevel.Debug, $"Runtime directory for {library} not found in {runtimePath}");
                 }
             }
-
         }
     }
 
@@ -272,5 +271,4 @@ public static class NativeLibraryLoader
         }
 #endif
     }
-
 }

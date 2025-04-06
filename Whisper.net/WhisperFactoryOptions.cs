@@ -90,5 +90,4 @@ public struct WhisperFactoryOptions
     /// By default, it is false and the model is loaded right away.
     /// </remarks>
     public bool DelayInitialization { get; set; }
-
 }
