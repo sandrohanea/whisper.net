@@ -1,10 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
-  <Import Condition="'$(EnableCoreML)' == 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
-  <Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) != ''"
-          Project="../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''" Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Condition="'$(EnableCoreML)' == 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''" Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
+  <Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) != ''" Project="../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
 
   <PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -14,6 +11,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="CommandLineParser" />
+	  <PackageReference Include="Whisper.net.Allruntimes" />
 	</ItemGroup>
 
 	<ItemGroup>

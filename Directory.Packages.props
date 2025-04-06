@@ -4,6 +4,7 @@
   <ItemGroup>
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.5.0-preview.1.25204.8" />
     <PackageVersion Include="System.Memory" Version="4.6.2" />
     <PackageVersion Include="System.IO.Compression" Version="4.3.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
@@ -11,7 +12,7 @@
     <!-- Tests -->
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="Whisper.net.AllRuntimes" Version="1.7.4" />
+    <PackageVersion Include="Whisper.net.AllRuntimes" Version="1.8.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
     <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.25174.1" />
