@@ -73,7 +73,7 @@ async Task FullDetection(Options opt)
     using var processor = builder.Build();
 
     using var fileStream = File.OpenRead(opt.FileName);
-
+    Console.WriteLine($"Using {nameof(WhisperProcessor)}:\n");
     await foreach (var segment in processor.ProcessAsync(fileStream, CancellationToken.None))
     {
         Console.WriteLine($"New Segment: {segment.Start} ==> {segment.End} : {segment.Text}");
@@ -95,6 +95,7 @@ async Task FullDetectionSpeechToText(Options opt)
 
     using var fileStream = File.OpenRead(opt.FileName);
 
+    Console.WriteLine($"\nUsing {nameof(ISpeechToTextClient)}:\n");
     await foreach (var segment in speechToTextClient.GetStreamingTextAsync(fileStream, options, CancellationToken.None))
     {
         Console.WriteLine($"New Segment: {segment.StartTime} ==> {segment.EndTime} : {segment.Text}");
