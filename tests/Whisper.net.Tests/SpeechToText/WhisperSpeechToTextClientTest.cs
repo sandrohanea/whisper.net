@@ -184,7 +184,6 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
         var result3 = await client.GetTextAsync(fileReader3, options);
         var segments3 = Assert.IsAssignableFrom<IEnumerable<SegmentData>>(result3.RawRepresentation);
 
-
         Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
         Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
     }

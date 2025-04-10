@@ -280,7 +280,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// Returns the strings in the given <paramref name="segmentData"/> to the string pool.
     /// </summary>
     /// <remarks>
-    /// This method should be used when <seealso cref="WhisperProcessorBuilder.WithStringPooling(bool)"/> was activated.
+    /// This method should be used when <seealso cref="WhisperProcessorBuilder.WithStringPool(IStringPool?)"/> was activated.
     /// Once a <paramref name="segmentData"/> is returned, the string values inside it (e.g. <seealso cref="SegmentData.Text"/>) might be changed.
     /// </remarks>
     public void Return(SegmentData segmentData)
