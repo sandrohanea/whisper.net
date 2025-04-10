@@ -16,6 +16,7 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
     private readonly Func<WhisperFactory> _buildFactoryFunc;
     private WhisperFactory? _factory;
     private readonly object _factoryLock = new();
+    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WhisperSpeechToTextClient"/> class.
@@ -46,6 +47,7 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
     /// </summary>
     /// <returns>The WhisperFactory instance.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the factory builder returns null.</exception>
+    /// <exception cref="ObjectDisposedException">Thrown when the client has been disposed.</exception>
     private WhisperFactory GetFactory()
     {
         if (_factory is not null)
@@ -55,13 +57,18 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 
         lock (_factoryLock)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(WhisperSpeechToTextClient));
+            }
+
             if (_factory is not null)
             {
                 return _factory;
             }
 
             _factory = _buildFactoryFunc();
-            
+
             if (_factory is null)
             {
                 throw new ArgumentNullException(nameof(_factory));
@@ -73,10 +80,21 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 
     public void Dispose()
     {
+        if (_disposed)
+        {
+            return;
+        }
+
         lock (_factoryLock)
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             _factory?.Dispose();
             _factory = null;
+            _disposed = true;
         }
     }
 
@@ -87,12 +105,17 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 
     public async IAsyncEnumerable<SpeechToTextResponseUpdate> GetStreamingTextAsync(Stream audioSpeechStream, SpeechToTextOptions? options = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(WhisperSpeechToTextClient));
+        }
+
         if (audioSpeechStream is null)
         {
             throw new ArgumentNullException(nameof(audioSpeechStream));
         }
 
-        using var processor = options.BuildWhisperProcessor(GetFactory());
+        await using var processor = options.BuildWhisperProcessor(GetFactory());
 
         var responseId = Guid.NewGuid().ToString();
         await foreach (var segment in processor.ProcessAsync(audioSpeechStream, cancellationToken))
@@ -115,6 +138,11 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 
     public async Task<SpeechToTextResponse> GetTextAsync(Stream audioSpeechStream, SpeechToTextOptions? options = null, CancellationToken cancellationToken = default)
     {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(WhisperSpeechToTextClient));
+        }
+
         if (audioSpeechStream is null)
         {
             throw new ArgumentNullException(nameof(audioSpeechStream));
@@ -122,7 +150,7 @@ public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 
         SpeechToTextResponse response = new();
 
-        using var processor = options?.BuildWhisperProcessor(GetFactory()) ?? GetFactory().CreateBuilder().Build();
+        await using var processor = options?.BuildWhisperProcessor(GetFactory()) ?? GetFactory().CreateBuilder().Build();
 
         StringBuilder fullTranscription = new();
         List<SegmentData> segments = [];

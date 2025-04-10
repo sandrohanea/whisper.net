@@ -67,7 +67,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         }
 
         using var client = new WhisperSpeechToTextClient(FactoryBuilder);
-        
+
         // Assert - Before
         Assert.Null(GetFactoryField(client));
         Assert.False(factoryBuilderCalled, "Factory builder should not be called until needed");
@@ -94,7 +94,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         }
 
         using var client = new WhisperSpeechToTextClient(FactoryBuilder);
-        
+
         // Assert - Before
         Assert.Null(GetFactoryField(client));
         Assert.False(factoryBuilderCalled, "Factory builder should not be called until needed");
@@ -171,6 +171,58 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Assert
         // After disposal, the factory field should be null
         Assert.Null(GetFactoryField(client));
+    }
+
+    [Fact]
+    public async Task AfterDispose_GetTextAsync_ShouldThrowObjectDisposedException()
+    {
+        // Arrange
+        var client = new WhisperSpeechToTextClient(_model.ModelFile);
+        var options = new SpeechToTextOptions().WithLanguage("en");
+
+        // Initialize the client by using it once
+        using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
+        {
+            await client.GetTextAsync(fileReader, options);
+        }
+
+        // Act - Dispose the client
+        client.Dispose();
+
+        // Assert - Attempting to use the client after disposal should throw ObjectDisposedException
+        using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => client.GetTextAsync(fileReader2, options));
+    }
+
+    [Fact]
+    public async Task AfterDispose_GetStreamingTextAsync_ShouldThrowObjectDisposedException()
+    {
+        // Arrange
+        var client = new WhisperSpeechToTextClient(_model.ModelFile);
+        var options = new SpeechToTextOptions().WithLanguage("en");
+
+        // Initialize the client by using it once
+        using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
+        {
+            await foreach (var _ in client.GetStreamingTextAsync(fileReader, options))
+            {
+                // Just consume the stream
+                break; // We only need to process one item to initialize the client
+            }
+        }
+
+        // Act - Dispose the client
+        client.Dispose();
+
+        // Assert - Attempting to use the client after disposal should throw ObjectDisposedException
+        using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
+        {
+            await foreach (var _ in client.GetStreamingTextAsync(fileReader2, options))
+            {
+                // This should throw before we get here
+            }
+        });
     }
 
     [Fact]
