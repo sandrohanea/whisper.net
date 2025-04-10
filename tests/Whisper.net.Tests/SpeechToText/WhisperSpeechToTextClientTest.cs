@@ -9,17 +9,17 @@ using static Whisper.net.Tests.ProcessAsyncFunctionalTests;
 namespace Whisper.net.Tests;
 public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
-    /*
     [Fact]
     public async Task TestHappyFlowAsync()
     {
         var segments = new List<SegmentData>();
-        var segmentsEnumerated = new List<SegmentData>();
+        var updatesEnumerated = new List<SpeechToTextResponseUpdate>();
         var progress = new List<int>();
 
         var encoderBegins = new List<EncoderBeginData>();
         using var factory = WhisperFactory.FromPath(model.ModelFile);
-        using var processor = factory.CreateBuilder()
+
+        var options = new SpeechToTextOptions()
                         .WithLanguage("en")
                         .WithEncoderBeginHandler((e) =>
                         {
@@ -27,53 +27,57 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
                             return true;
                         })
                         .WithProgressHandler(progress.Add)
-                        .WithSegmentEventHandler(segments.Add)
-                        .Build();
+                        .WithSegmentEventHandler(segments.Add);
+
+        using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var data in processor.ProcessAsync(fileReader))
+        await foreach (var data in client.GetStreamingTextAsync(fileReader, options))
         {
-            segmentsEnumerated.Add(data);
+            updatesEnumerated.Add(data);
         }
 
-        Assert.Equal(segments, segmentsEnumerated);
+        Assert.Equal(segments, updatesEnumerated.Select(u => u.RawRepresentation));
         Assert.True(segments.Count > 0);
         Assert.True(progress.SequenceEqual(progress.OrderBy(x => x)));
         Assert.True(progress.Count > 1);
         Assert.Single(encoderBegins);
         Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
+        Assert.Contains(updatesEnumerated, update => update.Text.Contains("nation should commit"));
     }
 
     [Fact]
-    public async Task ProcessAsync_Cancelled_WillCancellTheProcessing_AndDispose_WillWaitUntilFullyFinished()
+    public async Task WithSegmentEventHandler_Cancelled_WillCancellTheProcessing_AndDispose()
     {
         var segments = new List<SegmentData>();
-        var segmentsEnumerated = new List<SegmentData>();
+        var segmentsEnumerated = new List<SpeechToTextResponseUpdate>();
         var cts = new CancellationTokenSource();
         TaskCanceledException? taskCanceledException = null;
 
         var encoderBegins = new List<EncoderBeginData>();
         using var factory = WhisperFactory.FromPath(model.ModelFile);
-        var processor = factory.CreateBuilder()
-                        .WithLanguage("en")
-                        .WithEncoderBeginHandler((e) =>
-                        {
-                            encoderBegins.Add(e);
-                            return true;
-                        })
-                        .WithSegmentEventHandler(s =>
-                        {
-                            segments.Add(s);
-                            cts.Cancel();
-                        })
-                        .Build();
+
+        var options = new SpeechToTextOptions()
+            .WithLanguage("en")
+            .WithEncoderBeginHandler((e) =>
+            {
+                encoderBegins.Add(e);
+                return true;
+            })
+            .WithSegmentEventHandler(s =>
+            {
+                segments.Add(s);
+                cts.Cancel();
+            });
+
+        var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         try
         {
-            await foreach (var data in processor.ProcessAsync(fileReader, cts.Token))
+            await foreach (var update in client.GetStreamingTextAsync(fileReader, options, cts.Token))
             {
-                segmentsEnumerated.Add(data);
+                segmentsEnumerated.Add(update);
             }
         }
         catch (TaskCanceledException ex)
@@ -81,11 +85,11 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
             taskCanceledException = ex;
         }
 
-        await processor.DisposeAsync();
+        client.Dispose();
 
         Assert.Empty(segmentsEnumerated);
-        Assert.Single( segments);
-        Assert.Single( encoderBegins);
+        Assert.Single(segments);
+        Assert.Single(encoderBegins);
         Assert.NotNull(taskCanceledException);
         Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
     }
@@ -93,17 +97,18 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
     [Fact]
     public async Task ProcessAsync_WhenJunkChunkExists_ProcessCorrectly()
     {
-        var segments = new List<SegmentData>();
+        var segments = new List<SpeechToTextResponseUpdate>();
 
         using var factory = WhisperFactory.FromPath(model.ModelFile);
-        await using var processor = factory.CreateBuilder()
-                        .WithLanguage("en")
-                        .Build();
+        var options = new SpeechToTextOptions()
+                        .WithLanguage("en");
+
+        using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("junkchunk16khz.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader, options))
         {
-            segments.Add(segment);
+            segments.Add(update);
         }
 
         Assert.True(segments.Count >= 1);
@@ -112,21 +117,22 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
     [Fact]
     public async Task ProcessAsync_WhenMultichannel_ProcessCorrectly()
     {
-        var segments = new List<SegmentData>();
+        var segments = new List<SpeechToTextResponseUpdate>();
 
         using var factory = WhisperFactory.FromPath(model.ModelFile);
-        await using var processor = factory.CreateBuilder()
-                        .WithLanguage("en")
-                        .Build();
+        var options = new SpeechToTextOptions()
+                        .WithLanguage("en");
+
+        using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader, options))
         {
-            segments.Add(segment);
+            segments.Add(update);
         }
 
         Assert.True(segments.Count >= 1);
-    }*/
+    }
 
     [Fact]
     public async Task GetStreamingTextAsync_CalledMultipleTimes_Serially_WillCompleteEverytime()
@@ -135,7 +141,7 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
         var updates2 = new List<SpeechToTextResponseUpdate>();
         var updates3 = new List<SpeechToTextResponseUpdate>();
 
-        var client = new WhisperSpeechToTextClient(model.ModelFile);
+        using var client = new WhisperSpeechToTextClient(model.ModelFile);
         var options = new SpeechToTextOptions().WithLanguage("en");
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
@@ -163,7 +169,7 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
     [Fact]
     public async Task GetTextAsync_CalledMultipleTimes_Serially_WillCompleteEverytime()
     {
-        var client = new WhisperSpeechToTextClient(model.ModelFile);
+        using var client = new WhisperSpeechToTextClient(model.ModelFile);
         var options = new SpeechToTextOptions().WithLanguage("en");
 
         using var fileReader1 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
