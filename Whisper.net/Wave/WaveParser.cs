@@ -252,7 +252,8 @@ public sealed class WaveParser(Stream waveStream)
                 yield return currentSamples;
                 sampleIndex++;
             }
-        };
+        }
+
         if (sampleIndex < SamplesCount)
         {
             throw new CorruptedWaveException("Invalid wave file, the size is too small and couldn't read all the samples.");

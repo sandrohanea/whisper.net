@@ -1,6 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System.Globalization;
 using Foundation;
 using Microsoft.DotNet.XHarness.TestRunners.Common;
 using Microsoft.DotNet.XHarness.TestRunners.Xunit;
@@ -14,7 +13,7 @@ public class TestApplicationDelegate : UIApplicationDelegate
 {
     public override UIWindow? Window { get; set; }
 
-    public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
+    public override bool FinishedLaunching(UIApplication application, NSDictionary? launchOptions)
     {
         Window = new UIWindow(UIScreen.MainScreen.Bounds)
         {

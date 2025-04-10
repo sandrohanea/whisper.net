@@ -16,7 +16,6 @@ jobs:
 
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
           
       - name: Install Ninja
         id: install_ninja
@@ -43,7 +42,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
           
       - name: Install Ninja
         id: install_ninja
