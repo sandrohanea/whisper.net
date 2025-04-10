@@ -8,15 +8,76 @@ using Microsoft.Extensions.AI;
 
 namespace Whisper.net;
 
-public sealed class WhisperSpeechToTextClient(string modelFileName) : ISpeechToTextClient
+/// <summary>
+/// Client for speech-to-text operations using Whisper models.
+/// </summary>
+public sealed class WhisperSpeechToTextClient : ISpeechToTextClient
 {
-    private readonly WhisperFactory _factory = WhisperFactory.FromPath(modelFileName);
-    private WhisperProcessor? _processor;
+    private readonly Func<WhisperFactory> _buildFactoryFunc;
+    private WhisperFactory? _factory;
+    private readonly object _factoryLock = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WhisperSpeechToTextClient"/> class.
+    /// </summary>
+    /// <param name="modelFileName">The path to the model file.</param>
+    public WhisperSpeechToTextClient(string modelFileName)
+        : this(() => WhisperFactory.FromPath(modelFileName))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WhisperSpeechToTextClient"/> class with a factory builder function.
+    /// </summary>
+    /// <param name="buildFactoryFunc">A function that creates a WhisperFactory instance.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the factory builder is null.</exception>
+    public WhisperSpeechToTextClient(Func<WhisperFactory> buildFactoryFunc)
+    {
+        if (buildFactoryFunc is null)
+        {
+            throw new ArgumentNullException(nameof(buildFactoryFunc));
+        }
+
+        _buildFactoryFunc = buildFactoryFunc;
+    }
+
+    /// <summary>
+    /// Gets the WhisperFactory instance, creating it if it doesn't exist yet.
+    /// </summary>
+    /// <returns>The WhisperFactory instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the factory builder returns null.</exception>
+    private WhisperFactory GetFactory()
+    {
+        if (_factory is not null)
+        {
+            return _factory;
+        }
+
+        lock (_factoryLock)
+        {
+            if (_factory is not null)
+            {
+                return _factory;
+            }
+
+            _factory = _buildFactoryFunc();
+            
+            if (_factory is null)
+            {
+                throw new ArgumentNullException(nameof(_factory));
+            }
+
+            return _factory;
+        }
+    }
 
     public void Dispose()
     {
-        _processor?.Dispose();
-        _factory?.Dispose();
+        lock (_factoryLock)
+        {
+            _factory?.Dispose();
+            _factory = null;
+        }
     }
 
     public object? GetService(Type serviceType, object? serviceKey = null)
@@ -31,10 +92,10 @@ public sealed class WhisperSpeechToTextClient(string modelFileName) : ISpeechToT
             throw new ArgumentNullException(nameof(audioSpeechStream));
         }
 
-        this._processor ??= options.BuildWhisperProcessor(_factory);
+        using var processor = options.BuildWhisperProcessor(GetFactory());
 
         var responseId = Guid.NewGuid().ToString();
-        await foreach (var segment in _processor!.ProcessAsync(audioSpeechStream, cancellationToken))
+        await foreach (var segment in processor.ProcessAsync(audioSpeechStream, cancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -61,12 +122,12 @@ public sealed class WhisperSpeechToTextClient(string modelFileName) : ISpeechToT
 
         SpeechToTextResponse response = new();
 
-        this._processor ??= options.BuildWhisperProcessor(_factory);
+        using var processor = options?.BuildWhisperProcessor(GetFactory()) ?? GetFactory().CreateBuilder().Build();
 
         StringBuilder fullTranscription = new();
         List<SegmentData> segments = [];
 
-        await foreach (var segment in _processor!.ProcessAsync(audioSpeechStream, cancellationToken))
+        await foreach (var segment in processor.ProcessAsync(audioSpeechStream, cancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
             {
