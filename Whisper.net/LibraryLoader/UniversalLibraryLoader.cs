@@ -1,7 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 #if !NETSTANDARD
-using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
 

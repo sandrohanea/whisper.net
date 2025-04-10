@@ -19,5 +19,4 @@ public partial class ProcessAsyncFunctionalTests
             return obj.Text.GetHashCode();
         }
     }
-
 }

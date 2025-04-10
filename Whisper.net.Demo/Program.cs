@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using CommandLine;
+using Microsoft.Extensions.AI;
 using Whisper.net;
 using Whisper.net.Ggml;
 using Whisper.net.Wave;
@@ -26,6 +27,7 @@ async Task Demo(Options opt)
         case "transcribe":
         case "translate":
             await FullDetection(opt);
+            await FullDetectionSpeechToText(opt);
             break;
         default:
             Console.WriteLine("Unknown command");
@@ -71,12 +73,35 @@ async Task FullDetection(Options opt)
     using var processor = builder.Build();
 
     using var fileStream = File.OpenRead(opt.FileName);
-
+    Console.WriteLine($"Using {nameof(WhisperProcessor)}:\n");
     await foreach (var segment in processor.ProcessAsync(fileStream, CancellationToken.None))
     {
         Console.WriteLine($"New Segment: {segment.Start} ==> {segment.End} : {segment.Text}");
     }
 }
+
+#pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+async Task FullDetectionSpeechToText(Options opt)
+{
+    // Same factory can be used by multiple task to create processors.
+    using var speechToTextClient = new WhisperSpeechToTextClient(opt.ModelName);
+
+    var options = new SpeechToTextOptions().WithLanguage(opt.Language);
+
+    if (opt.Command == "translate")
+    {
+        options.WithTranslate();
+    }
+
+    using var fileStream = File.OpenRead(opt.FileName);
+
+    Console.WriteLine($"\nUsing {nameof(ISpeechToTextClient)}:\n");
+    await foreach (var segment in speechToTextClient.GetStreamingTextAsync(fileStream, options, CancellationToken.None))
+    {
+        Console.WriteLine($"New Segment: {segment.StartTime} ==> {segment.EndTime} : {segment.Text}");
+    }
+}
+#pragma warning restore MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 /// <summary>
 /// The options for this Demo

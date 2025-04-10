@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
   <Import Condition="'$(EnableCoreML)' == 'true' AND $(USE_WHISPER_NOAVX_TESTS) == ''"
