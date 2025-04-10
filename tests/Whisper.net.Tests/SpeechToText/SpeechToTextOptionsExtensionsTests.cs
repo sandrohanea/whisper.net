@@ -5,7 +5,7 @@ using Xunit;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-namespace Whisper.net.Tests;
+namespace Whisper.net.Tests.SpeechToText;
 
 public class SpeechToTextOptionsExtensionsTests
 {
@@ -746,7 +746,7 @@ public class SpeechToTextOptionsExtensionsTests
     // Helper class for testing
     private class TestStringPool : IStringPool
     {
-        public string? GetStringUtf8(IntPtr nativeUtf8) 
+        public string? GetStringUtf8(IntPtr nativeUtf8)
         {
             return null;
         }

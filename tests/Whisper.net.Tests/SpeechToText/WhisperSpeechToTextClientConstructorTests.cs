@@ -6,7 +6,7 @@ using Xunit;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-namespace Whisper.net.Tests;
+namespace Whisper.net.Tests.SpeechToText;
 
 public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModelFixture>
 {
@@ -32,7 +32,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
     public void Constructor_WithFactoryBuilder_ShouldNotCreateFactoryImmediately()
     {
         // Arrange
-        bool factoryBuilderCalled = false;
+        var factoryBuilderCalled = false;
         WhisperFactory FactoryBuilder()
         {
             factoryBuilderCalled = true;
@@ -116,7 +116,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
     public async Task MultipleRequests_ShouldReuseFactory()
     {
         // Arrange
-        int factoryBuilderCallCount = 0;
+        var factoryBuilderCallCount = 0;
         WhisperFactory FactoryBuilder()
         {
             factoryBuilderCallCount++;
