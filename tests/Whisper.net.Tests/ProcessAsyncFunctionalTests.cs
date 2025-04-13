@@ -27,7 +27,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
             .WithSegmentEventHandler(segments.Add)
             .Build();
 
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         await foreach (var data in processor.ProcessAsync(fileReader))
         {
             segmentsEnumerated.Add(data);
@@ -65,7 +65,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
             })
             .Build();
 
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         try
         {
             await foreach (var data in processor.ProcessAsync(fileReader, cts.Token))
@@ -97,7 +97,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
             .WithLanguage("en")
             .Build();
 
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("junkchunk16khz.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("junkchunk16khz.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments.Add(segment);
@@ -116,7 +116,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
             .WithLanguage("en")
             .Build();
 
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments.Add(segment);
@@ -137,19 +137,19 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
             .WithLanguage("en")
             .Build();
 
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments1.Add(segment);
         }
 
-        await using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader2))
         {
             segments2.Add(segment);
         }
 
-        await using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         await foreach (var segment in processor.ProcessAsync(fileReader3))
         {
             segments3.Add(segment);
@@ -167,7 +167,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
         var segments3 = new List<SegmentData>();
 
         using var factory = WhisperFactory.FromPath(model.ModelFile);
-        await using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var waveParser = new WaveParser(fileReader);
         var samples = await waveParser.GetAvgSamplesAsync();
 
