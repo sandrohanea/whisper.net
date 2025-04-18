@@ -16,6 +16,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Install aarch64-linux-gnu-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+
+      - name: Install gcc-arm-linux-gnueabihf
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
