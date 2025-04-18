@@ -3,7 +3,7 @@
   https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management-->
   <ItemGroup>
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.3" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.4.0-preview.1.25207.5" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.IO.Compression" Version="4.3.0" />
