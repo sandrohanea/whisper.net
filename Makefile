@@ -48,7 +48,7 @@ copy_metal_coreml:
 wasm:
 	rm -rf build/wasm
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
-	emcmake cmake --build build/wasm
+	cmake cmake --build build/wasm
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
 	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
