@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
 
       - name: Run apple build for x64
         run: make apple_x64
@@ -36,7 +35,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
 
       - name: Run apple build for arm
         run: make apple_arm

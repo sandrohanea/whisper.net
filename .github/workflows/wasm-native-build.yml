@@ -9,13 +9,12 @@ on:
 
 jobs:
   native-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
 
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021

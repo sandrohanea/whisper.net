@@ -9,13 +9,12 @@ on:
 
 jobs:
   native-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-          ref: ${{ github.head_ref }}
 
       - name: Install aarch64-linux-gnu-gcc
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu

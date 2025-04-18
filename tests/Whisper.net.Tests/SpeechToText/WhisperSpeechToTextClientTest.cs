@@ -6,7 +6,7 @@ using static Whisper.net.Tests.ProcessAsyncFunctionalTests;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-namespace Whisper.net.Tests;
+namespace Whisper.net.Tests.SpeechToText;
 public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
     [Fact]
@@ -183,13 +183,12 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : ICl
         using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var result3 = await client.GetTextAsync(fileReader3, options);
         var segments3 = Assert.IsAssignableFrom<IEnumerable<SegmentData>>(result3.RawRepresentation);
-        
 
         Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
         Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
     }
 
-    private  class UpdateDataComparer : IEqualityComparer<SpeechToTextResponseUpdate>
+    private class UpdateDataComparer : IEqualityComparer<SpeechToTextResponseUpdate>
     {
         public bool Equals(SpeechToTextResponseUpdate? xUpdate, SpeechToTextResponseUpdate? yUpdate)
         {

@@ -652,7 +652,7 @@ public static class SpeechToTextOptionsExtensions
 
         if (GetAdditionalProperty<string>(LanguageKey, options!, out var language) && !string.IsNullOrEmpty(language))
         {
-            processorBuilder.WithLanguage(language);
+            processorBuilder.WithLanguage(language!);
         }
 
         if (GetAdditionalProperty<bool>(LanguageDetectionKey, options!, out var languageDetection) && languageDetection)

@@ -4,7 +4,7 @@ namespace Whisper.net;
 
 public struct WhisperFactoryOptions
 {
-    public static WhisperFactoryOptions Default => new WhisperFactoryOptions();
+    public static WhisperFactoryOptions Default => new();
 
     public WhisperFactoryOptions()
     {
