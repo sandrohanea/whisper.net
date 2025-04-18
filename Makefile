@@ -48,6 +48,8 @@ copy_metal_coreml:
 wasm:
 	rm -rf build/wasm
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	which cmake
+	cmake --version
 	whoami
 	echo '-----start'
 	cat -n build/wasm/Makefile
