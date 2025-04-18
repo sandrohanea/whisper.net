@@ -48,6 +48,10 @@ copy_metal_coreml:
 wasm:
 	rm -rf build/wasm
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	whoami
+	echo '-----start'
+	cat -n build/wasm/Makefile
+	echo '-------end'
 	ls -l build/wasm
 	cmake --build build/wasm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
