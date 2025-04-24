@@ -22,14 +22,13 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
-      - name: Check cmake version 1
-        run: cmake --version
-
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
       - name: Check cmake version 2 
-        run: cmake --version
+        run: |
+         which cmake
+         cmake --version
 
       - name: Run wasm build
         run: make wasm
