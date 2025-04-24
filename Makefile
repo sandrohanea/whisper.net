@@ -58,6 +58,7 @@ wasm:
 	  cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a; \
 	  cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a; \
 	  cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a; \
+	  '
 
 linux_x64:
 	rm -rf build/linux-x64
