@@ -45,6 +45,7 @@ copy_metal:
 copy_metal_coreml:
 	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
 
+ # WASM hack to run under bash as emcmake overrides env variables and cannot run cmake anymore.
 wasm:
 	/bin/bash -c '\
 	  CMAKE_BIN=$$(which cmake); \
