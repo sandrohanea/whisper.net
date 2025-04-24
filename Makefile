@@ -46,17 +46,18 @@ copy_metal_coreml:
 	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
 
 wasm:
-	CMAKE_BIN=$(shell which cmake)
-	echo "Using cmake: $$CMAKE_BIN"
-	/bin/bash -c "$$CMAKE_BIN --version"
-	rm -rf build/wasm
-	emcmake /bin/bash -c "$$CMAKE_BIN -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)"
-	/bin/bash -c "$$CMAKE_BIN --build build/wasm --config $(BUILD_TYPE)"
-	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
-	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a
+	/bin/bash -c '\
+	  CMAKE_BIN=$$(which cmake); \
+	  echo "Using cmake: $$CMAKE_BIN"; \
+	  $$CMAKE_BIN --version; \
+	  rm -rf build/wasm; \
+	  emcmake $$CMAKE_BIN -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE); \
+	  $$CMAKE_BIN --build build/wasm --config $(BUILD_TYPE); \
+	  mkdir -p runtimes/Whisper.net.Runtime/browser-wasm; \
+	  cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a; \
 
 linux_x64:
 	rm -rf build/linux-x64
