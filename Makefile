@@ -51,11 +51,6 @@ wasm:
 	which cmake
 	ls -l /usr/local/bin/cmake
 	cmake --version
-	whoami
-	echo '-----start'
-	cat -n build/wasm/Makefile
-	echo '-------end'
-	ls -l build/wasm
 	cmake --build build/wasm --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
 	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a

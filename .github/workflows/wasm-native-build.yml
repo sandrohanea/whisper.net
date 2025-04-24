@@ -27,8 +27,11 @@ jobs:
 
       - name: Check cmake version 2 
         run: |
-         which cmake
-         cmake --version
+           rm -rf build/wasm
+           emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=Release
+           which cmake
+           ls -l /usr/local/bin/cmake
+           cmake --version
 
       - name: Run wasm build
         run: make wasm
