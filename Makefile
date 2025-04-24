@@ -49,6 +49,7 @@ wasm:
 	rm -rf build/wasm
 	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 	which cmake
+	ls -l /usr/local/bin/cmake
 	cmake --version
 	whoami
 	echo '-----start'
