@@ -22,6 +22,9 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
+      - name: Install CMake
+        run: sudo apt-get install -y cmake
+
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
