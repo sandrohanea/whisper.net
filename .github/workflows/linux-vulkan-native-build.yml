@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -38,7 +43,7 @@ jobs:
           
       - name: Run linux
         run: |
-          make linux_vulkan
+          make linux_vulkan BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Linux Vulkan Build Artifacts
         uses: actions/upload-artifact@v4

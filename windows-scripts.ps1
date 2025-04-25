@@ -142,17 +142,17 @@ function BuildWindows() {
     }
 
     # Copy the generated DLLs (assuming same folder structure/names)
-    Move-Item "$buildDirectory/bin/Release/whisper.dll" "$runtimePath/whisper.dll" -Force
-    Move-Item "$buildDirectory/bin/Release/ggml-whisper.dll" "$runtimePath/ggml-whisper.dll" -Force
-    Move-Item "$buildDirectory/bin/Release/ggml-base-whisper.dll" "$runtimePath/ggml-base-whisper.dll" -Force
-    Move-Item "$buildDirectory/bin/Release/ggml-cpu-whisper.dll" "$runtimePath/ggml-cpu-whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/$Configuration/whisper.dll" "$runtimePath/whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/$Configuration/ggml-whisper.dll" "$runtimePath/ggml-whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/$Configuration/ggml-base-whisper.dll" "$runtimePath/ggml-base-whisper.dll" -Force
+    Move-Item "$buildDirectory/bin/$Configuration/ggml-cpu-whisper.dll" "$runtimePath/ggml-cpu-whisper.dll" -Force
 
     if ($Cuda) {
-        Move-Item "$buildDirectory/bin/Release/ggml-cuda-whisper.dll" "$runtimePath/ggml-cuda-whisper.dll" -Force
+        Move-Item "$buildDirectory/bin/$Configuration/ggml-cuda-whisper.dll" "$runtimePath/ggml-cuda-whisper.dll" -Force
     }
 
     if ($Vulkan) {
-        Move-Item "$buildDirectory/bin/Release/ggml-vulkan-whisper.dll" "$runtimePath/ggml-vulkan-whisper.dll" -Force
+        Move-Item "$buildDirectory/bin/$Configuration/ggml-vulkan-whisper.dll" "$runtimePath/ggml-vulkan-whisper.dll" -Force
     }
 }
 

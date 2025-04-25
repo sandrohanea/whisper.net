@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -27,8 +32,9 @@ jobs:
         with:
           cuda: "12.1.0"
 
-      - name: Run linux
-        run: make linux_cuda
+      - name: Run linux-cuda
+        run: |
+          make linux_cuda BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Remove CUDA installer
         run: rm -rf cuda_installer-*

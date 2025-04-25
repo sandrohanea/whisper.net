@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -26,7 +31,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
       - name: Run wasm build
-        run: make wasm
+        run: make wasm BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Remove Emscripten
         run: rm -rf emsdk*

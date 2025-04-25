@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -24,8 +29,8 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindows -Arch "x64" -Configuration "Release"  -NoAvx $true
-          BuildWindows -Arch "x86" -Configuration "Release"  -NoAvx $true
+          BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }}  -NoAvx $true
+          BuildWindows -Arch "x86" -Configuration ${{ inputs.BuildConfig }}  -NoAvx $true
         shell: pwsh
 
       - name: Upload Windows NoAvx Build Artifacts

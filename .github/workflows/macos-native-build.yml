@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   intel-native-build:
@@ -16,8 +21,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Run apple build for x64
-        run: make apple_x64
+      - name: Run macos build for x64
+        run: |
+          make apple_x64 BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Intel Build Artifacts
         uses: actions/upload-artifact@v4
@@ -37,7 +43,8 @@ jobs:
           submodules: true
 
       - name: Run apple build for arm
-        run: make apple_arm
+        run: |
+          make apple_arm BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Arm Build Artifacts
         uses: actions/upload-artifact@v4

@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -22,13 +27,13 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
-      - name: Run linux
+      - name: Run linux-openvino
         run: |
           wget https://storage.openvinotoolkit.org/repositories/openvino/packages/2024.4/linux/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64.tgz -O openvino.tgz
           mkdir openvino
           tar -xvf openvino.tgz -C openvino
           source openvino/l_openvino_toolkit_ubuntu20_2024.4.0.16579.c3152d32c9c_x86_64/setupvars.sh
-          make linux_x64_openvino
+          make linux_x64_openvino BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Linux OpenVino Build Artifacts
         uses: actions/upload-artifact@v4

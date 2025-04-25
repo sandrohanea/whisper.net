@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: false
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -32,7 +37,7 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindows -Arch "x64" -Cuda $true -Configuration "Release";
+          BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
       - name: Remove CUDA installer
