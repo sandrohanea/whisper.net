@@ -24,6 +24,9 @@ on:
             default: 'Release'
    schedule:
      - cron: '40 17 * * 0'
+  
+env:
+  BUILD_CONFIG: ${{ inputs.BuildConfig || 'Release' }}
 
 jobs:
    codeql-github-actions:
@@ -32,74 +35,74 @@ jobs:
    android:
       uses: ./.github/workflows/android-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    macos:
       uses: ./.github/workflows/macos-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    windows:
       uses: ./.github/workflows/windows-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    windows-no-avx:
       uses: ./.github/workflows/windows-noavx-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    wasm:
       uses: ./.github/workflows/wasm-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    linux:
       uses: ./.github/workflows/linux-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    linux-no-avx:
       uses: ./.github/workflows/linux-noavx-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    linux-vulkan:
       uses: ./.github/workflows/linux-vulkan-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    windows-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    windows-vulkan:
       uses: ./.github/workflows/windows-vulkan-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    windows-openvino:
       uses: ./.github/workflows/windows-openvino-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    linux-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    linux-openvino:
       uses: ./.github/workflows/linux-openvino-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    macos-coreml:
       uses: ./.github/workflows/macos-coreml-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig }}
+         BuildConfig: ${{ env.BUILD_CONFIG }}
 
    dotnet-noavx:
      needs:

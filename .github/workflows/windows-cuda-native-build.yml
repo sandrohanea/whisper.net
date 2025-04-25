@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       BuildConfig:
-        required: false
+        required: true
         type: string
         default: 'Release'
 
