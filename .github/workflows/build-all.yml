@@ -32,74 +32,74 @@ jobs:
    android:
       uses: ./.github/workflows/android-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    macos:
       uses: ./.github/workflows/macos-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    windows:
       uses: ./.github/workflows/windows-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    windows-no-avx:
       uses: ./.github/workflows/windows-noavx-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    wasm:
       uses: ./.github/workflows/wasm-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    linux:
       uses: ./.github/workflows/linux-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    linux-no-avx:
       uses: ./.github/workflows/linux-noavx-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    linux-vulkan:
       uses: ./.github/workflows/linux-vulkan-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    windows-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/windows-cuda-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    windows-vulkan:
       uses: ./.github/workflows/windows-vulkan-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    windows-openvino:
       uses: ./.github/workflows/windows-openvino-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    linux-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    linux-openvino:
       uses: ./.github/workflows/linux-openvino-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    macos-coreml:
       uses: ./.github/workflows/macos-coreml-native-build.yml
       with:
-         BuildConfig: ${{ inputs.BuildConfig || "Release" }}
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
    dotnet-noavx:
      needs:
