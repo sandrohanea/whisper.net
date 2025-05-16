@@ -1,4 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
+
 using Whisper.net.Internals.Native.Implementations;
 using Whisper.net.Logger;
 
@@ -18,7 +19,7 @@ public static class NativeLibraryLoader
 #if IOS || MACCATALYST || TVOS
         WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportInternalWhisper for whisper librar for ios.");
         return LoadResult.Success(new LibraryImportInternalWhisper());
-#elif ANDROID       
+#elif ANDROID
         WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper librar for Android.");
         return LoadResult.Success(new LibraryImportLibWhisper());
 #else
@@ -30,14 +31,26 @@ public static class NativeLibraryLoader
             WhisperLogger.Log(WhisperLogLevel.Debug, "Using LibraryImportLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new LibraryImportLibWhisper());
 #else
-            WhisperLogger.Log(WhisperLogLevel.Debug, "Using DllImportsNativeLibWhisper for whisper library with bypassed loading.");
+            WhisperLogger.Log(WhisperLogLevel.Debug,
+                "Using DllImportsNativeLibWhisper for whisper library with bypassed loading.");
             return LoadResult.Success(new DllImportsNativeLibWhisper());
 #endif
         }
+
         return LoadLibraryComponent();
     }
 
-    private static readonly string[] dependencyOrder = ["ggml-base-whisper", "ggml-cpu-whisper", "ggml-blas-whisper", "ggml-metal-whisper", "ggml-cuda-whisper", "ggml-vulkan-whisper", "ggml-whisper"];
+    private static readonly string[] dependencyOrder =
+    [
+        "ggml-base-whisper",
+        "ggml-cpu-whisper",
+        "ggml-blas-whisper",
+        "ggml-metal-whisper",
+        "ggml-cuda-whisper",
+        "ggml-vulkan-whisper",
+        "ggml-whisper",
+        "whisper.coreml"
+    ];
 
     private static LoadResult LoadLibraryComponent()
     {
@@ -55,7 +68,8 @@ public static class NativeLibraryLoader
             Architecture.X86 => "x86",
             Architecture.Arm => "arm",
             Architecture.Arm64 => "arm64",
-            _ => throw new PlatformNotSupportedException($"Unsupported process architecture: {RuntimeInformation.ProcessArchitecture}")
+            _ => throw new PlatformNotSupportedException(
+                $"Unsupported process architecture: {RuntimeInformation.ProcessArchitecture}")
         };
 
 #if NETSTANDARD
@@ -101,14 +115,17 @@ public static class NativeLibraryLoader
                     {
                         // We cannot open one of the dependencies, we need to close all the opened dependencies and return false.
                         lastError = libraryLoader.GetLastError();
-                        WhisperLogger.Log(WhisperLogLevel.Debug, $"Couldn't load dependency at {dependencyPath}. Received: {lastError}");
+                        WhisperLogger.Log(WhisperLogLevel.Debug,
+                            $"Couldn't load dependency at {dependencyPath}. Received: {lastError}");
                         foreach (var handle in dependenciesHandles)
                         {
                             libraryLoader.CloseLibrary(handle);
                         }
+
                         dependenciesHandles.Clear();
                         continue;
                     }
+
                     dependenciesHandles.Add(dependencyHandle);
                 }
             }
@@ -123,7 +140,9 @@ public static class NativeLibraryLoader
                 {
                     libraryLoader.CloseLibrary(dependency);
                 }
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
+
+                WhisperLogger.Log(WhisperLogLevel.Debug,
+                    $"Failed to load whisper library from {whisperPath}. Error: {lastError}");
                 continue;
             }
 
@@ -144,8 +163,8 @@ public static class NativeLibraryLoader
         if (lastError == null)
         {
             throw new FileNotFoundException($"Native Library not found in default paths." +
-                $"Verify you have have included the native Whisper library in your application, " +
-                $"or install the default libraries with the Whisper.net.Runtime NuGet.");
+                                            $"Verify you have have included the native Whisper library in your application, " +
+                                            $"or install the default libraries with the Whisper.net.Runtime NuGet.");
         }
 
         // Runtime was found but couldn't be loaded.
@@ -164,9 +183,11 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture, List<RuntimeLibrary> runtimeLibraries)
+    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
+        List<RuntimeLibrary> runtimeLibraries)
     {
-        WhisperLogger.Log(WhisperLogLevel.Debug, $"Checking if runtime {runtime} is supported on the platform: {platform}");
+        WhisperLogger.Log(WhisperLogLevel.Debug,
+            $"Checking if runtime {runtime} is supported on the platform: {platform}");
 #if !NETSTANDARD
         // If AVX is not supported, we can't use CPU runtime on Windows and linux (we should use noavx runtime instead).
         if (runtime == RuntimeLibrary.Cpu
@@ -196,7 +217,8 @@ public static class NativeLibraryLoader
                 // + override the default RuntimeLibraryOrder to have only [ Cuda ].
                 // This way, the user can use Cuda if it's available, otherwise, the CPU runtime will be used.
                 // However, the cudart library should be available in the system.
-                WhisperLogger.Log(WhisperLogLevel.Debug, "Cuda runtime is not available, but it's the last runtime in the list. " +
+                WhisperLogger.Log(WhisperLogLevel.Debug,
+                    "Cuda runtime is not available, but it's the last runtime in the list. " +
                     "It will be used as a fallback to the CPU runtime.");
                 return true;
             }
@@ -206,29 +228,27 @@ public static class NativeLibraryLoader
         }
 
         return true;
-
     }
 
-    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture, string platform)
+    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture,
+        string platform)
     {
         var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
         var assemblySearchPaths = new[]
-            {
-                GetSafeDirectoryName(RuntimeOptions.LibraryPath),
-                AppDomain.CurrentDomain.RelativeSearchPath,
-                AppDomain.CurrentDomain.BaseDirectory,
-                GetSafeDirectoryName(assemblyLocation),
-                GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
-            }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
+        {
+            GetSafeDirectoryName(RuntimeOptions.LibraryPath), AppDomain.CurrentDomain.RelativeSearchPath,
+            AppDomain.CurrentDomain.BaseDirectory, GetSafeDirectoryName(assemblyLocation),
+            GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
+        }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
         foreach (var library in RuntimeOptions.RuntimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
                 var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
-                     ? "runtimes"
-                     : Path.Combine(assemblySearchPath, "runtimes");
+                    ? "runtimes"
+                    : Path.Combine(assemblySearchPath, "runtimes");
                 var runtimePath = library switch
                 {
                     RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
@@ -247,7 +267,8 @@ public static class NativeLibraryLoader
                 }
                 else
                 {
-                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Runtime directory for {library} not found in {runtimePath}");
+                    WhisperLogger.Log(WhisperLogLevel.Debug,
+                        $"Runtime directory for {library} not found in {runtimePath}");
                 }
             }
         }
@@ -266,7 +287,8 @@ public static class NativeLibraryLoader
         }
         catch (Exception ex)
         {
-            WhisperLogger.Log(WhisperLogLevel.Debug, $"Failed to get directory name from path: {path}. Error: {ex.Message}");
+            WhisperLogger.Log(WhisperLogLevel.Debug,
+                $"Failed to get directory name from path: {path}. Error: {ex.Message}");
             return null;
         }
 #endif
