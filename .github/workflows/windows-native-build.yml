@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: true
+        type: string
+        default: 'Release'
 
 jobs:
   intel-native-build:
@@ -25,7 +30,7 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindowsIntel
+          BuildWindowsIntel -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
       - name: Upload Windows Build Artifacts
@@ -51,7 +56,7 @@ jobs:
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindowsArm
+          BuildWindowsArm -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
       - name: Upload Windows Build Artifacts

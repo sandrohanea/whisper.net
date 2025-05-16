@@ -162,60 +162,44 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
     [Fact]
     public async Task ProcessAsync_ParallelExecution_WillCompleteEverytime()
     {
-        var segments1 = new List<SegmentData>();
-        var segments2 = new List<SegmentData>();
-        var segments3 = new List<SegmentData>();
+        var parallelExecutions = 6;
+
+        var segments = new List<List<SegmentData>>();
 
         using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var waveParser = new WaveParser(fileReader);
         var samples = await waveParser.GetAvgSamplesAsync();
 
-        var task1 = Task.Run(async () =>
+        var tasks = new List<Task>();
+
+        for (var i = 0; i < parallelExecutions; i++)
         {
-            await using var processor = factory.CreateBuilder()
-                .WithLanguage("en")
-                .Build();
-
-            await foreach (var segment in processor.ProcessAsync(samples))
+            var currentSegments = new List<SegmentData>();
+            segments.Add(currentSegments);
+            var task = Task.Run(async () =>
             {
-                Thread.Sleep(300);
-                segments1.Add(segment);
-            }
-        });
+                await using var processor = factory.CreateBuilder()
+                    .WithLanguage("en")
+                    .Build();
 
-        var task2 = Task.Run(async () =>
-        {
-            await using var processor = factory.CreateBuilder()
-                .WithLanguage("en")
-                .Build();
+                await foreach (var segment in processor.ProcessAsync(samples))
+                {
+                    Thread.Sleep(100);
+                    currentSegments.Add(segment);
+                }
+            });
+            tasks.Add(task);
 
-            await foreach (var segment in processor.ProcessAsync(samples))
-            {
-                Thread.Sleep(300);
-                segments2.Add(segment);
-            }
-        });
+        }
 
-
-        var task3 = Task.Run(async () =>
-        {
-            await using var processor = factory.CreateBuilder()
-                .WithLanguage("en")
-                .Build();
-
-            await foreach (var segment in processor.ProcessAsync(samples))
-            {
-                Thread.Sleep(300);
-                segments3.Add(segment);
-            }
-        });
-
-        await Task.WhenAll(task1, task2, task3);
+        await Task.WhenAll(tasks);
 
         // Assert
-        Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
-        Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
-        Assert.True(segments1.SequenceEqual(segments3, new SegmentDataComparer()));
+        for (var i = 1; i < parallelExecutions; i++)
+        {
+            Assert.True(segments[i].Count > 0);
+            Assert.True(segments[i].SequenceEqual(segments[0], new SegmentDataComparer()));
+        }
     }
 }

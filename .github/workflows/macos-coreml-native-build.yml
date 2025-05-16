@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: true
+        type: string
+        default: 'Release'
 
 jobs:
   intel-native-build:
@@ -17,7 +22,8 @@ jobs:
           submodules: true
 
       - name: Run apple coreml build for x64
-        run: make apple_coreml_x64
+        run: |
+          make apple_coreml_x64 BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Intel Build Artifacts
         uses: actions/upload-artifact@v4
@@ -37,7 +43,8 @@ jobs:
           submodules: true
 
       - name: Run apple coreml build for arm
-        run: make apple_coreml_arm
+        run: |
+          make apple_coreml_arm BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload CoreML Mac Arm Build Artifacts
         uses: actions/upload-artifact@v4

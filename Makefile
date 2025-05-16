@@ -29,7 +29,7 @@ apple_x64: copy_metal macos_x64
 apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
 
 apple_coreml_x64: copy_metal_coreml macos_x64_coreml
-apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml 
+apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml
 
 linux: linux_x64 linux_arm64 linux_arm
 
@@ -45,15 +45,21 @@ copy_metal:
 copy_metal_coreml:
 	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
 
+ # WASM hack to run under bash as emcmake overrides env variables and cannot run cmake anymore.
 wasm:
-	rm -rf build/wasm
-	emcmake cmake -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
-	emcmake cmake --build build/wasm --config $(BUILD_TYPE)
-	mkdir -p runtimes/Whisper.net.Runtime/browser-wasm
-	cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a
-	cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a
+	/bin/bash -c '\
+	  CMAKE_BIN=$$(which cmake); \
+	  echo "Using cmake: $$CMAKE_BIN"; \
+	  $$CMAKE_BIN --version; \
+	  rm -rf build/wasm; \
+	  emcmake $$CMAKE_BIN -S . -B build/wasm -DCMAKE_BUILD_TYPE=$(BUILD_TYPE); \
+	  $$CMAKE_BIN --build build/wasm --config $(BUILD_TYPE); \
+	  mkdir -p runtimes/Whisper.net.Runtime/browser-wasm; \
+	  cp build/wasm/whisper.cpp/src/libwhisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libwhisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-whisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-base-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-base-whisper.a; \
+	  cp build/wasm/whisper.cpp/ggml/src/libggml-cpu-whisper.a ./runtimes/Whisper.net.Runtime/browser-wasm/libggml-cpu-whisper.a; \
+	  '
 
 linux_x64:
 	rm -rf build/linux-x64
@@ -132,7 +138,7 @@ linux_x64_openvino:
 linux_x64_vulkan:
 	rm -rf build/linux-x64-vulkan
 	echo "Path is: `$(PATH)`"
-	cmake -S . -B build/linux-x64-vulkan -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR="$(VULKAN_SDK)/include" -DVulkan_LIBRARY="$(VULKAN_SDK)/lib/libvulkan.so" $(AVX_SUPPORT) 
+	cmake -S . -B build/linux-x64-vulkan -DGGML_VULKAN=ON -DVulkan_INCLUDE_DIR="$(VULKAN_SDK)/include" -DVulkan_LIBRARY="$(VULKAN_SDK)/lib/libvulkan.so" $(AVX_SUPPORT)
 	cmake --build build/linux-x64-vulkan --config $(BUILD_TYPE)
 	mkdir -p runtimes/Whisper.net.Runtime.Vulkan/linux-x64
 	echo 'LDD VERSION'

@@ -6,6 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      BuildConfig:
+        required: true
+        type: string
+        default: 'Release'
 
 jobs:
   native-build:
@@ -16,11 +21,17 @@ jobs:
         with:
           submodules: true
 
+      - name: Install aarch64-linux-gnu-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
+
+      - name: Install gcc-arm-linux-gnueabihf
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
+
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
 
       - name: Run wasm build
-        run: make wasm
+        run: make wasm BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Remove Emscripten
         run: rm -rf emsdk*
