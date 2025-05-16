@@ -45,6 +45,22 @@ internal struct WhisperParamBeamSearch
     public float Patience;
 }
 
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperVadParams
+{
+    public float Threshold;
+
+    public int MinSpeechDurationMs;
+
+    public int MinSilenceDurationMs;
+
+    public float MaxSpeechDurationS;
+
+    public int SpeechPaddingMs;
+
+    public float SampleOverlapS;
+}
+
 internal enum GgmlLogLevel
 {
     Error = 2,
@@ -240,6 +256,13 @@ internal struct WhisperFullParams
     public UIntPtr StartGrammarRule;
 
     public float GrammarPenalty;
+
+    public byte UseVad;
+
+    public IntPtr VadModelPath;
+
+    public WhisperVadParams VadParams;
+
 }
 
 [StructLayout(LayoutKind.Sequential)]
