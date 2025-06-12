@@ -1,0 +1,34 @@
+name: Upload Build Artifacts
+
+permissions:
+  contents: write
+
+on:
+  workflow_call:
+
+jobs:
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: runtime-artifacts
+
+      - name: Set release info
+        id: release-info
+        run: |
+          echo "date=$(date -u +'%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git -C whisper.cpp rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create preview release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: preview-${{ steps.release-info.outputs.date }}-${{ steps.release-info.outputs.commit }}
+          name: Preview ${{ steps.release-info.outputs.date }} (${{ steps.release-info.outputs.commit }})
+          artifacts: runtime-artifacts/**
+          prerelease: true
