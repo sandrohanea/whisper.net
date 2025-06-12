@@ -19,6 +19,10 @@ jobs:
           merge-multiple: true
           path: runtime-artifacts
 
+      - name: Zip Artifacts
+        run: |
+           zip -r native-runtimes.zip runtime-artifacts
+           
       - name: Set release info
         id: release-info
         run: |
@@ -30,5 +34,5 @@ jobs:
         with:
           tag: preview-${{ steps.release-info.outputs.date }}-${{ steps.release-info.outputs.commit }}
           name: Preview ${{ steps.release-info.outputs.date }} (${{ steps.release-info.outputs.commit }})
-          artifacts: runtime-artifacts/**
+          artifacts: native-runtimes.zip
           prerelease: true
