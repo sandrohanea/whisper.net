@@ -12,23 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Artifacts
-        id: download-artifact
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-          path: runtime-artifacts
-
-      - name: Zip Artifacts
-        run: |
-             zip -r native-runtimes.zip runtime-artifacts
-
-      - name: Set release info
-        id: release-info
-        run: |
-          echo "date=$(date -u +'%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
-          echo "commit=$(git -C whisper.cpp rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
       - name: Check for existing release with same commit
         id: check-release
         run: |
@@ -40,6 +23,25 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - name: Download Artifacts
+        if: steps.check-release.outputs.release_exists != 'true'
+        id: download-artifact
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: runtime-artifacts
+
+      - name: Zip Artifacts
+        if: steps.check-release.outputs.release_exists != 'true'
+        run: |
+             zip -r native-runtimes.zip runtime-artifacts
+
+      - name: Set release info
+        id: release-info
+        run: |
+          echo "date=$(date -u +'%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git -C whisper.cpp rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Create preview release
         if: steps.check-release.outputs.release_exists != 'true'
