@@ -131,3 +131,25 @@ jobs:
          - linux
       uses: ./.github/workflows/dotnet-maui.yml
       secrets: inherit
+
+   upload-build-artifacts:
+      needs:
+         - android
+         - macos
+         - windows
+         - wasm
+         - linux
+         - windows-vulkan
+         - linux-vulkan
+         - windows-openvino
+         - linux-openvino
+         - windows-no-avx
+         - linux-no-avx
+      if: >
+         (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+         (github.ref == 'refs/heads/main')
+      permissions:
+        contents: write
+      uses: ./.github/workflows/upload-build-artifacts.yml
+      secrets: inherit
+
