@@ -145,8 +145,9 @@ jobs:
          - linux-openvino
          - windows-no-avx
          - linux-no-avx
-         
-      if: github.ref == 'refs/heads/main'
+      if: >
+         (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+         (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/enhance-ci-workflow-to-upload-artifacts-to-preview-release')
       permissions:
         contents: write
       uses: ./.github/workflows/upload-build-artifacts.yml
