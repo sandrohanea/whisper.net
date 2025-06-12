@@ -147,7 +147,7 @@ jobs:
          - linux-no-avx
       if: >
          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-         (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/enhance-ci-workflow-to-upload-artifacts-to-preview-release')
+         (github.ref == 'refs/heads/main')
       permissions:
         contents: write
       uses: ./.github/workflows/upload-build-artifacts.yml
