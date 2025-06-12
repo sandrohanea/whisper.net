@@ -26,7 +26,7 @@ jobs:
           echo "commit=$(git -C whisper.cpp rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Create preview release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@90dc22b77f7e5e8d3a3a92924b18415dca53f445
         with:
           tag: preview-${{ steps.release-info.outputs.date }}-${{ steps.release-info.outputs.commit }}
           name: Preview ${{ steps.release-info.outputs.date }} (${{ steps.release-info.outputs.commit }})
