@@ -201,7 +201,7 @@ internal struct WhisperFullParams
     public byte SuppressBlank;
 
     // suppress non-speech tokens (e.g. `,`, `.`, etc.)
-    public byte SupressNonSpeechTokens;
+    public byte SuppressNonSpeechTokens;
 
     // common decoding parameters:
     // ref: https://github.com/openai/whisper/blob/f82bc59f5ea234d4b97fb2860842ed38519f7e65/whisper/decoding.py#L89
