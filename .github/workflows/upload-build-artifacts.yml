@@ -21,18 +21,32 @@ jobs:
 
       - name: Zip Artifacts
         run: |
-           zip -r native-runtimes.zip runtime-artifacts
-           
+             zip -r native-runtimes.zip runtime-artifacts
+
       - name: Set release info
         id: release-info
         run: |
           echo "date=$(date -u +'%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
           echo "commit=$(git -C whisper.cpp rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
+      - name: Check for existing release with same commit
+        id: check-release
+        run: |
+          COMMIT=${{ steps.release-info.outputs.commit }}
+          if gh release list --limit 100 --json tagName --jq ".[] | select(.tagName | contains(\"${COMMIT}\"))"; then
+            echo "release_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "release_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Create preview release
+        if: steps.check-release.outputs.release_exists != 'true'
         uses: ncipollo/release-action@90dc22b77f7e5e8d3a3a92924b18415dca53f445
         with:
           tag: preview-${{ steps.release-info.outputs.date }}-${{ steps.release-info.outputs.commit }}
           name: Preview ${{ steps.release-info.outputs.date }} (${{ steps.release-info.outputs.commit }})
           artifacts: native-runtimes.zip
           prerelease: true
+
