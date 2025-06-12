@@ -145,6 +145,10 @@ jobs:
          - linux-openvino
          - windows-no-avx
          - linux-no-avx
+         
+      if: github.ref == 'refs/heads/main'
+      permissions:
+        contents: write
       uses: ./.github/workflows/upload-build-artifacts.yml
       secrets: inherit
 
