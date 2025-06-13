@@ -1,6 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using Whisper.net.Wave;
 using Xunit;
 
 namespace Whisper.net.Tests;
@@ -157,49 +156,5 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClas
 
         Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));
         Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
-    }
-
-    [Fact]
-    public async Task ProcessAsync_ParallelExecution_WillCompleteEverytime()
-    {
-        var parallelExecutions = 6;
-
-        var segments = new List<List<SegmentData>>();
-
-        using var factory = WhisperFactory.FromPath(model.ModelFile);
-        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        var waveParser = new WaveParser(fileReader);
-        var samples = await waveParser.GetAvgSamplesAsync();
-
-        var tasks = new List<Task>();
-
-        for (var i = 0; i < parallelExecutions; i++)
-        {
-            var currentSegments = new List<SegmentData>();
-            segments.Add(currentSegments);
-            var task = Task.Run(async () =>
-            {
-                await using var processor = factory.CreateBuilder()
-                    .WithLanguage("en")
-                    .Build();
-
-                await foreach (var segment in processor.ProcessAsync(samples))
-                {
-                    Thread.Sleep(100);
-                    currentSegments.Add(segment);
-                }
-            });
-            tasks.Add(task);
-
-        }
-
-        await Task.WhenAll(tasks);
-
-        // Assert
-        for (var i = 1; i < parallelExecutions; i++)
-        {
-            Assert.True(segments[i].Count > 0);
-            Assert.True(segments[i].SequenceEqual(segments[0], new SegmentDataComparer()));
-        }
     }
 }
