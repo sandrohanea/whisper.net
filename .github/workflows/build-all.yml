@@ -39,6 +39,16 @@ jobs:
       with:
          BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
+   ios:
+      uses: ./.github/workflows/ios-native-build.yml
+      with:
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
+
+   tvos:
+      uses: ./.github/workflows/tvos-native-build.yml
+      with:
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
+
    windows:
       uses: ./.github/workflows/windows-native-build.yml
       with:
@@ -112,6 +122,8 @@ jobs:
       needs:
          - android
          - macos
+         - ios
+         - tvos
          - windows
          - wasm
          - linux
@@ -126,6 +138,8 @@ jobs:
       needs:
          - android
          - macos
+         - ios
+         - tvos
          - windows
          - wasm
          - linux
@@ -136,6 +150,8 @@ jobs:
       needs:
          - android
          - macos
+         - ios
+         - tvos
          - windows
          - wasm
          - linux

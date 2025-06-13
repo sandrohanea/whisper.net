@@ -34,6 +34,12 @@ jobs:
    macos:
       uses: ./.github/workflows/macos-native-build.yml
 
+   ios:
+      uses: ./.github/workflows/ios-native-build.yml
+
+   tvos:
+      uses: ./.github/workflows/tvos-native-build.yml
+
    windows:
       uses: ./.github/workflows/windows-native-build.yml
       
@@ -74,6 +80,8 @@ jobs:
       needs:
          - android
          - macos
+         - ios
+         - tvos
          - windows
          - wasm
          - linux

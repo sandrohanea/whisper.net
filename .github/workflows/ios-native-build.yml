@@ -1,0 +1,35 @@
+name: Apple iOS native build
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      BuildConfig:
+        required: true
+        type: string
+        default: 'Release'
+
+jobs:
+  ios-native-build:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Run iOS build
+        run: |
+          make ios ios_simulator_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
+
+      - name: Upload iOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: |
+            runtimes/Whisper.net.Run*/*/*
+            runtimes/Whisper.net.Run*/*.metal
+          retention-days: 7
