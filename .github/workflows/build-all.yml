@@ -133,7 +133,6 @@ jobs:
          - android
          - macos
          - ios
-         - tvos
          - windows
          - wasm
          - linux
@@ -145,7 +144,6 @@ jobs:
          - android
          - macos
          - ios
-         - tvos
          - windows
          - wasm
          - linux
