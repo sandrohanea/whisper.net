@@ -118,7 +118,6 @@ jobs:
          - android
          - macos
          - ios
-         - tvos
          - windows
          - wasm
          - linux
