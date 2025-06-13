@@ -67,7 +67,8 @@ public sealed class WhisperFactory : IDisposable
 
         var systemInfoPtr = libraryLoaded.Value.NativeWhisper!.WhisperPrintSystemInfo();
         var systemInfoStr = Marshal.PtrToStringAnsi(systemInfoPtr);
-        Marshal.FreeHGlobal(systemInfoPtr);
+        // The pointer returned by WhisperPrintSystemInfo points to a static
+        // buffer owned by the native library. Do not free it here.
         return systemInfoStr;
     }
 
