@@ -23,7 +23,7 @@ jobs:
 
       - name: Run iOS build
         run: |
-          make ios ios_simulator_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
+          make ios ios_simulator_arm64 tvos tvos_simulator_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload iOS Build Artifacts
         uses: actions/upload-artifact@v4
