@@ -1,0 +1,35 @@
+name: Apple tvOS native build
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      BuildConfig:
+        required: true
+        type: string
+        default: 'Release'
+
+jobs:
+  tvos-native-build:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Run tvOS build
+        run: |
+          make tvos tvos_simulator_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
+
+      - name: Upload tvOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-build
+          path: |
+            runtimes/Whisper.net.Run*/*/*
+            runtimes/Whisper.net.Run*/*.metal
+          retention-days: 7

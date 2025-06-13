@@ -42,9 +42,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Run apple build for arm
+      - name: Run macos build for arm and Mac Catalyst
         run: |
-          make apple_arm BUILD_TYPE=${{ inputs.BuildConfig }}
+          make macos_arm64 maccatalyst_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Arm Build Artifacts
         uses: actions/upload-artifact@v4
