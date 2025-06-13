@@ -175,7 +175,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                if (result != 0)
+                {
+                    throw new WhisperProcessingException($"Native whisper stopped processing with error code {result}.", result);
+                }
             }
             finally
             {
@@ -343,7 +347,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
                 try
                 {
-                    nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                    var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                    if (result != 0)
+                    {
+                        throw new WhisperProcessingException($"Native whisper stopped processing with error code {result}.", result);
+                    }
                 }
                 finally
                 {
