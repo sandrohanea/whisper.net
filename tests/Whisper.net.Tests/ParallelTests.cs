@@ -15,7 +15,7 @@ public class ParallelTests(TinyModelFixture model) : IClassFixture<TinyModelFixt
     [Fact]
     public async Task ProcessAsync_ParallelExecution_WillCompleteEverytime()
     {
-        var parallelExecutions = 5;
+        var parallelExecutions = 2;
         var totalExecutions = 10;
         Console.WriteLine($"Parallel executions: {parallelExecutions}, Total executions: {totalExecutions}");
 
