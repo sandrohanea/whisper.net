@@ -11,7 +11,8 @@ namespace Whisper.net.Wave;
 /// The 
 /// </remarks>
 /// <param name="waveStream">The wave stream to be processed.</param>
-public sealed class WaveParser(Stream waveStream)
+/// <param name="options">Parser options. Optional.</param>
+public sealed class WaveParser(Stream waveStream, WaveParserOptions? options = null)
 {
     private static readonly byte[] expectedSubFormatForPcm = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71];
     private ushort channels;
@@ -20,6 +21,7 @@ public sealed class WaveParser(Stream waveStream)
     private uint dataChunkSize;
     private long dataChunkPosition;
     private bool isInitialized;
+    private readonly WaveParserOptions options = options ?? new();
 
     /// <summary>
     /// Gets the number of channels in the current wave file.
@@ -254,7 +256,7 @@ public sealed class WaveParser(Stream waveStream)
             }
         }
 
-        if (sampleIndex < SamplesCount)
+        if (sampleIndex < SamplesCount && !options.AllowLessSamples)
         {
             throw new CorruptedWaveException("Invalid wave file, the size is too small and couldn't read all the samples.");
         }
