@@ -229,7 +229,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         try
         {
-            options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+            lock (options.OnSegmentEventHandlers)
+            {
+                options.OnSegmentEventHandlers.Add(OnSegmentHandler);
+            }
             options.WhisperAbortEventHandler = OnWhisperAbortHandler;
 
             currentCancellationToken = cancellationToken;
@@ -261,7 +264,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
         finally
         {
-            options.OnSegmentEventHandlers.Remove(OnSegmentHandler);
+            lock (options.OnSegmentEventHandlers)
+            {
+                options.OnSegmentEventHandlers.Remove(OnSegmentHandler);
+            }
         }
     }
 
@@ -776,7 +782,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     language!,
                     tokens);
 
-                foreach (var handler in options.OnSegmentEventHandlers)
+                OnSegmentEventHandler[] handlers;
+                lock (options.OnSegmentEventHandlers) { handlers = options.OnSegmentEventHandlers.ToArray(); }
+                foreach (var handler in handlers)
                 {
                     handler?.Invoke(eventHandlerArgs);
                     if (currentCancellationToken.HasValue && currentCancellationToken.Value.IsCancellationRequested)
