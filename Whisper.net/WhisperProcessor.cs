@@ -175,7 +175,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                if (result != 0)
+                {
+                    throw new WhisperProcessingException(result);
+                }
             }
             finally
             {
@@ -236,16 +240,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             options.WhisperAbortEventHandler = OnWhisperAbortHandler;
 
             currentCancellationToken = cancellationToken;
-            var whisperTask = ProcessInternalAsync(samples, cancellationToken)
-                .ContinueWith(_ => resetEvent.Set(), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Default);
+            var processingTask = ProcessInternalAsync(samples, cancellationToken);
+            var whisperTask = processingTask.ContinueWith(_ => resetEvent.Set(), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Default);
 
-            while (!whisperTask.IsCompleted || !buffer.IsEmpty)
+            while (!processingTask.IsCompleted || !buffer.IsEmpty)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (buffer.IsEmpty)
                 {
-                    await Task.WhenAny(whisperTask, resetEvent.WaitAsync())
+                    await Task.WhenAny(processingTask, resetEvent.WaitAsync())
                         .ConfigureAwait(false);
                 }
 
@@ -255,7 +259,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 }
             }
 
-            await whisperTask.ConfigureAwait(false);
+            await processingTask.ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
 
             while (buffer.TryDequeue(out var segmentData))
             {
@@ -349,7 +357,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
                 try
                 {
-                    nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                    var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, whisperParams, (IntPtr)pData, samples.Length);
+                    if (result != 0)
+                    {
+                        throw new WhisperProcessingException(result);
+                    }
                 }
                 finally
                 {
