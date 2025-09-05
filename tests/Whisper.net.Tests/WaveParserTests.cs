@@ -13,7 +13,11 @@ public class WaveParserTests
         using var stream = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
 
         var truncatedBytes = new byte[stream.Length - 1000];
-        var read = await stream.ReadAsync(truncatedBytes, 0, truncatedBytes.Length);
+#if NETFRAMEWORK
+        var read = stream.Read(truncatedBytes, 0, truncatedBytes.Length);
+#else
+        var read = await stream.ReadAsync(truncatedBytes);
+#endif
         Assert.Equal(truncatedBytes.Length, read);
 
         using var truncated = new MemoryStream(truncatedBytes);
@@ -29,7 +33,11 @@ public class WaveParserTests
         using var stream = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
 
         var truncatedBytes = new byte[stream.Length - 1000];
-        var read = await stream.ReadAsync(truncatedBytes, 0, truncatedBytes.Length);
+#if NETFRAMEWORK
+        var read = stream.Read(truncatedBytes, 0, truncatedBytes.Length);
+#else
+        var read = await stream.ReadAsync(truncatedBytes);
+#endif
         Assert.Equal(truncatedBytes.Length, read);
 
         using var truncated = new MemoryStream(truncatedBytes);
