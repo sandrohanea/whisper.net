@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.AI;
 using Xunit;
-using static Whisper.net.Tests.ProcessAsyncFunctionalTests;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 

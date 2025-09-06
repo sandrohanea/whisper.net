@@ -2,7 +2,6 @@
 
 using System.Runtime.InteropServices;
 using Xunit;
-using static Whisper.net.Tests.ProcessAsyncFunctionalTests;
 
 namespace Whisper.net.Tests;
 
