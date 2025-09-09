@@ -9,7 +9,7 @@ namespace Whisper.net.Tests;
 [CollectionDefinition("ParallelTests", DisableParallelization = true)]
 // This collection ensures that tests within it are run sequentially, preventing parallel execution issues with other tests
 // This issues were observed in the past as various github actions hosts ran out of memory when running multiple tests in parallel that used the same model file
-public class ParallelTests(TinyModelFixture model)
+public class ParallelTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
 
     [Fact]
@@ -24,7 +24,7 @@ public class ParallelTests(TinyModelFixture model)
         using var factory = WhisperFactory.FromPath(model.ModelFile);
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var waveParser = new WaveParser(fileReader);
-        var samples = await waveParser.GetAvgSamplesAsync(TestContext.Current.CancellationToken);
+        var samples = await waveParser.GetAvgSamplesAsync();
 
         Task CreateTask()
         {

@@ -6,7 +6,7 @@ using Xunit;
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 namespace Whisper.net.Tests.SpeechToText;
-public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
+public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowAsync()
@@ -31,7 +31,7 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
         using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var data in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
+        await foreach (var data in client.GetStreamingTextAsync(fileReader, options))
         {
             updatesEnumerated.Add(data);
         }
@@ -105,7 +105,7 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
         using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("junkchunk16khz.wav");
-        await foreach (var update in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader, options))
         {
             segments.Add(update);
         }
@@ -125,7 +125,7 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
         using var client = new WhisperSpeechToTextClient(() => factory);
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
-        await foreach (var update in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader, options))
         {
             segments.Add(update);
         }
@@ -144,19 +144,19 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
         var options = new SpeechToTextOptions().WithLanguage("en");
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var update in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader, options))
         {
             updates1.Add(update);
         }
 
         using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var update in client.GetStreamingTextAsync(fileReader2, options, TestContext.Current.CancellationToken))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader2, options))
         {
             updates2.Add(update);
         }
 
         using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var update in client.GetStreamingTextAsync(fileReader3, options, TestContext.Current.CancellationToken))
+        await foreach (var update in client.GetStreamingTextAsync(fileReader3, options))
         {
             updates3.Add(update);
         }
@@ -172,15 +172,15 @@ public partial class WhisperSpeechToTextClientTest(TinyModelFixture model)
         var options = new SpeechToTextOptions().WithLanguage("en");
 
         using var fileReader1 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        var result1 = await client.GetTextAsync(fileReader1, options, TestContext.Current.CancellationToken);
+        var result1 = await client.GetTextAsync(fileReader1, options);
         var segments1 = Assert.IsAssignableFrom<IEnumerable<SegmentData>>(result1.RawRepresentation);
 
         using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        var result2 = await client.GetTextAsync(fileReader2, options, TestContext.Current.CancellationToken);
+        var result2 = await client.GetTextAsync(fileReader2, options);
         var segments2 = Assert.IsAssignableFrom<IEnumerable<SegmentData>>(result2.RawRepresentation);
 
         using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        var result3 = await client.GetTextAsync(fileReader3, options, TestContext.Current.CancellationToken);
+        var result3 = await client.GetTextAsync(fileReader3, options);
         var segments3 = Assert.IsAssignableFrom<IEnumerable<SegmentData>>(result3.RawRepresentation);
 
         Assert.True(segments1.SequenceEqual(segments2, new SegmentDataComparer()));

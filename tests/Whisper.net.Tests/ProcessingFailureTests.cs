@@ -93,7 +93,7 @@ public class ProcessingFailureTests
         await using var processor = new WhisperProcessor(options, new FakeNativeWhisper(7));
         await Assert.ThrowsAsync<WhisperProcessingException>(async () =>
         {
-            await foreach (var _ in processor.ProcessAsync(new float[1], TestContext.Current.CancellationToken))
+            await foreach (var _ in processor.ProcessAsync(new float[1]))
             {
             }
         });

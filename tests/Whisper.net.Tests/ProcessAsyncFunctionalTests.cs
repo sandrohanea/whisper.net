@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Whisper.net.Tests;
 
-public partial class ProcessAsyncFunctionalTests(TinyModelFixture model)
+public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowAsync()
@@ -27,7 +27,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model)
             .Build();
 
         var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var data in processor.ProcessAsync(fileReader, TestContext.Current.CancellationToken))
+        await foreach (var data in processor.ProcessAsync(fileReader))
         {
             segmentsEnumerated.Add(data);
         }
@@ -97,7 +97,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model)
             .Build();
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("junkchunk16khz.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader, TestContext.Current.CancellationToken))
+        await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments.Add(segment);
         }
@@ -116,7 +116,7 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model)
             .Build();
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("multichannel.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader, TestContext.Current.CancellationToken))
+        await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments.Add(segment);
         }
@@ -137,19 +137,19 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model)
             .Build();
 
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader, TestContext.Current.CancellationToken))
+        await foreach (var segment in processor.ProcessAsync(fileReader))
         {
             segments1.Add(segment);
         }
 
         using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader2, TestContext.Current.CancellationToken))
+        await foreach (var segment in processor.ProcessAsync(fileReader2))
         {
             segments2.Add(segment);
         }
 
         using var fileReader3 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader3, TestContext.Current.CancellationToken))
+        await foreach (var segment in processor.ProcessAsync(fileReader3))
         {
             segments3.Add(segment);
         }

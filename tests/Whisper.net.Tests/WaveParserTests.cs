@@ -16,7 +16,7 @@ public class WaveParserTests
 #if NETFRAMEWORK
         var read = stream.Read(truncatedBytes, 0, truncatedBytes.Length);
 #else
-        var read = await stream.ReadAsync(truncatedBytes, TestContext.Current.CancellationToken);
+        var read = await stream.ReadAsync(truncatedBytes);
 #endif
         Assert.Equal(truncatedBytes.Length, read);
 
@@ -24,7 +24,7 @@ public class WaveParserTests
 
         var parser = new WaveParser(truncated);
 
-        await Assert.ThrowsAsync<CorruptedWaveException>(() => parser.GetAvgSamplesAsync(TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<CorruptedWaveException>(() => parser.GetAvgSamplesAsync());
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class WaveParserTests
 #if NETFRAMEWORK
         var read = stream.Read(truncatedBytes, 0, truncatedBytes.Length);
 #else
-        var read = await stream.ReadAsync(truncatedBytes, TestContext.Current.CancellationToken);
+        var read = await stream.ReadAsync(truncatedBytes);
 #endif
         Assert.Equal(truncatedBytes.Length, read);
 
@@ -44,7 +44,7 @@ public class WaveParserTests
 
         var parser = new WaveParser(truncated, new WaveParserOptions { AllowLessSamples = true });
 
-        var samples = await parser.GetAvgSamplesAsync(TestContext.Current.CancellationToken);
+        var samples = await parser.GetAvgSamplesAsync();
 
         Assert.NotNull(samples);
     }
