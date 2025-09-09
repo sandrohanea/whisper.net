@@ -1,10 +1,11 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
-public class ProcessQuantizedTests(TinyQuantizedModelFixture model) : IClassFixture<TinyQuantizedModelFixture>
+public class ProcessQuantizedTests(TinyQuantizedModelFixture model) : IAssemblyFixture<TinyQuantizedModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowQuantized()

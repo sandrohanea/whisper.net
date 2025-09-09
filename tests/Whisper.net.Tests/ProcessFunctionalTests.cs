@@ -2,10 +2,11 @@
 
 using System.Runtime.InteropServices;
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
-public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
+public class ProcessFunctionalTests(TinyModelFixture model) : IAssemblyFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlow()

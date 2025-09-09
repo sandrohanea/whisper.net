@@ -2,11 +2,12 @@
 
 using Microsoft.Extensions.AI;
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 namespace Whisper.net.Tests.SpeechToText;
-public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : IClassFixture<TinyModelFixture>
+public partial class WhisperSpeechToTextClientTest(TinyModelFixture model) : IAssemblyFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowAsync()

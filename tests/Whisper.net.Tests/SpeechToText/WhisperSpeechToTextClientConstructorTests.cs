@@ -3,12 +3,13 @@
 using System.Reflection;
 using Microsoft.Extensions.AI;
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 namespace Whisper.net.Tests.SpeechToText;
 
-public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModelFixture>
+public class WhisperSpeechToTextClientConstructorTests : IAssemblyFixture<TinyModelFixture>
 {
     private readonly TinyModelFixture _model;
 

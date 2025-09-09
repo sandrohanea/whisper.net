@@ -2,10 +2,11 @@
 using Whisper.net.Logger;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
-public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
+public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;

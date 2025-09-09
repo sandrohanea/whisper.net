@@ -2,6 +2,7 @@
 
 using Whisper.net.Wave;
 using Xunit;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
@@ -9,7 +10,7 @@ namespace Whisper.net.Tests;
 [CollectionDefinition("ParallelTests", DisableParallelization = true)]
 // This collection ensures that tests within it are run sequentially, preventing parallel execution issues with other tests
 // This issues were observed in the past as various github actions hosts ran out of memory when running multiple tests in parallel that used the same model file
-public class ParallelTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
+public class ParallelTests(TinyModelFixture model) : IAssemblyFixture<TinyModelFixture>
 {
 
     [Fact]
