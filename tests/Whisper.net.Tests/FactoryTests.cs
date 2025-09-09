@@ -40,7 +40,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
     [Fact]
     public void CreateBuilder_WithNoModel_ShouldThrow()
     {
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             WhisperFactory.FromPath("non-existent-file.bin")
                 .CreateBuilder();
@@ -52,7 +52,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
     [Fact]
     public void CreateBuilder_WithCorruptedModel_ShouldThrow()
     {
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             WhisperFactory.FromPath("kennedy.wav")
                 .CreateBuilder();
@@ -84,7 +84,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
         var factory = WhisperFactory.FromPath(model.ModelFile);
         factory.Dispose();
 
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             factory.CreateBuilder();
         };
