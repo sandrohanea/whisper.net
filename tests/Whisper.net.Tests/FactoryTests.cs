@@ -1,11 +1,10 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 using Whisper.net.Logger;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Whisper.net.Tests;
 
-public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
+public sealed class FactoryTests : IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;

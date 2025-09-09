@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Whisper.net.Tests.SpeechToText;
 
-public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModelFixture>
+public class WhisperSpeechToTextClientConstructorTests
 {
     private readonly TinyModelFixture _model;
 
@@ -75,7 +75,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Act
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var options = new SpeechToTextOptions().WithLanguage("en");
-        await client.GetTextAsync(fileReader, options);
+        await client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken);
 
         // Assert - After
         Assert.NotNull(GetFactoryField(client));
@@ -102,7 +102,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Act
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         var options = new SpeechToTextOptions().WithLanguage("en");
-        await foreach (var _ in client.GetStreamingTextAsync(fileReader, options))
+        await foreach (var _ in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
         {
             // Just consume the stream
         }
@@ -129,7 +129,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Act - First request
         using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
         {
-            await client.GetTextAsync(fileReader, options);
+            await client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken);
         }
 
         var factoryAfterFirstRequest = GetFactoryField(client);
@@ -139,7 +139,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Act - Second request
         using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
         {
-            await client.GetTextAsync(fileReader, options);
+            await client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken);
         }
 
         // Assert
@@ -159,7 +159,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Act - Create factory by using the client
         using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
         {
-            await client.GetTextAsync(fileReader, options);
+            await client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken);
         }
 
         var factory = GetFactoryField(client);
@@ -183,7 +183,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Initialize the client by using it once
         using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
         {
-            await client.GetTextAsync(fileReader, options);
+            await client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken);
         }
 
         // Act - Dispose the client
@@ -191,7 +191,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
 
         // Assert - Attempting to use the client after disposal should throw ObjectDisposedException
         using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await Assert.ThrowsAsync<ObjectDisposedException>(() => client.GetTextAsync(fileReader2, options));
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => client.GetTextAsync(fileReader2, options, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         // Initialize the client by using it once
         using (var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav"))
         {
-            await foreach (var _ in client.GetStreamingTextAsync(fileReader, options))
+            await foreach (var _ in client.GetStreamingTextAsync(fileReader, options, TestContext.Current.CancellationToken))
             {
                 // Just consume the stream
                 break; // We only need to process one item to initialize the client
@@ -218,7 +218,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
         using var fileReader2 = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
         await Assert.ThrowsAsync<ObjectDisposedException>(async () =>
         {
-            await foreach (var _ in client.GetStreamingTextAsync(fileReader2, options))
+            await foreach (var _ in client.GetStreamingTextAsync(fileReader2, options, TestContext.Current.CancellationToken))
             {
                 // This should throw before we get here
             }
@@ -234,7 +234,7 @@ public class WhisperSpeechToTextClientConstructorTests : IClassFixture<TinyModel
 
         // Act & Assert
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetTextAsync(fileReader, options));
+        await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetTextAsync(fileReader, options, TestContext.Current.CancellationToken));
     }
 
     private static WhisperFactory? GetFactoryField(WhisperSpeechToTextClient client)

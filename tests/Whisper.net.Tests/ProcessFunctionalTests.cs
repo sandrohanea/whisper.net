@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Whisper.net.Tests;
 
-public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<TinyModelFixture>
+public class ProcessFunctionalTests(TinyModelFixture model)
 {
     [Fact]
     public async Task TestHappyFlow()
@@ -76,7 +76,7 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IClassFixture<Tiny
                         })
                         .Build();
         using var fileReader = await TestDataProvider.OpenFileStreamAsync("romana.wav");
-        await foreach (var segment in processor.ProcessAsync(fileReader))
+        await foreach (var segment in processor.ProcessAsync(fileReader, TestContext.Current.CancellationToken))
         {
             segments.Add(segment);
         }

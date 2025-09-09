@@ -10,18 +10,19 @@ public class TinyQuantizedModelFixture() : ModelFixture(GgmlType.Tiny, Quantizat
 
 public abstract class ModelFixture(GgmlType type, QuantizationType quantizationType) : IAsyncLifetime
 {
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         ModelFile = await DownloadModelAsync(type, quantizationType);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         if (File.Exists(ModelFile))
         {
             File.Delete(ModelFile);
         }
-        return Task.CompletedTask;
+
+        return new ValueTask(Task.CompletedTask);
     }
 
     public string ModelFile { get; private set; } = string.Empty;
