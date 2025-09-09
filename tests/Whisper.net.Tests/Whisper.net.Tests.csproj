@@ -33,7 +33,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <TargetFrameworks>
-      net8.0;net9.0;net472;
+      net8.0;net9.0;net48;
     </TargetFrameworks>
   </PropertyGroup>
 
