@@ -7,14 +7,6 @@
 
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
       AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../../runtimes/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets" />
-
-  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
-      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../../runtimes/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets" />
-
-  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
-      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 
 	<PropertyGroup>
