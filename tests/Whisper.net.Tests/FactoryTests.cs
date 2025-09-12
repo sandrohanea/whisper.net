@@ -2,10 +2,11 @@
 using Whisper.net.Logger;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
-public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
+public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposable
 {
     private readonly TinyModelFixture model;
     private readonly ITestOutputHelper output;
@@ -39,7 +40,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
     [Fact]
     public void CreateBuilder_WithNoModel_ShouldThrow()
     {
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             WhisperFactory.FromPath("non-existent-file.bin")
                 .CreateBuilder();
@@ -51,7 +52,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
     [Fact]
     public void CreateBuilder_WithCorruptedModel_ShouldThrow()
     {
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             WhisperFactory.FromPath("kennedy.wav")
                 .CreateBuilder();
@@ -83,7 +84,7 @@ public sealed class FactoryTests : IClassFixture<TinyModelFixture>, IDisposable
         var factory = WhisperFactory.FromPath(model.ModelFile);
         factory.Dispose();
 
-        Action loadingMethod = () =>
+        var loadingMethod = () =>
         {
             factory.CreateBuilder();
         };

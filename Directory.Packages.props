@@ -3,7 +3,7 @@
   https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management-->
   <ItemGroup>
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.8.0" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.IO.Compression" Version="4.3.0" />
@@ -11,10 +11,14 @@
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <!-- Tests -->
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Whisper.net.AllRuntimes" Version="1.8.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageVersion Include="Xunit.Extensions.AssemblyFixture" Version="2.6.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
     <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.25174.1" />
     <PackageVersion Include="xunit.assert" Version="2.9.3" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />

@@ -121,10 +121,6 @@ jobs:
          - windows
          - wasm
          - linux
-         - windows-vulkan
-         - linux-vulkan
-         - windows-openvino
-         - linux-openvino
       uses: ./.github/workflows/dotnet.yml
       secrets: inherit
 

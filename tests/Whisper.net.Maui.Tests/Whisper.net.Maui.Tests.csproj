@@ -20,6 +20,7 @@
     <MtouchLink>None</MtouchLink>
     <RunAOTCompilation>False</RunAOTCompilation>
     <PublishedTrimmed>False</PublishedTrimmed>
+    <UseAppHost>true</UseAppHost>
 
 		<!-- Display name -->
 		<ApplicationTitle>Whisper.net.Maui.Tests</ApplicationTitle>

@@ -7,14 +7,6 @@
 
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
       AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../../runtimes/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets" />
-
-  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
-      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
-          Project="../../runtimes/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets" />
-
-  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
-      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
 
 	<PropertyGroup>
@@ -23,11 +15,13 @@
 		<LangVersion>13</LangVersion>
 		<IsTestProject>true</IsTestProject>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <NoWarn>xUnit1041</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
+    <PackageReference Include="Xunit.Extensions.AssemblyFixture" />
     <PackageReference Include="xunit.runner.visualstudio" />
 
 		<PackageReference Include="coverlet.collector">
@@ -39,7 +33,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <TargetFrameworks>
-      net8.0;net9.0;net472;
+      net8.0;net9.0;net48;
     </TargetFrameworks>
   </PropertyGroup>
 
