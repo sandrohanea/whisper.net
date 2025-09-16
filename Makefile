@@ -186,7 +186,7 @@ macos_x64_coreml:
 
 macos_arm64_coreml:
 	rm -rf build/macos-arm64-coreml
-	cmake $(COREML_SUPPORT) -DCMAKE_OSX_ARCHITECTURES="arm64" -DGGML_NATIVE=OFF  -S . -B build/macos-arm64-coreml
+	cmake $(COREML_SUPPORT) -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_C_FLAGS="-U__ARM_FEATURE_MATMUL_INT8" -DCMAKE_CXX_FLAGS="-U__ARM_FEATURE_MATMUL_INT8"  -S . -B build/macos-arm64-coreml
 	cmake --build build/macos-arm64-coreml
 	mkdir -p runtimes/Whisper.net.Runtime.CoreML/macos-arm64
 	cp build/macos-arm64-coreml/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime.CoreML/macos-arm64/libwhisper.dylib
