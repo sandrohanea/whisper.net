@@ -162,7 +162,7 @@ macos_x64:
 
 macos_arm64:
 	rm -rf build/macos-arm64
-	cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -DGGML_NATIVE=OFF . -B build/macos-arm64
+	cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_C_FLAGS="-U__ARM_FEATURE_MATMUL_INT8" -DCMAKE_CXX_FLAGS="-U__ARM_FEATURE_MATMUL_INT8" . -B build/macos-arm64
 	cmake --build build/macos-arm64
 	mkdir -p runtimes/Whisper.net.Runtime/macos-arm64
 	cp build/macos-arm64/whisper.cpp/src/libwhisper.dylib ./runtimes/Whisper.net.Runtime/macos-arm64/libwhisper.dylib
