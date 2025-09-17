@@ -80,6 +80,12 @@ jobs:
       with:
          BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
+   windows-cuda12:
+      if: ${{ inputs.BuildCuda == 'true' }}
+      uses: ./.github/workflows/windows-cuda12-native-build.yml
+      with:
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
+
    windows-vulkan:
       uses: ./.github/workflows/windows-vulkan-native-build.yml
       with:
@@ -93,6 +99,12 @@ jobs:
    linux-cuda:
       if: ${{ inputs.BuildCuda == 'true' }}
       uses: ./.github/workflows/linux-cuda-native-build.yml
+      with:
+         BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
+
+   linux-cuda12:
+      if: ${{ inputs.BuildCuda == 'true' }}
+      uses: ./.github/workflows/linux-cuda12-native-build.yml
       with:
          BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
