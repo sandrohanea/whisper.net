@@ -118,22 +118,6 @@
       <TargetPath>runtimes/maccatalyst/libggml-blas-whisper.dylib</TargetPath>
     </None>
   </ItemGroup>
-  <!-- Metal Maui asset for maccatalyst, ios, tvos and their simulators -->
-  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvos-')) or $(RuntimeIdentifier.StartsWith('tvossimulator-')) or (('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.'))) or $(TargetFramework.Contains('-maccatalyst')) == true or (('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
-    <MauiAsset Include="$(MSBuildThisFileDirectory)\ggml-metal.metal" LogicalName="ggml-metal.metal" />
-  </ItemGroup>
-
-  <!-- Metal Copy For MacOS -->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)\ggml-metal.metal">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>ggml-metal.metal</TargetPath>
-      <PublishFolderType>RootDirectory</PublishFolderType>
-    </None>
-  </ItemGroup>
-
   <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
       <Pack>true</Pack>

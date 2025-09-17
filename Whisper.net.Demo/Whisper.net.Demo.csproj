@@ -5,6 +5,8 @@
           Project="../runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
   <Import Condition="'$(EnableCoreML)' != 'true' AND $(USE_WHISPER_NOAVX_TESTS) != ''"
           Project="../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
 
   <PropertyGroup>
 		<OutputType>Exe</OutputType>

@@ -6,17 +6,18 @@ NOAVX_SUPPORT=-DGGML_AVX=OFF -DGGML_AVX2=OFF -DGGML_FMA=OFF -DGGML_F16C=OFF
 NDK := $(if $(strip $(NDK_PATH)),$(NDK_PATH),$(shell test -d $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle && echo $(HOME)/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle || echo ""))
 
 nuget:
-	mkdir -p nupkgs
-	nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
-	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
-	nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+        mkdir -p nupkgs
+        nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+        nuget pack runtimes/Whisper.net.Runtime.Metal.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+        dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
+        nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
-	nuget pack runtimes/Whisper.net.Runtime.AllRuntimes.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+        nuget pack runtimes/Whisper.net.AllRuntimes.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 
 clean:
 	rm -rf nupkgs
@@ -26,10 +27,10 @@ clean:
 android: android_x64 android_x86 android_arm64-v8a
 
 apple_x64: copy_metal macos_x64
-apple_arm: macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
+apple_arm: copy_metal macos_arm64 ios maccatalyst_arm64  ios_simulator_arm64  tvos_simulator_arm64 tvos
 
-apple_coreml_x64: copy_metal_coreml macos_x64_coreml
-apple_coreml_arm: macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml
+apple_coreml_x64: copy_metal macos_x64_coreml
+apple_coreml_arm: copy_metal macos_arm64_coreml ios_coreml  maccatalyst_arm64_coreml ios_simulator_coreml
 
 linux: linux_x64 linux_arm64 linux_arm
 
@@ -40,10 +41,7 @@ linux_cuda: linux_x64_cuda
 linux_vulkan: linux_x64_vulkan
 
 copy_metal:
-	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime/ggml-metal.metal
-
-copy_metal_coreml:
-	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.CoreML/ggml-metal.metal
+        cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/Whisper.net.Runtime.Metal/ggml-metal.metal
 
  # WASM hack to run under bash as emcmake overrides env variables and cannot run cmake anymore.
 wasm:

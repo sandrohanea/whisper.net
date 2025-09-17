@@ -13,6 +13,9 @@
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>
     <readme>content/readme.md</readme>
+    <dependencies>
+      <dependency id="Whisper.net.Runtime.Metal" version="$version$" />
+    </dependencies>
   </metadata>
   <files>
     <file src="Whisper.net.Runtime.CoreML\**" target="build"/>
