@@ -23,11 +23,9 @@ jobs:
           - cuda_label: cuda13
             cuda_version: "13.0.0"
             package_dir: "runtimes/Whisper.net.Runtime.Cuda.Windows"
-            artifact_name: windows-cuda-build
           - cuda_label: cuda12
             cuda_version: "12.4.0"
             package_dir: "runtimes/Whisper.net.Runtime.Cuda12.Windows"
-            artifact_name: windows-cuda12-build
 
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +43,8 @@ jobs:
         uses: Jimver/cuda-toolkit@433d453c1fa37d10a3254452fa8e284441c9192d
         with:
           cuda: ${{ matrix.cuda_version }}
+          use-github-cache: false
+          use-local-cache: false
 
       - name: Build Windows CUDA ${{ matrix.cuda_label }} runtime
         run: |
@@ -71,6 +71,6 @@ jobs:
       - name: Upload Windows CUDA ${{ matrix.cuda_label }} build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: "runtimes/Whisper.net.Run*/win-*/*"
+          name: windows-cuda-${{ matrix.cuda_label }}-build
+          path: "${{ matrix.package_dir }}/win-*/*"
           retention-days: 7

@@ -23,11 +23,9 @@ jobs:
           - cuda_label: cuda13
             cuda_version: "13.0.0"
             package_dir: "runtimes/Whisper.net.Runtime.Cuda.Linux"
-            artifact_name: linux-cuda-build
           - cuda_label: cuda12
             cuda_version: "12.4.0"
             package_dir: "runtimes/Whisper.net.Runtime.Cuda12.Linux"
-            artifact_name: linux-cuda12-build
 
     steps:
       - uses: actions/checkout@v4
@@ -65,6 +63,6 @@ jobs:
       - name: Upload Linux CUDA ${{ matrix.cuda_label }} build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: "runtimes/Whisper.net.Run*/linux-*/*"
+          name: linux-cuda-${{ matrix.cuda_label }}-build
+          path: "${{ matrix.package_dir }}/linux-*/*"
           retention-days: 7
