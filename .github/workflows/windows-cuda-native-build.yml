@@ -29,18 +29,54 @@ jobs:
         run: |
           vcpkg --triplet=x64-windows install opencl
 
-      - name: Install CUDA Toolkit
+      - name: Install CUDA Toolkit (13.x)
         uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
         with:
-          cuda: "12.1.0"
+          cuda: "13.0.0"
 
-      - name: Run Build
+      - name: Build Windows CUDA 13 runtime
         run: |
+          $ErrorActionPreference = "Stop"
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
-      - name: Remove CUDA installer
+      - name: Preserve CUDA 13 runtime output
+        run: |
+          $ErrorActionPreference = "Stop"
+          Move-Item "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64" \
+            "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64-cuda13" -Force
+        shell: pwsh
+
+      - name: Remove CUDA installer (13.x)
+        run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
+
+      - name: Install CUDA Toolkit (12.4)
+        uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
+        with:
+          cuda: "12.4.0"
+
+      - name: Build Windows CUDA 12 runtime
+        run: |
+          $ErrorActionPreference = "Stop"
+          Import-Module ./windows-scripts.ps1
+          BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }}
+        shell: pwsh
+
+      - name: Move CUDA 12 runtime and restore CUDA 13 output
+        run: |
+          $ErrorActionPreference = "Stop"
+          if (Test-Path "runtimes/Whisper.net.Runtime.Cuda12.Windows/win-x64") {
+            Remove-Item "runtimes/Whisper.net.Runtime.Cuda12.Windows/win-x64" -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path "runtimes/Whisper.net.Runtime.Cuda12.Windows" | Out-Null
+          Move-Item "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64" \
+            "runtimes/Whisper.net.Runtime.Cuda12.Windows/win-x64"
+          Move-Item "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64-cuda13" \
+            "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64"
+        shell: pwsh
+
+      - name: Remove CUDA installer (12.x)
         run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
 
       - name: Upload Windows Cuda Build Artifacts

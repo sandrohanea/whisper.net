@@ -27,16 +27,48 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
-      - name: Install CUDA Toolkit
+      - name: Install CUDA Toolkit (13.x)
         uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
         with:
-          cuda: "12.1.0"
+          cuda: "13.0.0"
 
-      - name: Run linux-cuda
+      - name: Build Linux CUDA 13 runtime
         run: |
+          set -euo pipefail
+          rm -rf runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
           make linux_cuda BUILD_TYPE=${{ inputs.BuildConfig }}
 
-      - name: Remove CUDA installer
+      - name: Preserve CUDA 13 runtime output
+        run: |
+          set -euo pipefail
+          mv runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64 \
+            runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64-cuda13
+
+      - name: Remove CUDA installer (13.x)
+        run: rm -rf cuda_installer-*
+
+      - name: Install CUDA Toolkit (12.4)
+        uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
+        with:
+          cuda: "12.4.0"
+
+      - name: Build Linux CUDA 12 runtime
+        run: |
+          set -euo pipefail
+          rm -rf runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
+          make linux_cuda BUILD_TYPE=${{ inputs.BuildConfig }}
+
+      - name: Move CUDA 12 runtime and restore CUDA 13 output
+        run: |
+          set -euo pipefail
+          rm -rf runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64
+          mkdir -p runtimes/Whisper.net.Runtime.Cuda12.Linux
+          mv runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64 \
+            runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64
+          mv runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64-cuda13 \
+            runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
+
+      - name: Remove CUDA installer (12.x)
         run: rm -rf cuda_installer-*
 
       - name: Upload Linux Cuda Build Artifacts
