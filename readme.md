@@ -97,7 +97,10 @@ For CPUs that do not support AVX instructions.
 
 ### Whisper.net.Runtime.Cuda
 
-Contains the native whisper.cpp library with NVidia CUDA support enabled.
+Contains the native whisper.cpp library with NVidia CUDA support enabled using CUDA 13.
+
+> [!NOTE]
+> CUDA 13 is the default GPU runtime for Whisper.net. If your environment is limited to CUDA 12.x drivers, install `Whisper.net.Runtime.Cuda12` alongside the main package. The runtime loader will automatically fall back to CUDA 12 binaries when CUDA 13 is not available.
 
 #### Examples
 
@@ -107,7 +110,22 @@ Contains the native whisper.cpp library with NVidia CUDA support enabled.
 
 - Everything from Whisper.net.Runtime pre-requisites
 - NVidia GPU with CUDA support
-- [CUDA Toolkit (>= 12.1)](https://developer.nvidia.com/cuda-downloads)
+- [CUDA Toolkit (>= 13.0)](https://developer.nvidia.com/cuda-downloads)
+
+#### Supported Platforms
+
+- Windows x64
+- Linux x64
+
+### Whisper.net.Runtime.Cuda12
+
+Contains the native whisper.cpp library with NVidia CUDA support enabled using CUDA 12.4.
+
+#### Pre-requisites
+
+- Everything from Whisper.net.Runtime pre-requisites
+- NVidia GPU with CUDA support
+- [CUDA Toolkit (>= 12.4)](https://developer.nvidia.com/cuda-downloads)
 
 #### Supported Platforms
 
@@ -169,7 +187,7 @@ You can install and use multiple runtimes in the same project. The runtime will 
 
 The following order of priority will be used by default:
 
-1. `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
+1. `Whisper.net.Runtime.Cuda` (CUDA 13 runtime with automatic fallback to CUDA 12 when the optional `Whisper.net.Runtime.Cuda12` package is installed)
 2. `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
 3. `Whisper.net.Runtime.CoreML` (Apple devices)
 4. `Whisper.net.Runtime.OpenVino` (Intel devices)

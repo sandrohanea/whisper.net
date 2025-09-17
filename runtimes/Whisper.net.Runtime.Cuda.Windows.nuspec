@@ -7,8 +7,8 @@
     <authors>Sandro Hanea</authors>
     <owners>Sandro Hanea</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>Windows Cuda dotnet runtimes for Whisper.</summary>
-    <description>Whisper.net.Runtime.Cuda.Windows contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support (Cuda) on Windows.</description>
+    <summary>Windows CUDA 13 runtime libraries for Whisper.</summary>
+    <description>Whisper.net.Runtime.Cuda.Windows contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support using CUDA 13 on Windows.</description>
     <tags>whisper;cuda;gpu;cublas;</tags>
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>

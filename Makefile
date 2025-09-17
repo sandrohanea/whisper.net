@@ -14,6 +14,9 @@ nuget:
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
