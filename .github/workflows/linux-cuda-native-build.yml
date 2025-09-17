@@ -14,7 +14,20 @@ on:
 
 jobs:
   native-build:
+    name: Linux CUDA ${{ matrix.cuda_label }}
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cuda_label: cuda13
+            cuda_version: "13.0.0"
+            package_dir: "runtimes/Whisper.net.Runtime.Cuda.Linux"
+            artifact_name: linux-cuda-build
+          - cuda_label: cuda12
+            cuda_version: "12.4.0"
+            package_dir: "runtimes/Whisper.net.Runtime.Cuda12.Linux"
+            artifact_name: linux-cuda12-build
 
     steps:
       - uses: actions/checkout@v4
@@ -27,23 +40,31 @@ jobs:
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
 
-      - name: Install CUDA Toolkit (13.x)
+      - name: Install CUDA Toolkit (${{ matrix.cuda_version }})
         uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
         with:
-          cuda: "13.0.0"
+          cuda: ${{ matrix.cuda_version }}
 
-      - name: Build Linux CUDA 13 runtime
+      - name: Build Linux CUDA ${{ matrix.cuda_label }} runtime
         run: |
           set -euo pipefail
           rm -rf runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64
           make linux_cuda BUILD_TYPE=${{ inputs.BuildConfig }}
 
-      - name: Remove CUDA installer (13.x)
+      - name: Stage Linux CUDA ${{ matrix.cuda_label }} runtime
+        if: matrix.package_dir != 'runtimes/Whisper.net.Runtime.Cuda.Linux'
+        run: |
+          set -euo pipefail
+          rm -rf "${{ matrix.package_dir }}/linux-x64"
+          mkdir -p "${{ matrix.package_dir }}"
+          mv runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64 "${{ matrix.package_dir }}/linux-x64"
+
+      - name: Remove CUDA installer (${{ matrix.cuda_version }})
         run: rm -rf cuda_installer-*
 
-      - name: Upload Linux Cuda Build Artifacts
+      - name: Upload Linux CUDA ${{ matrix.cuda_label }} build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-cuda-build
+          name: ${{ matrix.artifact_name }}
           path: "runtimes/Whisper.net.Run*/linux-*/*"
           retention-days: 7

@@ -55,9 +55,6 @@ jobs:
    windows-cuda:
       uses: ./.github/workflows/windows-cuda-native-build.yml
 
-   windows-cuda12:
-      uses: ./.github/workflows/windows-cuda12-native-build.yml
-
    windows-vulkan:
       uses: ./.github/workflows/windows-vulkan-native-build.yml
 
@@ -66,9 +63,6 @@ jobs:
       
    linux-cuda:
       uses: ./.github/workflows/linux-cuda-native-build.yml
-
-   linux-cuda12:
-      uses: ./.github/workflows/linux-cuda12-native-build.yml
 
    linux-openvino:
       uses: ./.github/workflows/linux-openvino-native-build.yml
@@ -88,12 +82,10 @@ jobs:
          - wasm
          - linux
          - windows-cuda
-         - windows-cuda12
          - windows-vulkan
          - windows-openvino
          - windows-no-avx
          - linux-cuda
-         - linux-cuda12
          - linux-openvino
          - linux-no-avx
          - linux-vulkan
