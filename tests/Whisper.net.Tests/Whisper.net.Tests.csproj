@@ -8,6 +8,9 @@
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
       AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
 
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Metal</id>
+    <title>Whisper.Net.Runtime.Metal</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Metal shader for Whisper runtimes.</summary>
+    <description>Whisper.net.Runtime.Metal contains the ggml metal shader used by Whisper.net runtimes.</description>
+    <tags>whisper;ios;macos;maccatalyst;tvos;metal</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Metal\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  <Import Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
 
 	<PropertyGroup>
 		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>

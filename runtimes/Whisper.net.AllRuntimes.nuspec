@@ -18,6 +18,7 @@
       <dependency id="Whisper.net.Runtime" version="$version$" />
       <dependency id="Whisper.net.Runtime.Cuda" version="$version$" />
       <dependency id="Whisper.net.Runtime.CoreML" version="$version$" />
+      <dependency id="Whisper.net.Runtime.Metal" version="$version$" />
       <dependency id="Whisper.net.Runtime.NoAvx" version="$version$" />
       <dependency id="Whisper.net.Runtime.OpenVino" version="$version$" />
       <dependency id="Whisper.net.Runtime.Vulkan" version="$version$" />
