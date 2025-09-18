@@ -14,11 +14,21 @@ on:
 
 jobs:
   native-build:
+    name: Windows CUDA ${{ matrix.cuda_label }}
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cuda_label: cuda13
+            cuda_version: "13.0.0"
+            package_dir: "runtimes/Whisper.net.Runtime.Cuda.Windows"
+          - cuda_label: cuda12
+            cuda_version: "12.4.0"
+            package_dir: "runtimes/Whisper.net.Runtime.Cuda12.Windows"
 
     steps:
       - uses: actions/checkout@v4
-
         with:
           submodules: true
 
@@ -29,23 +39,37 @@ jobs:
         run: |
           vcpkg --triplet=x64-windows install opencl
 
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@8022558310ea543e35132143092835585f60e628
+      - name: Install CUDA Toolkit (${{ matrix.cuda_version }})
+        uses: Jimver/cuda-toolkit@433d453c1fa37d10a3254452fa8e284441c9192d
         with:
-          cuda: "12.1.0"
+          cuda: ${{ matrix.cuda_version }}
+          log-file-suffix: windows-${{ matrix.cuda_label }}.log
 
-      - name: Run Build
+      - name: Build Windows CUDA ${{ matrix.cuda_label }} runtime
         run: |
+          $ErrorActionPreference = "Stop"
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
-      - name: Remove CUDA installer
+      - name: Stage Windows CUDA ${{ matrix.cuda_label }} runtime
+        if: matrix.package_dir != 'runtimes/Whisper.net.Runtime.Cuda.Windows'
+        run: |
+          $ErrorActionPreference = "Stop"
+          if (Test-Path "${{ matrix.package_dir }}/win-x64") {
+            Remove-Item "${{ matrix.package_dir }}/win-x64" -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path "${{ matrix.package_dir }}" | Out-Null
+          Move-Item "runtimes/Whisper.net.Runtime.Cuda.Windows/win-x64" \
+            "${{ matrix.package_dir }}/win-x64" -Force
+        shell: pwsh
+
+      - name: Remove CUDA installer (${{ matrix.cuda_version }})
         run: Remove-Item -Path 'cuda_installer-*' -Recurse -Force -ErrorAction Ignore
 
-      - name: Upload Windows Cuda Build Artifacts
+      - name: Upload Windows CUDA ${{ matrix.cuda_label }} build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-cuda-build
-          path: "runtimes/Whisper.net.Run*/win-*/*"
+          name: windows-cuda-${{ matrix.cuda_label }}-build
+          path: "${{ matrix.package_dir }}/win-*/*"
           retention-days: 7

@@ -1,34 +1,34 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libwhisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libwhisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/win-x64/whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/win-x64/ggml-whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-base-whisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-base-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-base-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/win-x64/ggml-base-whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-whisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cpu-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-cpu-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/win-x64/ggml-cpu-whisper.dll</TargetPath>
     </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cuda-whisper.so">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cuda-whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-cuda-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/win-x64/ggml-cuda-whisper.dll</TargetPath>
     </None>
   </ItemGroup>
 </Project>

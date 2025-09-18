@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals.Native;
 using Whisper.net.Internals.Native.Implementations.Cuda;
@@ -16,23 +17,56 @@ internal static class CudaHelper
         try
         {
 #if NET8_0_OR_GREATER
-            var libName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                               ? DllImportNativeCuda_64_12.LibraryName // Only 64-bit Windows is supported for now
-                               : DllImportNativeLibcuda.LibraryName;
-
-            if (!NativeLibrary.TryLoad(libName, out var library))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
-                return false;
+                foreach (var libraryName in new[]
+                         {
+                             DllImportNativeCuda_64_13.LibraryName,
+                             DllImportNativeCuda_64_12.LibraryName
+                         })
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Trying to load CUDA runtime library: {libraryName}.");
+                    if (!NativeLibrary.TryLoad(libraryName, out var libraryHandle))
+                    {
+                        WhisperLogger.Log(WhisperLogLevel.Debug,
+                            $"CUDA runtime library {libraryName} couldn't be loaded.");
+                        continue;
+                    }
+
+                    nativeCuda = new NativeLibraryCuda(libraryHandle);
+                    nativeCuda.CudaGetDeviceCount(out cudaDevices);
+                    break;
+                }
+
+                if (nativeCuda is null)
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
+                    return false;
+                }
             }
-            nativeCuda = new NativeLibraryCuda(library);
-            nativeCuda.CudaGetDeviceCount(out cudaDevices);
+            else
+            {
+                if (!NativeLibrary.TryLoad(DllImportNativeLibcuda.LibraryName, out var library))
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
+                    return false;
+                }
+
+                nativeCuda = new NativeLibraryCuda(library);
+                nativeCuda.CudaGetDeviceCount(out cudaDevices);
+            }
 #else
             try
             {
                 nativeCuda = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                                ? new DllImportNativeCuda_64_12()
+                                ? TryCreateWindowsCuda()
                                 : new DllImportNativeLibcuda();
+
+                if (nativeCuda is null)
+                {
+                    WhisperLogger.Log(WhisperLogLevel.Debug, "Cudart library couldn't be loaded.");
+                    return false;
+                }
                 nativeCuda.CudaGetDeviceCount(out cudaDevices);
             }
             catch
@@ -41,7 +75,7 @@ internal static class CudaHelper
                 return false;
             }
 #endif
-            WhisperLogger.Log(WhisperLogLevel.Debug, $"NUmber of CUDA devices found: {cudaDevices}");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Number of CUDA devices found: {cudaDevices}");
             return cudaDevices > 0;
         }
         finally
@@ -49,4 +83,30 @@ internal static class CudaHelper
             nativeCuda?.Dispose();
         }
     }
+
+#if !NET8_0_OR_GREATER
+    private static INativeCuda? TryCreateWindowsCuda()
+    {
+        foreach (var factory in new Func<INativeCuda>[]
+                 {
+                     () => new DllImportNativeCuda_64_13(),
+                     () => new DllImportNativeCuda_64_12()
+                 })
+        {
+            try
+            {
+                var instance = factory();
+                WhisperLogger.Log(WhisperLogLevel.Debug,
+                    $"Successfully created CUDA runtime binding: {instance.GetType().Name}.");
+                return instance;
+            }
+            catch
+            {
+                // ignored - we'll try the next available runtime
+            }
+        }
+
+        return null;
+    }
+#endif
 }

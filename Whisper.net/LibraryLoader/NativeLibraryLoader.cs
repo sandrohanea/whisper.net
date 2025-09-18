@@ -1,5 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.Collections.Generic;
+using System.Linq;
 using Whisper.net.Internals.Native.Implementations;
 using Whisper.net.Logger;
 
@@ -249,28 +251,52 @@ public static class NativeLibraryLoader
                 var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
                     ? "runtimes"
                     : Path.Combine(assemblySearchPath, "runtimes");
-                var runtimePath = library switch
+                foreach (var runtimePath in ResolveRuntimePaths(library, runtimesPath, platform, architecture))
                 {
-                    RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
-                    RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
-                    RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
-                    RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
-                    RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
-                    RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
-                    _ => throw new InvalidOperationException("Unknown runtime library")
-                };
-                WhisperLogger.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
+                    WhisperLogger.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
 
-                if (Directory.Exists(runtimePath))
-                {
-                    yield return (runtimePath, library);
-                }
-                else
-                {
-                    WhisperLogger.Log(WhisperLogLevel.Debug,
-                        $"Runtime directory for {library} not found in {runtimePath}");
+                    if (Directory.Exists(runtimePath))
+                    {
+                        yield return (runtimePath, library);
+                    }
+                    else
+                    {
+                        WhisperLogger.Log(WhisperLogLevel.Debug,
+                            $"Runtime directory for {library} not found in {runtimePath}");
+                    }
                 }
             }
+        }
+    }
+
+    private static IEnumerable<string> ResolveRuntimePaths(RuntimeLibrary library, string runtimesPath, string platform,
+        string architecture)
+    {
+        switch (library)
+        {
+            case RuntimeLibrary.Cuda:
+                foreach (var cudaDirectory in new[] { "cuda13", "cuda12", "cuda" })
+                {
+                    yield return Path.Combine(runtimesPath, cudaDirectory, $"{platform}-{architecture}");
+                }
+                yield break;
+            case RuntimeLibrary.Vulkan:
+                yield return Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}");
+                yield break;
+            case RuntimeLibrary.Cpu:
+                yield return Path.Combine(runtimesPath, $"{platform}-{architecture}");
+                yield break;
+            case RuntimeLibrary.CpuNoAvx:
+                yield return Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}");
+                yield break;
+            case RuntimeLibrary.CoreML:
+                yield return Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}");
+                yield break;
+            case RuntimeLibrary.OpenVino:
+                yield return Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}");
+                yield break;
+            default:
+                throw new InvalidOperationException("Unknown runtime library");
         }
     }
 
