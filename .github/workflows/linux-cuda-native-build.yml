@@ -32,6 +32,14 @@ jobs:
         with:
           submodules: true
 
+      - name: Reclaim runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+          sudo apt-get clean
+          df -h
+
       - name: Install aarch64-linux-gnu-gcc
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu && sudo apt-get install -y g++-aarch64-linux-gnu
 
@@ -42,6 +50,7 @@ jobs:
         uses: Jimver/cuda-toolkit@433d453c1fa37d10a3254452fa8e284441c9192d
         with:
           cuda: ${{ matrix.cuda_version }}
+          log-file-suffix: linux-${{ matrix.cuda_label }}.log
 
       - name: Build Linux CUDA ${{ matrix.cuda_label }} runtime
         run: |

@@ -43,8 +43,7 @@ jobs:
         uses: Jimver/cuda-toolkit@433d453c1fa37d10a3254452fa8e284441c9192d
         with:
           cuda: ${{ matrix.cuda_version }}
-          use-github-cache: false
-          use-local-cache: false
+          log-file-suffix: windows-${{ matrix.cuda_label }}.log
 
       - name: Build Windows CUDA ${{ matrix.cuda_label }} runtime
         run: |
