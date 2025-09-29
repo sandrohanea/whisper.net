@@ -4,7 +4,7 @@
   <ItemGroup>
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.9.0" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="9.9.1" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <PackageVersion Include="System.IO.Compression" Version="4.3.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
