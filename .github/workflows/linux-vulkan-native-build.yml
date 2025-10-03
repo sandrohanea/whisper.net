@@ -31,7 +31,7 @@ jobs:
         uses: humbletim/setup-vulkan-sdk@c25f41106918cde0bf347e6f201277392b3a9e9d
         with:
           vulkan-query-version: 1.4.321.1
-          vulkan-components: Vulkan-Headers, Glslang
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Tools, Glslang
           vulkan-use-cache: true
 
       - name: Set Vulkan variables
