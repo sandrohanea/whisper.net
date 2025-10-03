@@ -33,6 +33,9 @@ jobs:
 
       - name: Run Build
         run: |
+          ;Finding gslsc in powershell
+          Find-Path -Path "gslsc" -Recurse -File
+
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }} -Vulkan $true
         shell: pwsh

@@ -36,6 +36,7 @@ jobs:
 
       - name: Set Vulkan variables
         run: |
+          find "gslsc" -type f
           echo "$VULKAN_SDK/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/build/linux-x64-vulkan/bin" >> $GITHUB_PATH
 
