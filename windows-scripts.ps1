@@ -185,6 +185,9 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
     nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda12.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda12.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
+    nuget pack runtimes/Whisper.net.Runtime.Cuda12.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $Version -OutputDirectory ./nupkgs

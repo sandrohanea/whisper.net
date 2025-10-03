@@ -7,8 +7,8 @@
     <authors>Sandro Hanea</authors>
     <owners>Sandro Hanea</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>Linux Cuda dotnet runtimes for Whisper.</summary>
-    <description>Whisper.net.Runtime.Cuda.Linux contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support (Cuda) for Linux</description>
+    <summary>Linux CUDA 13 runtime libraries for Whisper.</summary>
+    <description>Whisper.net.Runtime.Cuda.Linux contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support using CUDA 13 for Linux.</description>
     <tags>whisper;cuda;gpu;cublas;</tags>
     <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
     <license type="expression">MIT</license>

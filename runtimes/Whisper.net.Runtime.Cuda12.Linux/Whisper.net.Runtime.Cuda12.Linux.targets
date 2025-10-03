@@ -4,31 +4,31 @@
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libwhisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/linux-x64/libwhisper.so</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/linux-x64/libggml-whisper.so</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-base-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-base-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/linux-x64/libggml-base-whisper.so</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-cpu-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/linux-x64/libggml-cpu-whisper.so</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cuda-whisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/cuda13/linux-x64/libggml-cuda-whisper.so</TargetPath>
+      <TargetPath>runtimes/cuda12/linux-x64/libggml-cuda-whisper.so</TargetPath>
     </None>
   </ItemGroup>
 </Project>
