@@ -135,9 +135,11 @@ jobs:
       - name: Install xharness
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
 
+      - name: Check simulators
+        run: xharness apple simulators list
 
       - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64
+        run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16"
 
       - name: Upload Maui iOS xharness test results
         if: ${{ always() }}
