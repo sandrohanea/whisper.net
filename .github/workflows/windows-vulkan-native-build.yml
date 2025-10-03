@@ -25,13 +25,11 @@ jobs:
         uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce
 
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@34be64e16c022c7d7dd27231cbb2a895ee3b8bc8
+        uses: humbletim/setup-vulkan-sdk@c25f41106918cde0bf347e6f201277392b3a9e9d
         with:
-          vulkan_version: 1.4.313.2
-          optional_components: com.lunarg.vulkan.vma
-          install_runtime: true
-          cache: true
-          stripdown: true
+          vulkan-query-version: 1.4.313.2
+          vulkan-components: Vulkan-Headers, Vulkan-Loader,Glslang
+          vulkan-use-cache: true
 
       - name: Run Build
         run: |
