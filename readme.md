@@ -157,7 +157,7 @@ Contains the native whisper.cpp library with Vulkan support enabled.
 #### Pre-requisites
 
 - Everything from Whisper.net.Runtime pre-requisites
-- [Vulkan Toolkit (>= 1.4.313.2)](https://vulkan.lunarg.com/sdk/home)]
+- [Vulkan Toolkit (>= 1.4.321.1)](https://vulkan.lunarg.com/sdk/home)]
 
 #### Supported Platforms
 
