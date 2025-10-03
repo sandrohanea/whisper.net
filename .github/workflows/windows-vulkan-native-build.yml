@@ -34,7 +34,7 @@ jobs:
           Invoke-WebRequest -Uri $InstallerURL -OutFile $InstallerPath
 
           Write-Host "Installing Vulkan SDK..."
-          Start-Process -FilePath $InstallerPath -ArgumentList "/S" -Wait
+          Start-Process -FilePath $InstallerPath -ArgumentList "--al -c" -Wait
 
           # The SDK typically installs to C:\VulkanSDK\<version>
           $VulkanPath = "C:\VulkanSDK\$VulkanVersion"
