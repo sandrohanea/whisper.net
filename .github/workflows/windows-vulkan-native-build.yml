@@ -31,11 +31,37 @@ jobs:
           vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Tools, Glslang
           vulkan-use-cache: true
 
+      - name: Setup Vulkan environment
+        run: |
+          Write-Host "Setting up Vulkan environment"
+
+          # Find glslc executable
+          $glslcPath = Get-ChildItem -Recurse -Path $env:GITHUB_WORKSPACE -Include "glslc.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+
+          if ($glslcPath) {
+            Write-Host "Found glslc at: $($glslcPath.FullName)"
+            $vulkanBinDir = $glslcPath.Directory.FullName
+            Write-Host "Adding to PATH: $vulkanBinDir"
+            echo "$vulkanBinDir" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+            # Set VULKAN_SDK environment variable
+            $vulkanSdkPath = $glslcPath.Directory.Parent.FullName
+            Write-Host "Setting VULKAN_SDK to: $vulkanSdkPath"
+            echo "VULKAN_SDK=$vulkanSdkPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          } else {
+            Write-Error "glslc.exe not found!"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Verify glslc
+        run: |
+          Write-Host "Verifying glslc installation"
+          glslc --version
+        shell: pwsh
+
       - name: Run Build
         run: |
-          Write-Host "Finding glslc path"
-          Get-ChildItem -Recurse -Path . -Include "glslc"
-
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }} -Vulkan $true
         shell: pwsh
