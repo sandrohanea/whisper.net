@@ -373,3 +373,6 @@ MigrationBackup/
 
 /runtimes/Whisper.net.Runtime.NoAvx/*
 !/runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets
+
+/runtimes/Whisper.net.Runtime.Metal/*
+!/runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets

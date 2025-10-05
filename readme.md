@@ -107,7 +107,7 @@ Contains the native whisper.cpp library with NVidia CUDA support enabled.
 
 - Everything from Whisper.net.Runtime pre-requisites
 - NVidia GPU with CUDA support
-- [CUDA Toolkit (>= 12.1)](https://developer.nvidia.com/cuda-downloads)
+- [CUDA Toolkit (>= 13.0.1)](https://developer.nvidia.com/cuda-downloads)
 
 #### Supported Platforms
 
