@@ -26,9 +26,17 @@ jobs:
 
       - name: Install gcc-arm-linux-gnueabihf
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-linux-gnueabihf && sudo apt-get install -y g++-arm-linux-gnueabihf
-
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android \
+                      /usr/share/dotnet \
+                      /usr/local/share/boost \
+                      /opt/ghc \
+                      /usr/local/share/swift
+          sudo apt-get clean
+          df -h
       - name: Install CUDA Toolkit
-        uses: sandrohanea/cuda-toolkit@cfee046042ba06dd691634f2bb09edd98af50f78
+        uses: Jimver/cuda-toolkit@1a3c14e26833ccf292b268f9a790fb47dea7b2da
         with:
           cuda: "13.0.1"
 
