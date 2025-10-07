@@ -12,12 +12,12 @@ internal static class CudaHelper
     {
         WhisperLogger.Log(WhisperLogLevel.Debug, "Checking for CUDA availability.");
         INativeCuda? nativeCuda = null;
-        var cudaDevices = 0;
         try
         {
+            var cudaDevices = 0;
 #if NET8_0_OR_GREATER
             var libName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                               ? DllImportNativeCuda_64_12.LibraryName // Only 64-bit Windows is supported for now
+                               ? DllImportNativeCuda_64_13.LibraryName // Only 64-bit Windows is supported for now
                                : DllImportNativeLibcuda.LibraryName;
 
             if (!NativeLibrary.TryLoad(libName, out var library))
@@ -31,7 +31,7 @@ internal static class CudaHelper
             try
             {
                 nativeCuda = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                                ? new DllImportNativeCuda_64_12()
+                                ? new DllImportNativeCuda_64_13()
                                 : new DllImportNativeLibcuda();
                 nativeCuda.CudaGetDeviceCount(out cudaDevices);
             }
