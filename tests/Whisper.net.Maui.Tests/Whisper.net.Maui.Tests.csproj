@@ -3,8 +3,8 @@
   <Import Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
-		
+		<TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+
 		<!-- Note for MacCatalyst:
 		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
 		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
@@ -85,5 +85,5 @@
 	  <ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	  <ProjectReference Include="..\Whisper.net.Tests\Whisper.net.Tests.csproj" />
 	</ItemGroup>
-  
+
 </Project>

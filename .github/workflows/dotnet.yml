@@ -10,7 +10,7 @@ permissions:
 
 on:
   workflow_call:
-  
+
 
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -28,6 +28,7 @@ jobs:
           dotnet-version: |
             8.0.x
             9.0.x
+            10.0.x
 
       - name: Download Artifacts
         id: download-artifact
@@ -41,21 +42,21 @@ jobs:
 
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
-        
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
           build-mode: manual
-    
+
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build  --logger "trx"
-          
+
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
@@ -63,7 +64,7 @@ jobs:
           name: Whisper.net MacOs Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
-          
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
@@ -76,7 +77,7 @@ jobs:
           name: test-results-macos
           path: ./**/*.trx
           retention-days: 7
-          
+
 
   dotnet-windows:
     runs-on: windows-latest
@@ -97,27 +98,27 @@ jobs:
         with:
           merge-multiple: true
           path: runtimes
-          
+
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-        
+
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
-        
+
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
           build-mode: manual
-    
+
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
-          
+
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
@@ -138,7 +139,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"
-          
+
   dotnet-linux:
     runs-on: ubuntu-latest
 
@@ -158,20 +159,20 @@ jobs:
         with:
           merge-multiple: true
           path: runtimes
-          
+
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
-        
+
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
-        
+
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
 
       - name: Test
         run: |
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
-                        
+
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
         if: success() || failure()    # run this step even if previous step failed
@@ -187,4 +188,4 @@ jobs:
           name: test-results-linux
           path: ./**/*.trx
           retention-days: 7
-        
+
