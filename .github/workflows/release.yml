@@ -22,6 +22,7 @@ on:
             required: true
             type: boolean
             default: true
+
 env:
    IS_PREVIEW: ${{ inputs.IsPreview }}
    PREVIEW_SUFFIX: ${{ inputs.PreviewSuffix }}
@@ -39,7 +40,7 @@ jobs:
 
    windows:
       uses: ./.github/workflows/windows-native-build.yml
-      
+
    windows-no-avx:
       uses: ./.github/workflows/windows-noavx-native-build.yml
 
@@ -60,19 +61,19 @@ jobs:
 
    windows-openvino:
       uses: ./.github/workflows/windows-openvino-native-build.yml
-      
+
    linux-cuda:
       uses: ./.github/workflows/linux-cuda-native-build.yml
 
    linux-openvino:
       uses: ./.github/workflows/linux-openvino-native-build.yml
-      
+
    linux-vulkan:
       uses: ./.github/workflows/linux-vulkan-native-build.yml
 
    macos-coreml:
       uses: ./.github/workflows/macos-coreml-native-build.yml
-      
+
    pack-all:
       needs:
          - android
@@ -94,7 +95,7 @@ jobs:
       with:
          IsPreview: ${{ inputs.IsPreview }}
          PreviewSuffix: ${{ inputs.PreviewSuffix }}
-         
+
    push-nuget:
       if: ${{ inputs.PushToNuget }}
       needs:
