@@ -55,7 +55,7 @@ jobs:
 
       - name: Test
         run: |
-          dotnet test ./Whisper.net.sln --no-build  --logger "trx"
+          dotnet test ./Whisper.net.sln --no-build  --logger "trx" --framework net10.0
 
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
