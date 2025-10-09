@@ -17,7 +17,7 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>13</LangVersion>
 		<IsTestProject>true</IsTestProject>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <NoWarn>xUnit1041</NoWarn>
 	</PropertyGroup>
 
@@ -36,7 +36,7 @@
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <TargetFrameworks>
-      net8.0;net9.0;net48;
+      net9.0;net10.0;net48;
     </TargetFrameworks>
   </PropertyGroup>
 

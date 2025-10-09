@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "github", "github", "{5C8656
 		.github\workflows\build-all.yml = .github\workflows\build-all.yml
 		.github\workflows\dotnet-maui.yml = .github\workflows\dotnet-maui.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\dotnet-noavx.yml = .github\workflows\dotnet-noavx.yml
 		.github\workflows\linux-cuda-native-build.yml = .github\workflows\linux-cuda-native-build.yml
 		.github\workflows\linux-native-build.yml = .github\workflows\linux-native-build.yml
 		.github\workflows\linux-noavx-native-build.yml = .github\workflows\linux-noavx-native-build.yml
