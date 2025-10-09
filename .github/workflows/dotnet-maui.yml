@@ -47,18 +47,18 @@ jobs:
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
       - name: Build ios-simulator
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
 
       - name: Build android
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net9.0-android -p:EmbedAssembliesIntoApk=true
+        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net10.0-android -p:EmbedAssembliesIntoApk=true
 
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:
           name: maui-build-artifacts
           path: |
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net10.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app
+            ./tests/Whisper.net.Maui.Tests/bin/Debug/net10.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
 
   dotnet-maui-test-android:
     runs-on: ubuntu-latest
