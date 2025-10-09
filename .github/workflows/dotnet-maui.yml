@@ -99,7 +99,7 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: xharness android test --app=./maui-build-artifacts/net9.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
+          script: xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
 
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
@@ -145,7 +145,7 @@ jobs:
         run: xharness apple simulators list
 
       - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/net9.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16"
+        run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16"
 
       - name: Upload Maui iOS xharness test results
         if: ${{ always() }}
