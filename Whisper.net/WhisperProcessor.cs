@@ -508,6 +508,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             whisperParams.InitialPrompt = initialPromptText.Value;
         }
 
+        if (options.CarryInitialPrompt.HasValue)
+        {
+            whisperParams.CarryInitialPrompt = options.CarryInitialPrompt.Value ? trueByte : falseByte;
+        }
+
         if (options.Language != null)
         {
             language = Marshal.StringToHGlobalAnsi(options.Language);

@@ -56,6 +56,8 @@ internal sealed class WhisperProcessorOptions
 
     public string? Prompt { get; set; }
 
+    public bool? CarryInitialPrompt { get; set; }
+
     public string? Language { get; set; }
 
     public bool? SuppressBlank { get; set; }

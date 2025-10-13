@@ -185,6 +185,8 @@ internal struct WhisperFullParams
 
     public IntPtr InitialPrompt;
 
+    public byte CarryInitialPrompt;
+
     // tokens to provide to the whisper decoder as initial prompt
     // these are prepended to any existing text context from a previous call
     public IntPtr PromptTokens;
