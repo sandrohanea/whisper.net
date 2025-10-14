@@ -154,6 +154,21 @@ function BuildWindows() {
     if ($Vulkan) {
         Move-Item "$buildDirectory/bin/$Configuration/ggml-vulkan-whisper.dll" "$runtimePath/ggml-vulkan-whisper.dll" -Force
     }
+
+    if ($Configuration -eq "DEBUG")
+    {
+        # We copy the PDB files for DEBUG as well
+        Move-Item "$buildDirectory/bin/$Configuration/whisper.pdb" "$runtimePath/whisper.pdb" -Force
+        Move-Item "$buildDirectory/bin/$Configuration/ggml-whisper.pdb" "$runtimePath/ggml-whisper.pdb" -Force
+        Move-Item "$buildDirectory/bin/$Configuration/ggml-base-whisper.pdb" "$runtimePath/ggml-base-whisper.pdb" -Force
+        Move-Item "$buildDirectory/bin/$Configuration/ggml-cpu-whisper.pdb" "$runtimePath/ggml-cpu-whisper.pdb" -Force
+        if ($Cuda) {
+            Move-Item "$buildDirectory/bin/$Configuration/ggml-cuda-whisper.pdb" "$runtimePath/ggml-cuda-whisper.pdb" -Force
+        }
+        if ($Vulkan) {
+            Move-Item "$buildDirectory/bin/$Configuration/ggml-vulkan-whisper.pdb" "$runtimePath/ggml-vulkan-whisper.pdb" -Force
+        }
+    }
 }
 
 function BuildWindowsArm([Parameter(Mandatory = $false)] [string]$Configuration = "Release") {
