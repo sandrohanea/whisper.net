@@ -44,11 +44,11 @@ jobs:
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj
 
       # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: csharp
-          build-mode: manual
+      # - name: Initialize CodeQL
+      #   uses: github/codeql-action/init@v4.30.8
+      #   with:
+      #     languages: csharp
+      #     build-mode: manual
 
       - name: Build
         run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
@@ -65,10 +65,10 @@ jobs:
           path: ./**/*.trx
           reporter: dotnet-trx
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:csharp"
+      # - name: Perform CodeQL Analysis
+      #   uses: github/codeql-action/analyze@v4.30.8
+      #   with:
+      #     category: "/language:csharp"
 
       - name: Upload trx files
         uses: actions/upload-artifact@v4
@@ -108,7 +108,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4.30.8
         with:
           languages: csharp
           build-mode: manual
@@ -137,7 +137,7 @@ jobs:
           retention-days: 7
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4.30.8
         with:
           category: "/language:csharp"
 

@@ -296,6 +296,19 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to always prepend InitialPrompt to every decode window (may reduce conditioning on previous text)
+    /// </summary>
+    /// <remarks>
+    /// By default, it is false.
+    /// </remarks>
+    /// <param name="carryInitialPrompt">A value indicating how to configure this value.</param>
+    public WhisperProcessorBuilder WithCarryInitialPrompt(bool carryInitialPrompt = true)
+    {
+        whisperProcessorOptions.CarryInitialPrompt = carryInitialPrompt;
+        return this;
+    }
+
+    /// <summary>
     /// Configures the processor with the language to be used for detection.
     /// </summary>
     /// <param name="language">The language (2 letters) to be used.</param>
