@@ -6,7 +6,7 @@ using Whisper.net.Native;
 namespace Whisper.net.Internals.Native.Implementations;
 
 /// <summary>
-/// This way of loading INativeWhisper is used on NetFramework + Wasm (as they doesn't support NativeLibrary)
+/// This way of loading INativeWhisper is used on NetFramework + Wasm (as they don't support NativeLibrary)
 /// </summary>
 internal class DllImportsNativeLibWhisper : INativeWhisper
 {

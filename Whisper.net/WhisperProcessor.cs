@@ -35,7 +35,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private int segmentIndex;
     private CancellationToken? currentCancellationToken;
 
-    // ID is used to identifying the current instance when calling the callbacks from C++
+    // ID is used to identify the current instance when calling the callbacks from C++
     private readonly long myId;
 
     internal WhisperProcessor(WhisperProcessorOptions options, INativeWhisper nativeWhisper)
