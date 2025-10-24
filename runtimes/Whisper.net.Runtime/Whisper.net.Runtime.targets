@@ -4,7 +4,7 @@
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <ForceLoad>true</ForceLoad>
-      <Frameworks>Accelerate;Metal</Frameworks>
+      <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
     <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.a">
       <Kind>Static</Kind>
@@ -30,7 +30,7 @@
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <ForceLoad>true</ForceLoad>
-      <Frameworks>Accelerate;Metal</Frameworks>
+      <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
     <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.a">
       <Kind>Static</Kind>
@@ -87,7 +87,7 @@
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <ForceLoad>true</ForceLoad>
-      <Frameworks>Accelerate;Metal</Frameworks>
+      <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
     <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.a">
       <Kind>Static</Kind>
@@ -118,7 +118,7 @@
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <ForceLoad>true</ForceLoad>
-      <Frameworks>Accelerate;Metal</Frameworks>
+      <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
     <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.a">
       <Kind>Static</Kind>
