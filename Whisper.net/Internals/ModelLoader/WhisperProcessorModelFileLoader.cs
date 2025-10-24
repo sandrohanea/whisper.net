@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using System.Text;
 using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 
@@ -22,25 +23,28 @@ internal sealed class WhisperProcessorModelFileLoader : IWhisperProcessorModelLo
 
     public void Dispose()
     {
-        if (aheadsHandle.HasValue)
-        {
-            aheadsHandle.Value.Free();
-        }
+        aheadsHandle?.Free();
     }
 
-    public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
+    public unsafe IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
-        return nativeWhisper.Whisper_Init_From_File_With_Params_No_State(pathModel,
-           new WhisperContextParams()
-           {
-               UseGpu = options.UseGpu.AsByte(),
-               FlashAttention = options.UseFlashAttention.AsByte(),
-               GpuDevice = options.GpuDevice,
-               DtwTokenLevelTimestamp = options.UseDtwTimeStamps.AsByte(),
-               HeadsPreset = ModelLoaderUtils.Map(options.HeadsPreset),
-               DtwNTop = options.DtwNTop,
-               WhisperAheads = aHeads,
-               Dtw_mem_size = new UIntPtr(options.DtwMemSize)
-           });
+        // Calling the method with a stack-allocated UTF8 string
+        var stackByteCount = Encoding.UTF8.GetByteCount(pathModel);
+        var stackBytes = stackalloc byte[stackByteCount + 1];
+        var stackPath = (IntPtr)stackBytes;
+        MarshalUtils.CopyStringToPtr(pathModel, stackPath, stackByteCount);
+
+        return nativeWhisper.Whisper_Init_From_File_With_Params_No_State(stackPath,
+            new WhisperContextParams()
+            {
+                UseGpu = options.UseGpu.AsByte(),
+                FlashAttention = options.UseFlashAttention.AsByte(),
+                GpuDevice = options.GpuDevice,
+                DtwTokenLevelTimestamp = options.UseDtwTimeStamps.AsByte(),
+                HeadsPreset = ModelLoaderUtils.Map(options.HeadsPreset),
+                DtwNTop = options.DtwNTop,
+                WhisperAheads = aHeads,
+                Dtw_mem_size = new UIntPtr(options.DtwMemSize)
+            });
     }
 }

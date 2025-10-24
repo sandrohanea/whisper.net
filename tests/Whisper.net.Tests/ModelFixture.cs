@@ -29,7 +29,7 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
     private static async Task<string> DownloadModelAsync(GgmlType type, QuantizationType quantizationType = QuantizationType.NoQuantization)
     {
         var huggingFaceToken = Environment.GetEnvironmentVariable("HF_TOKEN");
-        var ggmlModelPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.bin");
+        var ggmlModelPath = Path.Combine(Path.GetTempPath(), $"fișier-împânzit-utf8-{Guid.NewGuid()}.bin");
 
         // If you have a Hugging Face token, you can use it to download the model (to avoid rate limiting)
         // Otherwise, the default downloader will be used

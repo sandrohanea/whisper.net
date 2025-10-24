@@ -5,7 +5,7 @@ using Xunit.Extensions.AssemblyFixture;
 
 namespace Whisper.net.Tests;
 
-public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAssemblyFixture<TinyModelFixture>
+public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAssemblyFixture<TinyModelFixture>
 {
     [Fact]
     public async Task TestHappyFlowAsync()
@@ -39,6 +39,41 @@ public partial class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAsse
         Assert.True(progress.Count > 1);
         Assert.Single(encoderBegins);
         Assert.Contains(segments, segmentData => segmentData.Text.Contains("nation should commit"));
+    }
+
+    [Fact]
+    public async Task ProcessAsync_WhenUtf8Data_ProcessCorrectly()
+    {
+        var segments = new List<SegmentData>();
+        var segmentsEnumerated = new List<SegmentData>();
+        var progress = new List<int>();
+
+        var encoderBegins = new List<EncoderBeginData>();
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
+        await using var processor = factory.CreateBuilder()
+            .WithLanguage("ro")
+            .WithEncoderBeginHandler((e) =>
+            {
+                encoderBegins.Add(e);
+                return true;
+            })
+            .WithPrompt("RĂSPUNDE DOAR ÎN ROMÂNĂ ÎN MAJUSCULE 模型")
+            .WithProgressHandler(progress.Add)
+            .WithSegmentEventHandler(segments.Add)
+            .Build();
+
+        var fileReader = await TestDataProvider.OpenFileStreamAsync("romana.wav");
+        await foreach (var data in processor.ProcessAsync(fileReader))
+        {
+            segmentsEnumerated.Add(data);
+        }
+
+
+        Assert.Equal(segments, segmentsEnumerated);
+        Assert.True(segments.Count > 0);
+        Assert.True(progress.SequenceEqual(progress.OrderBy(x => x)));
+        Assert.True(progress.Count > 1);
+        Assert.Single(encoderBegins);
     }
 
     [Fact]
