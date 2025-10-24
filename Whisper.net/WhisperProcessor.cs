@@ -35,7 +35,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private int segmentIndex;
     private CancellationToken? currentCancellationToken;
 
-    // Id is used to identify the current instance when calling the callbacks from C++
+    // ID is used to identifying the current instance when calling the callbacks from C++
     private readonly long myId;
 
     internal WhisperProcessor(WhisperProcessorOptions options, INativeWhisper nativeWhisper)
@@ -66,14 +66,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
         else
         {
-            language = Marshal.StringToHGlobalAnsi(newLanguage);
+            language = MarshalUtils.GetStringHGlobalPtr(newLanguage);
+            if (!language.HasValue || language.Value == IntPtr.Zero)
+            {
+                throw new ArgumentException("Invalid language, cannot convert to native string.", nameof(newLanguage));
+            }
+
             newParams.Language = language.Value;
         }
 
-        if (oldLanguage.HasValue)
-        {
-            Marshal.FreeHGlobal(oldLanguage.Value);
-        }
+        MarshalUtils.TryReleaseStringHGlobal(oldLanguage);
         whisperParams = newParams;
     }
 
@@ -116,13 +118,15 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 {
                     nativeWhisper.Whisper_PCM_To_Mel_With_State(currentWhisperContext, state, (IntPtr)pSamples, samples.Length, whisperParams.Threads);
                 }
+
                 var langId = nativeWhisper.Whisper_Lang_Auto_Detect_With_State(currentWhisperContext, state, 0, whisperParams.Threads, (IntPtr)pData);
                 if (langId == -1)
                 {
                     return (null, 0f);
                 }
+
                 var languagePtr = nativeWhisper.Whisper_Lang_Str(langId);
-                var language = Marshal.PtrToStringAnsi(languagePtr);
+                var language = MarshalUtils.GetString(languagePtr);
                 return (language, probs[langId]);
             }
             finally
@@ -168,7 +172,6 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         fixed (float* pData = samples)
         {
-
             var state = GetWhisperState();
             try
             {
@@ -228,6 +231,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             {
                 return true;
             }
+
             return false;
         }
 
@@ -237,6 +241,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             {
                 options.OnSegmentEventHandlers.Add(OnSegmentHandler);
             }
+
             options.WhisperAbortEventHandler = OnWhisperAbortHandler;
 
             currentCancellationToken = cancellationToken;
@@ -314,28 +319,19 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
 
         processorInstances.TryRemove(myId, out _);
-        if (language.HasValue)
-        {
-            Marshal.FreeHGlobal(language.Value);
-            language = null;
-        }
+        MarshalUtils.TryReleaseStringHGlobal(language);
+        language = null;
+        MarshalUtils.TryReleaseStringHGlobal(initialPromptText);
+        initialPromptText = null;
 
-        if (initialPromptText.HasValue)
-        {
-            Marshal.FreeHGlobal(initialPromptText.Value);
-            initialPromptText = null;
-        }
-
-        if (suppressRegex.HasValue)
-        {
-            Marshal.FreeHGlobal(suppressRegex.Value);
-            suppressRegex = null;
-        }
+        MarshalUtils.TryReleaseStringHGlobal(suppressRegex);
+        suppressRegex = null;
 
         foreach (var gcHandle in gcHandles)
         {
             gcHandle.Free();
         }
+
         gcHandles.Clear();
         isDisposed = true;
     }
@@ -346,6 +342,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             throw new ObjectDisposedException("This processor has already been disposed.");
         }
+
         return Task.Factory.StartNew(() =>
         {
             fixed (float* pData = samples.Span)
@@ -377,9 +374,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var state = nativeWhisper.Whisper_Init_State(currentWhisperContext);
         if (RuntimeOptions.LoadedLibrary == RuntimeLibrary.OpenVino)
         {
-            var modelPath = Marshal.StringToHGlobalAnsi(options.OpenVinoModelPath);
-            var device = Marshal.StringToHGlobalAnsi(options.OpenVinoDevice);
-            var cachePath = Marshal.StringToHGlobalAnsi(options.OpenVinoCacheDir);
+            var modelPath = MarshalUtils.GetStringHGlobalPtr(options.OpenVinoModelPath);
+            var device = MarshalUtils.GetStringHGlobalPtr(options.OpenVinoDevice);
+            var cachePath = MarshalUtils.GetStringHGlobalPtr(options.OpenVinoCacheDir);
 
             try
             {
@@ -392,11 +389,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             }
             finally
             {
-                Marshal.FreeHGlobal(modelPath);
-                Marshal.FreeHGlobal(device);
-                Marshal.FreeHGlobal(cachePath);
+                MarshalUtils.TryReleaseStringHGlobal(modelPath);
+                MarshalUtils.TryReleaseStringHGlobal(device);
+                MarshalUtils.TryReleaseStringHGlobal(cachePath);
             }
         }
+
         return state;
     }
 
@@ -495,7 +493,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         if (!string.IsNullOrEmpty(options.SuppressRegex))
         {
-            suppressRegex = Marshal.StringToHGlobalAnsi(options.SuppressRegex);
+            suppressRegex = MarshalUtils.GetStringHGlobalPtr(options.SuppressRegex);
             whisperParams.SuppressRegex = suppressRegex.Value;
         }
 
@@ -503,7 +501,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             var tokenMaxLength = options.Prompt!.Length + 1;
 
-            initialPromptText = Marshal.StringToHGlobalAnsi(options.Prompt);
+            initialPromptText = MarshalUtils.GetStringHGlobalPtr(options.Prompt);
 
             whisperParams.InitialPrompt = initialPromptText.Value;
         }
@@ -515,7 +513,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         if (options.Language != null)
         {
-            language = Marshal.StringToHGlobalAnsi(options.Language);
+            language = MarshalUtils.GetStringHGlobalPtr(options.Language);
             whisperParams.Language = language.Value;
         }
 
@@ -566,6 +564,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 whisperParams.WhisperParamGreedy.BestOf = greedySamplingStrategy.BestOf.Value;
             }
         }
+
         if (options.SamplingStrategy is BeamSearchSamplingStrategy beamSamplingStrategy)
         {
             if (beamSamplingStrategy.BeamSize.HasValue)
@@ -656,6 +655,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             throw new Exception("Couldn't find processor instance for user data");
         }
+
         processor.OnNewSegment(state);
     }
 
@@ -668,6 +668,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             throw new Exception("Couldn't find processor instance for user data");
         }
+
         return processor.OnEncoderBegin() ? trueByte : falseByte;
     }
 
@@ -680,6 +681,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         {
             throw new Exception("Couldn't find processor instance for user data");
         }
+
         processor.OnProgress(progress);
     }
 
@@ -716,6 +718,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 return false;
             }
         }
+
         return true;
     }
 
@@ -739,7 +742,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             double sumProbability = 0;
             var numberOfTokens = nativeWhisper.Whisper_Full_N_Tokens_From_State(state, segmentIndex);
             var languageId = nativeWhisper.Whisper_Full_Lang_Id_From_State(state);
-            var language = Marshal.PtrToStringAnsi(nativeWhisper.Whisper_Lang_Str(languageId));
+            var language = MarshalUtils.GetString(nativeWhisper.Whisper_Lang_Str(languageId));
             var noSpeechProbability = nativeWhisper.Whisper_Full_Get_Segment_No_Speech_Prob_From_State(state, segmentIndex);
 
             var tokens = new WhisperToken[numberOfTokens];
@@ -774,6 +777,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                         maximumProbability = tokenProbability;
                         continue;
                     }
+
                     if (tokenProbability < minimumProbability)
                     {
                         minimumProbability = tokenProbability;
@@ -800,7 +804,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     tokens);
 
                 OnSegmentEventHandler[] handlers;
-                lock (options.OnSegmentEventHandlers) { handlers = options.OnSegmentEventHandlers.ToArray(); }
+                lock (options.OnSegmentEventHandlers)
+                {
+                    handlers = options.OnSegmentEventHandlers.ToArray();
+                }
+
                 foreach (var handler in handlers)
                 {
                     handler?.Invoke(eventHandlerArgs);
@@ -822,26 +830,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             return options.StringPool.GetStringUtf8(nativeUtf8);
         }
 
-        return DefaultStringFromNativeUtf8(nativeUtf8);
-    }
-
-    private static string? DefaultStringFromNativeUtf8(IntPtr nativeUtf8)
-    {
-
-#if NETSTANDARD
-        var len = 0;
-
-        while (Marshal.ReadByte(nativeUtf8, len) != 0)
-        {
-            len++;
-        }
-
-        var buffer = new byte[len];
-        Marshal.Copy(nativeUtf8, buffer, 0, buffer.Length);
-        return System.Text.Encoding.UTF8.GetString(buffer);
-#else
-        return Marshal.PtrToStringUTF8(nativeUtf8);
-#endif
+        return MarshalUtils.GetString(nativeUtf8);
     }
 
     /// <summary>

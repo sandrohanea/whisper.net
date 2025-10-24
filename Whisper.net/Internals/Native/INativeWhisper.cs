@@ -8,7 +8,7 @@ namespace Whisper.net.Internals.Native;
 internal interface INativeWhisper : IDisposable
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public delegate IntPtr whisper_init_from_file_with_params_no_state(string path, WhisperContextParams whisperContextParams);
+    public delegate IntPtr whisper_init_from_file_with_params_no_state(IntPtr path, WhisperContextParams whisperContextParams);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate IntPtr whisper_init_from_buffer_with_params_no_state(IntPtr buffer, nuint buffer_size, WhisperContextParams whisperContextParams);
