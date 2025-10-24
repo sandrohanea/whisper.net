@@ -1,195 +1,142 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup
-    Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwhisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-base-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-base-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-cpu-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-blas-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
-    </None>
+  <ItemGroup Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <ForceLoad>true</ForceLoad>
+      <Frameworks>Accelerate Metal</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-base-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-cpu-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-blas-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
   </ItemGroup>
 
-  <ItemGroup
-    Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libwhisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwhisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-base-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-base-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-cpu-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)ios-device\libggml-blas-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)ios-device\libggml-metal-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-metal-whisper.dylib</TargetPath>
-    </None>
-
+  <ItemGroup Condition="(('$(Platform)' == 'iPhone') OR ('$(RuntimeIdentifier)' == 'ios') OR $(RuntimeIdentifier.StartsWith('ios-')) OR $(RuntimeIdentifier.StartsWith('ios.')))">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libwhisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <ForceLoad>true</ForceLoad>
+      <Frameworks>Accelerate Metal</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-base-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-cpu-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-blas-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-metal-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Metal</Frameworks>
+    </NativeReference>
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('-maccatalyst')) == true ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libwhisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwhisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-base-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-base-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-cpu-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-blas-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
-    </None>
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libwhisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <ForceLoad>true</ForceLoad>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-base-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-cpu-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-blas-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
   </ItemGroup>
 
   <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvos-'))">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libwhisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwhisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-base-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-base-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-device\libggml-cpu-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-blas-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-device\libggml-metal-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-metal-whisper.dylib</TargetPath>
-    </None>
-
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libwhisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <ForceLoad>true</ForceLoad>
+      <Frameworks>Accelerate Metal</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-base-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-cpu-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-blas-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-metal-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Metal</Frameworks>
+    </NativeReference>
   </ItemGroup>
 
   <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('tvossimulator-'))">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libwhisper.dylib</TargetPath>
-    </None>
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-base-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-base-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-cpu-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-cpu-whisper.dylib</TargetPath>
-    </None>
-    <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-blas-whisper.dylib">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libggml-blas-whisper.dylib</TargetPath>
-    </None>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libwhisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <ForceLoad>true</ForceLoad>
+      <Frameworks>Accelerate Metal</Frameworks>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-base-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-cpu-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+    </NativeReference>
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-blas-whisper.a">
+      <Kind>Static</Kind>
+      <SmartLink>true</SmartLink>
+      <Frameworks>Accelerate</Frameworks>
+    </NativeReference>
   </ItemGroup>
   <!-- Start Windows -->
   <ItemGroup
