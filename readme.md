@@ -188,6 +188,37 @@ RuntimeOptions.RuntimeLibraryOrder =
 ];
 ```
 
+## Architecture and Dependencies
+
+```mermaid
+graph LR
+    A[Your App / Tests] --> B[Whisper.net (managed)]
+    B --> C[NativeLibraryLoader]
+    C --> D{Probe runtimes in priority}
+    D -->|Cuda available| R1[Whisper.net.Runtime.Cuda]
+    D -->|Vulkan available| R2[Whisper.net.Runtime.Vulkan]
+    D -->|CoreML available| R3[Whisper.net.Runtime.CoreML]
+    D -->|OpenVINO available| R4[Whisper.net.Runtime.OpenVino]
+    D -->|CPU (AVX)| R5[Whisper.net.Runtime]
+    D -->|CPU (No AVX)| R6[Whisper.net.Runtime.NoAvx]
+    R1 --> E[whisper.cpp + ggml + CUDA]
+    R2 --> E
+    R3 --> E
+    R4 --> E
+    R5 --> E
+    R6 --> E
+    E --> F[(OS / Drivers / Hardware)]
+```
+
+Notes
+- The loader selects the first compatible runtime it can find, based on the default priority or your overridden RuntimeOptions.RuntimeLibraryOrder.
+- The native libraries can come from any source as long as they are compatible and placed in the expected runtimes folder layout (see "Building The Runtime").
+
+### Pluggable native runtimes
+- Whisper.net can run with any compatible compilation of the native whisper.cpp libraries; the package Whisper.net.Runtime is just one of the possible builds we publish.
+- You may build your own native binaries (CPU, CUDA, CoreML, OpenVINO, Vulkan, NoAvx) and use them with Whisper.net as long as their files are arranged under ./runtimes in the same layout as our NuGet packages. The NativeLibraryLoader will probe them at runtime.
+- For reproducible builds, you can use the attached GitHub workflows as references or entry points to produce artifacts: .github/workflows/ (e.g., dotnet.yml, dotnet-noavx.yml, dotnet-maui.yml). These workflows compile and package native libraries across platforms and can be adapted for your needs.
+
 ## Versioning
 
 Whisper.net follows semantic versioning.
@@ -212,6 +243,14 @@ if (!File.Exists(modelName))
 }
 ```
 
+### Environment variables for model downloads
+
+- HF_TOKEN
+  - Optional. If set, Whisper.net will add an Authorization header when downloading models from Hugging Face to avoid rate limiting.
+  - Example:
+    - Bash: `export HF_TOKEN=hf_xxx`
+    - PowerShell: `$env:HF_TOKEN = "hf_xxx"`
+
 ## Usage
 
 ```csharp
@@ -233,51 +272,15 @@ await foreach (var result in processor.ProcessAsync(fileStream))
 
 You can find the documentation and code samples [here](https://github.com/sandrohanea/whisper.net).
 
-## Building The Runtime
+- Development environment setup notes are available in DEVELOPMENT.md.
 
-This section describes how to build the native runtime libraries for Whisper.net.
-Normally, you would not need to build the runtime libraries yourself, as they are available as NuGet packages.
+## Running tests
 
-The build scripts are a combination of PowerShell scripts and a Makefile. You can read each of them for the underlying `cmake` commands being used, or run them directly from the scripts.
+For instructions on running the test suites locally (including required .NET SDKs, optional environment variables like HF_TOKEN), see tests/README.md.
 
-You can also check the github actions available [here](https://github.com/sandrohanea/whisper.net/tree/main/.github/workflows)
-
-### Android
-
-`make android`
-
-Before running, create an environment variable for `NDK_PATH` with the path to your Android NDK. For example:
-
-`NDK_PATH=/Users/UserName/Library/Developer/Xamarin/android-sdk-macosx/ndk-bundle`
-
-### Apple
-
-`make apple`
-
-Compiling the Apple libraries requires a Mac with Xcode installed.
-
-### Apple CoreML
-
-`make apple_coreml`
-
-Compiling the Apple libraries requires a Mac with Xcode installed.
-
-### Linux
-
-`make linux`
-
-### Windows
-
-Import the PowerShell module:
-
-`Import-Module ./windows-scripts.ps1`
-
-Run `BuildWindowsAll` to build all Windows libraries.
-Alternatively, you can run `BuildWindows` with the desired parameters.
-
-```
-BuildWindows -Arch "x64" -Configuration "Release"  -NoAvx $true
-```
+- Offline/local alternative: You can run tests fully locally without network by pre-downloading all ggml models required by tests and pointing tests to them via WHISPER_TEST_MODEL_PATH.
+- MAUI tests use the Dotnet XHarness CLI to drive emulators/simulators. Docs: https://github.com/dotnet/xharness
+- Native runtimes: By default, tests and are using the locally built native binaries instead, see “Building The Runtime” in DEVELOPMENT.md and ensure the output matches the expected runtimes layout.
 
 ## License
 
