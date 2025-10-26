@@ -12,9 +12,6 @@ on:
   workflow_call:
 
 
-env:
-  HF_TOKEN: ${{ secrets.HF_TOKEN }}
-
 jobs:
   dotnet-macos:
     runs-on: macos-15

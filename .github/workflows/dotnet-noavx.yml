@@ -13,7 +13,6 @@ on:
 
 
 env:
-  HF_TOKEN: ${{ secrets.HF_TOKEN }}
   USE_WHISPER_NOAVX_TESTS: true
   VSTEST_CONNECTION_TIMEOUT : 600
 

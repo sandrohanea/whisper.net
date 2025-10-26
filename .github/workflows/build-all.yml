@@ -106,10 +106,15 @@ jobs:
       with:
          BuildConfig: ${{ inputs.BuildConfig || 'Release'}}
 
+   download-models-for-tests:
+     uses: ./.github/workflows/download-models-for-tests.yml
+
+
    dotnet-noavx:
      needs:
        - windows-no-avx
        - linux-no-avx
+       - download-models-for-tests
      uses: ./.github/workflows/dotnet-noavx.yml
      secrets: inherit
 
@@ -121,6 +126,7 @@ jobs:
          - windows
          - wasm
          - linux
+         - download-models-for-tests
       uses: ./.github/workflows/dotnet.yml
       secrets: inherit
 
@@ -132,6 +138,7 @@ jobs:
          - windows
          - wasm
          - linux
+         - download-models-for-tests
       uses: ./.github/workflows/dotnet-maui.yml
       secrets: inherit
 
