@@ -26,7 +26,7 @@ foreach (var type in types)
         var predownloadModelPath = Path.Combine(predownloadedPath, $"ggml-{type.ToString().ToLowerInvariant()}-{quantizationType.ToString().ToLowerInvariant()}.bin");
         await using var fileStream = File.OpenWrite(predownloadModelPath);
         await model.CopyToAsync(fileStream);
-        Console.WriteLine($"Written {predownloadModelPath} with {fileStream} bytes");
+        Console.WriteLine($"Written {predownloadModelPath} with {fileStream.Length} bytes");
     }
 }
 return 0;
