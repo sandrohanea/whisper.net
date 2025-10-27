@@ -11,6 +11,9 @@ permissions:
 on:
   workflow_call:
 
+env:
+  # The artifacts are stored in the runtimes folder.
+  WHISPER_TEST_MODEL_PATH: ./runtimes
 
 jobs:
   dotnet-macos:

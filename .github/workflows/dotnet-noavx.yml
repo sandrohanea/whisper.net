@@ -11,10 +11,11 @@ permissions:
 on:
   workflow_call:
 
-
 env:
   USE_WHISPER_NOAVX_TESTS: true
   VSTEST_CONNECTION_TIMEOUT : 600
+  # The artifacts are stored in the runtimes folder.
+  WHISPER_TEST_MODEL_PATH: ./runtimes
 
 jobs:
 

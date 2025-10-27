@@ -9,7 +9,6 @@ permissions:
 on:
   workflow_call:
 
-
 env:
   WHISPER_TEST_MODEL_PATH: ./test-models
 
