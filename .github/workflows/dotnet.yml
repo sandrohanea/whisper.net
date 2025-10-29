@@ -11,10 +11,6 @@ permissions:
 on:
   workflow_call:
 
-env:
-  # The artifacts are stored in the runtimes folder.
-  WHISPER_TEST_MODEL_PATH: ./runtimes
-
 jobs:
   dotnet-macos:
     runs-on: macos-15
@@ -55,6 +51,7 @@ jobs:
 
       - name: Test
         run: |
+          export WHISPER_TEST_MODEL_PATH="$(cd ./runtimes && pwd)"
           dotnet test ./Whisper.net.sln --no-build  --logger "trx" --framework net10.0
 
       - name: Test Reporter
@@ -118,6 +115,7 @@ jobs:
 
       - name: Test
         run: |
+          $env:WHISPER_TEST_MODEL_PATH = (Resolve-Path "./runtimes").Path
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
 
       - name: Test Reporter
@@ -173,6 +171,7 @@ jobs:
 
       - name: Test
         run: |
+          export WHISPER_TEST_MODEL_PATH="$(cd ./runtimes && pwd)"
           dotnet test ./Whisper.net.sln --no-build --logger "trx"
 
       - name: Test Reporter

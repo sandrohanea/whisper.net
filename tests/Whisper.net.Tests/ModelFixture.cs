@@ -46,14 +46,8 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
                 return ggmlModelPath;
             }
 
-            Console.WriteLine($"Pre-downloaded model not found at '{predownloadModelPath}'.");
-            foreach (var file in Directory.GetFiles(predownloadedPath))
-            {
-                Console.WriteLine($"  - {file}");
-            }
-
             throw new Exception(
-                $"Pre-downloaded model not found at '{predownloadedPath}'."
+                $"Pre-downloaded model not found at '{predownloadModelPath}'. Either remove the env variable, or download the model manually and place it at '{predownloadModelPath}'."
             );
         }
 
