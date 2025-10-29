@@ -6,6 +6,7 @@ using Xunit;
 namespace Whisper.net.Tests;
 
 public class TinyModelFixture() : ModelFixture(GgmlType.Tiny, QuantizationType.NoQuantization);
+
 public class TinyQuantizedModelFixture() : ModelFixture(GgmlType.Tiny, QuantizationType.Q5_0);
 
 public abstract class ModelFixture(GgmlType type, QuantizationType quantizationType) : IAsyncLifetime
@@ -21,6 +22,7 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
         {
             File.Delete(ModelFile);
         }
+
         return Task.CompletedTask;
     }
 
@@ -43,6 +45,16 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
                 Console.WriteLine($"Using pre-downloaded model from '{predownloadedPath}'.");
                 return ggmlModelPath;
             }
+
+            Console.WriteLine($"Pre-downloaded model not found at '{predownloadModelPath}'.");
+            foreach (var file in Directory.GetFiles(predownloadedPath))
+            {
+                Console.WriteLine($"  - {file}");
+            }
+
+            throw new Exception(
+                $"Pre-downloaded model not found at '{predownloadedPath}'."
+            );
         }
 
         // If you have a Hugging Face token, you can use it to download the model (to avoid rate limiting)
@@ -50,14 +62,7 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
         var downloader = string.IsNullOrEmpty(huggingFaceToken)
             ? WhisperGgmlDownloader.Default
             : new(
-                new()
-                {
-                    DefaultRequestHeaders =
-                    {
-                        { "Authorization", $"Bearer {huggingFaceToken}" }
-                    },
-                    Timeout = TimeSpan.FromHours(1)
-                });
+                new() { DefaultRequestHeaders = { { "Authorization", $"Bearer {huggingFaceToken}" } }, Timeout = TimeSpan.FromHours(1) });
         using var model = await downloader.GetGgmlModelAsync(type, quantizationType);
         using var fileWriter = File.OpenWrite(ggmlModelPath);
         await model.CopyToAsync(fileWriter);

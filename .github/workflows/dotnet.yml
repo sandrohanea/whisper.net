@@ -37,9 +37,6 @@ jobs:
           merge-multiple: true
           path: runtimes
 
-      - name: Check the runtimes folder
-        run: ls -l -R runtimes
-
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
 
@@ -103,9 +100,6 @@ jobs:
           merge-multiple: true
           path: runtimes
 
-      - name: Check the runtimes folder
-        run: ls -l -R runtimes
-
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
 
@@ -167,9 +161,6 @@ jobs:
         with:
           merge-multiple: true
           path: runtimes
-
-      - name: Check the runtimes folder
-        run: ls -l -R runtimes
 
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.sln
