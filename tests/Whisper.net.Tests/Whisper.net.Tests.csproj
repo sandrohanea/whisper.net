@@ -34,7 +34,7 @@
 	</ItemGroup>
 
 
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) AND $(USE_WHISPER_NOAVX_TESTS) == ''">
     <TargetFrameworks>
       net9.0;net10.0;net48;
     </TargetFrameworks>
