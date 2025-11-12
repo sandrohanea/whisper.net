@@ -131,10 +131,6 @@ jobs:
         with:
           xcode-version: '26.1'
 
-      - name: Install ios simulator
-        run: |
-          xcodebuild -downloadPlatform iOS
-
       - name: Download Artifacts
         id: download-artifact
         uses: actions/download-artifact@v4
@@ -145,8 +141,8 @@ jobs:
       - name: Install xharness
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
 
-      - name: Check simulators
-        run: xharness apple simulators list
+      - name: Ensure simulator
+        run: xharness apple simulators install ios-simulator_26.1
 
       - name: run ios tests
         run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16" --timeout "00:30:00"
