@@ -75,7 +75,7 @@ dotnet restore
 dotnet build Whisper.net.sln -c Release
 ```
 
-To include the MAUI targets, pass `-p:USE_WHISPER_MAUI=true` to `dotnet build` or work directly with `Whisper.net.Maui.Tests.sln`.
+To include the MAUI targets, pass `-p:USE_WHISPER_MAUI=true` to `dotnet build` or work directly with `Whisper.net.Tests.Maui.sln`.
 
 ## Running tests
 Run the cross-platform unit tests after updating any code:
@@ -91,7 +91,7 @@ MAUI integration tests can be executed from compatible environments (Android/iOS
 
 ```bash
 # Example: run Android tests
-USE_WHISPER_MAUI_TESTS=true dotnet test tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -f net9.0-android
+USE_WHISPER_MAUI_TESTS=true dotnet test tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -f net9.0-android
 ```
 
 Please ensure new features include automated tests whenever possible, and update `tests/TestData` cautiously because assets are shared between projects.

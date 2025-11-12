@@ -1,4 +1,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IsIos>$(TargetFramework.Contains('-ios'))</IsIos>
+    <IsTvOS>$(TargetFramework.Contains('-tvos'))</IsTvOS>
+    <IsMacCatalyst>$(TargetFramework.Contains('-maccatalyst'))</IsMacCatalyst>
+    <IsAndroid>$(TargetFramework.Contains('-android'))</IsAndroid>
+    <IsMobile>($(IsIos) OR $(IsTvOS) OR $(IsMacCatalyst) OR $(IsAndroid))</IsMobile>
+  </PropertyGroup>
+
   <ItemGroup Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
     <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.a">
       <Kind>Static</Kind>
@@ -140,7 +148,7 @@
   </ItemGroup>
   <!-- Start Windows -->
   <ItemGroup
-    Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
+    Condition="$(TargetFramework.Contains('-windows')) == true or $(IsMobile) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-arm64\whisper.dll">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -290,7 +298,8 @@
   <!-- End Android -->
   <!-- Start MacOS-->
   <ItemGroup
-    Condition="$(TargetFramework.Contains('-macos')) == true or $(TargetFramework.Contains('-')) == false">
+    Condition="$(TargetFramework.Contains('-macos')) == true or $(IsMobile) == false">
+
     <None Visible="false" Include="$(MSBuildThisFileDirectory)macos-x64\libwhisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -365,7 +374,7 @@
   </ItemGroup>
   <!-- End MacOs -->
   <!-- Start Linux-->
-  <ItemGroup Condition="$(TargetFramework.Contains('-')) == false ">
+  <ItemGroup Condition="$(IsMobile) == false">
     <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-arm64\libwhisper.so">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>

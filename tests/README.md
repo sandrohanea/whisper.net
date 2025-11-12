@@ -10,7 +10,7 @@ Prerequisites
 
 Test projects
 - tests/Whisper.net.Tests: Standard .NET tests (xUnit) executed on Windows, Linux, and macOS.
-- tests/Whisper.net.Maui.Tests: MAUI tests that target Android and iOS simulators (primarily exercised in CI).
+- tests/Whisper.net.Tests.Maui: MAUI tests that target Android and iOS simulators (primarily exercised in CI).
 
 Basic usage
 - Run all tests in the main solution:

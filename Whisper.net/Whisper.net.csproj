@@ -24,9 +24,9 @@
     <TargetFrameworks>net8.0;net9.0;net10.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
+  <PropertyGroup>
     <USE_WHISPER_MAUI>TRUE</USE_WHISPER_MAUI>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
   <PropertyGroup Condition="$(USE_WHISPER_MAUI) != ''">
     <TargetFrameworks>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Whisper.net.Maui.Tests" />
+    <InternalsVisibleTo Include="Whisper.net.Tests.Maui" />
     <InternalsVisibleTo Include="Whisper.net.Tests" />
   </ItemGroup>
 
