@@ -10,7 +10,7 @@ on:
 
 jobs:
   dotnet-maui-build:
-    runs-on: macos-15
+    runs-on: macos-26
 
     env:
       USE_WHISPER_MAUI: "TRUE"
@@ -116,7 +116,7 @@ jobs:
             ./test-results/*
 
   dotnet-maui-test-ios:
-    runs-on: macos-15
+    runs-on: macos-26
     needs: dotnet-maui-build
 
     env:
