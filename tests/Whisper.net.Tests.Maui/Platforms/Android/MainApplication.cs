@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Runtime;
-using Whisper.net.Tests.Maui.Platforms.Android;
 
 namespace Whisper.net.Tests.Maui;
 

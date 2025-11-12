@@ -5,7 +5,7 @@ using Microsoft.DotNet.XHarness.TestRunners.Common;
 using Microsoft.DotNet.XHarness.TestRunners.Xunit;
 using Whisper.net.Tests;
 using Application = Android.App.Application;
-namespace Whisper.net.Tests.Maui.Platforms.Android;
+namespace Whisper.net.Tests.Maui;
 
 public class HeadlessTestRunner : AndroidApplicationEntryPoint
 {

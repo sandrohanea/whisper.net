@@ -63,6 +63,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "runtimes", "runtimes", "{CC
 		runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets = runtimes\Whisper.net.Runtime\Whisper.net.Runtime.targets
 		runtimes\Whisper.net.Runtime.Vulkan.nuspec = runtimes\Whisper.net.Runtime.Vulkan.nuspec
 		runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets = runtimes\Whisper.net.Runtime.Vulkan\Whisper.net.Runtime.Vulkan.targets
+		runtimes\Whisper.net.Runtime.Metal.nuspec = runtimes\Whisper.net.Runtime.Metal.nuspec
+		runtimes\Whisper.net.Runtime.Metal\Whisper.net.Runtime.Metal.targets = runtimes\Whisper.net.Runtime.Metal\Whisper.net.Runtime.Metal.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.net.Tests", "tests\Whisper.net.Tests\Whisper.net.Tests.csproj", "{CE567791-96B8-4377-AF4F-49D75035348D}"

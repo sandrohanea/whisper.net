@@ -5,12 +5,12 @@ using Android.Content;
 using Android.OS;
 using Android.Provider;
 using Android.Runtime;
-using Whisper.net.Tests;
 using Application = Android.App.Application;
 using Environment = Android.OS.Environment;
-namespace Whisper.net.Tests.Maui.Platforms.Android;
 
-[Instrumentation(Name = "com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation")]
+namespace Whisper.net.Tests.Maui;
+
+[Instrumentation(Name = "com.companyname.whisper.net.tests.maui.AndroidMauiTestInstrumentation")]
 public class MauiTestInstrumentation(IntPtr handle, JniHandleOwnership transfer) : Instrumentation(handle, transfer)
 {
     public IServiceProvider Services { get; private set; } = null!;
