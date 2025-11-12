@@ -43,10 +43,6 @@ jobs:
           dotnet workload install maui --ignore-failed-sources
           dotnet workload install tvos --ignore-failed-sources
 
-      - name: Install ios simulator
-        run: |
-          xcodebuild -downloadPlatform iOS 
-
       - name: Restore dependencies
         run: dotnet restore ./Whisper.net.Maui.Tests.sln
 
@@ -134,10 +130,10 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
         with:
           xcode-version: '26.1'
-          
+
       - name: Install ios simulator
         run: |
-          xcodebuild -downloadPlatform iOS 
+          xcodebuild -downloadPlatform iOS
 
       - name: Download Artifacts
         id: download-artifact
