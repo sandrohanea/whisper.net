@@ -9,7 +9,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
     }
 
-    private async void ContentPage_Loaded(object sender, EventArgs e)
+    private async void Button_OnClicked(object? sender, EventArgs e)
     {
         try
         {

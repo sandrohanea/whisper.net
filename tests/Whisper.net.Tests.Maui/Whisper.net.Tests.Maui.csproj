@@ -63,9 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Platforms\iOS\TestApplicationDelegate.cs">
-      <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
-    </Compile>
     <Compile Update="Platforms\Android\HeadlessTestRunner.cs">
       <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
     </Compile>
