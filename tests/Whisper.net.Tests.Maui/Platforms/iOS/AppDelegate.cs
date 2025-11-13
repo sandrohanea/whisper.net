@@ -35,8 +35,9 @@ public class AppDelegate : MauiUIApplicationDelegate
         {
             // Exit the app
             Console.WriteLine(e);
-            Environment.Exit(1);
         }
+
+        Environment.Exit(1);
     }
 
     class TestsEntryPoint : iOSApplicationEntryPoint
