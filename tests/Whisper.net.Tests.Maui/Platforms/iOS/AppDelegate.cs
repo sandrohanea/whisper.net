@@ -16,7 +16,7 @@ public class AppDelegate : MauiUIApplicationDelegate
         {
             i.FinishedLaunching((app, options) =>
             {
-                // Fire and forget your on-device tests
+                // Fire and forget on-device tests
                 _ = RunAsync();
                 return true;
             });
@@ -28,6 +28,7 @@ public class AppDelegate : MauiUIApplicationDelegate
     {
         try
         {
+            await Task.Delay(1000);
             var entryPoint = new TestsEntryPoint();
             await entryPoint.RunAsync().ConfigureAwait(false);
         }
