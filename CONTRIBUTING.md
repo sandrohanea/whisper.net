@@ -37,7 +37,7 @@ The minimum toolchain varies depending on what you plan to build:
 | Component | Requirement |
 |-----------|-------------|
 | .NET SDK | .NET 8 SDK or newer (the library multi-targets `netstandard2.0`, `net8.0`, and `net9.0`). |
-| IDE/editor | Visual Studio 2022, Visual Studio Code, Rider, or any editor that honours `.editorconfig`. |
+| IDE/editor | Visual Studio 2026, Visual Studio Code, Rider, or any editor that honours `.editorconfig`. |
 | Native build tools | CMake ≥ 3.10 and a compiler toolchain for your target platform when building runtimes from source (see [`Makefile`](Makefile) for platform-specific switches). |
 | Optional | Android/iOS tooling if you are working on MAUI or mobile runtimes. |
 
@@ -72,10 +72,10 @@ Restore and build from the solution root:
 ```bash
 dotnet restore
 # Build everything without Maui-specific targets
-dotnet build Whisper.net.sln -c Release
+dotnet build Whisper.net.slnx -c Release
 ```
 
-To include the MAUI targets, pass `-p:USE_WHISPER_MAUI=true` to `dotnet build` or work directly with `Whisper.net.Tests.Maui.sln`.
+To include the MAUI targets, pass `-p:USE_WHISPER_MAUI=true` to `dotnet build` or work directly with `Whisper.net.Tests.Maui.slnx`.
 
 ## Running tests
 Run the cross-platform unit tests after updating any code:
