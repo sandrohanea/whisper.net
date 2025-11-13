@@ -49,7 +49,7 @@ public class AppDelegate : MauiUIApplicationDelegate
 
         protected override IEnumerable<TestAssemblyInfo> GetTestAssemblies()
         {
-            yield return new TestAssemblyInfo(typeof(ModelFixture).Assembly, typeof(ModelFixture).Assembly.Location);
+            yield return new TestAssemblyInfo(typeof(MauiTest).Assembly, typeof(MauiTest).Assembly.Location);
         }
 
         protected override void TerminateWithSuccess()
