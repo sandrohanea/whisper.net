@@ -1,0 +1,30 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="MinSizeRel" />
+    <BuildType Name="Release" />
+    <BuildType Name="RelWithDebInfo" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../readme.md" />
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="build/win-x64/whisper.cpp/whisper.vcxproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Whisper.net.Demo/Whisper.net.Demo.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Release" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+  <Project Path="Whisper.net.Tests/Whisper.net.Tests.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Debug" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+  <Project Path="Whisper.net/Whisper.net.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Release" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+</Solution>

@@ -52,7 +52,7 @@ jobs:
           dotnet workload install maccatalyst --ignore-failed-sources
 
       - name: Restore dependencies
-        run: dotnet restore ./Whisper.net.sln
+        run: dotnet restore ./Whisper.net.slnx
 
       - name: Pack all
         run: |

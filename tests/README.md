@@ -10,16 +10,16 @@ Prerequisites
 
 Test projects
 - tests/Whisper.net.Tests: Standard .NET tests (xUnit) executed on Windows, Linux, and macOS.
-- tests/Whisper.net.Maui.Tests: MAUI tests that target Android and iOS simulators (primarily exercised in CI).
+- tests/Whisper.net.Tests.Maui: MAUI tests that target Android and iOS simulators (primarily exercised in CI).
 
 Basic usage
 - Run all tests in the main solution:
-  - dotnet test ./Whisper.net.sln
+  - dotnet test ./Whisper.net.slnx
 - Run only the core tests:
   - dotnet test ./tests/Whisper.net.Tests/Whisper.net.Tests.csproj
 
 Running tests from IDEs
-- Visual Studio 2022: Open Whisper.net.sln and use Test Explorer to run tests. Ensure required SDKs/workloads are installed (see root README and DEVELOPMENT.md).
+- Visual Studio 2022: Open Whisper.net.slnx and use Test Explorer to run tests. Ensure required SDKs/workloads are installed (see root README and DEVELOPMENT.md).
 - JetBrains Rider: Open the solution and use the Unit Tests tool window. Rider discovers xUnit tests automatically; you can filter by project.
 - Visual Studio Code: Use the Dev Containers extension for a preconfigured environment or install the C# extensions and .NET SDKs locally. Run tests via the integrated terminal (dotnet test) or configure tasks.
 
@@ -44,11 +44,11 @@ MAUI tests (advanced)
 - Android
   - Requires Android SDK, an emulator, and (optionally) xharness if you want to reproduce CI flows locally.
   - Example CI command (runs inside GitHub Actions):
-    - xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
+    - xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.tests.maui-Signed.apk -p com.companyname.whisper.net.tests.maui -i com.companyname.whisper.net.tests.maui.AndroidMauiTestInstrumentation -o=./test-results/android
 - iOS (macOS only)
   - Requires Xcode, iOS simulators, and xharness to mirror CI execution.
   - Example CI command:
-    - xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16" --timeout "00:30:00"
+    - xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16" --timeout "00:30:00"
 - Tip: For most local development, it is sufficient to run tests/Whisper.net.Tests. MAUI tests are primarily validated in CI.
 - Docs: Dotnet XHarness documentation: https://github.com/dotnet/xharness
 

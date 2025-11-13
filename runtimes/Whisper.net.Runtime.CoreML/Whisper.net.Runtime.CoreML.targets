@@ -1,5 +1,5 @@
 <Project ToolsVersion="4.0"
-  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Condition="(('$(Platform)' == 'iPhoneSimulator') OR $(RuntimeIdentifier.StartsWith('iossimulator')))">
     <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libwhisper.a">
       <Kind>Static</Kind>

@@ -221,22 +221,22 @@
   <ItemGroup
     Condition="$(AndroidSupportedAbis.Contains('x86')) or $(RuntimeIdentifiers.Contains('android-x86'))">
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86\libwhisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86\libwhisper.so">
       <Link>lib\x86\libwhisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86\libggml-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86\libggml-whisper.so">
       <Link>lib\x86\libggml-whisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86\libggml-base-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86\libggml-base-whisper.so">
       <Link>lib\x86\libggml-base-whisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86\libggml-cpu-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86\libggml-cpu-whisper.so">
       <Link>lib\x86\libggml-cpu-whisper.so</Link>
       <Abi>x86</Abi>
     </AndroidNativeLibrary>
@@ -244,22 +244,22 @@
   <ItemGroup
     Condition="$(AndroidSupportedAbis.Contains('x86_64')) or $(RuntimeIdentifiers.Contains('android-x64'))">
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86_64\libwhisper.so">
       <Link>lib\x86_64\libwhisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-whisper.so">
       <Link>lib\x86_64\libggml-whisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-base-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-base-whisper.so">
       <Link>lib\x86_64\libggml-base-whisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-cpu-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-x86_64\libggml-cpu-whisper.so">
       <Link>lib\x86_64\libggml-cpu-whisper.so</Link>
       <Abi>x86_64</Abi>
     </AndroidNativeLibrary>
@@ -267,22 +267,22 @@
   <ItemGroup
     Condition="$(AndroidSupportedAbis.Contains('arm64-v8a')) or $(RuntimeIdentifiers.Contains('android-arm64'))">
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libwhisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libwhisper.so">
       <Link>lib\armv8\libwhisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-whisper.so">
       <Link>lib\armv8\libggml-whisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-base-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-base-whisper.so">
       <Link>lib\armv8\libggml-base-whisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
     <AndroidNativeLibrary Visible="false"
-      Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-cpu-whisper.so">
+                          Include="$(MSBuildThisFileDirectory)android-arm64-v8a\libggml-cpu-whisper.so">
       <Link>lib\armv8\libggml-cpu-whisper.so</Link>
       <Abi>arm64-v8a</Abi>
     </AndroidNativeLibrary>
@@ -341,21 +341,21 @@
       <TargetPath>runtimes/macos-arm64/libggml-cpu-whisper.dylib</TargetPath>
     </None>
     <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-base-whisper.dylib">
+          Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-base-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/macos-arm64/libggml-base-whisper.dylib</TargetPath>
     </None>
     <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-blas-whisper.dylib">
+          Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-blas-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>runtimes/macos-arm64/libggml-blas-whisper.dylib</TargetPath>
     </None>
     <None Visible="false"
-      Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-metal-whisper.dylib">
+          Include="$(MSBuildThisFileDirectory)macos-arm64\libggml-metal-whisper.dylib">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

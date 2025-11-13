@@ -39,18 +39,18 @@ jobs:
           path: runtimes
 
       - name: Restore dependencies
-        run: dotnet restore ./Whisper.net.sln
+        run: dotnet restore ./Whisper.net.slnx
 
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+        run: dotnet build ./Whisper.net.slnx --no-restore -warnaserror
 
       - name: Test
         run: |
           $env:WHISPER_TEST_MODEL_PATH = (Resolve-Path "./runtimes").Path
-          dotnet test ./Whisper.net.sln --no-build --logger "trx"
+          dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
@@ -90,18 +90,18 @@ jobs:
           path: runtimes
 
       - name: Restore dependencies
-        run: dotnet restore ./Whisper.net.sln
+        run: dotnet restore ./Whisper.net.slnx
 
       - name: Run Dependency Checker
         run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
 
       - name: Build
-        run: dotnet build ./Whisper.net.sln --no-restore -warnaserror
+        run: dotnet build ./Whisper.net.slnx --no-restore -warnaserror
 
       - name: Test
         run: |
           export WHISPER_TEST_MODEL_PATH="$(cd ./runtimes && pwd)"
-          dotnet test ./Whisper.net.sln --no-build --logger "trx"
+          dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
