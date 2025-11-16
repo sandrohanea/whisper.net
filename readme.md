@@ -21,7 +21,7 @@ To install Whisper.net with all the available runtimes, run the following comman
 Or add a package reference in your `.csproj` file:
 
 ```
-    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.8.1" />
+    <PackageReference Include="Whisper.net.AllRuntimes" Version="1.9.0" />
 ```
 
 `Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
@@ -31,10 +31,10 @@ Or add a package reference in your `.csproj` file:
 To install a specific runtime, you can install them individually and combine them as needed. For example, to install the CPU runtime, add the following package references:
 
 ```
-    <PackageReference Include="Whisper.net" Version="1.8.1" />
+    <PackageReference Include="Whisper.net" Version="1.9.0" />
 ```
 ```
-    <PackageReference Include="Whisper.net.Runtime" Version="1.8.1" />
+    <PackageReference Include="Whisper.net.Runtime" Version="1.9.0" />
 ```
 
 ## GPT for Whisper
@@ -187,32 +187,6 @@ RuntimeOptions.RuntimeLibraryOrder =
     RuntimeLibrary.Cpu
 ];
 ```
-
-## Architecture and Dependencies
-
-```mermaid
-graph LR
-    A[Your App / Tests] --> B[Whisper.net (managed)]
-    B --> C[NativeLibraryLoader]
-    C --> D{Probe runtimes in priority}
-    D -->|Cuda available| R1[Whisper.net.Runtime.Cuda]
-    D -->|Vulkan available| R2[Whisper.net.Runtime.Vulkan]
-    D -->|CoreML available| R3[Whisper.net.Runtime.CoreML]
-    D -->|OpenVINO available| R4[Whisper.net.Runtime.OpenVino]
-    D -->|CPU (AVX)| R5[Whisper.net.Runtime]
-    D -->|CPU (No AVX)| R6[Whisper.net.Runtime.NoAvx]
-    R1 --> E[whisper.cpp + ggml + CUDA]
-    R2 --> E
-    R3 --> E
-    R4 --> E
-    R5 --> E
-    R6 --> E
-    E --> F[(OS / Drivers / Hardware)]
-```
-
-Notes
-- The loader selects the first compatible runtime it can find, based on the default priority or your overridden RuntimeOptions.RuntimeLibraryOrder.
-- The native libraries can come from any source as long as they are compatible and placed in the expected runtimes folder layout (see "Building The Runtime").
 
 ### Pluggable native runtimes
 - Whisper.net can run with any compatible compilation of the native whisper.cpp libraries; the package Whisper.net.Runtime is just one of the possible builds we publish.
