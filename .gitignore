@@ -376,3 +376,5 @@ MigrationBackup/
 
 /runtimes/Whisper.net.Runtime.Metal/*
 !/runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets
+
+/test-results

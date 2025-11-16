@@ -24,10 +24,6 @@
     <TargetFrameworks>net8.0;net9.0;net10.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
-    <USE_WHISPER_MAUI>TRUE</USE_WHISPER_MAUI>
-  </PropertyGroup>-->
-
   <PropertyGroup Condition="$(USE_WHISPER_MAUI) != ''">
     <TargetFrameworks>
       net8.0;net9.0;net10.0;netstandard2.0;net9.0-ios;net9.0-tvos;net9.0-maccatalyst;net9.0-android;net10.0-ios;net10.0-tvos;net10.0-maccatalyst;net10.0-android
@@ -40,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Whisper.net.Maui.Tests" />
+    <InternalsVisibleTo Include="Whisper.net.Tests.Maui" />
     <InternalsVisibleTo Include="Whisper.net.Tests" />
   </ItemGroup>
 

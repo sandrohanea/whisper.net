@@ -1,0 +1,95 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="MinSizeRel" />
+    <BuildType Name="Release" />
+    <BuildType Name="RelWithDebInfo" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Packages.props" />
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/Solution Items/docs/">
+    <File Path="DEVELOPMENT.md" />
+  </Folder>
+  <Folder Name="/Solution Items/docs/tests/">
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/Solution Items/github/">
+    <File Path=".github/workflows/android-native-build.yml" />
+    <File Path=".github/workflows/build-all.yml" />
+    <File Path=".github/workflows/codeql-github-actions.yml" />
+    <File Path=".github/workflows/dotnet-maui.yml" />
+    <File Path=".github/workflows/dotnet-noavx.yml" />
+    <File Path=".github/workflows/dotnet.yml" />
+    <File Path=".github/workflows/download-models-tests.yml" />
+    <File Path=".github/workflows/linux-cuda-native-build.yml" />
+    <File Path=".github/workflows/linux-native-build.yml" />
+    <File Path=".github/workflows/linux-noavx-native-build.yml" />
+    <File Path=".github/workflows/linux-openvino-native-build.yml" />
+    <File Path=".github/workflows/linux-vulkan-native-build.yml" />
+    <File Path=".github/workflows/macos-coreml-native-build.yml" />
+    <File Path=".github/workflows/macos-native-build.yml" />
+    <File Path=".github/workflows/pack-all.yml" />
+    <File Path=".github/workflows/push-all.yml" />
+    <File Path=".github/workflows/release.yml" />
+    <File Path=".github/workflows/wasm-native-build.yml" />
+    <File Path=".github/workflows/windows-cuda-native-build.yml" />
+    <File Path=".github/workflows/windows-native-build.yml" />
+    <File Path=".github/workflows/windows-noavx-native-build.yml" />
+    <File Path=".github/workflows/windows-openvino-native-build.yml" />
+    <File Path=".github/workflows/windows-vulkan-native-build.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/runtimes/">
+    <File Path="runtimes/Whisper.net.AllRuntimes.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.CoreML.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.CoreML/Whisper.net.Runtime.CoreML.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda.Linux/Whisper.net.Runtime.Cuda.Linux.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda.Windows/Whisper.net.Runtime.Cuda.Windows.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Metal.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.NoAvx.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.OpenVino.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.OpenVino/Whisper.net.Runtime.OpenVino.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Vulkan.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Vulkan/Whisper.net.Runtime.Vulkan.targets" />
+    <File Path="runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
+  </Folder>
+  <Folder Name="/Solution Items/scripts/">
+    <File Path="CMakeLists.txt" />
+    <File Path="Makefile" />
+    <File Path="windows-scripts.ps1" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/DownloadModelForTests/DownloadModelForTests.csproj">
+      <BuildType Solution="MinSizeRel|*" Project="Debug" />
+      <BuildType Solution="RelWithDebInfo|*" Project="Debug" />
+    </Project>
+    <Project Path="tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj">
+      <BuildType Solution="MinSizeRel|*" Project="Release" />
+      <BuildType Solution="RelWithDebInfo|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Project Path="tests/Whisper.net.Tests/Whisper.net.Tests.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Debug" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+  <Project Path="Whisper.net.Demo/Whisper.net.Demo.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Release" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+  <Project Path="Whisper.net/Whisper.net.csproj">
+    <BuildType Solution="MinSizeRel|*" Project="Release" />
+    <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+  </Project>
+</Solution>

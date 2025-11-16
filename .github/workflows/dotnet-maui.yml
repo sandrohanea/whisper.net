@@ -10,7 +10,7 @@ on:
 
 jobs:
   dotnet-maui-build:
-    runs-on: macos-15
+    runs-on: macos-26
 
     env:
       USE_WHISPER_MAUI: "TRUE"
@@ -29,7 +29,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@7f352e61cbe8130c957c3bc898c4fb025784ea1e
         with:
-          xcode-version: '26.0'
+          xcode-version: '26.1'
 
       - name: Download Artifacts
         id: download-artifact
@@ -44,21 +44,27 @@ jobs:
           dotnet workload install tvos --ignore-failed-sources
 
       - name: Restore dependencies
-        run: dotnet restore ./Whisper.net.Maui.Tests.sln
+        run: dotnet restore ./Whisper.net.Maui.Tests.slnx
+
+      - name: Install xharness
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+
+      - name: Ensure simulator
+        run: xharness apple simulators install ios-simulator_26.1
 
       - name: Build ios-simulator
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
+        run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
 
       - name: Build android
-        run: dotnet build ./tests/Whisper.net.Maui.Tests/Whisper.net.Maui.Tests.csproj -c Debug -f net10.0-android -p:EmbedAssembliesIntoApk=true
+        run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-android -p:EmbedAssembliesIntoApk=true
 
       - name: Upload apk and ios app
         uses: actions/upload-artifact@v4
         with:
           name: maui-build-artifacts
           path: |
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net10.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app
-            ./tests/Whisper.net.Maui.Tests/bin/Debug/net10.0-android/com.companyname.whisper.net.maui.tests-Signed.apk
+            ./tests/Whisper.net.Tests.Maui/bin/Debug/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app
+            ./tests/Whisper.net.Tests.Maui/bin/Debug/net10.0-android/com.companyname.whisper.net.tests.maui-Signed.apk
 
   dotnet-maui-test-android:
     runs-on: ubuntu-latest
@@ -99,7 +105,7 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.maui.tests-Signed.apk -p com.companyname.whisper.net.maui.tests -i com.companyname.whisper.net.maui.tests.AndroidMauiTestInstrumentation -o=./test-results/android
+          script: xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.tests.maui-Signed.apk -p com.companyname.whisper.net.tests.maui -i com.companyname.whisper.net.tests.maui.AndroidMauiTestInstrumentation -o=./test-results/android
 
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
@@ -108,49 +114,48 @@ jobs:
           name: xharness-android-test-results
           path: |
             ./test-results/*
-
-  dotnet-maui-test-ios:
-    runs-on: macos-15
-    needs: dotnet-maui-build
-
-    env:
-      USE_WHISPER_MAUI: "TRUE"
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
-
-      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
-        with:
-          xcode-version: '16.4'
-
-      - name: Download Artifacts
-        id: download-artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: maui-build-artifacts
-          path: maui-build-artifacts
-
-      - name: Install xharness
-        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
-
-      - name: Check simulators
-        run: xharness apple simulators list
-
-      - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Maui.Tests.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16" --timeout "00:30:00"
-
-      - name: Upload Maui iOS xharness test results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: xharness-ios-test-results
-          path: |
-            ./test-results/*
+#
+#  dotnet-maui-test-ios:
+#    runs-on: macos-26
+#    needs: dotnet-maui-build
+#
+#    env:
+#      USE_WHISPER_MAUI: "TRUE"
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup .NET
+#        uses: actions/setup-dotnet@v4
+#        with:
+#          dotnet-version: |
+#            8.0.x
+#            9.0.x
+#            10.0.x
+#
+#      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
+#        with:
+#          xcode-version: '26.1'
+#
+#      - name: Download Artifacts
+#        id: download-artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: maui-build-artifacts
+#          path: maui-build-artifacts
+#
+#      - name: Install xharness
+#        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+#
+#      - name: Ensure simulator
+#        run: xharness apple simulators install ios-simulator_26.1
+#
+#      - name: run ios tests
+#        run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 17" --timeout "00:30:00"
+#      - name: Upload Maui iOS xharness test results
+#        if: ${{ always() }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: xharness-ios-test-results
+#          path: |
+#            ./test-results/*

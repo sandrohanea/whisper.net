@@ -23,7 +23,7 @@ Devcontainer (optional)
   - Link: TODO add link to repository devcontainer template (e.g., .devcontainer folder) once published.
 
 Editors and IDEs
-- Visual Studio 2022 (Windows/macOS):
+- Visual Studio 2026 (Windows/macOS):
   - Download: https://visualstudio.microsoft.com/downloads/
   - Recommended workloads:
     - .NET desktop development
@@ -95,13 +95,13 @@ Notes on required platform build tools (WIP):
 - Common tools: CMake (>= 3.24), Ninja (optional but recommended), Git with submodules. TODO: Pin exact minimum versions used in CI.
 - macOS: Xcode (latest stable) + Command Line Tools, CMake, Ninja or Make. TODO: Add Homebrew install snippets.
 - Linux: build-essential (gcc/g++/make), CMake, Ninja (optional), libstdc++6, glibc 2.31+. TODO: Validate on Ubuntu 22.04/24.04 and document packages per distro.
-- Windows: Visual Studio 2022 with "Desktop development with C++" workload, Windows 11/Server 2022 SDK, CMake, and Ninja (optional). TODO: Add vs_BuildTools sku/script example.
+- Windows: Visual Studio 2026 with "Desktop development with C++" workload, Windows 11/Server 2022 SDK, CMake, and Ninja (optional). TODO: Add vs_BuildTools sku/script example.
 - Android (for MAUI/native): Android SDK + NDK r25+; set NDK_PATH accordingly (see below). TODO: Align NDK version with CI matrix.
 
 If you prefer a preconfigured environment, see the Devcontainer notes in DEVELOPMENT.md. VS Code users can use the Dev Containers extension: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers. TODO: Provide a ready-to-use devcontainer.json with the required tools and a script to fetch native runtimes.
 
 Editors and IDEs
-- Visual Studio 2022 (Windows)
+- Visual Studio 2026 (Windows)
     - Download: https://visualstudio.microsoft.com/downloads/
     - Recommended workloads:
         - .NET desktop development
@@ -109,7 +109,7 @@ Editors and IDEs
         - Mobile development with .NET (for MAUI tests/samples)
 - JetBrains Rider
     - Product page: https://www.jetbrains.com/rider/
-    - Open the solution (Whisper.net.sln) and use the Unit Tests window to run tests. Rider supports multi-targeting and test discovery for xUnit.
+    - Open the solution (Whisper.net.slnx) and use the Unit Tests window to run tests. Rider supports multi-targeting and test discovery for xUnit.
 - Visual Studio Code
     - Recommended to use with Dev Containers (link above) for parity with CI; otherwise install the C# Dev Kit and required .NET SDKs.
 
