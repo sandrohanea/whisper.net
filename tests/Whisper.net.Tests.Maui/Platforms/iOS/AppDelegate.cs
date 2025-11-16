@@ -28,7 +28,6 @@ public class AppDelegate : MauiUIApplicationDelegate
     {
         try
         {
-            await Task.Delay(1000);
             var entryPoint = new TestsEntryPoint();
             await entryPoint.RunAsync().ConfigureAwait(false);
         }
