@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="../Whisper.net/Whisper.net.csproj" />
+  <Project Path="BlazorApp/BlazorApp.Client/BlazorApp.Client.csproj" />
+  <Project Path="BlazorApp/BlazorApp/BlazorApp.csproj" />
+  <Project Path="ContinuousRecognition/ContinuousRecognition.csproj" />
+  <Project Path="CoreML/CoreML.csproj" />
+  <Project Path="Diarization/Diarization.csproj" />
+  <Project Path="LowAllocationStringPooling/LowAllocationStringPooling.csproj" />
+  <Project Path="MultiRuntime/MultiRuntime.csproj" />
+  <Project Path="NAudioMp3/NAudioMp3.csproj" />
+  <Project Path="NAudioResampleWav/NAudioResampleWav.csproj" />
+  <Project Path="NvidiaCuda/NvidiaCuda.csproj" />
+  <Project Path="OpenVinoExample/OpenVinoExample.csproj" />
+  <Project Path="ParallelExecution/ParallelExecution.csproj" />
+  <Project Path="Simple/Simple.csproj" />
+  <Project Path="SimpleSync/SimpleSync.csproj" />
+  <Project Path="Vulkan/Vulkan.csproj" />
+</Solution>
