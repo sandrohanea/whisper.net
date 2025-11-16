@@ -35,6 +35,7 @@
     <File Path=".github/workflows/windows-noavx-native-build.yml" />
     <File Path=".github/workflows/windows-openvino-native-build.yml" />
     <File Path=".github/workflows/windows-vulkan-native-build.yml" />
+    <File Path=".github\workflows\codeql-github-actions.yml" />
   </Folder>
   <Folder Name="/Solution Items/runtimes/">
     <File Path="runtimes/Whisper.net.AllRuntimes.nuspec" />
