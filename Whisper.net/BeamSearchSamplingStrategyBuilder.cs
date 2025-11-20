@@ -7,18 +7,14 @@ namespace Whisper.net;
 /// <summary>
 /// Builder for <seealso cref="BeamSearchSamplingStrategy"/>
 /// </summary>
-public class BeamSearchSamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
+public class BeamSearchSamplingStrategyBuilder
 {
     private readonly BeamSearchSamplingStrategy beamSearchSamplingStrategy;
 
-    internal BeamSearchSamplingStrategyBuilder(WhisperProcessorBuilder whisperProcessorBuilder, BeamSearchSamplingStrategy beamSearchSamplingStrategy)
+    internal BeamSearchSamplingStrategyBuilder(BeamSearchSamplingStrategy beamSearchSamplingStrategy)
     {
-        ParentBuilder = whisperProcessorBuilder;
         this.beamSearchSamplingStrategy = beamSearchSamplingStrategy;
     }
-
-    /// <inheritdoc/>
-    public WhisperProcessorBuilder ParentBuilder { get; }
 
     /// <summary>
     /// Configures the Beam Search Sampling Strategy with the specified <paramref name="beamSize"/>.

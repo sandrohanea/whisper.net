@@ -16,10 +16,7 @@ public class WhisperProcessorBuilder
 
     internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper, IStringPool stringPool)
     {
-        whisperProcessorOptions = new WhisperProcessorOptions()
-        {
-            ContextHandle = context
-        };
+        whisperProcessorOptions = new WhisperProcessorOptions() { ContextHandle = context };
         this.nativeWhisper = nativeWhisper;
         this.stringPool = stringPool;
     }
@@ -94,7 +91,7 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
-    /// Configures the processor to not use past transformation (if any) as the initial prompt for a newer processing. 
+    /// Configures the processor to not use past transformation (if any) as the initial prompt for a newer processing.
     /// </summary>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
@@ -107,7 +104,7 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
-    /// Configures the processor to force a single segment as output instead of multiple. 
+    /// Configures the processor to force a single segment as output instead of multiple.
     /// </summary>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
@@ -314,7 +311,7 @@ public class WhisperProcessorBuilder
     /// <param name="language">The language (2 letters) to be used.</param>
     /// <returns>An instance to the same builder.</returns>
     /// <remarks>
-    /// Default value is "en". 
+    /// Default value is "en".
     /// Example: "en", "ro"
     /// </remarks>
     public WhisperProcessorBuilder WithLanguage(string language)
@@ -517,23 +514,37 @@ public class WhisperProcessorBuilder
     /// <summary>
     /// Configures the processor to use the Greedy Sampling strategy.
     /// </summary>
+    /// <param name="configure">An optional action to configure the <seealso cref="GreedySamplingStrategy"/> that will be used.</param>
     /// <returns>A new <seealso cref="GreedySamplingStrategyBuilder"/> for configuring the <seealso cref="GreedySamplingStrategy"/></returns>
-    public IWhisperSamplingStrategyBuilder WithGreedySamplingStrategy()
+    public WhisperProcessorBuilder WithGreedySamplingStrategy(Action<GreedySamplingStrategyBuilder>? configure = null)
     {
         var greedySamplingStrategy = new GreedySamplingStrategy();
         whisperProcessorOptions.SamplingStrategy = greedySamplingStrategy;
-        return new GreedySamplingStrategyBuilder(this, greedySamplingStrategy);
+        if (configure != null)
+        {
+            var greedySamplingStrategyBuilder = new GreedySamplingStrategyBuilder(greedySamplingStrategy);
+            configure(greedySamplingStrategyBuilder);
+        }
+
+        return this;
     }
 
     /// <summary>
     /// Configures the processor to use the Beam Search Sampling Strategy.
     /// </summary>
+    /// <param name="configure">An optional action to configure the <seealso cref="BeamSearchSamplingStrategy"/> that will be used.</param>
     /// <returns>A new <seealso cref="BeamSearchSamplingStrategyBuilder"/> for configuring the <seealso cref="BeamSearchSamplingStrategy"/></returns>
-    public IWhisperSamplingStrategyBuilder WithBeamSearchSamplingStrategy()
+    public WhisperProcessorBuilder WithBeamSearchSamplingStrategy(Action<BeamSearchSamplingStrategyBuilder>? configure = null)
     {
         var beamSearchSamplingStrategy = new BeamSearchSamplingStrategy();
         whisperProcessorOptions.SamplingStrategy = beamSearchSamplingStrategy;
-        return new BeamSearchSamplingStrategyBuilder(this, beamSearchSamplingStrategy);
+        if (configure != null)
+        {
+            var beamSearchBuilder = new BeamSearchSamplingStrategyBuilder(beamSearchSamplingStrategy);
+            configure(beamSearchBuilder);
+        }
+
+        return this;
     }
 
     /// <summary>
