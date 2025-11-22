@@ -7,18 +7,14 @@ namespace Whisper.net;
 /// <summary>
 /// Builder for <seealso cref="GreedySamplingStrategyBuilder"/>
 /// </summary>
-public class GreedySamplingStrategyBuilder : IWhisperSamplingStrategyBuilder
+public class GreedySamplingStrategyBuilder
 {
     private readonly GreedySamplingStrategy greedySamplingStrategy;
 
-    internal GreedySamplingStrategyBuilder(WhisperProcessorBuilder parentBuilder, GreedySamplingStrategy greedySamplingStrategy)
+    internal GreedySamplingStrategyBuilder(GreedySamplingStrategy greedySamplingStrategy)
     {
-        ParentBuilder = parentBuilder;
         this.greedySamplingStrategy = greedySamplingStrategy;
     }
-
-    /// <inheritdoc/>
-    public WhisperProcessorBuilder ParentBuilder { get; }
 
     /// <summary>
     /// Configures the Greedy Sampling Strategy with the specified <paramref name="bestOf"/>.
