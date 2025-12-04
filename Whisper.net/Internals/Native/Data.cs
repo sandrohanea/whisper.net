@@ -63,9 +63,9 @@ internal struct WhisperVadParams
 
 internal enum GgmlLogLevel
 {
-    Error = 2,
+    Info = 2,
     Warning = 3,
-    Info = 4,
+    Error = 4,
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
