@@ -107,7 +107,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <returns></returns>
     public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
     {
-        var probs = new float[nativeWhisper.Whisper_Lang_Max_Id()];
+        var probs = new float[nativeWhisper.Whisper_Lang_Max_Id() + 1];
 
         fixed (float* pData = probs)
         {
