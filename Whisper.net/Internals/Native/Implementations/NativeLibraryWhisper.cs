@@ -25,6 +25,7 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Full_N_Tokens_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_n_tokens_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_n_tokens_from_state)));
         Whisper_Full_Get_Token_P_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_p_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_p_from_state)));
         Whisper_Lang_Max_Id = Marshal.GetDelegateForFunctionPointer<whisper_lang_max_id>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_lang_max_id)));
+        Whisper_Lang_Id = Marshal.GetDelegateForFunctionPointer<whisper_lang_id>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_lang_id)));
         Whisper_Lang_Auto_Detect_With_State = Marshal.GetDelegateForFunctionPointer<whisper_lang_auto_detect_with_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_lang_auto_detect_with_state)));
         Whisper_PCM_To_Mel_With_State = Marshal.GetDelegateForFunctionPointer<whisper_pcm_to_mel_with_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_pcm_to_mel_with_state)));
         Whisper_Lang_Str = Marshal.GetDelegateForFunctionPointer<whisper_lang_str>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_lang_str)));
@@ -66,6 +67,8 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_full_get_token_p_from_state Whisper_Full_Get_Token_P_From_State { get; }
 
     public whisper_lang_max_id Whisper_Lang_Max_Id { get; }
+
+    public whisper_lang_id Whisper_Lang_Id { get; }
 
     public whisper_lang_auto_detect_with_state Whisper_Lang_Auto_Detect_With_State { get; }
 
