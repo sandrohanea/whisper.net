@@ -47,6 +47,7 @@ public class ProcessingFailureTests
             Whisper_Full_Get_Token_Text_From_State = (_, _, _, _) => IntPtr.Zero;
             WhisperPrintSystemInfo = () => IntPtr.Zero;
             Whisper_Full_Get_Segment_No_Speech_Prob_From_State = (_, _) => 0;
+            Whisper_Lang_Id = _ => 0;
         }
 
         public INativeWhisper.whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
@@ -62,6 +63,7 @@ public class ProcessingFailureTests
         public INativeWhisper.whisper_full_n_tokens_from_state Whisper_Full_N_Tokens_From_State { get; }
         public INativeWhisper.whisper_full_get_token_p_from_state Whisper_Full_Get_Token_P_From_State { get; }
         public INativeWhisper.whisper_lang_max_id Whisper_Lang_Max_Id { get; }
+        public INativeWhisper.whisper_lang_id Whisper_Lang_Id { get; }
         public INativeWhisper.whisper_lang_auto_detect_with_state Whisper_Lang_Auto_Detect_With_State { get; }
         public INativeWhisper.whisper_pcm_to_mel_with_state Whisper_PCM_To_Mel_With_State { get; }
         public INativeWhisper.whisper_lang_str Whisper_Lang_Str { get; }
