@@ -47,6 +47,9 @@ internal interface INativeWhisper : IDisposable
     public delegate int whisper_lang_max_id();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate int whisper_lang_id(IntPtr lang);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate int whisper_lang_auto_detect_with_state(IntPtr context, IntPtr state, int offset_ms, int n_threads, IntPtr lang_probs);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -95,6 +98,7 @@ internal interface INativeWhisper : IDisposable
     whisper_full_n_tokens_from_state Whisper_Full_N_Tokens_From_State { get; }
     whisper_full_get_token_p_from_state Whisper_Full_Get_Token_P_From_State { get; }
     whisper_lang_max_id Whisper_Lang_Max_Id { get; }
+    whisper_lang_id Whisper_Lang_Id { get; }
     whisper_lang_auto_detect_with_state Whisper_Lang_Auto_Detect_With_State { get; }
     whisper_pcm_to_mel_with_state Whisper_PCM_To_Mel_With_State { get; }
     whisper_lang_str Whisper_Lang_Str { get; }

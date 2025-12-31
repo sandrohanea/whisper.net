@@ -51,6 +51,9 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     private static partial int whisper_lang_max_id();
 
     [LibraryImport(NativeConstants.LibWhisperLibraryName)]
+    private static partial int whisper_lang_id(IntPtr lang);
+
+    [LibraryImport(NativeConstants.LibWhisperLibraryName)]
     private static partial int whisper_lang_auto_detect_with_state(IntPtr context, IntPtr state, int offset_ms, int n_threads, IntPtr lang_probs);
 
     [LibraryImport(NativeConstants.LibWhisperLibraryName)]
@@ -111,6 +114,8 @@ internal partial class LibraryImportLibWhisper : INativeWhisper
     public INativeWhisper.whisper_full_get_token_p_from_state Whisper_Full_Get_Token_P_From_State => whisper_full_get_token_p_from_state;
 
     public INativeWhisper.whisper_lang_max_id Whisper_Lang_Max_Id => whisper_lang_max_id;
+
+    public INativeWhisper.whisper_lang_id Whisper_Lang_Id => whisper_lang_id;
 
     public INativeWhisper.whisper_lang_auto_detect_with_state Whisper_Lang_Auto_Detect_With_State => whisper_lang_auto_detect_with_state;
 
