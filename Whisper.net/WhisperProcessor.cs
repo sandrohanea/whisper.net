@@ -102,10 +102,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     /// <summary>
     /// For the given audio input, detects the most probable language and also returns the probability of this language to be correct.
+    /// The detection can be restricted to a set of candidate languages.
     /// </summary>
     /// <param name="samples"></param>
+    /// <param name="candidateLanguages">If provided, only languages from this list are considered when selecting the result.</param>
     /// <returns></returns>
-    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples)
+    public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, params ReadOnlySpan<string> candidateLanguages)
     {
         var probs = new float[nativeWhisper.Whisper_Lang_Max_Id() + 1];
 
@@ -125,15 +127,60 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     return (null, 0f);
                 }
 
-                var languagePtr = nativeWhisper.Whisper_Lang_Str(langId);
+                var candidateLangId = TrySelectCandidateLanguageId(candidateLanguages, probs);
+                var selectedLangId = candidateLangId ?? langId;
+
+                var languagePtr = nativeWhisper.Whisper_Lang_Str(selectedLangId);
                 var language = MarshalUtils.GetString(languagePtr);
-                return (language, probs[langId]);
+                return (language, probs[selectedLangId]);
             }
             finally
             {
                 nativeWhisper.Whisper_Free_State(state);
             }
         }
+    }
+
+    private int? TrySelectCandidateLanguageId(ReadOnlySpan<string> candidateLanguages, float[] probabilities)
+    {
+        if (candidateLanguages.IsEmpty)
+        {
+            return null;
+        }
+
+        var bestCandidateId = -1;
+        var bestCandidateProbability = float.NegativeInfinity;
+
+        foreach (var candidateLanguage in candidateLanguages)
+        {
+            if (string.IsNullOrWhiteSpace(candidateLanguage))
+            {
+                continue;
+            }
+
+            var languagePtr = MarshalUtils.GetStringHGlobalPtr(candidateLanguage);
+            try
+            {
+                var candidateLangId = nativeWhisper.Whisper_Lang_Id(languagePtr);
+                if (candidateLangId < 0 || candidateLangId >= probabilities.Length)
+                {
+                    continue;
+                }
+
+                var probability = probabilities[candidateLangId];
+                if (probability > bestCandidateProbability)
+                {
+                    bestCandidateProbability = probability;
+                    bestCandidateId = candidateLangId;
+                }
+            }
+            finally
+            {
+                MarshalUtils.TryReleaseStringHGlobal(languagePtr);
+            }
+        }
+
+        return bestCandidateId == -1 ? null : bestCandidateId;
     }
 
     /// <summary>
