@@ -107,7 +107,7 @@ public class LanguageDetectionTests
             Whisper_Lang_Max_Id = () => probabilities.Length - 1;
             Whisper_Lang_Id = lang =>
             {
-                var name = Marshal.PtrToStringUTF8(lang);
+                var name = MarshalUtils.GetString(lang);
                 return name is not null && languageIds.TryGetValue(name, out var id) ? id : -1;
             };
             Whisper_Lang_Auto_Detect_With_State = (_, _, _, _, langProbs) =>
