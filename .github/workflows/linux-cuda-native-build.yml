@@ -16,6 +16,7 @@ jobs:
   native-build:
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         cuda:
           - version: "13.0.1"

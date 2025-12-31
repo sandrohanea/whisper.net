@@ -16,6 +16,7 @@ jobs:
   native-build:
     runs-on: windows-2022
     strategy:
+      fail-fast: false
       matrix:
         cuda:
           - version: "13.0.1"
