@@ -43,6 +43,7 @@ jobs:
         with:
           cuda: "${{ matrix.cuda.version }}"
           use-github-cache: false
+          log-file-suffix: "${{ matrix.cuda.artifact }}"
 
       - name: Run Build
         run: |

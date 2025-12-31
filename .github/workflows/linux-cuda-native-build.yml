@@ -48,6 +48,7 @@ jobs:
         uses: Jimver/cuda-toolkit@6008063726ffe3309d1b22e413d9e88fed91a2f2
         with:
           cuda: "${{ matrix.cuda.version }}"
+          log-file-suffix: "${{ matrix.cuda.artifact }}"
 
       - name: Run linux-cuda
         run: |
