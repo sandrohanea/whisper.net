@@ -133,9 +133,9 @@ jobs:
             9.0.x
             10.0.x
 
-      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
+      - uses: maxim-lobanov/setup-xcode@7f352e61cbe8130c957c3bc898c4fb025784ea1e
         with:
-          xcode-version: '26.1'
+          xcode-version: '26.2'
 
       - name: Download Artifacts
         id: download-artifact
