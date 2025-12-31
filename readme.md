@@ -24,7 +24,7 @@ Or add a package reference in your `.csproj` file:
     <PackageReference Include="Whisper.net.AllRuntimes" Version="1.9.0" />
 ```
 
-`Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net.
+`Whisper.net` is the main package that contains the core functionality but does not include any runtimes. `Whisper.net.AllRuntimes` includes all available runtimes for Whisper.net, including both CUDA 13 (`Whisper.net.Runtime.Cuda`) and CUDA 12 (`Whisper.net.Runtime.Cuda12`) GPU builds.
 
 ### Installing Specific Runtimes
 
@@ -97,7 +97,7 @@ For CPUs that do not support AVX instructions.
 
 ### Whisper.net.Runtime.Cuda
 
-Contains the native whisper.cpp library with NVidia CUDA support enabled.
+Contains the native whisper.cpp library with NVidia CUDA support enabled (built with the CUDA 13 toolchain).
 
 #### Examples
 
@@ -108,6 +108,25 @@ Contains the native whisper.cpp library with NVidia CUDA support enabled.
 - Everything from Whisper.net.Runtime pre-requisites
 - NVidia GPU with CUDA support
 - [CUDA Toolkit (>= 13.0.1)](https://developer.nvidia.com/cuda-downloads)
+
+#### Supported Platforms
+
+- Windows x64
+- Linux x64
+
+### Whisper.net.Runtime.Cuda12
+
+Contains the native whisper.cpp library with NVidia CUDA support enabled, built against the CUDA 12 toolchain for systems that only provide CUDA 12.x drivers.
+
+#### Examples
+
+ - [CUDA usage example](https://github.com/sandrohanea/whisper.net/tree/main/examples/NvidiaCuda)
+
+#### Pre-requisites
+
+- Everything from Whisper.net.Runtime pre-requisites
+- NVidia GPU with CUDA support
+- [CUDA Toolkit (>= 12.4.1)](https://developer.nvidia.com/cuda-downloads)
 
 #### Supported Platforms
 
@@ -169,12 +188,15 @@ You can install and use multiple runtimes in the same project. The runtime will 
 
 The following order of priority will be used by default:
 
-1. `Whisper.net.Runtime.Cuda` (NVidia devices with all drivers installed)
-2. `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
-3. `Whisper.net.Runtime.CoreML` (Apple devices)
-4. `Whisper.net.Runtime.OpenVino` (Intel devices)
-5. `Whisper.net.Runtime` (CPU inference)
-6. `Whisper.net.Runtime.NoAvx` (CPU inference without AVX support)
+1. `Whisper.net.Runtime.Cuda` (NVidia devices with CUDA 13 drivers installed)
+2. `Whisper.net.Runtime.Cuda12` (NVidia devices with CUDA 12 drivers installed)
+3. `Whisper.net.Runtime.Vulkan` (Windows x64 with Vulkan installed)
+4. `Whisper.net.Runtime.CoreML` (Apple devices)
+5. `Whisper.net.Runtime.OpenVino` (Intel devices)
+6. `Whisper.net.Runtime` (CPU inference)
+7. `Whisper.net.Runtime.NoAvx` (CPU inference without AVX support)
+
+The loader automatically probes the CUDA runtimes in this order and validates the installed driver via `cudaRuntimeGetVersion`, so machines with only CUDA 12 drivers will transparently fall back to `Whisper.net.Runtime.Cuda12`.
 
 To change the order or force a specific runtime, set the `RuntimeLibraryOrder` on the `RuntimeOptions`:
 
@@ -184,6 +206,7 @@ RuntimeOptions.RuntimeLibraryOrder =
     RuntimeLibrary.CoreML,
     RuntimeLibrary.OpenVino,
     RuntimeLibrary.Cuda,
+    RuntimeLibrary.Cuda12,
     RuntimeLibrary.Cpu
 ];
 ```

@@ -10,7 +10,7 @@ namespace Whisper.net.LibraryLoader;
 /// </remarks>
 public static class RuntimeOptions
 {
-    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
+    private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cuda12, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
 
     /// <summary>
     /// Gets or sets a custom path to the Whisper native library.
@@ -21,7 +21,7 @@ public static class RuntimeOptions
     /// Gets or sets the order of the runtime libraries to use for processing.
     /// </summary>
     /// <remarks>
-    /// The default order is [RuntimeLibrary.Cuda, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx].
+    /// The default order is [RuntimeLibrary.Cuda, RuntimeLibrary.Cuda12, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx].
     /// </remarks>
     public static List<RuntimeLibrary> RuntimeLibraryOrder { get; set; } = defaultRuntimeOrder;
 

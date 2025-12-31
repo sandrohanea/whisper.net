@@ -14,6 +14,9 @@ nuget:
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
+	nuget pack runtimes/Whisper.net.Runtime.Cuda12.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Vulkan.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.OpenVino.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.NoAvx.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
@@ -37,6 +40,8 @@ linux: linux_x64 linux_arm64 linux_arm
 linux_noavx: linux_x64_noavx
 
 linux_cuda: linux_x64_cuda
+
+linux_cuda12: linux_x64_cuda12
 
 linux_vulkan: linux_x64_vulkan
 
@@ -107,6 +112,19 @@ linux_x64_cuda:
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-base-whisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-cpu-whisper.so
 	cp build/linux-x64-cuda/whisper.cpp/ggml/src/ggml-cuda/libggml-cuda-whisper.so ./runtimes/Whisper.net.Runtime.Cuda.Linux/linux-x64/libggml-cuda-whisper.so
+
+linux_x64_cuda12:
+	rm -rf build/linux-x64-cuda12
+	cmake -S . -B build/linux-x64-cuda12 -DCMAKE_C_COMPILER=x86_64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnu-g++ -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DGGML_CUDA=ON $(AVX_SUPPORT)
+	cmake --build build/linux-x64-cuda12 --config $(BUILD_TYPE)
+	mkdir -p runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64
+	echo 'LDD VERSION'
+	ldd --version
+	cp build/linux-x64-cuda12/whisper.cpp/src/libwhisper.so ./runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64/libwhisper.so
+	cp build/linux-x64-cuda12/whisper.cpp/ggml/src/libggml-whisper.so ./runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64/libggml-whisper.so
+	cp build/linux-x64-cuda12/whisper.cpp/ggml/src/libggml-base-whisper.so ./runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64/libggml-base-whisper.so
+	cp build/linux-x64-cuda12/whisper.cpp/ggml/src/libggml-cpu-whisper.so ./runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64/libggml-cpu-whisper.so
+	cp build/linux-x64-cuda12/whisper.cpp/ggml/src/ggml-cuda/libggml-cuda-whisper.so ./runtimes/Whisper.net.Runtime.Cuda12.Linux/linux-x64/libggml-cuda-whisper.so
 
 linux_x64_noavx:
 	rm -rf build/linux-x64-noavx

@@ -15,7 +15,15 @@ on:
 jobs:
   native-build:
     runs-on: ubuntu-22.04
-
+    strategy:
+      matrix:
+        cuda:
+          - version: "13.0.1"
+            target: linux_cuda
+            artifact: linux-cuda-build
+          - version: "12.4.1"
+            target: linux_cuda12
+            artifact: linux-cuda12-build
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,11 +46,11 @@ jobs:
       - name: Install CUDA Toolkit
         uses: Jimver/cuda-toolkit@1a3c14e26833ccf292b268f9a790fb47dea7b2da
         with:
-          cuda: "13.0.1"
+          cuda: "${{ matrix.cuda.version }}"
 
       - name: Run linux-cuda
         run: |
-          make linux_cuda BUILD_TYPE=${{ inputs.BuildConfig }}
+          make ${{ matrix.cuda.target }} BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Remove CUDA installer
         run: rm -rf cuda_installer-*
@@ -50,6 +58,6 @@ jobs:
       - name: Upload Linux Cuda Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-cuda-build
+          name: ${{ matrix.cuda.artifact }}
           path: "runtimes/Whisper.net.Run*/linux-*/*"
           retention-days: 7

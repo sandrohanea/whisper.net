@@ -139,6 +139,11 @@ Compiling the Apple libraries requires a Mac with Xcode installed.
 
 Prereqs: gcc/g++/make (build-essential), CMake, Ninja (optional). TODO: Add apt/yum/pacman examples.
 
+#### Linux CUDA runtimes
+
+- `make linux_cuda` builds the CUDA 13 artifacts used by `Whisper.net.Runtime.Cuda` (requires CUDA Toolkit 13.0.1 or a compatible CUDA 13 toolchain to be installed on the host).
+- `make linux_cuda12` builds the CUDA 12 artifacts used by `Whisper.net.Runtime.Cuda12` (requires CUDA Toolkit 12.4.1 or the matching CUDA 12 toolchain).
+
 ### Windows
 
 Import the PowerShell module:
@@ -151,6 +156,11 @@ Alternatively, you can run `BuildWindows` with the desired parameters.
 ```
 BuildWindows -Arch "x64" -Configuration "Release"  -NoAvx $true
 ```
+
+To build the CUDA runtimes explicitly:
+
+- `BuildWindows -Arch "x64" -Cuda $true -Configuration Release` builds the CUDA 13 package (`Whisper.net.Runtime.Cuda`) and expects the CUDA 13.0.1 toolkit on the machine or CI runner.
+- `BuildWindows -Arch "x64" -Cuda $true -CudaVersion "12" -Configuration Release` builds the CUDA 12 package (`Whisper.net.Runtime.Cuda12`) and requires the CUDA 12.4.1 toolkit.
 
 Native runtime downloads via Devcontainer
 - For a reproducible setup, you can use a development container to provision toolchains and optionally pre-fetch native runtimes.

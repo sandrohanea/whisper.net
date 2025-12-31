@@ -6,6 +6,7 @@ public enum RuntimeLibrary
 {
     Cpu,
     Cuda,
+    Cuda12,
     Vulkan,
     CoreML,
     OpenVino,

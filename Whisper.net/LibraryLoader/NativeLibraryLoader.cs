@@ -206,9 +206,9 @@ public static class NativeLibraryLoader
         }
 #endif
         // If Cuda is not available, we can't use Cuda runtime (unless there is no other runtime available, where CUDA runtime can be used as a fallback to the CPU)
-        if (runtime == RuntimeLibrary.Cuda && !CudaHelper.IsCudaAvailable())
+        if (IsCudaRuntime(runtime) && !CudaHelper.IsCudaAvailable(runtime))
         {
-            var cudaIndex = runtimeLibraries.IndexOf(RuntimeLibrary.Cuda);
+            var cudaIndex = runtimeLibraries.IndexOf(runtime);
 
             if (cudaIndex == RuntimeOptions.RuntimeLibraryOrder.Count - 1)
             {
@@ -218,12 +218,12 @@ public static class NativeLibraryLoader
                 // This way, the user can use Cuda if it's available, otherwise, the CPU runtime will be used.
                 // However, the cudart library should be available in the system.
                 WhisperLogger.Log(WhisperLogLevel.Debug,
-                    "Cuda runtime is not available, but it's the last runtime in the list. " +
+                    $"Cuda runtime {runtime} is not available, but it's the last runtime in the list. " +
                     "It will be used as a fallback to the CPU runtime.");
                 return true;
             }
 
-            WhisperLogger.Log(WhisperLogLevel.Debug, "Cuda driver is not available or no cuda device is identified.");
+            WhisperLogger.Log(WhisperLogLevel.Debug, $"Cuda driver for {runtime} is not available or no cuda device is identified.");
             return false;
         }
 
@@ -252,6 +252,7 @@ public static class NativeLibraryLoader
                 var runtimePath = library switch
                 {
                     RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
+                    RuntimeLibrary.Cuda12 => Path.Combine(runtimesPath, "cuda12", $"{platform}-{architecture}"),
                     RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
                     RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
                     RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
@@ -293,4 +294,7 @@ public static class NativeLibraryLoader
         }
 #endif
     }
+
+    private static bool IsCudaRuntime(RuntimeLibrary runtime)
+        => runtime == RuntimeLibrary.Cuda || runtime == RuntimeLibrary.Cuda12;
 }

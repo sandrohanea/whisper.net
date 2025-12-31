@@ -43,6 +43,7 @@ foreach (var assemblySearchPath in assemblySearchPaths)
     var runtimePath = library switch
     {
         RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
+        RuntimeLibrary.Cuda12 => Path.Combine(runtimesPath, "cuda12", $"{platform}-{architecture}"),
         RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
         RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
         RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
