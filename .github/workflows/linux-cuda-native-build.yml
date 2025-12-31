@@ -45,7 +45,7 @@ jobs:
           sudo apt-get clean
           df -h
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@1a3c14e26833ccf292b268f9a790fb47dea7b2da
+        uses: Jimver/cuda-toolkit@6008063726ffe3309d1b22e413d9e88fed91a2f2
         with:
           cuda: "${{ matrix.cuda.version }}"
 
