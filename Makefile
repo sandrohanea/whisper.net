@@ -9,7 +9,7 @@ nuget:
 	mkdir -p nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Metal.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
-	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -o ./nupkgs -c $(BUILD_TYPE)
+	dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$(VERSION) -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o ./nupkgs -c $(BUILD_TYPE)
 	nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs
 	nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $(VERSION) -OutputDirectory ./nupkgs

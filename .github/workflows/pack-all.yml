@@ -70,4 +70,4 @@ jobs:
         with:
           name: nupkgs
           path: |
-            nupkgs/*.nupkg
+            nupkgs/*nupkg
