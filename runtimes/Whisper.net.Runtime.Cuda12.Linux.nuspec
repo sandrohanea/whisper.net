@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Cuda12.Linux</id>
+    <title>Whisper.Net.Runtime.Cuda12.Linux</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Linux CUDA 12 dotnet runtimes for Whisper.</summary>
+    <description>Whisper.net.Runtime.Cuda12.Linux contains the native runtime libraries to enable Whisper on .NET with Whisper.net and GPU support (Cuda 12) on Linux.</description>
+    <tags>whisper;cuda;cuda12;gpu;cublas;</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Cuda12.Linux\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

@@ -17,6 +17,7 @@
       <dependency id="Whisper.net" version="$version$" />
       <dependency id="Whisper.net.Runtime" version="$version$" />
       <dependency id="Whisper.net.Runtime.Cuda" version="$version$" />
+      <dependency id="Whisper.net.Runtime.Cuda12" version="$version$" />
       <dependency id="Whisper.net.Runtime.CoreML" version="$version$" />
       <dependency id="Whisper.net.Runtime.Metal" version="$version$" />
       <dependency id="Whisper.net.Runtime.NoAvx" version="$version$" />

@@ -8,6 +8,7 @@ internal class NativeLibraryCuda(IntPtr cudaHandle) : INativeCuda
 {
 
     public cudaGetDeviceCount CudaGetDeviceCount { get; } = Marshal.GetDelegateForFunctionPointer<cudaGetDeviceCount>(NativeLibrary.GetExport(cudaHandle, nameof(cudaGetDeviceCount)));
+    public cudaRuntimeGetVersion CudaRuntimeGetVersion { get; } = Marshal.GetDelegateForFunctionPointer<cudaRuntimeGetVersion>(NativeLibrary.GetExport(cudaHandle, nameof(cudaRuntimeGetVersion)));
 
     public void Dispose()
     {

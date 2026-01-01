@@ -52,8 +52,13 @@
     <File Path="runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec" />
     <File Path="runtimes/Whisper.net.Runtime.Cuda.Linux/Whisper.net.Runtime.Cuda.Linux.targets" />
     <File Path="runtimes/Whisper.net.Runtime.Cuda.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda12.nuspec" />
     <File Path="runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec" />
     <File Path="runtimes/Whisper.net.Runtime.Cuda.Windows/Whisper.net.Runtime.Cuda.Windows.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda12.Windows.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda12.Windows/Whisper.net.Runtime.Cuda12.Windows.targets" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda12.Linux.nuspec" />
+    <File Path="runtimes/Whisper.net.Runtime.Cuda12.Linux/Whisper.net.Runtime.Cuda12.Linux.targets" />
     <File Path="runtimes/Whisper.net.Runtime.Metal.nuspec" />
     <File Path="runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
     <File Path="runtimes/Whisper.net.Runtime.NoAvx.nuspec" />

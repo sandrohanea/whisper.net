@@ -15,7 +15,16 @@ on:
 jobs:
   native-build:
     runs-on: windows-2022
-
+    strategy:
+      fail-fast: false
+      matrix:
+        cuda:
+          - version: "13.0.1"
+            major: "13"
+            artifact: windows-cuda-build
+          - version: "12.4.1"
+            major: "12"
+            artifact: windows-cuda12-build
     steps:
       - uses: actions/checkout@v4
 
@@ -30,15 +39,16 @@ jobs:
           vcpkg --triplet=x64-windows install opencl
 
       - name: Install CUDA Toolkit
-        uses: sandrohanea/cuda-toolkit@cfee046042ba06dd691634f2bb09edd98af50f78
+        uses: Jimver/cuda-toolkit@6008063726ffe3309d1b22e413d9e88fed91a2f2
         with:
-          cuda: "13.0.1"
+          cuda: "${{ matrix.cuda.version }}"
           use-github-cache: false
+          log-file-suffix: "${{ matrix.cuda.artifact }}"
 
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
-          BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }}
+          BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }} -CudaVersion "${{ matrix.cuda.major }}"
         shell: pwsh
 
       - name: Remove CUDA installer
@@ -47,6 +57,6 @@ jobs:
       - name: Upload Windows Cuda Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-cuda-build
+          name: ${{ matrix.cuda.artifact }}
           path: "runtimes/Whisper.net.Run*/win-*/*"
           retention-days: 7

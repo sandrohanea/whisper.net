@@ -8,5 +8,9 @@ internal interface INativeCuda : IDisposable
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int cudaGetDeviceCount(out int count);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int cudaRuntimeGetVersion(out int version);
+
     cudaGetDeviceCount CudaGetDeviceCount { get; }
+    cudaRuntimeGetVersion CudaRuntimeGetVersion { get; }
 }
