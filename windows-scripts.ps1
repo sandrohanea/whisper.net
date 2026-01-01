@@ -204,7 +204,7 @@ function PackAll([Parameter(Mandatory = $true)] [string]$Version) {
 
     nuget pack runtimes/Whisper.net.Runtime.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Metal.nuspec -Version $Version -OutputDirectory ./nupkgs
-    dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -o ./nupkgs -c Release
+    dotnet pack Whisper.net/Whisper.net.csproj -p:Version=$Version -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -o ./nupkgs -c Release
     nuget pack runtimes/Whisper.net.Runtime.CoreML.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Cuda.Linux.nuspec -Version $Version -OutputDirectory ./nupkgs
     nuget pack runtimes/Whisper.net.Runtime.Cuda.Windows.nuspec -Version $Version -OutputDirectory ./nupkgs
