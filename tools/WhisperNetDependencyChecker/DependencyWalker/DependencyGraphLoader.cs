@@ -65,28 +65,95 @@ internal class DependencyGraphLoader
     /// </summary>
     public string? ResolveLibraryPath(string libraryName, string? baseDirectory)
     {
-        // 1. Check the same folder as the initial native library.
-        if (baseDirectory != null)
+        foreach (var candidateName in GetCandidateLibraryNames(libraryName))
         {
-            var candidate = Path.Combine(baseDirectory, libraryName);
-            if (File.Exists(candidate))
+            // 1. Check the same folder as the initial native library.
+            if (baseDirectory != null)
             {
-                return candidate;
+                var candidate = Path.Combine(baseDirectory, candidateName);
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
             }
-        }
 
-        // 2. Check each known path.
-        foreach (var knownPath in knownPathProvider.GetKnownPaths())
-        {
-            var candidate = Path.Combine(knownPath, libraryName);
-            if (File.Exists(candidate))
+            // 2. Check each known path.
+            foreach (var knownPath in knownPathProvider.GetKnownPaths())
             {
-                return candidate;
+                var candidate = Path.Combine(knownPath, candidateName);
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
             }
         }
 
         // Not found.
         return null;
+    }
+
+    private static IEnumerable<string> GetCandidateLibraryNames(string libraryName)
+    {
+        yield return libraryName;
+
+        if (OperatingSystem.IsMacOS())
+        {
+            var unversioned = TryGetUnversionedMacDylibName(libraryName);
+            if (unversioned != null)
+            {
+                yield return unversioned;
+            }
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            var unversioned = TryGetUnversionedLinuxSoName(libraryName);
+            if (unversioned != null)
+            {
+                yield return unversioned;
+            }
+        }
+    }
+
+    private static string? TryGetUnversionedMacDylibName(string libraryName)
+    {
+        const string suffix = ".dylib";
+        if (!libraryName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var nameWithoutSuffix = libraryName[..^suffix.Length];
+        var lastDot = nameWithoutSuffix.LastIndexOf('.');
+        if (lastDot <= 0)
+        {
+            return null;
+        }
+
+        var versionPart = nameWithoutSuffix[(lastDot + 1)..];
+        if (versionPart.Length == 0 || !versionPart.All(char.IsDigit))
+        {
+            return null;
+        }
+
+        return nameWithoutSuffix[..lastDot] + suffix;
+    }
+
+    private static string? TryGetUnversionedLinuxSoName(string libraryName)
+    {
+        const string marker = ".so.";
+        var markerIndex = libraryName.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        if (markerIndex <= 0)
+        {
+            return null;
+        }
+
+        var versionPart = libraryName[(markerIndex + marker.Length)..];
+        if (versionPart.Length == 0 || !versionPart.All(c => char.IsDigit(c) || c == '.'))
+        {
+            return null;
+        }
+
+        return libraryName[..markerIndex] + ".so";
     }
 
     /// <summary>
