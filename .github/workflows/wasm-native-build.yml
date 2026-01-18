@@ -1,7 +1,7 @@
 name: Wasm Native build
 
 permissions:
-    contents: read
+  contents: read
 
 on:
   workflow_dispatch:
@@ -10,14 +10,14 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   native-build:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -37,7 +37,7 @@ jobs:
         run: rm -rf emsdk*
 
       - name: Upload Wasm Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wasm-build
           path: "runtimes/Whisper.net.Run*/browser-wasm/*"

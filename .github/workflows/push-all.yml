@@ -5,18 +5,18 @@ name: Push Nuget Packages to nuget.org
 
 permissions:
   contents: write
-  id-token: write   # required for GitHub OIDC
+  id-token: write # required for GitHub OIDC
 on:
   workflow_call:
 
 jobs:
   push-nupkgs:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
@@ -25,7 +25,7 @@ jobs:
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: nupkgs
           path: nupkgs
@@ -38,13 +38,14 @@ jobs:
 
       - name: Push to nuget.org
         run: |
-              dotnet nuget push .\nupkgs\*nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          dotnet nuget push ./nupkgs/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          dotnet nuget push ./nupkgs/*.snupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
 
       - name: Get version from package
         id: get-version
         run: |
-              $version = (Get-ChildItem -Path nupkgs\*.nupkg | Select-Object -First 1).BaseName -replace '.*\.(\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?)', '$1'
-              git config user.email "sandrohanea@users.noreply.github.com"
-              git config user.name "Sandro Hanea (auto)"
-              git tag -a "$version" -m "Release version $version"
-              git push --tags
+          version="$(ls -1 nupkgs/*.nupkg | head -n 1 | sed -E 's/.*\.([0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+)?)\.nupkg/\1/')"
+          git config user.email "sandrohanea@users.noreply.github.com"
+          git config user.name "Sandro Hanea (auto)"
+          git tag -a "$version" -m "Release version $version"
+          git push --tags

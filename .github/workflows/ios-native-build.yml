@@ -10,14 +10,14 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   ios-native-build:
     runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -26,7 +26,7 @@ jobs:
           make ios ios_simulator_arm64 tvos tvos_simulator_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload iOS Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ios-build
           path: |

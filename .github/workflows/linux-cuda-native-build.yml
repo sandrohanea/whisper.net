@@ -10,7 +10,7 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   native-build:
@@ -26,7 +26,7 @@ jobs:
             target: linux_cuda12
             artifact: linux-cuda12-build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -45,7 +45,7 @@ jobs:
           sudo apt-get clean
           df -h
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@6008063726ffe3309d1b22e413d9e88fed91a2f2
+        uses: Jimver/cuda-toolkit@b6fc3a9f3f15256d9d94ffe1254f9c5a2565cde6
         with:
           cuda: "${{ matrix.cuda.version }}"
           log-file-suffix: "${{ matrix.cuda.artifact }}"
@@ -58,7 +58,7 @@ jobs:
         run: rm -rf cuda_installer-*
 
       - name: Upload Linux Cuda Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.cuda.artifact }}
           path: "runtimes/Whisper.net.Run*/linux-*/*"

@@ -1,7 +1,7 @@
 name: Windows OpenVino native build
 
 permissions:
-    contents: read
+  contents: read
 
 on:
   workflow_dispatch:
@@ -10,14 +10,14 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   native-build:
     runs-on: windows-2022
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Windows OpenVino Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-openvino-build
           path: "runtimes/Whisper.net.Run*/win-*/*"

@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Collect GitHub issue and release data
         shell: pwsh
@@ -38,10 +38,10 @@ jobs:
           Out-File -FilePath "issues.md" -Encoding utf8 -InputObject ""
           foreach ($issue in $issues) {
             Add-Content -Path "issues.md" -Value "## #$($issue.number) - $($issue.title)`n$($issue.body)`n"
-            
+
             $commentsUrl = $issue.comments_url
             $comments = Invoke-RestMethod -Uri $commentsUrl -Headers $headers
-            
+
             if ($comments.Count -gt 0) {
               Add-Content -Path "issues.md" -Value "### Comments:`n"
               foreach ($comment in $comments) {
@@ -90,12 +90,12 @@ jobs:
               Add-Content -Path "code_snippets.md" -Value $content
               Add-Content -Path "code_snippets.md" -Value "``````n"
             } else {
-              Write-Error "File not found: $fullPath" exit 1 # Fail the script if a file is not found 
+              Write-Error "File not found: $fullPath" exit 1 # Fail the script if a file is not found
             }
           }
 
       - name: Upload data artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: data
           path: "*.md"

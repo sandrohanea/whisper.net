@@ -13,18 +13,17 @@ on:
 
 env:
   USE_WHISPER_NOAVX_TESTS: true
-  VSTEST_CONNECTION_TIMEOUT : 600
+  VSTEST_CONNECTION_TIMEOUT: 600
 
 jobs:
-
   dotnet-noavx-windows:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
@@ -33,7 +32,7 @@ jobs:
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           path: runtimes
@@ -53,16 +52,16 @@ jobs:
           dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
-        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
-        if: success() || failure()    # run this step even if previous step failed
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: Whisper.net Windows Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
 
       - name: Upload trx files
-        uses: actions/upload-artifact@v4
-        if: success() || failure()    # run this step even if previous step failed
+        uses: actions/upload-artifact@v6
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results-windows-noavx
           path: ./**/*.trx
@@ -72,10 +71,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
@@ -84,7 +83,7 @@ jobs:
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           path: runtimes
@@ -104,18 +103,17 @@ jobs:
           dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
-        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5
-        if: success() || failure()    # run this step even if previous step failed
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results
           path: ./**/*.trx
           reporter: dotnet-trx
 
       - name: Upload trx files
-        uses: actions/upload-artifact@v4
-        if: success() || failure()    # run this step even if previous step failed
+        uses: actions/upload-artifact@v6
+        if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results-linux-noavx
           path: ./**/*.trx
           retention-days: 7
-
