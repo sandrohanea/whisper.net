@@ -9,14 +9,14 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   native-build:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -29,7 +29,7 @@ jobs:
         run: make android BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Android Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: android-build
           path: "runtimes/Whisper.net.Run*/android-*/*"

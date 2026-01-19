@@ -8,13 +8,13 @@ permissions:
 
 on:
   workflow_call:
-     inputs:
-        IsPreview:
-            required: true
-            type: boolean
-        PreviewSuffix:
-            required: false
-            type: string
+    inputs:
+      IsPreview:
+        required: true
+        type: boolean
+      PreviewSuffix:
+        required: false
+        type: string
 
 jobs:
   pack-nupkgs:
@@ -22,10 +22,10 @@ jobs:
     env:
       USE_WHISPER_MAUI: "TRUE"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             9.0.x
@@ -33,13 +33,13 @@ jobs:
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           path: runtimes
 
       - name: Install Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: "microsoft"
           java-version: "11"
@@ -66,7 +66,7 @@ jobs:
         shell: pwsh
 
       - name: Publish nupkgs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nupkgs
           path: |

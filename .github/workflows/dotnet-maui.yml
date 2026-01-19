@@ -17,23 +17,23 @@ jobs:
       USE_WHISPER_MAUI_TESTS: "TRUE"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
             9.0.x
             10.0.x
 
-      - uses: maxim-lobanov/setup-xcode@7f352e61cbe8130c957c3bc898c4fb025784ea1e
+      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
         with:
-          xcode-version: '26.2'
+          xcode-version: "26.2"
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           path: runtimes
@@ -59,7 +59,7 @@ jobs:
         run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-android -p:EmbedAssembliesIntoApk=true
 
       - name: Upload apk and ios app
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: maui-build-artifacts
           path: |
@@ -74,10 +74,10 @@ jobs:
       USE_WHISPER_MAUI: "TRUE"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
@@ -86,7 +86,7 @@ jobs:
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: maui-build-artifacts
           path: maui-build-artifacts
@@ -101,7 +101,7 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
 
       - name: run android tests
-        uses: reactivecircus/android-emulator-runner@62dbb605bba737720e10b196cb4220d374026a6d
+        uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b
         with:
           api-level: 29
           arch: x86_64
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xharness-android-test-results
           path: |
@@ -123,23 +123,23 @@ jobs:
       USE_WHISPER_MAUI: "TRUE"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
             9.0.x
             10.0.x
 
-      - uses: maxim-lobanov/setup-xcode@7f352e61cbe8130c957c3bc898c4fb025784ea1e
+      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd
         with:
-          xcode-version: '26.2'
+          xcode-version: "26.2"
 
       - name: Download Artifacts
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: maui-build-artifacts
           path: maui-build-artifacts
@@ -154,7 +154,7 @@ jobs:
         run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 17" --timeout "00:30:00"
       - name: Upload Maui iOS xharness test results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: xharness-ios-test-results
           path: |

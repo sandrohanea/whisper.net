@@ -10,7 +10,7 @@ jobs:
   upload-artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -36,7 +36,7 @@ jobs:
       - name: Download Artifacts
         if: steps.check-release.outputs.release_exists != 'true'
         id: download-artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           path: runtime-artifacts
@@ -48,7 +48,7 @@ jobs:
 
       - name: Create preview release
         if: steps.check-release.outputs.release_exists != 'true'
-        uses: ncipollo/release-action@90dc22b77f7e5e8d3a3a92924b18415dca53f445
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b
         with:
           tag: preview-nativelibs-${{ steps.release-info.outputs.commit }}
           name: Preview NativeLibs ${{ steps.release-info.outputs.date }} (${{ steps.release-info.outputs.commit }})

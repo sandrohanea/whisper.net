@@ -1,7 +1,7 @@
 name: Windows native build
 
 permissions:
-    contents: read
+  contents: read
 
 on:
   workflow_dispatch:
@@ -10,23 +10,23 @@ on:
       BuildConfig:
         required: true
         type: string
-        default: 'Release'
+        default: "Release"
 
 jobs:
   intel-native-build:
     runs-on: windows-2022
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
         with:
           submodules: true
-          
+
       - name: Install Ninja
         id: install_ninja
         run: |
           choco install ninja
-          
+
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Windows Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-build
           path: "runtimes/Whisper.net.Run*/win-*/*"
@@ -44,15 +44,15 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
-          
+
       - name: Install Ninja
         id: install_ninja
         run: |
           choco install ninja
-          
+
       - name: Run Build
         run: |
           Import-Module ./windows-scripts.ps1
@@ -60,7 +60,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Windows Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-arm-build
           path: "runtimes/Whisper.net.Run*/win-*/*"
