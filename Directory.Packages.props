@@ -1,14 +1,23 @@
 <Project>
   <!-- Directory.Packages.props gets included automatically during the build. Read more here:
   https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management-->
+  <PropertyGroup>
+    <MauiVersion>10.0.30</MauiVersion>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.2" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.2.0" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <!-- Tools -->
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
     <!-- Examples / Demos -->
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
+    <PackageVersion Include="Microsoft.NET.ILLink.Tasks" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.App.Internal.Assets" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.DotNet.HotReload.WebAssembly.Browser" Version="10.0.102" />
+    <PackageVersion Include="Microsoft.NET.Sdk.WebAssembly.Pack" Version="10.0.2" />
     <!-- Tests -->
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
@@ -20,7 +29,7 @@
     </PackageVersion>
     <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.25174.1" />
     <PackageVersion Include="xunit.assert" Version="2.9.3" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)"/>
