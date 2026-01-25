@@ -12,7 +12,6 @@
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
     <!-- Examples / Demos -->
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
-    <PackageVersion Include="Microsoft.NET.ILLink.Tasks" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.App.Internal.Assets" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.2" />
