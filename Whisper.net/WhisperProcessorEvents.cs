@@ -42,7 +42,9 @@ public class WhisperToken
 /// <param name="minProbability"></param>
 /// <param name="maxProbability"></param>
 /// <param name="probability"></param>
+/// <param name="noSpeechProbability"></param>
 /// <param name="language"></param>
+/// <param name="tokens"></param>
 public class SegmentData(
     string text,
     TimeSpan start,
