@@ -315,10 +315,10 @@ std::string generate_temp_filename(const std::string &path, const std::string &p
     return ss.str();
 }
 
-bool convert_to_wav(const std::string & temp_filename, std::string & error_resp) {
+bool convert_to_wav(const std::string & temp_filename, std::string & error_resp, bool stereo) {
     std::ostringstream cmd_stream;
     std::string converted_filename_temp = temp_filename + "_temp.wav";
-    cmd_stream << "ffmpeg -i \"" << temp_filename << "\" -y -ar 16000 -ac 1 -c:a pcm_s16le \"" << converted_filename_temp << "\" 2>&1";
+    cmd_stream << "ffmpeg -i \"" << temp_filename << "\" -y -ar 16000 -ac " << (stereo ? 2 : 1) << " -c:a pcm_s16le \"" << converted_filename_temp << "\" 2>&1";
     std::string cmd = cmd_stream.str();
 
     int status = std::system(cmd.c_str());
@@ -341,7 +341,7 @@ bool convert_to_wav(const std::string & temp_filename, std::string & error_resp)
     return true;
 }
 
-std::string estimate_diarization_speaker(std::vector<std::vector<float>> pcmf32s, int64_t t0, int64_t t1, bool id_only = false) {
+std::string estimate_diarization_speaker(const std::vector<std::vector<float>> & pcmf32s, int64_t t0, int64_t t1, bool id_only = false) {
     std::string speaker = "";
     const int64_t n_samples = pcmf32s[0].size();
 
@@ -451,7 +451,7 @@ void whisper_print_segment_callback(struct whisper_context * ctx, struct whisper
     }
 }
 
-std::string output_str(struct whisper_context * ctx, const whisper_params & params, std::vector<std::vector<float>> pcmf32s) {
+std::string output_str(struct whisper_context * ctx, const whisper_params & params, const std::vector<std::vector<float>> & pcmf32s) {
     std::stringstream result;
     const int n_segments = whisper_full_n_segments(ctx);
     for (int i = 0; i < n_segments; ++i) {
@@ -848,7 +848,7 @@ int main(int argc, char ** argv) {
             temp_file.close();
 
             std::string error_resp = "{\"error\":\"Failed to execute ffmpeg command.\"}";
-            const bool is_converted = convert_to_wav(temp_filename, error_resp);
+            const bool is_converted = convert_to_wav(temp_filename, error_resp, params.diarize);
             if (!is_converted) {
                 res.status = 500;
                 res.set_content(error_resp, "application/json");
@@ -1089,6 +1089,14 @@ int main(int argc, char ** argv) {
                 if (!params.no_timestamps) {
                     segment["start"] = whisper_full_get_segment_t0(ctx, i) * 0.01;
                     segment["end"] = whisper_full_get_segment_t1(ctx, i) * 0.01;
+                }
+
+                if (params.diarize && pcmf32s.size() == 2) {
+                    segment["speaker"] = estimate_diarization_speaker(
+                        pcmf32s,
+                        whisper_full_get_segment_t0(ctx, i),
+                        whisper_full_get_segment_t1(ctx, i),
+                        true);
                 }
 
                 float total_logprob = 0;
