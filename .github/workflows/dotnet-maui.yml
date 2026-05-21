@@ -47,7 +47,7 @@ jobs:
         run: dotnet restore ./Whisper.net.Maui.Tests.slnx
 
       - name: Install xharness
-        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
         run: xharness apple simulators install ios-simulator_26.2
@@ -98,7 +98,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Install xharness
-        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: run android tests
         uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b
@@ -145,7 +145,7 @@ jobs:
           path: maui-build-artifacts
 
       - name: Install xharness
-        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json --version "10.0.0-*"
+        run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
         run: xharness apple simulators install ios-simulator_26.2
