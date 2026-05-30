@@ -245,7 +245,7 @@ public sealed class WhisperVadProcessor : IAsyncDisposable, IDisposable
             {
                 var start = nativeWhisper.Whisper_Vad_Segments_Get_Segment_T0(segmentsHandle, i);
                 var end = nativeWhisper.Whisper_Vad_Segments_Get_Segment_T1(segmentsHandle, i);
-                segments[i] = new VadSegmentData(TimeSpan.FromSeconds(start), TimeSpan.FromSeconds(end));
+                segments[i] = new VadSegmentData(TimeSpan.FromSeconds(start / 100.0), TimeSpan.FromSeconds(end / 100.0));
             }
 
             return segments;

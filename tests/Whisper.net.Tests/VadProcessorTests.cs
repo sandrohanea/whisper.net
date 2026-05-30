@@ -186,8 +186,8 @@ public class VadProcessorTests
                 return segmentsHandle;
             };
             Whisper_Vad_Segments_N_Segments = _ => 2;
-            Whisper_Vad_Segments_Get_Segment_T0 = (_, index) => index == 0 ? 1.25f : 3;
-            Whisper_Vad_Segments_Get_Segment_T1 = (_, index) => index == 0 ? 2.5f : 4;
+            Whisper_Vad_Segments_Get_Segment_T0 = (_, index) => index == 0 ? 125 : 300;
+            Whisper_Vad_Segments_Get_Segment_T1 = (_, index) => index == 0 ? 250 : 400;
             Whisper_Vad_Free_Segments = handle => WasSegmentsHandleFreed = handle == segmentsHandle;
             Whisper_Vad_Free = _ => { };
         }
