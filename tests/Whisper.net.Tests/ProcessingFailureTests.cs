@@ -172,7 +172,7 @@ public class ProcessingFailureTests
             cts.Cancel();
             await WaitForTaskAsync(nativeAbortObserved.Task);
 
-            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => WaitForTaskAsync(processingTask, TimeSpan.FromSeconds(1)));
+            await Assert.ThrowsAsync<TaskCanceledException>(() => WaitForTaskAsync(processingTask, TimeSpan.FromSeconds(1)));
             Assert.False(nativeFinished.Task.IsCompleted);
         }
         finally

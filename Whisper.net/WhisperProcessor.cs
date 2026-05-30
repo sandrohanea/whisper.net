@@ -296,13 +296,19 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             while (!processingTask.IsCompleted || !buffer.IsEmpty)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new TaskCanceledException();
+                }
 
                 if (buffer.IsEmpty)
                 {
                     await Task.WhenAny(processingTask, resetEvent.WaitAsync())
                         .ConfigureAwait(false);
-                    cancellationToken.ThrowIfCancellationRequested();
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw new TaskCanceledException();
+                    }
                 }
 
                 while (!buffer.IsEmpty && buffer.TryDequeue(out var segmentData))
