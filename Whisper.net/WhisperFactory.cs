@@ -2,8 +2,6 @@
 
 using Whisper.net.Internals;
 using Whisper.net.Internals.ModelLoader;
-using Whisper.net.LibraryLoader;
-using Whisper.net.Logger;
 
 namespace Whisper.net;
 
@@ -21,24 +19,14 @@ public sealed class WhisperFactory : IDisposable
     private readonly StringPool stringPool = new();
     private bool wasDisposed;
 
-    private static readonly Lazy<LoadResult> LibraryLoaded = new(() =>
-    {
-        var localLibraryLoaded = NativeLibraryLoader.LoadNativeLibrary();
-        if (localLibraryLoaded.IsSuccess)
-        {
-            LogProvider.InitializeLogging(localLibraryLoaded.NativeWhisper!);
-        }
-        return localLibraryLoaded;
-    }, true);
-
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
     {
-        CheckLibraryLoaded();
+        var nativeWhisper = WhisperLibrary.NativeWhisper;
 
         this.loader = loader;
         if (!delayInit)
         {
-            var nativeContext = loader.LoadNativeContext(LibraryLoaded.Value.NativeWhisper!);
+            var nativeContext = loader.LoadNativeContext(nativeWhisper);
             isEagerlyInitialized = true;
 
 #if NET8_0_OR_GREATER
@@ -49,7 +37,7 @@ public sealed class WhisperFactory : IDisposable
         }
         else
         {
-            contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(LibraryLoaded.Value.NativeWhisper!), isThreadSafe: false);
+            contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(WhisperLibrary.NativeWhisper), isThreadSafe: false);
         }
     }
 
@@ -62,9 +50,7 @@ public sealed class WhisperFactory : IDisposable
     /// <exception cref="Exception"></exception>
     public static string? GetRuntimeInfo()
     {
-        CheckLibraryLoaded();
-
-        var systemInfoPtr = LibraryLoaded.Value.NativeWhisper!.WhisperPrintSystemInfo();
+        var systemInfoPtr = WhisperLibrary.NativeWhisper.WhisperPrintSystemInfo();
         var systemInfoStr = MarshalUtils.GetString(systemInfoPtr);
         // The pointer returned by WhisperPrintSystemInfo points to a static
         // buffer owned by the native library. Do not free it here.
@@ -77,11 +63,10 @@ public sealed class WhisperFactory : IDisposable
     /// <returns></returns>
     public static IEnumerable<string> GetSupportedLanguages()
     {
-        CheckLibraryLoaded();
-
-        for (var i = 0; i < LibraryLoaded.Value.NativeWhisper!.Whisper_Lang_Max_Id(); i++)
+        var nativeWhisper = WhisperLibrary.NativeWhisper;
+        for (var i = 0; i < nativeWhisper.Whisper_Lang_Max_Id(); i++)
         {
-            var languagePtr = LibraryLoaded.Value.NativeWhisper!.Whisper_Lang_Str(i);
+            var languagePtr = nativeWhisper.Whisper_Lang_Str(i);
             var language = MarshalUtils.GetString(languagePtr);
             if (!string.IsNullOrEmpty(language))
             {
@@ -168,7 +153,7 @@ public sealed class WhisperFactory : IDisposable
             throw new WhisperModelLoadException("Failed to load the whisper model.");
         }
 
-        return new WhisperProcessorBuilder(contextLazy.Value, LibraryLoaded.Value.NativeWhisper!, stringPool);
+        return new WhisperProcessorBuilder(contextLazy.Value, WhisperLibrary.NativeWhisper, stringPool);
     }
 
     public void Dispose()
@@ -181,17 +166,9 @@ public sealed class WhisperFactory : IDisposable
         // Even if the Lazy value was not created, we still need to free the context if it was eagerly initialized.
         if ((contextLazy.IsValueCreated || isEagerlyInitialized) && contextLazy.Value != IntPtr.Zero)
         {
-            LibraryLoaded.Value.NativeWhisper!.Whisper_Free(contextLazy.Value);
+            WhisperLibrary.NativeWhisper.Whisper_Free(contextLazy.Value);
         }
         loader.Dispose();
         wasDisposed = true;
-    }
-
-    private static void CheckLibraryLoaded()
-    {
-        if (!LibraryLoaded.Value.IsSuccess)
-        {
-            throw new Exception($"Failed to load native whisper library. Error: {LibraryLoaded.Value.ErrorMessage}");
-        }
     }
 }

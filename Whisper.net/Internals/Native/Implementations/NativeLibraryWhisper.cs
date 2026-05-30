@@ -2,6 +2,7 @@
 
 #if !NETSTANDARD
 using System.Runtime.InteropServices;
+using Whisper.net.Native;
 using static Whisper.net.Internals.Native.INativeWhisper;
 
 namespace Whisper.net.Internals.Native.Implementations;
@@ -38,6 +39,18 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Full_Get_Token_Text_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_token_text_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_token_text_from_state)));
         WhisperPrintSystemInfo = Marshal.GetDelegateForFunctionPointer<whisper_print_system_info>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_print_system_info)));
         Whisper_Full_Get_Segment_No_Speech_Prob_From_State = Marshal.GetDelegateForFunctionPointer<whisper_full_get_segment_no_speech_prob_from_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_get_segment_no_speech_prob_from_state)));
+        Whisper_Vad_Default_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_default_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_default_params)));
+        Whisper_Vad_Default_Context_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_default_context_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_default_context_params)));
+        Whisper_Vad_Init_From_File_With_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_init_from_file_with_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_init_from_file_with_params)));
+        Whisper_Vad_Detect_Speech = Marshal.GetDelegateForFunctionPointer<whisper_vad_detect_speech>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_detect_speech)));
+        Whisper_Vad_Detect_Speech_No_Reset = Marshal.GetDelegateForFunctionPointer<whisper_vad_detect_speech_no_reset>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_detect_speech_no_reset)));
+        Whisper_Vad_Reset_State = Marshal.GetDelegateForFunctionPointer<whisper_vad_reset_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_reset_state)));
+        Whisper_Vad_Segments_From_Probs = Marshal.GetDelegateForFunctionPointer<whisper_vad_segments_from_probs>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_segments_from_probs)));
+        Whisper_Vad_Segments_N_Segments = Marshal.GetDelegateForFunctionPointer<whisper_vad_segments_n_segments>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_segments_n_segments)));
+        Whisper_Vad_Segments_Get_Segment_T0 = Marshal.GetDelegateForFunctionPointer<whisper_vad_segments_get_segment_t0>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_segments_get_segment_t0)));
+        Whisper_Vad_Segments_Get_Segment_T1 = Marshal.GetDelegateForFunctionPointer<whisper_vad_segments_get_segment_t1>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_segments_get_segment_t1)));
+        Whisper_Vad_Free_Segments = Marshal.GetDelegateForFunctionPointer<whisper_vad_free_segments>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_free_segments)));
+        Whisper_Vad_Free = Marshal.GetDelegateForFunctionPointer<whisper_vad_free>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_free)));
 
         this.whisperLibraryHandle = whisperLibraryHandle;
     }
@@ -94,9 +107,34 @@ internal class NativeLibraryWhisper : INativeWhisper
 
     public whisper_full_get_segment_no_speech_prob_from_state Whisper_Full_Get_Segment_No_Speech_Prob_From_State { get; }
 
+    public whisper_vad_default_params Whisper_Vad_Default_Params { get; }
+
+    public whisper_vad_default_context_params Whisper_Vad_Default_Context_Params { get; }
+
+    public whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params { get; }
+
+    public whisper_vad_detect_speech Whisper_Vad_Detect_Speech { get; }
+
+    public whisper_vad_detect_speech_no_reset Whisper_Vad_Detect_Speech_No_Reset { get; }
+
+    public whisper_vad_reset_state Whisper_Vad_Reset_State { get; }
+
+    public whisper_vad_segments_from_probs Whisper_Vad_Segments_From_Probs { get; }
+
+    public whisper_vad_segments_n_segments Whisper_Vad_Segments_N_Segments { get; }
+
+    public whisper_vad_segments_get_segment_t0 Whisper_Vad_Segments_Get_Segment_T0 { get; }
+
+    public whisper_vad_segments_get_segment_t1 Whisper_Vad_Segments_Get_Segment_T1 { get; }
+
+    public whisper_vad_free_segments Whisper_Vad_Free_Segments { get; }
+
+    public whisper_vad_free Whisper_Vad_Free { get; }
+
     public void Dispose()
     {
         NativeLibrary.Free(whisperLibraryHandle);
     }
+
 }
 #endif

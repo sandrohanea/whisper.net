@@ -47,4 +47,14 @@ internal sealed class WhisperProcessorModelFileLoader : IWhisperProcessorModelLo
                 Dtw_mem_size = new UIntPtr(options.DtwMemSize)
             });
     }
+
+    public unsafe IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
+    {
+        var stackByteCount = Encoding.UTF8.GetByteCount(pathModel);
+        var stackBytes = stackalloc byte[stackByteCount + 1];
+        var stackPath = (IntPtr)stackBytes;
+        MarshalUtils.CopyStringToPtr(pathModel, stackPath, stackByteCount);
+
+        return nativeWhisper.Whisper_Vad_Init_From_File_With_Params(stackPath, parameters);
+    }
 }

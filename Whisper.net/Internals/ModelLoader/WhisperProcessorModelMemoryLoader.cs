@@ -48,4 +48,9 @@ internal class WhisperProcessorModelMemoryLoader : IWhisperProcessorModelLoader
                 Dtw_mem_size = new UIntPtr(options.DtwMemSize),
             });
     }
+
+    public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
+    {
+        throw new NotSupportedException("VAD model loading from a memory buffer is not supported by the native whisper VAD API.");
+    }
 }
