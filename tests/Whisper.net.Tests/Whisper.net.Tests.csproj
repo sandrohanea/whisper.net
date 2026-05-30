@@ -17,6 +17,8 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>13</LangVersion>
 		<IsTestProject>true</IsTestProject>
+    <!-- The native whisper runtime is process-global enough that concurrent TFM testhosts can interfere with each other on Windows. -->
+    <TestTfmsInParallel>false</TestTfmsInParallel>
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <NoWarn>xUnit1041</NoWarn>
 	</PropertyGroup>
