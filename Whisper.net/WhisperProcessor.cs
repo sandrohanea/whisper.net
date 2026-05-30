@@ -296,19 +296,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             while (!processingTask.IsCompleted || !buffer.IsEmpty)
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    throw new TaskCanceledException();
-                }
+                ThrowTaskCanceledIfCancellationRequested(cancellationToken);
 
                 if (buffer.IsEmpty)
                 {
                     await Task.WhenAny(processingTask, resetEvent.WaitAsync())
                         .ConfigureAwait(false);
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        throw new TaskCanceledException();
-                    }
+                    ThrowTaskCanceledIfCancellationRequested(cancellationToken);
                 }
 
                 while (!buffer.IsEmpty && buffer.TryDequeue(out var segmentData))
@@ -318,10 +312,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             }
 
             await processingTask.ConfigureAwait(false);
-            if (cancellationToken.IsCancellationRequested)
-            {
-                throw new TaskCanceledException();
-            }
+            ThrowTaskCanceledIfCancellationRequested(cancellationToken);
 
             while (buffer.TryDequeue(out var segmentData))
             {
@@ -412,11 +403,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
                     if (result != 0)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
+                        ThrowTaskCanceledIfCancellationRequested(cancellationToken);
                         throw new WhisperProcessingException(result);
                     }
 
-                    cancellationToken.ThrowIfCancellationRequested();
+                    ThrowTaskCanceledIfCancellationRequested(cancellationToken);
                 }
                 finally
                 {
@@ -463,6 +454,14 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
 
         return state;
+    }
+
+    private static void ThrowTaskCanceledIfCancellationRequested(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            throw new TaskCanceledException();
+        }
     }
 
     private WhisperFullParams GetWhisperParams()

@@ -183,6 +183,27 @@ public class ProcessingFailureTests
         await WaitForTaskAsync(nativeFinished.Task);
     }
 
+    [Fact]
+    public async Task ProcessAsync_WhenCancelledBeforeNativeFailure_ShouldThrowTaskCanceledException()
+    {
+        using var cts = new CancellationTokenSource();
+        using var native = new FakeNativeWhisper(-6, (_, _, _, _, _) =>
+        {
+            cts.Cancel();
+            return -6;
+        });
+
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        await using var processor = new WhisperProcessor(options, native);
+
+        await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        {
+            await foreach (var _ in processor.ProcessAsync(new float[1], cts.Token))
+            {
+            }
+        });
+    }
+
     private static async Task WaitForTaskAsync(Task task)
     {
         await WaitForTaskAsync(task, TimeSpan.FromSeconds(5));
