@@ -41,7 +41,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@dc73d59c2d7bd4f8194098a91219eeee6d8a1719
+        uses: github/codeql-action/init@v4
         with:
           languages: csharp
           build-mode: manual
@@ -63,7 +63,7 @@ jobs:
           reporter: dotnet-trx
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@dc73d59c2d7bd4f8194098a91219eeee6d8a1719
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
 
@@ -104,7 +104,7 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@dc73d59c2d7bd4f8194098a91219eeee6d8a1719
+        uses: github/codeql-action/init@v4
         with:
           languages: csharp
           build-mode: manual
@@ -134,7 +134,7 @@ jobs:
           retention-days: 7
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@dc73d59c2d7bd4f8194098a91219eeee6d8a1719
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
 
