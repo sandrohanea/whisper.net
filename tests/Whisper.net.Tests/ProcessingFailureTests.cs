@@ -13,10 +13,10 @@ public class ProcessingFailureTests
     {
         private readonly int _errorCode;
 
-        public FakeNativeWhisper(int errorCode)
+        public FakeNativeWhisper(int errorCode, INativeWhisper.whisper_full_with_state? whisperFullWithState = null)
         {
             _errorCode = errorCode;
-            Whisper_Full_With_State = (context, state, p, samples, n) => _errorCode;
+            Whisper_Full_With_State = whisperFullWithState ?? ((context, state, p, samples, n) => _errorCode);
             Whisper_Init_State = _ => new IntPtr(1);
             Whisper_Free_State = _ => { };
             Whisper_Full_Default_Params_By_Ref = strategy =>
@@ -123,5 +123,96 @@ public class ProcessingFailureTests
             {
             }
         });
+    }
+
+    [Fact]
+    public async Task ProcessAsync_WhenCancelledBeforeSegment_ShouldWakeEnumeratorAndSignalNativeAbort()
+    {
+        var nativeStarted = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var nativeAbortObserved = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var nativeFinished = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var allowNativeReturn = new ManualResetEventSlim();
+
+        using var native = new FakeNativeWhisper(-6, (_, _, parameters, _, _) =>
+        {
+            try
+            {
+                nativeStarted.SetResult(null);
+                var abortCallback = Marshal.GetDelegateForFunctionPointer<WhisperAbortCallback>(parameters.OnAbort);
+
+                while (abortCallback(parameters.OnAbortUserData) == 0)
+                {
+                    Thread.Sleep(10);
+                }
+
+                nativeAbortObserved.SetResult(null);
+                allowNativeReturn.Wait(TimeSpan.FromSeconds(5));
+                return -6;
+            }
+            finally
+            {
+                nativeFinished.SetResult(null);
+            }
+        });
+
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        await using var processor = new WhisperProcessor(options, native);
+        using var cts = new CancellationTokenSource();
+
+        var processingTask = Task.Run(async () =>
+        {
+            await foreach (var _ in processor.ProcessAsync(new float[1], cts.Token))
+            {
+            }
+        });
+
+        try
+        {
+            await WaitForTaskAsync(nativeStarted.Task);
+            cts.Cancel();
+            await WaitForTaskAsync(nativeAbortObserved.Task);
+
+            await Assert.ThrowsAsync<TaskCanceledException>(() => WaitForTaskAsync(processingTask, TimeSpan.FromSeconds(1)));
+            Assert.False(nativeFinished.Task.IsCompleted);
+        }
+        finally
+        {
+            allowNativeReturn.Set();
+        }
+
+        await WaitForTaskAsync(nativeFinished.Task);
+    }
+
+    [Fact]
+    public async Task ProcessAsync_WhenCancelledBeforeNativeFailure_ShouldThrowTaskCanceledException()
+    {
+        using var cts = new CancellationTokenSource();
+        using var native = new FakeNativeWhisper(-6, (_, _, _, _, _) =>
+        {
+            cts.Cancel();
+            return -6;
+        });
+
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        await using var processor = new WhisperProcessor(options, native);
+
+        await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        {
+            await foreach (var _ in processor.ProcessAsync(new float[1], cts.Token))
+            {
+            }
+        });
+    }
+
+    private static async Task WaitForTaskAsync(Task task)
+    {
+        await WaitForTaskAsync(task, TimeSpan.FromSeconds(5));
+    }
+
+    private static async Task WaitForTaskAsync(Task task, TimeSpan timeout)
+    {
+        var completedTask = await Task.WhenAny(task, Task.Delay(timeout));
+        Assert.Same(task, completedTask);
+        await task;
     }
 }

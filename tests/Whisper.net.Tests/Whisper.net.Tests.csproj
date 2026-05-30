@@ -17,6 +17,8 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>13</LangVersion>
 		<IsTestProject>true</IsTestProject>
+    <!-- dotnet test runs target frameworks in parallel by default. Each TFM is a full native inference test run, and Windows CI has left one testhost stuck before producing its TRX when multiple TFMs run at once. Keep TFM execution sequential so the suite's native concurrency stays bounded. -->
+    <TestTfmsInParallel>false</TestTfmsInParallel>
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <NoWarn>xUnit1041</NoWarn>
 	</PropertyGroup>
