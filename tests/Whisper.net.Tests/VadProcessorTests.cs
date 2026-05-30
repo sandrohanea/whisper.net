@@ -1,91 +1,138 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
-using Whisper.net.Internals;
+using Whisper.net.Internals.ModelLoader;
 using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 using Xunit;
 
 namespace Whisper.net.Tests;
 
-public class LanguageDetectionTests
+public class VadProcessorTests
 {
     [Fact]
-    public void DetectLanguageWithProbability_WhenCandidatesProvided_SelectsBestCandidate()
+    public void Build_ShouldUseVadContextParams()
     {
-        using var native = CreateNative(votedLanguageId: 2, probabilities: [0.1f, 0.9f, 0.6f], languages: ["en", "fr", "ro"]);
-        using var processor = CreateProcessor(native);
+        var loader = new FakeModelLoader();
+        var nativeWhisper = new FakeNativeWhisper();
 
-        var (language, probability) = processor.DetectLanguageWithProbability(new float[16], new[] { "fr", "en" });
+        using var processor = new WhisperVadProcessorBuilder(loader, nativeWhisper)
+            .WithThreads(4)
+            .WithUseGpu(false)
+            .WithGpuDevice(2)
+            .Build();
 
-        Assert.Equal("fr", language);
-        Assert.Equal(0.9f, probability);
+        Assert.Equal(4, loader.VadContextParams.NThreads);
+        Assert.Equal(0, loader.VadContextParams.UseGpu);
+        Assert.Equal(2, loader.VadContextParams.GpuDevice);
     }
 
     [Fact]
-    public void DetectLanguageWithProbability_WhenCandidatesProvidedAsSpan_SelectsBestCandidate()
+    public void DetectSpeech_ShouldReturnSegments()
     {
-        using var native = CreateNative(votedLanguageId: 2, probabilities: [0.1f, 0.9f, 0.6f], languages: ["en", "fr", "ro"]);
-        using var processor = CreateProcessor(native);
-        var candidates = new[] { "fr", "en" };
-
-        var (language, probability) = processor.DetectLanguageWithProbability(new float[16], candidates.AsSpan());
-
-        Assert.Equal("fr", language);
-        Assert.Equal(0.9f, probability);
-    }
-
-    [Fact]
-    public void DetectLanguageWithProbability_WhenNoCandidatesProvided_ReturnsNativeResult()
-    {
-        using var native = CreateNative(votedLanguageId: 2, probabilities: [0.1f, 0.9f, 0.6f], languages: ["en", "fr", "ro"]);
-        using var processor = CreateProcessor(native);
-
-        var (language, probability) = processor.DetectLanguageWithProbability(new float[16]);
-
-        Assert.Equal("ro", language);
-        Assert.Equal(0.6f, probability);
-    }
-
-    [Fact]
-    public void DetectLanguageWithProbability_WhenCandidatesDontMatch_FallsBackToNativeResult()
-    {
-        using var native = CreateNative(votedLanguageId: 2, probabilities: [0.1f, 0.9f, 0.6f], languages: ["en", "fr", "ro"]);
-        using var processor = CreateProcessor(native);
-
-        var (language, probability) = processor.DetectLanguageWithProbability(new float[16], new[] { "de" });
-
-        Assert.Equal("ro", language);
-        Assert.Equal(0.6f, probability);
-    }
-
-    private static WhisperProcessor CreateProcessor(INativeWhisper nativeWhisper)
-    {
-        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
-        return new WhisperProcessor(options, nativeWhisper);
-    }
-
-    private static LanguageDetectionNativeWhisper CreateNative(int votedLanguageId, float[] probabilities, string[] languages) =>
-        new(votedLanguageId, probabilities, languages);
-
-    private sealed class LanguageDetectionNativeWhisper : INativeWhisper
-    {
-        private readonly float[] probabilities;
-        private readonly string[] languages;
-        private readonly int votedLanguageId;
-        private readonly Dictionary<string, int> languageIds;
-        private readonly IntPtr[] languagePtrs;
-
-        public LanguageDetectionNativeWhisper(int votedLanguageId, float[] probabilities, string[] languages)
+        var nativeWhisper = new FakeNativeWhisper();
+        var options = new WhisperVadProcessorOptions
         {
-            this.votedLanguageId = votedLanguageId;
-            this.probabilities = probabilities;
-            this.languages = languages;
-            languageIds = languages
-                .Select((name, index) => (name, index))
-                .ToDictionary(k => k.name, k => k.index, StringComparer.OrdinalIgnoreCase);
-            languagePtrs = languages.Select(MarshalUtils.GetStringHGlobalPtr).ToArray();
+            ContextHandle = new IntPtr(10),
+            VadParams = new WhisperVadParams { Threshold = 0.75f }
+        };
 
+        using var processor = new WhisperVadProcessor(options, nativeWhisper);
+
+        var segments = processor.DetectSpeech([0.1f, 0.2f]);
+
+        Assert.Equal(2, nativeWhisper.LastSamplesCount);
+        Assert.Equal(0.75f, nativeWhisper.LastVadParams.Threshold);
+        Assert.True(nativeWhisper.WasSegmentsHandleFreed);
+        Assert.Collection(segments,
+            segment =>
+            {
+                Assert.Equal(TimeSpan.FromSeconds(1.25), segment.Start);
+                Assert.Equal(TimeSpan.FromSeconds(2.5), segment.End);
+            },
+            segment =>
+            {
+                Assert.Equal(TimeSpan.FromSeconds(3), segment.Start);
+                Assert.Equal(TimeSpan.FromSeconds(4), segment.End);
+            });
+    }
+
+    [Fact]
+    public void DetectSpeech_WhenNativeFails_ShouldThrow()
+    {
+        var nativeWhisper = new FakeNativeWhisper { DetectSpeechResult = 0 };
+        var options = new WhisperVadProcessorOptions
+        {
+            ContextHandle = new IntPtr(10),
+            VadParams = new WhisperVadParams()
+        };
+
+        using var processor = new WhisperVadProcessor(options, nativeWhisper);
+
+        Assert.Throws<WhisperProcessingException>(() => processor.DetectSpeech([0.1f]));
+    }
+
+    [Fact]
+    public void DetectSpeechNoReset_ShouldUseNoResetNativeCall()
+    {
+        var nativeWhisper = new FakeNativeWhisper();
+        var options = new WhisperVadProcessorOptions
+        {
+            ContextHandle = new IntPtr(10),
+            VadParams = new WhisperVadParams()
+        };
+
+        using var processor = new WhisperVadProcessor(options, nativeWhisper);
+
+        processor.DetectSpeechNoReset([0.1f, 0.2f, 0.3f]);
+
+        Assert.True(nativeWhisper.WasNoResetDetectionUsed);
+        Assert.Equal(3, nativeWhisper.LastSamplesCount);
+    }
+
+    [Fact]
+    public void ResetState_ShouldResetNativeVadState()
+    {
+        var nativeWhisper = new FakeNativeWhisper();
+        var options = new WhisperVadProcessorOptions
+        {
+            ContextHandle = new IntPtr(10),
+            VadParams = new WhisperVadParams()
+        };
+
+        using var processor = new WhisperVadProcessor(options, nativeWhisper);
+
+        processor.ResetState();
+
+        Assert.True(nativeWhisper.WasStateReset);
+    }
+
+    private sealed class FakeModelLoader : IWhisperProcessorModelLoader
+    {
+        public WhisperVadContextParams VadContextParams { get; private set; }
+
+        public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
+        {
+            return IntPtr.Zero;
+        }
+
+        public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
+        {
+            VadContextParams = parameters;
+            return new IntPtr(10);
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
+    private sealed class FakeNativeWhisper : INativeWhisper
+    {
+        private readonly IntPtr segmentsHandle = new(20);
+
+        public FakeNativeWhisper()
+        {
             Whisper_Init_From_File_With_Params_No_State = (_, _) => IntPtr.Zero;
             Whisper_Init_From_Buffer_With_Params_No_State = (_, _, _) => IntPtr.Zero;
             Whisper_Free = _ => { };
@@ -104,49 +151,53 @@ public class LanguageDetectionTests
             Whisper_Full_Get_Segment_Text_From_State = (_, _) => IntPtr.Zero;
             Whisper_Full_N_Tokens_From_State = (_, _) => 0;
             Whisper_Full_Get_Token_P_From_State = (_, _, _) => 0;
-            Whisper_Lang_Max_Id = () => probabilities.Length - 1;
-            Whisper_Lang_Id = lang =>
-            {
-                var name = MarshalUtils.GetString(lang);
-                return name is not null && languageIds.TryGetValue(name, out var id) ? id : -1;
-            };
-            Whisper_Lang_Auto_Detect_With_State = (_, _, _, _, langProbs) =>
-            {
-                Marshal.Copy(probabilities, 0, langProbs, probabilities.Length);
-                return votedLanguageId;
-            };
+            Whisper_Lang_Max_Id = () => 0;
+            Whisper_Lang_Id = _ => 0;
+            Whisper_Lang_Auto_Detect_With_State = (_, _, _, _, _) => 0;
             Whisper_PCM_To_Mel_With_State = (_, _, _, _, _) => 0;
-            Whisper_Lang_Str = langId =>
-            {
-                if (langId < 0 || langId >= languagePtrs.Length)
-                {
-                    return IntPtr.Zero;
-                }
-
-                return languagePtrs[langId];
-            };
-            Whisper_Init_State = _ => new IntPtr(1);
+            Whisper_Lang_Str = _ => IntPtr.Zero;
+            Whisper_Init_State = _ => IntPtr.Zero;
             Whisper_Free_State = _ => { };
-            Whisper_Full_Lang_Id_From_State = _ => votedLanguageId;
+            Whisper_Full_Lang_Id_From_State = _ => 0;
             Whisper_Log_Set = (_, _) => { };
             Whisper_Ctx_Init_Openvino_Encoder_With_State = (_, _, _, _, _) => { };
             Whisper_Full_Get_Token_Data_From_State = (_, _, _) => default;
             Whisper_Full_Get_Token_Text_From_State = (_, _, _, _) => IntPtr.Zero;
             WhisperPrintSystemInfo = () => IntPtr.Zero;
             Whisper_Full_Get_Segment_No_Speech_Prob_From_State = (_, _) => 0;
-            Whisper_Vad_Default_Params = () => default;
-            Whisper_Vad_Default_Context_Params = () => default;
-            Whisper_Vad_Init_From_File_With_Params = (_, _) => IntPtr.Zero;
-            Whisper_Vad_Detect_Speech = (_, _, _) => 0;
-            Whisper_Vad_Detect_Speech_No_Reset = (_, _, _) => 0;
-            Whisper_Vad_Reset_State = _ => { };
-            Whisper_Vad_Segments_From_Probs = (_, _) => IntPtr.Zero;
-            Whisper_Vad_Segments_N_Segments = _ => 0;
-            Whisper_Vad_Segments_Get_Segment_T0 = (_, _) => 0;
-            Whisper_Vad_Segments_Get_Segment_T1 = (_, _) => 0;
-            Whisper_Vad_Free_Segments = _ => { };
+            Whisper_Vad_Default_Params = () => new WhisperVadParams { Threshold = 0.5f };
+            Whisper_Vad_Default_Context_Params = () => new WhisperVadContextParams { NThreads = 1, UseGpu = 1, GpuDevice = 0 };
+            Whisper_Vad_Init_From_File_With_Params = (_, _) => new IntPtr(10);
+            Whisper_Vad_Detect_Speech = (_, _, nSamples) =>
+            {
+                LastSamplesCount = nSamples;
+                return DetectSpeechResult;
+            };
+            Whisper_Vad_Detect_Speech_No_Reset = (_, _, nSamples) =>
+            {
+                WasNoResetDetectionUsed = true;
+                LastSamplesCount = nSamples;
+                return DetectSpeechResult;
+            };
+            Whisper_Vad_Reset_State = _ => WasStateReset = true;
+            Whisper_Vad_Segments_From_Probs = (_, parameters) =>
+            {
+                LastVadParams = parameters;
+                return segmentsHandle;
+            };
+            Whisper_Vad_Segments_N_Segments = _ => 2;
+            Whisper_Vad_Segments_Get_Segment_T0 = (_, index) => index == 0 ? 1.25f : 3;
+            Whisper_Vad_Segments_Get_Segment_T1 = (_, index) => index == 0 ? 2.5f : 4;
+            Whisper_Vad_Free_Segments = handle => WasSegmentsHandleFreed = handle == segmentsHandle;
             Whisper_Vad_Free = _ => { };
         }
+
+        public byte DetectSpeechResult { get; set; } = 1;
+        public int LastSamplesCount { get; private set; }
+        public WhisperVadParams LastVadParams { get; private set; }
+        public bool WasSegmentsHandleFreed { get; private set; }
+        public bool WasNoResetDetectionUsed { get; private set; }
+        public bool WasStateReset { get; private set; }
 
         public INativeWhisper.whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
         public INativeWhisper.whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
@@ -189,10 +240,6 @@ public class LanguageDetectionTests
 
         public void Dispose()
         {
-            foreach (var ptr in languagePtrs)
-            {
-                MarshalUtils.TryReleaseStringHGlobal(ptr);
-            }
         }
     }
 }

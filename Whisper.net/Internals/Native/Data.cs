@@ -61,6 +61,16 @@ internal struct WhisperVadParams
     public float SampleOverlapS;
 }
 
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperVadContextParams
+{
+    public int NThreads;
+
+    public byte UseGpu;
+
+    public int GpuDevice;
+}
+
 internal enum GgmlLogLevel
 {
     Info = 2,

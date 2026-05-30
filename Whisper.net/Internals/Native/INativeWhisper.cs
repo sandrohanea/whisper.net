@@ -85,6 +85,42 @@ internal interface INativeWhisper : IDisposable
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate float whisper_full_get_segment_no_speech_prob_from_state(IntPtr state, int index);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate WhisperVadParams whisper_vad_default_params();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate WhisperVadContextParams whisper_vad_default_context_params();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_vad_init_from_file_with_params(IntPtr path, WhisperVadContextParams parameters);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate byte whisper_vad_detect_speech(IntPtr context, IntPtr samples, int nSamples);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate byte whisper_vad_detect_speech_no_reset(IntPtr context, IntPtr samples, int nSamples);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate void whisper_vad_reset_state(IntPtr context);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_vad_segments_from_probs(IntPtr context, WhisperVadParams parameters);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate int whisper_vad_segments_n_segments(IntPtr segments);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate float whisper_vad_segments_get_segment_t0(IntPtr segments, int index);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate float whisper_vad_segments_get_segment_t1(IntPtr segments, int index);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate void whisper_vad_free_segments(IntPtr segments);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate void whisper_vad_free(IntPtr context);
+
     whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
     whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
     whisper_free Whisper_Free { get; }
@@ -112,4 +148,16 @@ internal interface INativeWhisper : IDisposable
     whisper_print_system_info WhisperPrintSystemInfo { get; }
 
     whisper_full_get_segment_no_speech_prob_from_state Whisper_Full_Get_Segment_No_Speech_Prob_From_State { get; }
+    whisper_vad_default_params Whisper_Vad_Default_Params { get; }
+    whisper_vad_default_context_params Whisper_Vad_Default_Context_Params { get; }
+    whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params { get; }
+    whisper_vad_detect_speech Whisper_Vad_Detect_Speech { get; }
+    whisper_vad_detect_speech_no_reset Whisper_Vad_Detect_Speech_No_Reset { get; }
+    whisper_vad_reset_state Whisper_Vad_Reset_State { get; }
+    whisper_vad_segments_from_probs Whisper_Vad_Segments_From_Probs { get; }
+    whisper_vad_segments_n_segments Whisper_Vad_Segments_N_Segments { get; }
+    whisper_vad_segments_get_segment_t0 Whisper_Vad_Segments_Get_Segment_T0 { get; }
+    whisper_vad_segments_get_segment_t1 Whisper_Vad_Segments_Get_Segment_T1 { get; }
+    whisper_vad_free_segments Whisper_Vad_Free_Segments { get; }
+    whisper_vad_free Whisper_Vad_Free { get; }
 }
