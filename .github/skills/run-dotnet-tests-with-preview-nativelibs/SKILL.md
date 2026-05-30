@@ -35,7 +35,8 @@ https://github.com/sandrohanea/whisper.net/releases/tag/preview-nativelibs-f2458
 Run from the repository root:
 
 ```powershell
-$tag = gh release list --repo sandrohanea/whisper.net --limit 100 --json tagName,isPrerelease,publishedAt --jq '.[] | select(.isPrerelease and (.tagName | startswith("preview-nativelibs-"))) | .tagName' | Select-Object -First 1
+$commit = git rev-parse --short=7 HEAD:whisper.cpp
+$tag = "preview-nativelibs-$commit"
 gh release download $tag --repo sandrohanea/whisper.net --pattern native-runtimes.zip --clobber
 Expand-Archive .\native-runtimes.zip -DestinationPath . -Force
 Copy-Item .\runtime-artifacts\* .\runtimes\ -Recurse -Force
@@ -51,7 +52,8 @@ dotnet test .\Whisper.net.slnx --no-build --logger "trx"
 Run from the repository root:
 
 ```bash
-tag="$(gh release list --repo sandrohanea/whisper.net --limit 100 --json tagName,isPrerelease,publishedAt --jq '.[] | select(.isPrerelease and (.tagName | startswith("preview-nativelibs-"))) | .tagName' | head -n 1)"
+commit="$(git rev-parse --short=7 HEAD:whisper.cpp)"
+tag="preview-nativelibs-$commit"
 gh release download "$tag" --repo sandrohanea/whisper.net --pattern native-runtimes.zip --clobber
 unzip -o native-runtimes.zip
 cp -R runtime-artifacts/* runtimes/
