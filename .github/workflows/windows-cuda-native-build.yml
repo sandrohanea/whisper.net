@@ -32,14 +32,14 @@ jobs:
           submodules: true
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57
 
       - name: Install OpenCl with vcpkg
         run: |
           vcpkg --triplet=x64-windows install opencl
 
       - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@b6fc3a9f3f15256d9d94ffe1254f9c5a2565cde6
+        uses: Jimver/cuda-toolkit@3d45d157f327c09c04b50ee6ccdea2d9d017ec76
         with:
           cuda: "${{ matrix.cuda.version }}"
           use-github-cache: false
