@@ -21,7 +21,7 @@ jobs:
           submodules: true
 
       - name: Install Android NDK
-        uses: nttld/setup-ndk@aacaf74664d0f8e1b070a865acb47ee25007386d
+        uses: nttld/setup-ndk@ed92fe6cadad69be94a966a7ee3271275e62f779
         with:
           ndk-version: r25c
 

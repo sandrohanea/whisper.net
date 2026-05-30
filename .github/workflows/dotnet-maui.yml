@@ -101,7 +101,7 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: run android tests
-        uses: reactivecircus/android-emulator-runner@0a638108440efd5c7f980e6ba145dbcdd8f32009
+        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a
         with:
           api-level: 29
           arch: x86_64
