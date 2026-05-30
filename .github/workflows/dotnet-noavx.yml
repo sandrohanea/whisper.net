@@ -17,7 +17,7 @@ env:
 
 jobs:
   dotnet-noavx-windows:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
 
     steps:
       - uses: actions/checkout@v6
@@ -52,7 +52,7 @@ jobs:
           dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
-        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637
+        uses: dorny/test-reporter@a6ddd83ac95ff4586f5d3aceeb314d9a1841db95
         if: success() || failure() # run this step even if previous step failed
         with:
           name: Whisper.net Windows Test Results
@@ -103,7 +103,7 @@ jobs:
           dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
-        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637
+        uses: dorny/test-reporter@a6ddd83ac95ff4586f5d3aceeb314d9a1841db95
         if: success() || failure() # run this step even if previous step failed
         with:
           name: Whisper.net Linux Test Results

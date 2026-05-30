@@ -18,7 +18,7 @@ on:
 
 jobs:
   pack-nupkgs:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     env:
       USE_WHISPER_MAUI: "TRUE"
     steps:
