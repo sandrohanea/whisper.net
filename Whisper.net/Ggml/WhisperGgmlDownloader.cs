@@ -4,6 +4,9 @@ namespace Whisper.net.Ggml;
 
 public class WhisperGgmlDownloader(HttpClient httpClient)
 {
+    private const string HuggingFaceRepository = "https://huggingface.co/sandrohanea/whisper.net/resolve";
+    private const string ModelVersion = "v4";
+
     private static readonly Lazy<WhisperGgmlDownloader> defaultInstance = new
         (
             () => new WhisperGgmlDownloader(new() { Timeout = TimeSpan.FromHours(1) })
@@ -32,7 +35,7 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
         var subdirectory = GetQuantizationSubdirectory(quantization);
         var modelName = GetModelName(type);
 
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/{subdirectory}/{modelName}.bin";
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/{subdirectory}/{modelName}.bin";
 #if NETSTANDARD
         return await httpClient.GetStreamAsync(url);
 #else
@@ -49,7 +52,7 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
     public async Task<Stream> GetEncoderOpenVinoModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/openvino/{modelName}-encoder.zip";
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/openvino/{modelName}-encoder.zip";
 #if NETSTANDARD
         return await httpClient.GetStreamAsync(url);
 #else
@@ -80,7 +83,25 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
     public async Task<Stream> GetEncoderCoreMLModelAsync(GgmlType type, CancellationToken cancellationToken = default)
     {
         var modelName = GetModelName(type);
-        var url = $"https://huggingface.co/sandrohanea/whisper.net/resolve/v3/coreml/{modelName}-encoder.zip";
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/coreml/{modelName}-encoder.zip";
+
+#if NETSTANDARD
+        return await httpClient.GetStreamAsync(url);
+#else
+        return await httpClient.GetStreamAsync(url, cancellationToken);
+#endif
+    }
+
+    /// <summary>
+    /// Gets the download stream for the ggml Silero VAD model.
+    /// </summary>
+    /// <param name="type">The type of the Silero VAD model which needs to be downloaded.</param>
+    /// <param name="cancellationToken">A cancellation token used to stop the request to huggingface.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public async Task<Stream> GetGgmlSileroVadModelAsync(SileroVadType type = SileroVadType.V6_2_0, CancellationToken cancellationToken = default)
+    {
+        var modelName = GetSileroVadModelName(type);
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/vad/{modelName}.bin";
 
 #if NETSTANDARD
         return await httpClient.GetStreamAsync(url);
@@ -120,6 +141,16 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
             QuantizationType.Q5_1 => "q5_1",
             QuantizationType.Q8_0 => "q8_0",
             _ => throw new ArgumentOutOfRangeException(nameof(quantization), quantization, null)
+        };
+    }
+
+    private static string GetSileroVadModelName(SileroVadType type)
+    {
+        return type switch
+        {
+            SileroVadType.V5_1_2 => "ggml-silero-v5.1.2",
+            SileroVadType.V6_2_0 => "ggml-silero-v6.2.0",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
 }
