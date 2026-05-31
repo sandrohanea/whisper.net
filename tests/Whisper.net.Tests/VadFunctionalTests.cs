@@ -2,14 +2,11 @@
 
 using Xunit;
 using Xunit.Extensions.AssemblyFixture;
-using Whisper.net.Wave;
 
 namespace Whisper.net.Tests;
 
 public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<SileroVadModelFixture>
 {
-    private static readonly TimeSpan TestAudioDuration = TimeSpan.FromSeconds(3);
-
     [Fact]
     public async Task DetectSpeechAsync_WhenUsingSileroVadModel_DetectsExpectedSegments()
     {
@@ -18,8 +15,8 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
             .WithThreshold(0.5f)
             .Build();
 
-        var samples = await ReadTestSamplesAsync();
-        var segments = await processor.DetectSpeechAsync(samples);
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        var segments = await processor.DetectSpeechAsync(fileReader);
 
         AssertSegmentsDetected(segments);
     }
@@ -32,28 +29,20 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
             .WithThreshold(0.5f)
             .Build();
 
-        var samples = await ReadTestSamplesAsync();
-        var segments = processor.DetectSpeech(samples);
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        var segments = processor.DetectSpeech(fileReader);
 
         AssertSegmentsDetected(segments);
     }
 
-    private static async Task<float[]> ReadTestSamplesAsync()
-    {
-        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
-        var parser = new WaveParser(fileReader);
-        var samples = await parser.GetAvgSamplesAsync();
-        var testSampleCount = Math.Min(samples.Length, (int)(parser.SampleRate * TestAudioDuration.TotalSeconds));
-        var testSamples = new float[testSampleCount];
-        Array.Copy(samples, testSamples, testSampleCount);
-        return testSamples;
-    }
-
     private static void AssertSegmentsDetected(IReadOnlyList<VadSegmentData> segments)
     {
-        Assert.Single(segments);
+        Assert.Equal(7, segments.Count);
 
         Assert.InRange(segments[0].Start, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(300));
         Assert.InRange(segments[0].End, TimeSpan.FromMilliseconds(2700), TimeSpan.FromMilliseconds(2800));
+
+        Assert.InRange(segments[6].Start, TimeSpan.FromMilliseconds(17500), TimeSpan.FromMilliseconds(17600));
+        Assert.InRange(segments[6].End, TimeSpan.FromMilliseconds(20900), TimeSpan.FromMilliseconds(21100));
     }
 }
