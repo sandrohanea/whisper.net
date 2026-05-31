@@ -6,6 +6,8 @@ public class TestDataProvider
 {
     public static Func<string, Task<Stream>> OpenFileStreamAsync { get; set; } = DefaultOpenFileStreamAsync;
 
+    public static Func<string, Task<Stream>>? OpenModelFileStreamAsync { get; set; }
+
     private static Task<Stream> DefaultOpenFileStreamAsync(string file)
     {
         var fileStream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read);

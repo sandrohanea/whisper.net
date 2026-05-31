@@ -51,6 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiAsset Include="..\..\runtimes\ggml-*.bin" LogicalName="%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Essentials"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>

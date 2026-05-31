@@ -34,13 +34,14 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
     {
         var huggingFaceToken = Environment.GetEnvironmentVariable("HF_TOKEN");
         var predownloadedPath = Environment.GetEnvironmentVariable("WHISPER_TEST_MODEL_PATH");
+        var modelFileName = $"ggml-{type.ToString().ToLowerInvariant()}-{quantizationType.ToString().ToLowerInvariant()}.bin";
 
         var ggmlModelPath = Path.Combine(Path.GetTempPath(), $"fișier-împânzit-utf8-{Guid.NewGuid()}.bin");
 
         // If a pre-downloaded model is specified, copy it into place and return immediately.
         if (!string.IsNullOrWhiteSpace(predownloadedPath))
         {
-            var predownloadModelPath = Path.Combine(predownloadedPath, $"ggml-{type.ToString().ToLowerInvariant()}-{quantizationType.ToString().ToLowerInvariant()}.bin");
+            var predownloadModelPath = Path.Combine(predownloadedPath, modelFileName);
             if (File.Exists(predownloadModelPath))
             {
                 File.Copy(predownloadModelPath, ggmlModelPath, overwrite: true);
@@ -51,6 +52,15 @@ public abstract class ModelFixture(GgmlType type, QuantizationType quantizationT
             throw new Exception(
                 $"Pre-downloaded model not found at '{predownloadModelPath}'. Either remove the env variable, or download the model manually and place it at '{predownloadModelPath}'."
             );
+        }
+
+        if (TestDataProvider.OpenModelFileStreamAsync is { } openModelFileStreamAsync)
+        {
+            using var packagedModel = await openModelFileStreamAsync(modelFileName);
+            using var packagedModelWriter = File.Create(ggmlModelPath);
+            await packagedModel.CopyToAsync(packagedModelWriter);
+            Console.WriteLine($"Using packaged model '{modelFileName}'.");
+            return ggmlModelPath;
         }
 
         // If you have a Hugging Face token, you can use it to download the model (to avoid rate limiting)
@@ -106,6 +116,15 @@ public abstract class VadModelFixture(SileroVadType type) : IAsyncLifetime
             throw new Exception(
                 $"Pre-downloaded VAD model not found at '{predownloadModelPath}'. Either remove the env variable, or download the model manually and place it at '{predownloadModelPath}'."
             );
+        }
+
+        if (TestDataProvider.OpenModelFileStreamAsync is { } openModelFileStreamAsync)
+        {
+            using var packagedModel = await openModelFileStreamAsync(modelFileName);
+            using var packagedModelWriter = File.Create(vadModelPath);
+            await packagedModel.CopyToAsync(packagedModelWriter);
+            Console.WriteLine($"Using packaged VAD model '{modelFileName}'.");
+            return vadModelPath;
         }
 
         var downloader = string.IsNullOrEmpty(huggingFaceToken)
