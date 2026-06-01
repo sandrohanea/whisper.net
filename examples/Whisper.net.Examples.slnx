@@ -17,5 +17,6 @@
   <Project Path="ParallelExecution/ParallelExecution.csproj" />
   <Project Path="Simple/Simple.csproj" />
   <Project Path="SimpleSync/SimpleSync.csproj" />
+  <Project Path="Vad/Vad.csproj" />
   <Project Path="Vulkan/Vulkan.csproj" />
 </Solution>

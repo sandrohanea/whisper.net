@@ -32,6 +32,9 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Local test model caches
+.test-models/
+test-models/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

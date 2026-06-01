@@ -240,6 +240,31 @@ if (!File.Exists(modelName))
 }
 ```
 
+The same downloader can fetch the ggml Silero VAD model used by `WhisperVadFactory`:
+
+```csharp
+var vadModelName = "ggml-silero-v6.2.0.bin";
+if (!File.Exists(vadModelName))
+{
+    using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlSileroVadModelAsync();
+    using var fileWriter = File.OpenWrite(vadModelName);
+    await modelStream.CopyToAsync(fileWriter);
+}
+
+using var vadFactory = WhisperVadFactory.FromPath(vadModelName);
+```
+
+The Silero VAD model can also be built from the `whisper.cpp` submodule:
+
+```console
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install silero-vad
+python .\whisper.cpp\models\convert-silero-vad-to-ggml.py --output .\whisper.cpp\models\silero.bin
+```
+
+The conversion script names the output with the Silero package version, for example `silero-v6.2.0-ggml.bin`; add it to the Whisper.net Hugging Face repository as `vad/ggml-silero-v6.2.0.bin`, then create the `v4` tag from that commit so the downloader can resolve it.
+
 ### Environment variables for model downloads
 
 - HF_TOKEN

@@ -47,9 +47,15 @@ public class MauiTestInstrumentation(IntPtr handle, JniHandleOwnership transfer)
         return memoryStream;
     }
 
+    private static Task<Stream> OpenModelFileNameAsync(string file)
+    {
+        return FileSystem.OpenAppPackageFileAsync(file);
+    }
+
     public override async void OnStart()
     {
         TestDataProvider.OpenFileStreamAsync = OpenFileNameAsync;
+        TestDataProvider.OpenModelFileStreamAsync = OpenModelFileNameAsync;
         base.OnStart();
 
         await _waitForApplication.Task;

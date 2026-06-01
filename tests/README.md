@@ -28,10 +28,13 @@ Model downloads during tests
 - To reduce rate limiting from Hugging Face when downloading models, you may set an access token via HF_TOKEN.
 
 Offline/local model cache (no network)
-- Pre-download a model (e.g., ggml-tiny) using your preferred method and keep it on disk.
-- Point tests to that file by setting either of these environment variables:
-  - WHISPER_TEST_MODEL_PATH=/full/path/to/your/ggml-tiny.bin  # source file on your disk
-  - Note: The WHISPER_TEST_MODEL_PATH remains the source file path; the deterministic temp file is the destination the tests operate on.
+- Pre-download the models expected by tests into a directory.
+- The easiest way to populate the cache is with the repository downloader:
+  - PowerShell: `$env:WHISPER_TEST_MODEL_PATH = "$PWD\.test-models"; dotnet run --project .\tools\DownloadModelForTests\DownloadModelForTests.csproj`
+  - Bash: `WHISPER_TEST_MODEL_PATH="$PWD/.test-models" dotnet run --project ./tools/DownloadModelForTests/DownloadModelForTests.csproj`
+- Point tests to that directory:
+  - `WHISPER_TEST_MODEL_PATH=/full/path/to/test-models`
+- The directory should contain model files such as `ggml-tiny-noquantization.bin`, `ggml-tiny-q5_0.bin`, and `ggml-silero-v6.2.0.bin`.
 
 Environment variables
 - HF_TOKEN (optional)
