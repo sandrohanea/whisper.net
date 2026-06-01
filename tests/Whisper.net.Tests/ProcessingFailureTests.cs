@@ -211,8 +211,16 @@ public class ProcessingFailureTests
 
     private static async Task WaitForTaskAsync(Task task, TimeSpan timeout)
     {
-        var completedTask = await Task.WhenAny(task, Task.Delay(timeout));
-        Assert.Same(task, completedTask);
+        using var timeoutCancellation = new CancellationTokenSource();
+        var timeoutTask = Task.Delay(timeout, timeoutCancellation.Token);
+        var completedTask = await Task.WhenAny(task, timeoutTask);
+
+        if (completedTask != task && !task.IsCompleted)
+        {
+            Assert.Fail($"Task did not complete within {timeout}.");
+        }
+
+        timeoutCancellation.Cancel();
         await task;
     }
 }

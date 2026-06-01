@@ -105,7 +105,7 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.tests.maui-Signed.apk -p com.companyname.whisper.net.tests.maui -i com.companyname.whisper.net.tests.maui.AndroidMauiTestInstrumentation -o=./test-results/android
+          script: xharness android test --app=./maui-build-artifacts/net10.0-android/com.companyname.whisper.net.tests.maui-Signed.apk -p com.companyname.whisper.net.tests.maui -i com.companyname.whisper.net.tests.maui.AndroidMauiTestInstrumentation -o=./test-results/android --timeout "00:30:00"
 
       - name: Upload Maui Android xharness test results
         if: ${{ always() }}
