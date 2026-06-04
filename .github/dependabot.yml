@@ -6,10 +6,12 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/" # Location of package manifests
+    directories:
+      - "/" # Location of package manifests
+      - "/examples"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "nuget"
-    directory: "/examples" # Location of package manifests
-    schedule:
-      interval: "weekly"
+    groups:
+      nuget-dependencies:
+        patterns:
+          - "*"
