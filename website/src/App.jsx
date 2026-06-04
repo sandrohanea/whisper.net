@@ -1,13 +1,15 @@
 import { useState, useRef } from 'react'
 import './App.css'
-// force HMR full reload
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false)
   const handleCopy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {
+      // clipboard API unavailable or denied
+    })
   }
   return (
     <button className="copy-btn" onClick={handleCopy} title="Copy to clipboard">

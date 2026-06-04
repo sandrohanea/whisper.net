@@ -503,4 +503,12 @@
   .card {
     padding: 1.5rem;
   }
+
+  .hero-row {
+    flex-wrap: wrap;
+  }
+
+  .hero-row .btn {
+    flex: 1 1 100%;
+  }
 }

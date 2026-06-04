@@ -1,16 +1,39 @@
-# React + Vite
+# Whisper.net Presentation Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A static single-page presentation website for the [Whisper.net](https://github.com/sandrohanea/whisper.net) project. Built with React + Vite.
 
-Currently, two official plugins are available:
+## What's in this folder
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `src/App.jsx` — Main component with hero section, feature cards, code example, runtimes table, and CTA sections
+- `src/App.css` — All component styles (dark theme, cards, waveform animation, syntax highlighting)
+- `src/index.css` — Global CSS reset and custom properties (color scheme)
+- `index.html` — Entry point with Google Fonts (Inter) and page metadata
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- [Node.js](https://nodejs.org/) (v18 or later)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Install dependencies
+
+```bash
+cd website
+npm install
+```
+
+### Run the development server
+
+```bash
+npm run dev
+```
+
+The site will be available at [http://localhost:5173](http://localhost:5173).
+
+### Build for production
+
+```bash
+npm run build
+```
+
+The output will be in the `dist/` folder, ready to deploy as a static site.
