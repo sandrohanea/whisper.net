@@ -65,6 +65,14 @@ public sealed class WhisperFileModelLoader : IWhisperModelLoader
     }
 
     /// <inheritdoc />
+    public void Close()
+    {
+        stream?.Dispose();
+        stream = null;
+        reachedEnd = false;
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         if (isDisposed)
@@ -72,7 +80,7 @@ public sealed class WhisperFileModelLoader : IWhisperModelLoader
             return;
         }
 
-        stream?.Dispose();
+        Close();
         isDisposed = true;
     }
 

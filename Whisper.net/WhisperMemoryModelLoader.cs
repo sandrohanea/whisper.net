@@ -39,6 +39,11 @@ public sealed class WhisperMemoryModelLoader : IWhisperModelLoader
     }
 
     /// <inheritdoc />
+    public void Close()
+    {
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
     }

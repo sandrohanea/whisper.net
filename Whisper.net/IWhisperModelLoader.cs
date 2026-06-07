@@ -27,4 +27,13 @@ public interface IWhisperModelLoader : IDisposable
     /// Gets a value indicating whether the model source reached EOF.
     /// </summary>
     bool IsEof { get; }
+
+    /// <summary>
+    /// Releases resources used by the current native load operation.
+    /// </summary>
+    /// <remarks>
+    /// This is called after each native load attempt. Implementations that open resources in <see cref="Reset"/>
+    /// can close them here while keeping the loader reusable for a later reset.
+    /// </remarks>
+    void Close();
 }

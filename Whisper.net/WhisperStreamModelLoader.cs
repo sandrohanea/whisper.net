@@ -83,6 +83,11 @@ public sealed class WhisperStreamModelLoader : IWhisperModelLoader
     }
 
     /// <inheritdoc />
+    public void Close()
+    {
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         if (isDisposed)

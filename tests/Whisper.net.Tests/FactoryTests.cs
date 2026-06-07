@@ -109,6 +109,17 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
     }
 
     [Fact]
+    public void CreateBuilder_WithModelLoader_ShouldCloseLoaderAfterNativeLoad()
+    {
+        var loader = new TrackingModelLoader(File.ReadAllBytes(model.ModelFile));
+        using var factory = WhisperFactory.FromModelLoader(loader);
+
+        _ = factory.CreateBuilder();
+
+        Assert.Equal(1, loader.CloseCount);
+    }
+
+    [Fact]
     public void CreateBuilder_WithDisposedFactory_ShouldThrow()
     {
         var factory = WhisperFactory.FromPath(model.ModelFile);
@@ -147,8 +158,47 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
             throw new InvalidOperationException("Loader failure.");
         }
 
+        public void Close()
+        {
+        }
+
         public void Dispose()
         {
+        }
+    }
+
+    private sealed class TrackingModelLoader : IWhisperModelLoader
+    {
+        private readonly WhisperMemoryModelLoader inner;
+
+        public TrackingModelLoader(ReadOnlyMemory<byte> memory)
+        {
+            inner = new WhisperMemoryModelLoader(memory);
+        }
+
+        public int CloseCount { get; private set; }
+
+        public bool IsEof => inner.IsEof;
+
+        public void Reset()
+        {
+            inner.Reset();
+        }
+
+        public int CopyTo(Span<byte> destination)
+        {
+            return inner.CopyTo(destination);
+        }
+
+        public void Close()
+        {
+            CloseCount++;
+            inner.Close();
+        }
+
+        public void Dispose()
+        {
+            inner.Dispose();
         }
     }
 
@@ -193,7 +243,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
             return inner.Read(buffer, offset, Math.Min(count, maxBytesPerRead));
         }
 
-#if !NETSTANDARD
+#if !NET48
         public override int Read(Span<byte> buffer)
         {
             return inner.Read(buffer[..Math.Min(buffer.Length, maxBytesPerRead)]);

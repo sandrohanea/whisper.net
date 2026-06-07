@@ -60,6 +60,18 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
         Assert.NotNull(processor);
     }
 
+    [Fact]
+    public void Build_WhenUsingModelLoader_ShouldCloseLoaderAfterNativeLoad()
+    {
+        var loader = new TrackingModelLoader(File.ReadAllBytes(model.ModelFile));
+        using var factory = WhisperVadFactory.FromModelLoader(loader);
+
+        using var processor = factory.CreateBuilder().Build();
+
+        Assert.NotNull(processor);
+        Assert.Equal(1, loader.CloseCount);
+    }
+
     private static void AssertSegmentsDetected(IReadOnlyList<VadSegmentData> segments)
     {
         Assert.Equal(7, segments.Count);
@@ -102,7 +114,7 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
             return inner.Read(buffer, offset, Math.Min(count, maxBytesPerRead));
         }
 
-#if !NETSTANDARD
+#if !NET48
         public override int Read(Span<byte> buffer)
         {
             return inner.Read(buffer[..Math.Min(buffer.Length, maxBytesPerRead)]);
@@ -122,6 +134,42 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+
+    }
+
+    private sealed class TrackingModelLoader : IWhisperModelLoader
+    {
+        private readonly WhisperMemoryModelLoader inner;
+
+        public TrackingModelLoader(ReadOnlyMemory<byte> memory)
+        {
+            inner = new WhisperMemoryModelLoader(memory);
+        }
+
+        public int CloseCount { get; private set; }
+
+        public bool IsEof => inner.IsEof;
+
+        public void Reset()
+        {
+            inner.Reset();
+        }
+
+        public int CopyTo(Span<byte> destination)
+        {
+            return inner.CopyTo(destination);
+        }
+
+        public void Close()
+        {
+            CloseCount++;
+            inner.Close();
+        }
+
+        public void Dispose()
+        {
+            inner.Dispose();
         }
     }
 }

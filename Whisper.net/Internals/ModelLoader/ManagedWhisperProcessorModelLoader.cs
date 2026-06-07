@@ -27,14 +27,18 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
     public IntPtr LoadNativeContext(INativeWhisper nativeWhisper)
     {
         using var nativeLoader = CreateNativeLoader();
-        var context = nativeWhisper.Whisper_Init_With_Params_No_State(ref nativeLoader.Loader,
-            ModelLoaderUtils.GetWhisperContextParams(options, aHeads));
+        var context = IntPtr.Zero;
         try
         {
+            context = nativeWhisper.Whisper_Init_With_Params_No_State(ref nativeLoader.Loader,
+                ModelLoaderUtils.GetWhisperContextParams(options, aHeads));
+            nativeLoader.Close();
             nativeLoader.ThrowIfError();
+            return context;
         }
         catch
         {
+            nativeLoader.Close();
             if (context != IntPtr.Zero)
             {
                 nativeWhisper.Whisper_Free(context);
@@ -42,20 +46,22 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
 
             throw;
         }
-
-        return context;
     }
 
     public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
     {
         using var nativeLoader = CreateNativeLoader();
-        var context = nativeWhisper.Whisper_Vad_Init_With_Params(ref nativeLoader.Loader, parameters);
+        var context = IntPtr.Zero;
         try
         {
+            context = nativeWhisper.Whisper_Vad_Init_With_Params(ref nativeLoader.Loader, parameters);
+            nativeLoader.Close();
             nativeLoader.ThrowIfError();
+            return context;
         }
         catch
         {
+            nativeLoader.Close();
             if (context != IntPtr.Zero)
             {
                 nativeWhisper.Whisper_Vad_Free(context);
@@ -63,8 +69,6 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
 
             throw;
         }
-
-        return context;
     }
 
     public void Dispose()
@@ -176,7 +180,13 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
 #endif
     private static void CloseStatic(IntPtr context)
     {
-        _ = context;
+        try
+        {
+            GetContext(context).Close();
+        }
+        catch
+        {
+        }
     }
 
     private sealed class CallbackContext
@@ -190,9 +200,29 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
 
         public Exception? Error { get; private set; }
 
+        private bool isClosed;
+
         public void SetError(Exception exception)
         {
             Error ??= exception;
+        }
+
+        public void Close()
+        {
+            if (isClosed)
+            {
+                return;
+            }
+
+            isClosed = true;
+            try
+            {
+                ModelLoader.Close();
+            }
+            catch (Exception ex)
+            {
+                SetError(ex);
+            }
         }
     }
 
@@ -241,6 +271,11 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
             {
                 throw new WhisperModelLoadException("Failed to load the whisper model from the managed model loader.", callbackContext.Error);
             }
+        }
+
+        public void Close()
+        {
+            callbackContext.Close();
         }
 
         public void Dispose()
