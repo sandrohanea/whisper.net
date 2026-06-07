@@ -17,6 +17,9 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     private static extern IntPtr whisper_init_from_buffer_with_params_no_state(IntPtr buffer, nuint buffer_size, WhisperContextParams whisperContextParams);
 
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr whisper_init_with_params_no_state(ref WhisperModelLoader loader, WhisperContextParams whisperContextParams);
+
+    [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void whisper_free(IntPtr context);
 
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -98,6 +101,9 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     private static extern IntPtr whisper_vad_init_from_file_with_params(IntPtr path, WhisperVadContextParams parameters);
 
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr whisper_vad_init_with_params(ref WhisperModelLoader loader, WhisperVadContextParams parameters);
+
+    [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
     private static extern byte whisper_vad_detect_speech(IntPtr context, IntPtr samples, int nSamples);
 
     [DllImport(NativeConstants.LibWhisperLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -127,6 +133,8 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     public INativeWhisper.whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State => whisper_init_from_file_with_params_no_state;
 
     public INativeWhisper.whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State => whisper_init_from_buffer_with_params_no_state;
+
+    public INativeWhisper.whisper_init_with_params_no_state Whisper_Init_With_Params_No_State => whisper_init_with_params_no_state;
 
     public INativeWhisper.whisper_free Whisper_Free => whisper_free;
 
@@ -181,6 +189,8 @@ internal class DllImportsNativeLibWhisper : INativeWhisper
     public INativeWhisper.whisper_vad_default_context_params Whisper_Vad_Default_Context_Params => whisper_vad_default_context_params;
 
     public INativeWhisper.whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params => whisper_vad_init_from_file_with_params;
+
+    public INativeWhisper.whisper_vad_init_with_params Whisper_Vad_Init_With_Params => whisper_vad_init_with_params;
 
     public INativeWhisper.whisper_vad_detect_speech Whisper_Vad_Detect_Speech => whisper_vad_detect_speech;
 

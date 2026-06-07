@@ -96,6 +96,15 @@ internal delegate byte WhisperAbortCallback(IntPtr user_data);
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 internal delegate void WhisperGgmlLogCallback(GgmlLogLevel level, IntPtr message, IntPtr user_data);
 
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate nuint WhisperModelLoaderRead(IntPtr context, IntPtr output, nuint readSize);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate byte WhisperModelLoaderEof(IntPtr context);
+
+[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+internal delegate void WhisperModelLoaderClose(IntPtr context);
+
 [StructLayout(LayoutKind.Sequential)]
 internal struct WhisperAhead
 {
@@ -108,6 +117,15 @@ internal struct WhisperAheads
 {
     public UIntPtr NHeads;
     public IntPtr Heads;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct WhisperModelLoader
+{
+    public IntPtr Context;
+    public IntPtr Read;
+    public IntPtr Eof;
+    public IntPtr Close;
 }
 
 [StructLayout(LayoutKind.Sequential)]
