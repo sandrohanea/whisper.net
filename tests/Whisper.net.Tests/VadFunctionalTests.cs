@@ -52,7 +52,7 @@ public class VadFunctionalTests(SileroVadModelFixture model) : IAssemblyFixture<
     public void Build_WhenUsingStreamModelReturningPartialReads_ShouldReturnProcessor()
     {
         using var modelStream = File.OpenRead(model.ModelFile);
-        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 3);
+        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 4096);
         using var factory = WhisperVadFactory.FromStream(partialReadStream);
 
         using var processor = factory.CreateBuilder().Build();

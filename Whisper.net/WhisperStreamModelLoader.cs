@@ -9,6 +9,10 @@ namespace Whisper.net;
 /// </summary>
 public sealed class WhisperStreamModelLoader : IWhisperModelLoader
 {
+#if NETSTANDARD
+    private const int MaxTemporaryBufferSize = 81920;
+#endif
+
     private readonly Stream stream;
     private readonly bool leaveOpen;
     private readonly long initialPosition;
@@ -63,10 +67,11 @@ public sealed class WhisperStreamModelLoader : IWhisperModelLoader
 
         hasRead = true;
 #if NETSTANDARD
-        var buffer = ArrayPool<byte>.Shared.Rent(destination.Length);
+        var bytesToRead = Math.Min(destination.Length, MaxTemporaryBufferSize);
+        var buffer = ArrayPool<byte>.Shared.Rent(bytesToRead);
         try
         {
-            var bytesRead = stream.Read(buffer, 0, destination.Length);
+            var bytesRead = stream.Read(buffer, 0, bytesToRead);
             buffer.AsSpan(0, bytesRead).CopyTo(destination);
             reachedEnd = bytesRead == 0;
             return bytesRead;

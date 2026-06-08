@@ -82,7 +82,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
     public void CreateBuilder_WithStreamModelReturningPartialReads_ShouldReturnBuilder()
     {
         using var modelStream = File.OpenRead(model.ModelFile);
-        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 3);
+        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 4096);
         using var factory = WhisperFactory.FromStream(partialReadStream);
         var builder = factory.CreateBuilder();
         Assert.NotNull(builder);
@@ -92,7 +92,7 @@ public sealed class FactoryTests : IAssemblyFixture<TinyModelFixture>, IDisposab
     public void CreateBuilder_WithNonSeekableStreamModelReturningPartialReads_ShouldReturnBuilder()
     {
         using var modelStream = File.OpenRead(model.ModelFile);
-        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 3, canSeek: false);
+        using var partialReadStream = new PartialReadStream(modelStream, maxBytesPerRead: 4096, canSeek: false);
         using var factory = WhisperFactory.FromStream(partialReadStream);
         var builder = factory.CreateBuilder();
         Assert.NotNull(builder);
