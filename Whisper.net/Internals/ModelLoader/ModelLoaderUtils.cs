@@ -61,4 +61,19 @@ internal static class ModelLoaderUtils
     {
         return value ? (byte)1 : (byte)0;
     }
+
+    public static WhisperContextParams GetWhisperContextParams(WhisperFactoryOptions options, WhisperAheads aHeads)
+    {
+        return new WhisperContextParams()
+        {
+            UseGpu = options.UseGpu.AsByte(),
+            FlashAttention = options.UseFlashAttention.AsByte(),
+            GpuDevice = options.GpuDevice,
+            DtwTokenLevelTimestamp = options.UseDtwTimeStamps.AsByte(),
+            HeadsPreset = Map(options.HeadsPreset),
+            DtwNTop = options.DtwNTop,
+            WhisperAheads = aHeads,
+            Dtw_mem_size = new UIntPtr(options.DtwMemSize)
+        };
+    }
 }

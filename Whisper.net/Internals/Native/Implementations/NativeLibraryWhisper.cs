@@ -15,6 +15,7 @@ internal class NativeLibraryWhisper : INativeWhisper
     {
         Whisper_Init_From_File_With_Params_No_State = Marshal.GetDelegateForFunctionPointer<whisper_init_from_file_with_params_no_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_init_from_file_with_params_no_state)));
         Whisper_Init_From_Buffer_With_Params_No_State = Marshal.GetDelegateForFunctionPointer<whisper_init_from_buffer_with_params_no_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_init_from_buffer_with_params_no_state)));
+        Whisper_Init_With_Params_No_State = Marshal.GetDelegateForFunctionPointer<whisper_init_with_params_no_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_init_with_params_no_state)));
         Whisper_Free = Marshal.GetDelegateForFunctionPointer<whisper_free>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_free)));
         Whisper_Free_Params = Marshal.GetDelegateForFunctionPointer<whisper_free_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_free_params)));
         Whisper_Full_Default_Params_By_Ref = Marshal.GetDelegateForFunctionPointer<whisper_full_default_params_by_ref>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_full_default_params_by_ref)));
@@ -42,6 +43,7 @@ internal class NativeLibraryWhisper : INativeWhisper
         Whisper_Vad_Default_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_default_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_default_params)));
         Whisper_Vad_Default_Context_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_default_context_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_default_context_params)));
         Whisper_Vad_Init_From_File_With_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_init_from_file_with_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_init_from_file_with_params)));
+        Whisper_Vad_Init_With_Params = Marshal.GetDelegateForFunctionPointer<whisper_vad_init_with_params>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_init_with_params)));
         Whisper_Vad_Detect_Speech = Marshal.GetDelegateForFunctionPointer<whisper_vad_detect_speech>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_detect_speech)));
         Whisper_Vad_Detect_Speech_No_Reset = Marshal.GetDelegateForFunctionPointer<whisper_vad_detect_speech_no_reset>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_detect_speech_no_reset)));
         Whisper_Vad_Reset_State = Marshal.GetDelegateForFunctionPointer<whisper_vad_reset_state>(NativeLibrary.GetExport(whisperLibraryHandle, nameof(whisper_vad_reset_state)));
@@ -58,6 +60,8 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
 
     public whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
+
+    public whisper_init_with_params_no_state Whisper_Init_With_Params_No_State { get; }
 
     public whisper_free Whisper_Free { get; }
 
@@ -112,6 +116,8 @@ internal class NativeLibraryWhisper : INativeWhisper
     public whisper_vad_default_context_params Whisper_Vad_Default_Context_Params { get; }
 
     public whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params { get; }
+
+    public whisper_vad_init_with_params Whisper_Vad_Init_With_Params { get; }
 
     public whisper_vad_detect_speech Whisper_Vad_Detect_Speech { get; }
 

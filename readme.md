@@ -254,6 +254,16 @@ if (!File.Exists(vadModelName))
 using var vadFactory = WhisperVadFactory.FromPath(vadModelName);
 ```
 
+Models can also be supplied from managed sources without writing native code. Use `FromStream`, `FromBuffer`, or implement `IWhisperModelLoader` when the model comes from a custom source:
+
+```csharp
+using var whisperModelStream = await GetWhisperModelStreamAsync();
+using var whisperFactory = WhisperFactory.FromStream(whisperModelStream);
+
+using var vadModelStream = await GetVadModelStreamAsync();
+using var vadFactory = WhisperVadFactory.FromStream(vadModelStream);
+```
+
 The Silero VAD model can also be built from the `whisper.cpp` submodule:
 
 ```console

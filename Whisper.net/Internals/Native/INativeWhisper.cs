@@ -14,6 +14,9 @@ internal interface INativeWhisper : IDisposable
     public delegate IntPtr whisper_init_from_buffer_with_params_no_state(IntPtr buffer, nuint buffer_size, WhisperContextParams whisperContextParams);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_init_with_params_no_state(ref WhisperModelLoader loader, WhisperContextParams whisperContextParams);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate void whisper_free(IntPtr context);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -95,6 +98,9 @@ internal interface INativeWhisper : IDisposable
     public delegate IntPtr whisper_vad_init_from_file_with_params(IntPtr path, WhisperVadContextParams parameters);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public delegate IntPtr whisper_vad_init_with_params(ref WhisperModelLoader loader, WhisperVadContextParams parameters);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate byte whisper_vad_detect_speech(IntPtr context, IntPtr samples, int nSamples);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -123,6 +129,7 @@ internal interface INativeWhisper : IDisposable
 
     whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
     whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
+    whisper_init_with_params_no_state Whisper_Init_With_Params_No_State { get; }
     whisper_free Whisper_Free { get; }
     whisper_free_params Whisper_Free_Params { get; }
     whisper_full_default_params_by_ref Whisper_Full_Default_Params_By_Ref { get; }
@@ -151,6 +158,7 @@ internal interface INativeWhisper : IDisposable
     whisper_vad_default_params Whisper_Vad_Default_Params { get; }
     whisper_vad_default_context_params Whisper_Vad_Default_Context_Params { get; }
     whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params { get; }
+    whisper_vad_init_with_params Whisper_Vad_Init_With_Params { get; }
     whisper_vad_detect_speech Whisper_Vad_Detect_Speech { get; }
     whisper_vad_detect_speech_no_reset Whisper_Vad_Detect_Speech_No_Reset { get; }
     whisper_vad_reset_state Whisper_Vad_Reset_State { get; }

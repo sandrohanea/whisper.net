@@ -88,6 +88,7 @@ public class LanguageDetectionTests
 
             Whisper_Init_From_File_With_Params_No_State = (_, _) => IntPtr.Zero;
             Whisper_Init_From_Buffer_With_Params_No_State = (_, _, _) => IntPtr.Zero;
+            Whisper_Init_With_Params_No_State = (ref WhisperModelLoader loader, WhisperContextParams parameters) => IntPtr.Zero;
             Whisper_Free = _ => { };
             Whisper_Free_Params = ptr => Marshal.FreeHGlobal(ptr);
             Whisper_Full_Default_Params_By_Ref = strategy =>
@@ -137,6 +138,7 @@ public class LanguageDetectionTests
             Whisper_Vad_Default_Params = () => default;
             Whisper_Vad_Default_Context_Params = () => default;
             Whisper_Vad_Init_From_File_With_Params = (_, _) => IntPtr.Zero;
+            Whisper_Vad_Init_With_Params = (ref WhisperModelLoader loader, WhisperVadContextParams parameters) => IntPtr.Zero;
             Whisper_Vad_Detect_Speech = (_, _, _) => 0;
             Whisper_Vad_Detect_Speech_No_Reset = (_, _, _) => 0;
             Whisper_Vad_Reset_State = _ => { };
@@ -150,6 +152,7 @@ public class LanguageDetectionTests
 
         public INativeWhisper.whisper_init_from_file_with_params_no_state Whisper_Init_From_File_With_Params_No_State { get; }
         public INativeWhisper.whisper_init_from_buffer_with_params_no_state Whisper_Init_From_Buffer_With_Params_No_State { get; }
+        public INativeWhisper.whisper_init_with_params_no_state Whisper_Init_With_Params_No_State { get; }
         public INativeWhisper.whisper_free Whisper_Free { get; }
         public INativeWhisper.whisper_free_params Whisper_Free_Params { get; }
         public INativeWhisper.whisper_full_default_params_by_ref Whisper_Full_Default_Params_By_Ref { get; }
@@ -177,6 +180,7 @@ public class LanguageDetectionTests
         public INativeWhisper.whisper_vad_default_params Whisper_Vad_Default_Params { get; }
         public INativeWhisper.whisper_vad_default_context_params Whisper_Vad_Default_Context_Params { get; }
         public INativeWhisper.whisper_vad_init_from_file_with_params Whisper_Vad_Init_From_File_With_Params { get; }
+        public INativeWhisper.whisper_vad_init_with_params Whisper_Vad_Init_With_Params { get; }
         public INativeWhisper.whisper_vad_detect_speech Whisper_Vad_Detect_Speech { get; }
         public INativeWhisper.whisper_vad_detect_speech_no_reset Whisper_Vad_Detect_Speech_No_Reset { get; }
         public INativeWhisper.whisper_vad_reset_state Whisper_Vad_Reset_State { get; }

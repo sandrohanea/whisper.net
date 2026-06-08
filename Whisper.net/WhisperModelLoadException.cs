@@ -8,7 +8,15 @@ namespace Whisper.net;
 /// <remarks>
 /// Check if the path to the model is correct and if the appropiate version of the model is used.
 /// </remarks>
-/// <param name="message"></param>
-public class WhisperModelLoadException(string message) : Exception(message)
+public class WhisperModelLoadException : Exception
 {
+    public WhisperModelLoadException(string message)
+        : base(message)
+    {
+    }
+
+    public WhisperModelLoadException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 }

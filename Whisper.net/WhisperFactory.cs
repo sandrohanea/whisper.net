@@ -100,7 +100,7 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromPath(string path, WhisperFactoryOptions options)
     {
-        return new WhisperFactory(new WhisperProcessorModelFileLoader(path, options), options.DelayInitialization);
+        return FromModelLoader(new WhisperFileModelLoader(path), options);
     }
 
     /// <summary>
@@ -127,7 +127,51 @@ public sealed class WhisperFactory : IDisposable
     /// </remarks>
     public static WhisperFactory FromBuffer(Memory<byte> memory, WhisperFactoryOptions options)
     {
-        return new WhisperFactory(new WhisperProcessorModelMemoryLoader(memory, options), options.DelayInitialization);
+        return FromModelLoader(new WhisperMemoryModelLoader(memory), options);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses the ggml model from a stream in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="stream">The stream containing the model.</param>
+    /// <param name="leaveOpen">Whether to leave <paramref name="stream"/> open when the factory is disposed.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public static WhisperFactory FromStream(Stream stream, bool leaveOpen = false)
+    {
+        return FromStream(stream, WhisperFactoryOptions.Default, leaveOpen);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses the ggml model from a stream in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="stream">The stream containing the model.</param>
+    /// <param name="options">The options for the factory and the loading of the model.</param>
+    /// <param name="leaveOpen">Whether to leave <paramref name="stream"/> open when the factory is disposed.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public static WhisperFactory FromStream(Stream stream, WhisperFactoryOptions options, bool leaveOpen = false)
+    {
+        return FromModelLoader(new WhisperStreamModelLoader(stream, leaveOpen), options);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses a managed model loader in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="modelLoader">The managed model loader.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public static WhisperFactory FromModelLoader(IWhisperModelLoader modelLoader)
+    {
+        return FromModelLoader(modelLoader, WhisperFactoryOptions.Default);
+    }
+
+    /// <summary>
+    /// Creates a factory that uses a managed model loader in order to create <seealso cref="WhisperProcessorBuilder"/>.
+    /// </summary>
+    /// <param name="modelLoader">The managed model loader.</param>
+    /// <param name="options">The options for the factory and the loading of the model.</param>
+    /// <returns>An instance to the same builder.</returns>
+    public static WhisperFactory FromModelLoader(IWhisperModelLoader modelLoader, WhisperFactoryOptions options)
+    {
+        return new WhisperFactory(new ManagedWhisperProcessorModelLoader(modelLoader, options), options.DelayInitialization);
     }
 
     /// <summary>
