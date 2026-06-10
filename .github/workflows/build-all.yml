@@ -10,10 +10,14 @@ permissions:
 on:
    push:
       branches: ["main"]
-      paths-ignore: ["website/**"]
+      paths-ignore:
+         - "website/**"
+         - ".github/workflows/deploy-website.yml"
    pull_request:
       branches: ["main"]
-      paths-ignore: ["website/**"]
+      paths-ignore:
+         - "website/**"
+         - ".github/workflows/deploy-website.yml"
    workflow_dispatch:
       inputs:
          BuildCuda:
@@ -165,4 +169,3 @@ jobs:
         contents: write
       uses: ./.github/workflows/upload-build-artifacts.yml
       secrets: inherit
-
