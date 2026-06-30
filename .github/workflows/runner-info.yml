@@ -1,0 +1,23 @@
+name: Runner Info
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  show-runner:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Print runner information
+        run: |
+          echo "Runner OS: $RUNNER_OS"
+          echo "Runner Name: $RUNNER_NAME"
+          echo "Architecture: $(uname -m 2>/dev/null || echo 'N/A')"
+          echo "Machine info:";
+          uname -a || ver || systeminfo || true
