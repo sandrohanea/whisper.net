@@ -5,8 +5,8 @@
     <MauiVersion>10.0.80</MauiVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.9" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.7.0" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.10" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.8.1" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <!-- Tools -->
     <PackageVersion Include="ELFSharp" Version="2.17.3" />
@@ -19,16 +19,16 @@
     <PackageVersion Include="Microsoft.NET.Sdk.WebAssembly.Pack" Version="10.0.2" />
     <!-- Tests -->
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="Xunit.Extensions.AssemblyFixture" Version="2.6.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.26353.2" />
+    <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.26370.2" />
     <PackageVersion Include="xunit.assert" Version="2.9.3" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.10" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)"/>
