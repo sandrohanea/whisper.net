@@ -97,8 +97,8 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAssemblyFixt
 
         await processor.ProcessWithUtf8HandlerAsync(samples, segment =>
         {
-            segmentTexts.Add(System.Text.Encoding.UTF8.GetString(segment.TextUtf8));
-            languageCodes.Add(System.Text.Encoding.UTF8.GetString(segment.LanguageUtf8));
+            segmentTexts.Add(Utf8TestUtils.Decode(segment.TextUtf8));
+            languageCodes.Add(Utf8TestUtils.Decode(segment.LanguageUtf8));
 
             Assert.True(segment.End >= segment.Start);
             Assert.InRange(segment.Probability, 0f, 1f);
@@ -106,7 +106,7 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAssemblyFixt
             for (var tokenIndex = 0; tokenIndex < segment.TokenCount; tokenIndex++)
             {
                 var token = segment.GetToken(tokenIndex);
-                tokenTexts.Add(System.Text.Encoding.UTF8.GetString(token.TextUtf8));
+                tokenTexts.Add(Utf8TestUtils.Decode(token.TextUtf8));
             }
         });
 

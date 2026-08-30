@@ -211,9 +211,9 @@ public class ProcessingFailureTests
     [Fact]
     public async Task ProcessWithUtf8HandlerAsync_InvokesHandlerWithoutAllocatingSegmentData()
     {
-        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
-        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
-        var language = Marshal.StringToCoTaskMemUTF8("en");
+        var segmentText = Utf8TestUtils.AllocateNullTerminated(" Segment text");
+        var tokenText = Utf8TestUtils.AllocateNullTerminated(" token");
+        var language = Utf8TestUtils.AllocateNullTerminated("en");
         var allocatingHandlerCalled = false;
 
         try
@@ -229,9 +229,9 @@ public class ProcessingFailureTests
 
             await processor.ProcessWithUtf8HandlerAsync(new float[1], segment =>
             {
-                actualSegmentText = System.Text.Encoding.UTF8.GetString(segment.TextUtf8);
-                actualLanguage = System.Text.Encoding.UTF8.GetString(segment.LanguageUtf8);
-                actualTokenText = System.Text.Encoding.UTF8.GetString(segment.GetToken(0).TextUtf8);
+                actualSegmentText = Utf8TestUtils.Decode(segment.TextUtf8);
+                actualLanguage = Utf8TestUtils.Decode(segment.LanguageUtf8);
+                actualTokenText = Utf8TestUtils.Decode(segment.GetToken(0).TextUtf8);
             });
 
             Assert.False(allocatingHandlerCalled);
@@ -250,9 +250,9 @@ public class ProcessingFailureTests
     [Fact]
     public async Task ProcessWithUtf8HandlerAsync_WhenHandlerThrows_RethrowsFromTask()
     {
-        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
-        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
-        var language = Marshal.StringToCoTaskMemUTF8("en");
+        var segmentText = Utf8TestUtils.AllocateNullTerminated(" Segment text");
+        var tokenText = Utf8TestUtils.AllocateNullTerminated(" token");
+        var language = Utf8TestUtils.AllocateNullTerminated("en");
 
         try
         {
@@ -291,9 +291,9 @@ public class ProcessingFailureTests
     [Fact]
     public void ProcessWithUtf8Handler_InvokesHandlerSynchronously()
     {
-        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
-        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
-        var language = Marshal.StringToCoTaskMemUTF8("en");
+        var segmentText = Utf8TestUtils.AllocateNullTerminated(" Segment text");
+        var tokenText = Utf8TestUtils.AllocateNullTerminated(" token");
+        var language = Utf8TestUtils.AllocateNullTerminated("en");
 
         try
         {
@@ -321,9 +321,9 @@ public class ProcessingFailureTests
     [Fact]
     public void ProcessWithUtf8Handler_WhenHandlerThrows_RethrowsFromCall()
     {
-        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
-        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
-        var language = Marshal.StringToCoTaskMemUTF8("en");
+        var segmentText = Utf8TestUtils.AllocateNullTerminated(" Segment text");
+        var tokenText = Utf8TestUtils.AllocateNullTerminated(" token");
+        var language = Utf8TestUtils.AllocateNullTerminated("en");
 
         try
         {
