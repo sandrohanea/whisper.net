@@ -85,12 +85,23 @@ public static class NativeLibraryLoader
 
         string? lastError = null;
 
-        var availableRuntimes = GetRuntimePaths(architecture, platform).ToList();
+        var runtimeSelection = RuntimeLibrarySelector.Select(
+            RuntimeOptions.ForcedRuntimeLibrary,
+            RuntimeOptions.RuntimeLibraryOrder);
+
+        if (runtimeSelection.BypassCompatibilityChecks)
+        {
+            WhisperLogger.Log(WhisperLogLevel.Warning,
+                $"Runtime {runtimeSelection.RuntimeLibraryOrder[0]} was forced. Automatic runtime compatibility checks will be bypassed.");
+        }
+
+        var availableRuntimes = GetRuntimePaths(architecture, platform, runtimeSelection.RuntimeLibraryOrder).ToList();
         var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
 
         foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
-            if (!IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
+            if (!runtimeSelection.BypassCompatibilityChecks
+                && !IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
             {
                 continue;
             }
@@ -231,7 +242,7 @@ public static class NativeLibraryLoader
     }
 
     private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture,
-        string platform)
+        string platform, IReadOnlyList<RuntimeLibrary> runtimeLibraryOrder)
     {
         var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
@@ -242,7 +253,7 @@ public static class NativeLibraryLoader
             GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
         }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
-        foreach (var library in RuntimeOptions.RuntimeLibraryOrder)
+        foreach (var library in runtimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {

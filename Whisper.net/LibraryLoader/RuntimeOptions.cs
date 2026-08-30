@@ -26,6 +26,24 @@ public static class RuntimeOptions
     public static List<RuntimeLibrary> RuntimeLibraryOrder { get; set; } = defaultRuntimeOrder;
 
     /// <summary>
+    /// Gets or sets the runtime library that should be loaded without performing compatibility checks.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When set, <see cref="RuntimeLibraryOrder"/> is ignored, only the specified runtime is considered, and
+    /// automatic compatibility checks such as CPU instruction-set and CUDA availability detection are bypassed.
+    /// Native library path resolution and loading are still performed normally.
+    /// </para>
+    /// <para>
+    /// Use this option only when the application has determined that the runtime is compatible with the current
+    /// hardware and software environment. Forcing an incompatible runtime can cause native library loading failures
+    /// or process crashes due to unsupported CPU instructions.
+    /// </para>
+    /// <para>This value must be set before any <seealso cref="WhisperFactory"/> is created.</para>
+    /// </remarks>
+    public static RuntimeLibrary? ForcedRuntimeLibrary { get; set; }
+
+    /// <summary>
     /// Gets or sets the library that was loaded by the runtime.
     /// </summary>
     /// <remarks>

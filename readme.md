@@ -198,7 +198,7 @@ The following order of priority will be used by default:
 
 The loader automatically probes the CUDA runtimes in this order and validates the installed driver via `cudaRuntimeGetVersion`, so machines with only CUDA 12 drivers will transparently fall back to `Whisper.net.Runtime.Cuda12`.
 
-To change the order or force a specific runtime, set the `RuntimeLibraryOrder` on the `RuntimeOptions`:
+To change the preferred runtime order, set `RuntimeLibraryOrder` on `RuntimeOptions`:
 
 ```csharp
 RuntimeOptions.RuntimeLibraryOrder =
@@ -210,6 +210,16 @@ RuntimeOptions.RuntimeLibraryOrder =
     RuntimeLibrary.Cpu
 ];
 ```
+
+Setting `RuntimeLibraryOrder` changes the preferred order, but compatibility checks are still performed before a runtime is loaded. If your application performs its own hardware and software detection, you can force a runtime and bypass those checks:
+
+```csharp
+RuntimeOptions.ForcedRuntimeLibrary = RuntimeLibrary.Cpu;
+```
+
+Set `ForcedRuntimeLibrary` before creating any `WhisperFactory`. Only the specified runtime will be considered; native library path resolution and loading will still occur normally, but automatic checks such as CPU instruction-set and CUDA availability detection will be skipped. The application is responsible for ensuring the selected runtime is compatible. Forcing an incompatible runtime can cause native library loading failures or process crashes due to unsupported CPU instructions.
+
+This override can also be used by Native AOT applications that perform their own runtime hardware detection, without raising the managed application's instruction-set baseline.
 
 ### Pluggable native runtimes
 - Whisper.net can run with any compatible compilation of the native whisper.cpp libraries; the package Whisper.net.Runtime is just one of the possible builds we publish.
