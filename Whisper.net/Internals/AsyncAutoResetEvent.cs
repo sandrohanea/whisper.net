@@ -5,34 +5,39 @@ namespace Whisper.net.Internals;
 internal class AsyncAutoResetEvent
 {
     private static readonly Task Completed = Task.CompletedTask;
-    private TaskCompletionSource<bool>? waitTcs;
-    private int isSignaled; // 0 for false, 1 for true
+    private readonly object sync = new();
+    private readonly Queue<TaskCompletionSource<bool>> waiters = new();
+    private bool isSignaled;
 
     public Task WaitAsync()
     {
-        if (Interlocked.CompareExchange(ref isSignaled, 0, 1) == 1)
+        lock (sync)
         {
-            return Completed;
-        }
-        else
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var oldTcs = Interlocked.Exchange(ref waitTcs, tcs);
-            oldTcs?.TrySetCanceled();
-            return tcs.Task;
+            if (isSignaled)
+            {
+                isSignaled = false;
+                return Completed;
+            }
+
+            var waiter = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            waiters.Enqueue(waiter);
+            return waiter.Task;
         }
     }
 
     public void Set()
     {
-        var toRelease = Interlocked.Exchange(ref waitTcs, null);
-        if (toRelease != null)
+        TaskCompletionSource<bool>? toRelease;
+        lock (sync)
         {
-            toRelease.SetResult(true);
+            toRelease = waiters.Count > 0 ? waiters.Dequeue() : null;
+
+            if (toRelease == null)
+            {
+                isSignaled = true;
+            }
         }
-        else
-        {
-            Interlocked.Exchange(ref isSignaled, 1);
-        }
+
+        toRelease?.SetResult(true);
     }
 }
