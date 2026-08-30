@@ -117,6 +117,19 @@ public class ProcessingFailureTests
     }
 
     [Fact]
+    public void Process_WhenSamplesAreEmpty_ShouldNotCallNative()
+    {
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        using var processor = new WhisperProcessor(options, new FakeNativeWhisper(0, (_, _, _, _, _) =>
+        {
+            Assert.Fail("The native processor should not be called for empty samples.");
+            return 0;
+        }));
+
+        processor.Process([]);
+    }
+
+    [Fact]
     public async Task ProcessAsync_WhenNativeFails_ShouldThrow()
     {
         var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
@@ -127,6 +140,25 @@ public class ProcessingFailureTests
             {
             }
         });
+    }
+
+    [Fact]
+    public async Task ProcessAsync_WhenSamplesAreEmpty_ShouldNotCallNative()
+    {
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        await using var processor = new WhisperProcessor(options, new FakeNativeWhisper(0, (_, _, _, _, _) =>
+        {
+            Assert.Fail("The native processor should not be called for empty samples.");
+            return 0;
+        }));
+
+        var segments = new List<SegmentData>();
+        await foreach (var segment in processor.ProcessAsync(ReadOnlyMemory<float>.Empty))
+        {
+            segments.Add(segment);
+        }
+
+        Assert.Empty(segments);
     }
 
     [Fact]

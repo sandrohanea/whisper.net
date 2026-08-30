@@ -208,6 +208,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             throw new ObjectDisposedException("This processor has already been disposed.");
         }
 
+        if (samples.IsEmpty)
+        {
+            return;
+        }
+
         fixed (float* pData = samples)
         {
             var state = GetWhisperState();
@@ -384,6 +389,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         if (isDisposed)
         {
             throw new ObjectDisposedException("This processor has already been disposed.");
+        }
+
+        if (samples.IsEmpty)
+        {
+            return Task.CompletedTask;
         }
 
         return Task.Factory.StartNew(() =>
