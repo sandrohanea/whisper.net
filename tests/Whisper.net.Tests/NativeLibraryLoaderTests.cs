@@ -15,15 +15,27 @@ public class NativeLibraryLoaderTests
     [InlineData(RuntimeLibrary.CoreML)]
     [InlineData(RuntimeLibrary.OpenVino)]
     [InlineData(RuntimeLibrary.CpuNoAvx)]
-    public void IsRuntimeSupported_WhenRuntimeIsForced_ShouldBypassCompatibilityChecks(RuntimeLibrary runtime)
+    public void Select_WhenRuntimeIsForced_ShouldSelectOnlyThatRuntimeAndBypassCompatibilityChecks(
+        RuntimeLibrary runtime)
     {
-        var isSupported = NativeLibraryLoader.IsRuntimeSupported(
-            runtime,
-            platform: "win",
-            architecture: "x64",
-            runtimeLibraries: [],
-            forcedRuntimeLibrary: runtime);
+        var selection = RuntimeLibrarySelector.Select(
+            forcedRuntimeLibrary: runtime,
+            preferredRuntimeLibraryOrder: [RuntimeLibrary.Cuda, RuntimeLibrary.Cpu]);
 
-        Assert.True(isSupported);
+        Assert.Equal([runtime], selection.RuntimeLibraryOrder);
+        Assert.True(selection.BypassCompatibilityChecks);
+    }
+
+    [Fact]
+    public void Select_WhenRuntimeIsNotForced_ShouldPreservePreferredOrderAndCompatibilityChecks()
+    {
+        RuntimeLibrary[] preferredOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cpu];
+
+        var selection = RuntimeLibrarySelector.Select(
+            forcedRuntimeLibrary: null,
+            preferredRuntimeLibraryOrder: preferredOrder);
+
+        Assert.Equal(preferredOrder, selection.RuntimeLibraryOrder);
+        Assert.False(selection.BypassCompatibilityChecks);
     }
 }

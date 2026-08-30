@@ -85,24 +85,23 @@ public static class NativeLibraryLoader
 
         string? lastError = null;
 
-        var forcedRuntimeLibrary = RuntimeOptions.ForcedRuntimeLibrary;
-        IReadOnlyList<RuntimeLibrary> runtimeLibraryOrder = forcedRuntimeLibrary.HasValue
-            ? [forcedRuntimeLibrary.Value]
-            : RuntimeOptions.RuntimeLibraryOrder.ToList();
+        var runtimeSelection = RuntimeLibrarySelector.Select(
+            RuntimeOptions.ForcedRuntimeLibrary,
+            RuntimeOptions.RuntimeLibraryOrder);
 
-        if (forcedRuntimeLibrary.HasValue)
+        if (runtimeSelection.BypassCompatibilityChecks)
         {
             WhisperLogger.Log(WhisperLogLevel.Warning,
-                $"Runtime {forcedRuntimeLibrary.Value} was forced. Automatic runtime compatibility checks will be bypassed.");
+                $"Runtime {runtimeSelection.RuntimeLibraryOrder[0]} was forced. Automatic runtime compatibility checks will be bypassed.");
         }
 
-        var availableRuntimes = GetRuntimePaths(architecture, platform, runtimeLibraryOrder).ToList();
+        var availableRuntimes = GetRuntimePaths(architecture, platform, runtimeSelection.RuntimeLibraryOrder).ToList();
         var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
 
         foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
-            if (!IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes,
-                    forcedRuntimeLibrary))
+            if (!runtimeSelection.BypassCompatibilityChecks
+                && !IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
             {
                 continue;
             }
@@ -195,14 +194,9 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    internal static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
-        List<RuntimeLibrary> runtimeLibraries, RuntimeLibrary? forcedRuntimeLibrary = null)
+    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
+        List<RuntimeLibrary> runtimeLibraries)
     {
-        if (forcedRuntimeLibrary == runtime)
-        {
-            return true;
-        }
-
         WhisperLogger.Log(WhisperLogLevel.Debug,
             $"Checking if runtime {runtime} is supported on the platform: {platform}");
 #if !NETSTANDARD
