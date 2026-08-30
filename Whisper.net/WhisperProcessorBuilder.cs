@@ -12,13 +12,11 @@ public class WhisperProcessorBuilder
 {
     private readonly WhisperProcessorOptions whisperProcessorOptions;
     private readonly INativeWhisper nativeWhisper;
-    private readonly IStringPool stringPool;
 
-    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper, IStringPool stringPool)
+    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper)
     {
         whisperProcessorOptions = new WhisperProcessorOptions() { ContextHandle = context };
         this.nativeWhisper = nativeWhisper;
-        this.stringPool = stringPool;
     }
 
     /// <summary>
@@ -481,20 +479,17 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
-    /// Adds the functionlity of pooling the strings that are generated reducing the number of allocations.
+    /// Configures a custom string pool.
     /// </summary>
     /// <remarks>
-    /// When using this option designed for high-performance use-cases,
-    /// ensure that you're returning the <seealso cref="SegmentData"/> object back to the <seealso cref="WhisperProcessor"/>
-    /// using the method <see cref="WhisperProcessor.Return(SegmentData)"/>.
-    ///
-    /// By default, this option is disabled.
-    /// When calling this method with null, a default implementation of <seealso cref="IStringPool"/> will be used (reshared between all processors created for the <seealso cref="WhisperFactory"/>.
+    /// String pooling is obsolete. Use <see cref="WhisperProcessor.ProcessWithUtf8HandlerAsync"/> to consume
+    /// borrowed UTF-8 text without allocating managed strings.
     /// </remarks>
     /// <returns>An instance to the same builder.</returns>
+    [Obsolete("String pooling is obsolete and will be removed in a future major version. Use WhisperProcessor.ProcessWithUtf8HandlerAsync instead.")]
     public WhisperProcessorBuilder WithStringPool(IStringPool? stringPool = null)
     {
-        whisperProcessorOptions.StringPool = stringPool ?? this.stringPool;
+        whisperProcessorOptions.StringPool = stringPool;
         return this;
     }
 
@@ -502,9 +497,10 @@ public class WhisperProcessorBuilder
     /// Disables the string pooling.
     /// </summary>
     /// <remarks>
-    /// This will disable the pooling of strings that are generated (have effect only if <seealso cref="WithStringPool"/> was called).
+    /// String pooling is obsolete and disabled by default.
     /// </remarks>
     /// <returns>An instance to the same builder.</returns>
+    [Obsolete("String pooling is obsolete and will be removed in a future major version. String pooling is disabled by default.")]
     public WhisperProcessorBuilder WithoutStringPool()
     {
         whisperProcessorOptions.StringPool = null;

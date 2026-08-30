@@ -2,6 +2,7 @@
 
 using Xunit;
 using Xunit.Extensions.AssemblyFixture;
+using Whisper.net.Wave;
 
 namespace Whisper.net.Tests;
 
@@ -74,6 +75,46 @@ public class ProcessAsyncFunctionalTests(TinyModelFixture model) : IAssemblyFixt
         Assert.True(progress.SequenceEqual(progress.OrderBy(x => x)));
         Assert.True(progress.Count > 1);
         Assert.Single(encoderBegins);
+    }
+
+    [Fact]
+    public async Task ProcessWithUtf8HandlerAsync_ProvidesBorrowedSegmentAndTokenText()
+    {
+        var segmentTexts = new List<string>();
+        var tokenTexts = new List<string>();
+        var languageCodes = new List<string>();
+        var allocatingHandlerCalled = false;
+
+        using var factory = WhisperFactory.FromPath(model.ModelFile);
+        await using var processor = factory.CreateBuilder()
+            .WithLanguage("en")
+            .WithProbabilities()
+            .WithSegmentEventHandler(_ => allocatingHandlerCalled = true)
+            .Build();
+
+        using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+        var samples = await new WaveParser(fileReader).GetAvgSamplesAsync();
+
+        await processor.ProcessWithUtf8HandlerAsync(samples, segment =>
+        {
+            segmentTexts.Add(System.Text.Encoding.UTF8.GetString(segment.TextUtf8));
+            languageCodes.Add(System.Text.Encoding.UTF8.GetString(segment.LanguageUtf8));
+
+            Assert.True(segment.End >= segment.Start);
+            Assert.InRange(segment.Probability, 0f, 1f);
+
+            for (var tokenIndex = 0; tokenIndex < segment.TokenCount; tokenIndex++)
+            {
+                var token = segment.GetToken(tokenIndex);
+                tokenTexts.Add(System.Text.Encoding.UTF8.GetString(token.TextUtf8));
+            }
+        });
+
+        Assert.False(allocatingHandlerCalled);
+        Assert.NotEmpty(segmentTexts);
+        Assert.NotEmpty(tokenTexts);
+        Assert.All(languageCodes, language => Assert.Equal("en", language));
+        Assert.Contains(segmentTexts, text => text.Contains("nation should commit"));
     }
 
     [Fact]

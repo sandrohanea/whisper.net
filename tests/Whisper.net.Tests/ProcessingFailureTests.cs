@@ -71,24 +71,24 @@ public class ProcessingFailureTests
         public INativeWhisper.whisper_free_params Whisper_Free_Params { get; }
         public INativeWhisper.whisper_full_default_params_by_ref Whisper_Full_Default_Params_By_Ref { get; }
         public INativeWhisper.whisper_full_with_state Whisper_Full_With_State { get; }
-        public INativeWhisper.whisper_full_n_segments_from_state Whisper_Full_N_Segments_From_State { get; }
+        public INativeWhisper.whisper_full_n_segments_from_state Whisper_Full_N_Segments_From_State { get; set; }
         public INativeWhisper.whisper_full_get_segment_t0_from_state Whisper_Full_Get_Segment_T0_From_State { get; }
         public INativeWhisper.whisper_full_get_segment_t1_from_state Whisper_Full_Get_Segment_T1_From_State { get; }
-        public INativeWhisper.whisper_full_get_segment_text_from_state Whisper_Full_Get_Segment_Text_From_State { get; }
-        public INativeWhisper.whisper_full_n_tokens_from_state Whisper_Full_N_Tokens_From_State { get; }
+        public INativeWhisper.whisper_full_get_segment_text_from_state Whisper_Full_Get_Segment_Text_From_State { get; set; }
+        public INativeWhisper.whisper_full_n_tokens_from_state Whisper_Full_N_Tokens_From_State { get; set; }
         public INativeWhisper.whisper_full_get_token_p_from_state Whisper_Full_Get_Token_P_From_State { get; }
         public INativeWhisper.whisper_lang_max_id Whisper_Lang_Max_Id { get; }
         public INativeWhisper.whisper_lang_id Whisper_Lang_Id { get; }
         public INativeWhisper.whisper_lang_auto_detect_with_state Whisper_Lang_Auto_Detect_With_State { get; }
         public INativeWhisper.whisper_pcm_to_mel_with_state Whisper_PCM_To_Mel_With_State { get; }
-        public INativeWhisper.whisper_lang_str Whisper_Lang_Str { get; }
+        public INativeWhisper.whisper_lang_str Whisper_Lang_Str { get; set; }
         public INativeWhisper.whisper_init_state Whisper_Init_State { get; }
         public INativeWhisper.whisper_free_state Whisper_Free_State { get; }
         public INativeWhisper.whisper_full_lang_id_from_state Whisper_Full_Lang_Id_From_State { get; }
         public INativeWhisper.whisper_log_set Whisper_Log_Set { get; }
         public INativeWhisper.whisper_ctx_init_openvino_encoder_with_state Whisper_Ctx_Init_Openvino_Encoder_With_State { get; }
         public INativeWhisper.whisper_full_get_token_data_from_state Whisper_Full_Get_Token_Data_From_State { get; }
-        public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; }
+        public INativeWhisper.whisper_full_get_token_text_from_state Whisper_Full_Get_Token_Text_From_State { get; set; }
         public INativeWhisper.whisper_print_system_info WhisperPrintSystemInfo { get; }
         public INativeWhisper.whisper_full_get_segment_no_speech_prob_from_state Whisper_Full_Get_Segment_No_Speech_Prob_From_State { get; }
         public INativeWhisper.whisper_vad_default_params Whisper_Vad_Default_Params { get; }
@@ -206,6 +206,166 @@ public class ProcessingFailureTests
             {
             }
         });
+    }
+
+    [Fact]
+    public async Task ProcessWithUtf8HandlerAsync_InvokesHandlerWithoutAllocatingSegmentData()
+    {
+        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
+        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
+        var language = Marshal.StringToCoTaskMemUTF8("en");
+        var allocatingHandlerCalled = false;
+
+        try
+        {
+            using var native = CreateUtf8HandlerNative(segmentText, tokenText, language);
+            var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+            options.OnSegmentEventHandlers.Add(_ => allocatingHandlerCalled = true);
+            await using var processor = new WhisperProcessor(options, native);
+
+            string? actualSegmentText = null;
+            string? actualTokenText = null;
+            string? actualLanguage = null;
+
+            await processor.ProcessWithUtf8HandlerAsync(new float[1], segment =>
+            {
+                actualSegmentText = System.Text.Encoding.UTF8.GetString(segment.TextUtf8);
+                actualLanguage = System.Text.Encoding.UTF8.GetString(segment.LanguageUtf8);
+                actualTokenText = System.Text.Encoding.UTF8.GetString(segment.GetToken(0).TextUtf8);
+            });
+
+            Assert.False(allocatingHandlerCalled);
+            Assert.Equal(" Segment text", actualSegmentText);
+            Assert.Equal(" token", actualTokenText);
+            Assert.Equal("en", actualLanguage);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(segmentText);
+            Marshal.FreeCoTaskMem(tokenText);
+            Marshal.FreeCoTaskMem(language);
+        }
+    }
+
+    [Fact]
+    public async Task ProcessWithUtf8HandlerAsync_WhenHandlerThrows_RethrowsFromTask()
+    {
+        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
+        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
+        var language = Marshal.StringToCoTaskMemUTF8("en");
+
+        try
+        {
+            using var native = CreateUtf8HandlerNative(segmentText, tokenText, language);
+            var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+            await using var processor = new WhisperProcessor(options, native);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                processor.ProcessWithUtf8HandlerAsync(
+                    new float[1],
+                    _ => throw new InvalidOperationException("Handler failed.")));
+
+            Assert.Equal("Handler failed.", exception.Message);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(segmentText);
+            Marshal.FreeCoTaskMem(tokenText);
+            Marshal.FreeCoTaskMem(language);
+        }
+    }
+
+    [Fact]
+    public void ProcessWithUtf8HandlerAsync_WhenHandlerIsNull_ThrowsArgumentNullException()
+    {
+        using var native = new FakeNativeWhisper(0);
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+        using var processor = new WhisperProcessor(options, native);
+
+        Assert.Throws<ArgumentNullException>(() =>
+        {
+            _ = processor.ProcessWithUtf8HandlerAsync(new float[1], null!);
+        });
+    }
+
+    [Fact]
+    public void ProcessWithUtf8Handler_InvokesHandlerSynchronously()
+    {
+        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
+        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
+        var language = Marshal.StringToCoTaskMemUTF8("en");
+
+        try
+        {
+            using var native = CreateUtf8HandlerNative(segmentText, tokenText, language);
+            var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+            using var processor = new WhisperProcessor(options, native);
+            var handlerCalled = false;
+
+            processor.ProcessWithUtf8Handler(new float[1], segment =>
+            {
+                handlerCalled = true;
+                Assert.True(segment.TextUtf8.SequenceEqual(" Segment text"u8));
+            });
+
+            Assert.True(handlerCalled);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(segmentText);
+            Marshal.FreeCoTaskMem(tokenText);
+            Marshal.FreeCoTaskMem(language);
+        }
+    }
+
+    [Fact]
+    public void ProcessWithUtf8Handler_WhenHandlerThrows_RethrowsFromCall()
+    {
+        var segmentText = Marshal.StringToCoTaskMemUTF8(" Segment text");
+        var tokenText = Marshal.StringToCoTaskMemUTF8(" token");
+        var language = Marshal.StringToCoTaskMemUTF8("en");
+
+        try
+        {
+            using var native = CreateUtf8HandlerNative(segmentText, tokenText, language);
+            var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
+            using var processor = new WhisperProcessor(options, native);
+
+            var exception = Assert.Throws<InvalidOperationException>(() =>
+                processor.ProcessWithUtf8Handler(
+                    new float[1],
+                    _ => throw new InvalidOperationException("Handler failed.")));
+
+            Assert.Equal("Handler failed.", exception.Message);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(segmentText);
+            Marshal.FreeCoTaskMem(tokenText);
+            Marshal.FreeCoTaskMem(language);
+        }
+    }
+
+    private static FakeNativeWhisper CreateUtf8HandlerNative(
+        IntPtr segmentText,
+        IntPtr tokenText,
+        IntPtr language)
+    {
+        var native = new FakeNativeWhisper(0, (_, state, parameters, _, _) =>
+        {
+            var callback = Marshal.GetDelegateForFunctionPointer<WhisperNewSegmentCallback>(parameters.OnNewSegment);
+            callback(IntPtr.Zero, state, 1, parameters.OnNewSegmentUserData);
+            return 0;
+        })
+        {
+            Whisper_Full_N_Segments_From_State = _ => 1,
+            Whisper_Full_Get_Segment_Text_From_State = (_, _) => segmentText,
+            Whisper_Full_N_Tokens_From_State = (_, _) => 1,
+            Whisper_Full_Get_Token_Text_From_State = (_, _, _, _) => tokenText,
+            Whisper_Lang_Str = _ => language
+        };
+
+        return native;
     }
 
     private static async Task WaitForTaskAsync(Task task)

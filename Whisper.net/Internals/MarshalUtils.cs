@@ -7,6 +7,23 @@ namespace Whisper.net.Internals;
 
 internal static class MarshalUtils
 {
+    public static unsafe ReadOnlySpan<byte> GetUtf8Span(IntPtr ptr)
+    {
+        if (ptr == IntPtr.Zero)
+        {
+            return default;
+        }
+
+        var bytes = (byte*)ptr;
+        var length = 0;
+        while (bytes[length] != 0)
+        {
+            length++;
+        }
+
+        return new ReadOnlySpan<byte>(bytes, length);
+    }
+
     public static string? GetString(IntPtr ptr)
     {
         if (ptr == IntPtr.Zero)

@@ -8,7 +8,7 @@
   <Project Path="ContinuousRecognition/ContinuousRecognition.csproj" />
   <Project Path="CoreML/CoreML.csproj" />
   <Project Path="Diarization/Diarization.csproj" />
-  <Project Path="LowAllocationStringPooling/LowAllocationStringPooling.csproj" />
+  <Project Path="LowAllocationUtf8Handler/LowAllocationUtf8Handler.csproj" />
   <Project Path="MultiRuntime/MultiRuntime.csproj" />
   <Project Path="NAudioMp3/NAudioMp3.csproj" />
   <Project Path="NAudioResampleWav/NAudioResampleWav.csproj" />
