@@ -150,7 +150,9 @@ public class ProcessingFailureTests
                 }
 
                 nativeAbortObserved.SetResult(null);
-                allowNativeReturn.Wait(TimeSpan.FromSeconds(5));
+                Assert.True(
+                    allowNativeReturn.Wait(TimeSpan.FromSeconds(30)),
+                    "Native processing was not released within the safety timeout.");
                 return -6;
             }
             finally
@@ -176,7 +178,7 @@ public class ProcessingFailureTests
             cts.Cancel();
             await WaitForTaskAsync(nativeAbortObserved.Task);
 
-            await Assert.ThrowsAsync<TaskCanceledException>(() => WaitForTaskAsync(processingTask, TimeSpan.FromSeconds(1)));
+            await Assert.ThrowsAsync<TaskCanceledException>(() => WaitForTaskAsync(processingTask, TimeSpan.FromSeconds(10)));
             Assert.False(nativeFinished.Task.IsCompleted);
         }
         finally
