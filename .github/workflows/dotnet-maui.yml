@@ -29,7 +29,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
         with:
-          xcode-version: "26.5"
+          xcode-version: "26.6"
 
       - name: Download Artifacts
         id: download-artifact
@@ -135,7 +135,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
         with:
-          xcode-version: "26.5"
+          xcode-version: "26.6"
 
       - name: Download Artifacts
         id: download-artifact
