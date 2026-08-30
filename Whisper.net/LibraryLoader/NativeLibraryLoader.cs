@@ -85,12 +85,24 @@ public static class NativeLibraryLoader
 
         string? lastError = null;
 
-        var availableRuntimes = GetRuntimePaths(architecture, platform).ToList();
+        var forcedRuntimeLibrary = RuntimeOptions.ForcedRuntimeLibrary;
+        IReadOnlyList<RuntimeLibrary> runtimeLibraryOrder = forcedRuntimeLibrary.HasValue
+            ? [forcedRuntimeLibrary.Value]
+            : RuntimeOptions.RuntimeLibraryOrder.ToList();
+
+        if (forcedRuntimeLibrary.HasValue)
+        {
+            WhisperLogger.Log(WhisperLogLevel.Warning,
+                $"Runtime {forcedRuntimeLibrary.Value} was forced. Automatic runtime compatibility checks will be bypassed.");
+        }
+
+        var availableRuntimes = GetRuntimePaths(architecture, platform, runtimeLibraryOrder).ToList();
         var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
 
         foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
-            if (!IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
+            if (!IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes,
+                    forcedRuntimeLibrary))
             {
                 continue;
             }
@@ -183,9 +195,14 @@ public static class NativeLibraryLoader
         return Path.Combine(runtimePath, libraryFileName);
     }
 
-    private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
-        List<RuntimeLibrary> runtimeLibraries)
+    internal static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
+        List<RuntimeLibrary> runtimeLibraries, RuntimeLibrary? forcedRuntimeLibrary = null)
     {
+        if (forcedRuntimeLibrary == runtime)
+        {
+            return true;
+        }
+
         WhisperLogger.Log(WhisperLogLevel.Debug,
             $"Checking if runtime {runtime} is supported on the platform: {platform}");
 #if !NETSTANDARD
@@ -231,7 +248,7 @@ public static class NativeLibraryLoader
     }
 
     private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture,
-        string platform)
+        string platform, IReadOnlyList<RuntimeLibrary> runtimeLibraryOrder)
     {
         var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
         // NetFramework and Mono will crash if we try to get the directory of an empty string.
@@ -242,7 +259,7 @@ public static class NativeLibraryLoader
             GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
         }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
 
-        foreach (var library in RuntimeOptions.RuntimeLibraryOrder)
+        foreach (var library in runtimeLibraryOrder)
         {
             foreach (var assemblySearchPath in assemblySearchPaths)
             {
