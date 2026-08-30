@@ -2,6 +2,7 @@
 
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
 using Whisper.net.Internals.Native;
@@ -221,10 +222,14 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 processingSemaphore.Wait();
                 segmentIndex = 0;
 
-                var processingContextHandle = CreateProcessingContext(CancellationToken.None, out var processingParams);
+                var processingContextHandle = CreateProcessingContext(
+                    CancellationToken.None,
+                    out var processingParams,
+                    out var processingContext);
                 try
                 {
                     var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
+                    processingContext.ThrowIfHandlerFailed();
                     if (result != 0)
                     {
                         throw new WhisperProcessingException(result);
@@ -345,12 +350,111 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
+    /// Processes audio samples and invokes <paramref name="handler"/> for each recognized segment without
+    /// allocating managed strings for segment or token text.
+    /// </summary>
+    /// <param name="samples">The 16 kHz mono audio samples to process.</param>
+    /// <param name="handler">The synchronous handler invoked for each recognized segment.</param>
+    /// <param name="cancellationToken">A token that can cancel processing.</param>
+    /// <returns>A task that completes after processing and all handler invocations have completed.</returns>
+    /// <remarks>
+    /// The data supplied to <paramref name="handler"/> is borrowed from the native Whisper state and is valid
+    /// only until the handler returns. Copy or decode any data that must be retained.
+    /// </remarks>
+    public Task ProcessWithUtf8HandlerAsync(
+        ReadOnlyMemory<float> samples,
+        Utf8SegmentHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        if (handler is null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        return ProcessInternalAsync(samples, cancellationToken, handler);
+    }
+
+    /// <summary>
+    /// Processes audio samples synchronously and invokes <paramref name="handler"/> for each recognized segment
+    /// without allocating managed strings for segment or token text.
+    /// </summary>
+    /// <param name="samples">The 16 kHz mono audio samples to process.</param>
+    /// <param name="handler">The synchronous handler invoked for each recognized segment.</param>
+    /// <param name="cancellationToken">A token that can cancel processing.</param>
+    /// <remarks>
+    /// The data supplied to <paramref name="handler"/> is borrowed from the native Whisper state and is valid
+    /// only until the handler returns. Copy or decode any data that must be retained.
+    /// </remarks>
+    public unsafe void ProcessWithUtf8Handler(
+        ReadOnlySpan<float> samples,
+        Utf8SegmentHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        if (handler is null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        if (isDisposed)
+        {
+            throw new ObjectDisposedException("This processor has already been disposed.");
+        }
+
+        processingSemaphore.Wait(cancellationToken);
+        var state = IntPtr.Zero;
+        var processingContextHandle = default(GCHandle);
+
+        try
+        {
+            fixed (float* pData = samples)
+            {
+                segmentIndex = 0;
+                state = GetWhisperState();
+                processingContextHandle = CreateProcessingContext(
+                    cancellationToken,
+                    out var processingParams,
+                    out var processingContext,
+                    handler);
+
+                var result = nativeWhisper.Whisper_Full_With_State(
+                    currentWhisperContext,
+                    state,
+                    processingParams,
+                    (IntPtr)pData,
+                    samples.Length);
+                processingContext.ThrowIfHandlerFailed();
+                if (result != 0)
+                {
+                    ThrowTaskCanceledIfCancellationRequested(cancellationToken);
+                    throw new WhisperProcessingException(result);
+                }
+
+                ThrowTaskCanceledIfCancellationRequested(cancellationToken);
+            }
+        }
+        finally
+        {
+            if (processingContextHandle.IsAllocated)
+            {
+                processingContextHandle.Free();
+            }
+
+            if (state != IntPtr.Zero)
+            {
+                nativeWhisper.Whisper_Free_State(state);
+            }
+
+            processingSemaphore.Release();
+        }
+    }
+
+    /// <summary>
     /// Returns the strings in the given <paramref name="segmentData"/> to the string pool.
     /// </summary>
     /// <remarks>
-    /// This method should be used when <seealso cref="WhisperProcessorBuilder.WithStringPool(IStringPool?)"/> was activated.
-    /// Once a <paramref name="segmentData"/> is returned, the string values inside it (e.g. <seealso cref="SegmentData.Text"/>) might be changed.
+    /// String pooling is obsolete. This method is retained temporarily for compatibility with custom string pools.
     /// </remarks>
+    [Obsolete("String pooling is obsolete and will be removed in a future major version. Use ProcessWithUtf8HandlerAsync instead.")]
     public void Return(SegmentData segmentData)
     {
         options.StringPool?.ReturnString(segmentData.Text);
@@ -384,7 +488,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         isDisposed = true;
     }
 
-    private unsafe Task ProcessInternalAsync(ReadOnlyMemory<float> samples, CancellationToken cancellationToken)
+    private unsafe Task ProcessInternalAsync(
+        ReadOnlyMemory<float> samples,
+        CancellationToken cancellationToken,
+        Utf8SegmentHandler? utf8SegmentHandler = null)
     {
         if (isDisposed)
         {
@@ -408,9 +515,14 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 {
                     segmentIndex = 0;
                     state = GetWhisperState();
-                    processingContextHandle = CreateProcessingContext(cancellationToken, out var processingParams);
+                    processingContextHandle = CreateProcessingContext(
+                        cancellationToken,
+                        out var processingParams,
+                        out var processingContext,
+                        utf8SegmentHandler);
 
                     var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
+                    processingContext.ThrowIfHandlerFailed();
                     if (result != 0)
                     {
                         ThrowTaskCanceledIfCancellationRequested(cancellationToken);
@@ -701,9 +813,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return whisperParams;
     }
 
-    private GCHandle CreateProcessingContext(CancellationToken cancellationToken, out WhisperFullParams processingParams)
+    private GCHandle CreateProcessingContext(
+        CancellationToken cancellationToken,
+        out WhisperFullParams processingParams,
+        out ProcessingContext processingContext,
+        Utf8SegmentHandler? utf8SegmentHandler = null)
     {
-        var processingContext = new ProcessingContext(this, cancellationToken);
+        processingContext = new ProcessingContext(this, cancellationToken, utf8SegmentHandler);
         var processingContextHandle = GCHandle.Alloc(processingContext);
         var processingContextPtr = GCHandle.ToIntPtr(processingContextHandle);
 
@@ -735,6 +851,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     {
         var processingContext = GetProcessingContext(userData);
         var shouldCancel = processingContext.CancellationToken.IsCancellationRequested
+            || processingContext.HandlerFailed
             || (processingContext.Processor.options.WhisperAbortEventHandler?.Invoke() ?? false);
         return shouldCancel ? trueByte : falseByte;
     }
@@ -745,7 +862,28 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private static void OnNewSegmentStatic(IntPtr ctx, IntPtr state, int nNew, IntPtr userData)
     {
         var processingContext = GetProcessingContext(userData);
-        processingContext.Processor.OnNewSegment(state, processingContext.CancellationToken);
+        if (processingContext.HandlerFailed)
+        {
+            return;
+        }
+
+        if (processingContext.Utf8SegmentHandler is null)
+        {
+            processingContext.Processor.OnNewSegment(state, processingContext.CancellationToken);
+            return;
+        }
+
+        try
+        {
+            processingContext.Processor.OnNewUtf8Segment(
+                state,
+                processingContext.Utf8SegmentHandler,
+                processingContext.CancellationToken);
+        }
+        catch (Exception exception)
+        {
+            processingContext.SetHandlerException(exception);
+        }
     }
 
 #if !NETSTANDARD
@@ -788,6 +926,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         if (cancellationToken.IsCancellationRequested)
         {
             return false;
+        }
+
+        if (options.OnEncoderBeginEventHandlers.Count == 0)
+        {
+            return true;
         }
 
         var encoderBeginArgs = new EncoderBeginData();
@@ -904,6 +1047,39 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    private void OnNewUtf8Segment(
+        IntPtr state,
+        Utf8SegmentHandler handler,
+        CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        var segments = nativeWhisper.Whisper_Full_N_Segments_From_State(state);
+        while (segmentIndex < segments)
+        {
+            var segment = new Utf8SegmentData(
+                currentWhisperContext,
+                state,
+                segmentIndex,
+                nativeWhisper,
+                options.ComputeProbabilities);
+
+            if (!segment.TextUtf8.IsEmpty)
+            {
+                handler(segment);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+            }
+
+            segmentIndex++;
+        }
+    }
+
     private string? StringFromNativeUtf8(IntPtr nativeUtf8)
     {
         if (options.StringPool != null)
@@ -926,10 +1102,32 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         Dispose();
     }
 
-    private sealed class ProcessingContext(WhisperProcessor processor, CancellationToken cancellationToken)
+    private sealed class ProcessingContext(
+        WhisperProcessor processor,
+        CancellationToken cancellationToken,
+        Utf8SegmentHandler? utf8SegmentHandler)
     {
+        private ExceptionDispatchInfo? handlerException;
+
         public WhisperProcessor Processor { get; } = processor;
 
         public CancellationToken CancellationToken { get; } = cancellationToken;
+
+        public Utf8SegmentHandler? Utf8SegmentHandler { get; } = utf8SegmentHandler;
+
+        public bool HandlerFailed => Volatile.Read(ref handlerException) is not null;
+
+        public void SetHandlerException(Exception exception)
+        {
+            Interlocked.CompareExchange(
+                ref handlerException,
+                ExceptionDispatchInfo.Capture(exception),
+                null);
+        }
+
+        public void ThrowIfHandlerFailed()
+        {
+            Volatile.Read(ref handlerException)?.Throw();
+        }
     }
 }

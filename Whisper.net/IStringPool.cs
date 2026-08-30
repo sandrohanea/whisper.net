@@ -5,6 +5,7 @@ namespace Whisper.net;
 /// <summary>
 /// A pool for strings.
 /// </summary>
+[Obsolete("String pooling is obsolete and will be removed in a future major version. Use WhisperProcessor.ProcessWithUtf8HandlerAsync instead.")]
 public interface IStringPool
 {
     /// <summary>

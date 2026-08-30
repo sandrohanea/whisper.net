@@ -4,6 +4,8 @@ using Whisper.net.SamplingStrategy;
 
 namespace Whisper.net;
 
+#pragma warning disable CS0618 // Retained for backward compatibility until the next major version.
+
 internal sealed class WhisperProcessorOptions
 {
     public string? OpenVinoModelPath { get; set; }

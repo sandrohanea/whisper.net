@@ -6,6 +6,15 @@ public delegate void OnProgressHandler(int progress);
 
 public delegate void OnSegmentEventHandler(SegmentData e);
 
+/// <summary>
+/// Handles a recognized segment without allocating managed strings for its text.
+/// </summary>
+/// <remarks>
+/// The data and its UTF-8 spans are valid only for the duration of the callback.
+/// The handler must copy or decode any data that needs to be retained.
+/// </remarks>
+public delegate void Utf8SegmentHandler(Utf8SegmentData segment);
+
 public delegate bool OnEncoderBeginEventHandler(EncoderBeginData e);
 
 public delegate bool WhisperAbortEventHandler();

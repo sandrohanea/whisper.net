@@ -16,7 +16,6 @@ public sealed class WhisperFactory : IDisposable
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private readonly bool isEagerlyInitialized;
-    private readonly StringPool stringPool = new();
     private bool wasDisposed;
 
     private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
@@ -197,7 +196,7 @@ public sealed class WhisperFactory : IDisposable
             throw new WhisperModelLoadException("Failed to load the whisper model.");
         }
 
-        return new WhisperProcessorBuilder(contextLazy.Value, WhisperLibrary.NativeWhisper, stringPool);
+        return new WhisperProcessorBuilder(contextLazy.Value, WhisperLibrary.NativeWhisper);
     }
 
     public void Dispose()

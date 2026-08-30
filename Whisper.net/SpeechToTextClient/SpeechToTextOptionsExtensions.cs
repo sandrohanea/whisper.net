@@ -3,6 +3,7 @@
 using Microsoft.Extensions.AI;
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning disable CS0618 // String-pool options are retained for backward compatibility until the next major version.
 
 namespace Whisper.net;
 
@@ -376,8 +377,9 @@ public static class SpeechToTextOptionsExtensions
     /// <param name="options">The options to configure.</param>
     /// <returns>The same options instance for chaining.</returns>
     /// <remarks>
-    /// This will disable the pooling of strings that are generated (have effect only if <see cref="WithStringPool"/> was called).
+    /// String pooling is obsolete and disabled by default.
     /// </remarks>
+    [Obsolete("String pooling is obsolete and will be removed in a future major version.")]
     public static SpeechToTextOptions WithoutStringPool(this SpeechToTextOptions options)
     {
         options.AdditionalProperties ??= [];
@@ -496,10 +498,10 @@ public static class SpeechToTextOptionsExtensions
     /// <param name="stringPool">The string pool to use.</param>
     /// <returns>The same options instance for chaining.</returns>
     /// <remarks>
-    /// When using this option designed for high-performance use-cases,
-    /// ensure that you're returning the <see cref="SegmentData"/> object back to the <see cref="WhisperProcessor"/>
-    /// using the method <see cref="WhisperProcessor.Return(SegmentData)"/>.
+    /// String pooling is obsolete. Use <see cref="WhisperProcessor.ProcessWithUtf8HandlerAsync"/> to consume
+    /// borrowed UTF-8 text without allocating managed strings.
     /// </remarks>
+    [Obsolete("String pooling is obsolete and will be removed in a future major version. Use WhisperProcessor.ProcessWithUtf8HandlerAsync instead.")]
     public static SpeechToTextOptions WithStringPool(this SpeechToTextOptions options, IStringPool stringPool)
     {
         options.AdditionalProperties ??= [];

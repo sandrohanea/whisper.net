@@ -7,6 +7,8 @@ using Xunit;
 
 namespace Whisper.net.Tests.SpeechToText;
 
+#pragma warning disable CS0618 // String-pool APIs are covered here for backward compatibility.
+
 public class SpeechToTextOptionsExtensionsTests
 {
     [Fact]
