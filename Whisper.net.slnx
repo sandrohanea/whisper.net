@@ -84,6 +84,10 @@
       <BuildType Solution="MinSizeRel|*" Project="Release" />
       <BuildType Solution="RelWithDebInfo|*" Project="Debug" />
     </Project>
+    <Project Path="tools/RestoreNativeLibraries/RestoreNativeLibraries.csproj">
+      <BuildType Solution="MinSizeRel|*" Project="Release" />
+      <BuildType Solution="RelWithDebInfo|*" Project="Release" />
+    </Project>
   </Folder>
   <Project Path="tests/Whisper.net.Tests/Whisper.net.Tests.csproj">
     <BuildType Solution="MinSizeRel|*" Project="Debug" />

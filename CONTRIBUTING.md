@@ -58,13 +58,12 @@ Keep the submodule on the revision pinned in `.gitmodules`. When proposing updat
 Most features depend on native runtimes placed under `runtimes/Whisper.net.Runtime*`. If you do not want to build every flavour locally, download the prebuilt artifacts:
 
 ```bash
-wget https://github.com/sandrohanea/whisper.net/releases/download/preview-nativelibs-41fc9de/native-runtimes.zip
-unzip native-runtimes.zip
-cp runtime-artifacts/* runtimes -r
-rm -r runtime-artifacts
+dotnet run --project tools/RestoreNativeLibraries
 ```
 
-The `Makefile` documents how to build each runtime manually. If you modify native code, re-run the relevant make targets (e.g. `make linux`, `make windows`, `make wasm`) and update the copied binaries in `runtimes/` accordingly.
+The restorer selects the preview release matching the pinned `whisper.cpp` revision. By default, it downloads and extracts each revision once under the primary checkout's `.whisper/native-runtimes/` cache, which is shared by all linked Git worktrees. It then copies the artifacts into the current worktree. Use `--check` to inspect the current state, `--force` to replace a damaged cache entry, or `--no-cache` to use a temporary download.
+
+Preview artifacts are only suitable for managed-only development. The `Makefile` documents how to build each runtime manually. If you modify native code, native build inputs, or runtime packaging, re-run the relevant make targets (e.g. `make linux`, `make windows`, `make wasm`) and update the copied binaries in `runtimes/` accordingly.
 
 ## Building the managed code
 Restore and build from the solution root:

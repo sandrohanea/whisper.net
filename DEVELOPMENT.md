@@ -19,7 +19,7 @@ Devcontainer (optional)
   - Optional: Vulkan/CUDA/OpenVINO tools if working on those runtimes
 - Cache nuget packages via a mapped host directory (e.g., /home/vscode/.nuget/packages) for faster restores.
 - Ensure submodules are initialized if you plan to build native code: git submodule update --init --recursive
-- Native runtime download: A devcontainer can include a bootstrap script to download the prebuilt native runtimes into ./runtimes for local testing. See below for a placeholder link.
+- Native runtime download: Run `dotnet run --project tools/RestoreNativeLibraries` to populate `./runtimes` from the preview release matching the pinned `whisper.cpp` revision. Linked Git worktrees share the download cache in the primary checkout's `.whisper/native-runtimes/` directory.
   - Link: TODO add link to repository devcontainer template (e.g., .devcontainer folder) once published.
 
 Editors and IDEs
@@ -38,6 +38,7 @@ Editors and IDEs
 
 Native runtime usage during development
 - Default: Projects resolve native libraries from the published NuGet runtime packages (Whisper.net.Runtime*). This is the easiest path for library and app development.
+- Managed tests in this repository: Run `dotnet run --project tools/RestoreNativeLibraries` once per worktree. The tool reuses its shared cache, and `--check`, `--force`, `--no-cache`, and `--cache-dir` provide diagnostics and cache control.
 - Local native builds: If you change native code and want to test locally, see the section “Building The Runtime” for build instructions. Ensure your output layout matches the expected runtimes folders (./runtimes/*) so the loader can probe them.
 
 MAUI/mobile tooling

@@ -30,34 +30,28 @@ Example release:
 https://github.com/sandrohanea/whisper.net/releases/tag/preview-nativelibs-f24588a
 ```
 
-## PowerShell workflow
+## Restore workflow
 
-Run from the repository root:
-
-```powershell
-$commit = git rev-parse --short=7 HEAD:whisper.cpp
-$tag = "preview-nativelibs-$commit"
-gh release download $tag --repo sandrohanea/whisper.net --pattern native-runtimes.zip --clobber
-Expand-Archive .\native-runtimes.zip -DestinationPath . -Force
-Copy-Item .\runtime-artifacts\* .\runtimes\ -Recurse -Force
-Remove-Item .\runtime-artifacts -Recurse -Force
-Remove-Item .\native-runtimes.zip
-dotnet restore .\Whisper.net.slnx
-dotnet build .\Whisper.net.slnx --no-restore -warnaserror
-dotnet test .\Whisper.net.slnx --no-build --logger "trx"
-```
-
-## Bash workflow
-
-Run from the repository root:
+Run from the repository root on Windows, macOS, or Linux:
 
 ```bash
-commit="$(git rev-parse --short=7 HEAD:whisper.cpp)"
-tag="preview-nativelibs-$commit"
-gh release download "$tag" --repo sandrohanea/whisper.net --pattern native-runtimes.zip --clobber
-unzip -o native-runtimes.zip
-cp -R runtime-artifacts/* runtimes/
-rm -rf runtime-artifacts native-runtimes.zip
+dotnet run --project tools/RestoreNativeLibraries
+```
+
+The restorer derives the release tag from the pinned `whisper.cpp` gitlink. It caches each revision under `.whisper/native-runtimes/` in the primary checkout so linked worktrees do not download the same release repeatedly. Concurrent processes use a cache lock and publish completed entries atomically.
+
+Useful diagnostics and overrides:
+
+```bash
+dotnet run --project tools/RestoreNativeLibraries -- --check
+dotnet run --project tools/RestoreNativeLibraries -- --force
+dotnet run --project tools/RestoreNativeLibraries -- --no-cache
+dotnet run --project tools/RestoreNativeLibraries -- --cache-dir <path>
+```
+
+After the runtimes are available:
+
+```bash
 dotnet restore ./Whisper.net.slnx
 dotnet build ./Whisper.net.slnx --no-restore -warnaserror
 dotnet test ./Whisper.net.slnx --no-build --logger "trx"
@@ -65,10 +59,10 @@ dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
 ## Test model handling
 
-The preview native libs release contains native runtime artifacts, not necessarily test model files. Do not set `WHISPER_TEST_MODEL_PATH` to `runtimes/` unless the required `ggml-*.bin` model files are present there. Without that variable, the tests download models through the normal test fixture path.
+The release can contain test-model artifacts in addition to native runtimes. The restorer intentionally installs only `Whisper.net.Runtime*` directories; model population remains a separate workflow. Do not set `WHISPER_TEST_MODEL_PATH` to `runtimes/`. Without that variable, the tests download models through the normal test fixture path.
 
 ## Repository hygiene
 
 - Treat downloaded native runtimes as local test inputs, not source changes.
 - Do not commit copied binaries from `native-runtimes.zip` unless the task explicitly asks to update runtime artifacts.
-- Remove temporary `native-runtimes.zip` and `runtime-artifacts/` files after unpacking.
+- The restorer cleans up temporary archives and extraction directories automatically.

@@ -49,6 +49,21 @@
 		<ProjectReference Include="..\..\Whisper.net\Whisper.net.csproj" />
 	</ItemGroup>
 
+  <Target Name="EnsureNativeRuntimesAreAvailable"
+          BeforeTargets="PrepareForBuild"
+          Condition="'$(DesignTimeBuild)' != 'true' AND '$(USE_WHISPER_MAUI_TESTS)' == ''">
+    <ItemGroup Condition="'$(USE_WHISPER_NOAVX_TESTS)' != ''">
+      <_WhisperNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.NoAvx\**\*"
+                                 Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.NoAvx\*.targets" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(USE_WHISPER_NOAVX_TESTS)' == ''">
+      <_WhisperNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime\**\*"
+                                 Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime\*.targets" />
+    </ItemGroup>
+    <Error Condition="'@(_WhisperNativeRuntimeFile)' == ''"
+           Text="Native runtimes are missing. Run 'dotnet run --project tools/RestoreNativeLibraries' from the repository root, then retry. Preview runtimes are only suitable for managed-only changes." />
+  </Target>
+
   <!-- Files cannot be copied without PublishFolderType on MAUI, and test data is embedded as MauiAsset there -->
 	<ItemGroup Condition="$(USE_WHISPER_MAUI_TESTS) == ''">
     <None Include="..\TestData\**">
