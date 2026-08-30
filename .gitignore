@@ -36,6 +36,9 @@ bld/
 .test-models/
 test-models/
 
+# Shared development caches (including preview native runtimes)
+.whisper/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 .idea/
