@@ -2,6 +2,7 @@
 
 using Whisper.net.Internals;
 using Whisper.net.Internals.ModelLoader;
+using Whisper.net.Internals.Native;
 
 namespace Whisper.net;
 
@@ -16,16 +17,27 @@ public sealed class WhisperFactory : IDisposable
     private readonly IWhisperProcessorModelLoader loader;
     private readonly Lazy<IntPtr> contextLazy;
     private readonly bool isEagerlyInitialized;
+    private readonly WhisperModelFamily modelFamily;
+    private readonly INativeWhisper? nativeWhisper;
+    private readonly INativeParakeet? nativeParakeet;
     private bool wasDisposed;
 
-    private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit)
+    private WhisperFactory(IWhisperProcessorModelLoader loader, bool delayInit, WhisperModelFamily modelFamily)
     {
-        var nativeWhisper = WhisperLibrary.NativeWhisper;
-
         this.loader = loader;
+        this.modelFamily = modelFamily;
+        if (modelFamily == WhisperModelFamily.Parakeet)
+        {
+            nativeParakeet = ParakeetLibrary.NativeParakeet;
+        }
+        else
+        {
+            nativeWhisper = WhisperLibrary.NativeWhisper;
+        }
+
         if (!delayInit)
         {
-            var nativeContext = loader.LoadNativeContext(nativeWhisper);
+            var nativeContext = LoadNativeContext();
             isEagerlyInitialized = true;
 
 #if NET8_0_OR_GREATER
@@ -36,7 +48,7 @@ public sealed class WhisperFactory : IDisposable
         }
         else
         {
-            contextLazy = new Lazy<IntPtr>(() => loader.LoadNativeContext(WhisperLibrary.NativeWhisper), isThreadSafe: false);
+            contextLazy = new Lazy<IntPtr>(LoadNativeContext, isThreadSafe: false);
         }
     }
 
@@ -54,6 +66,21 @@ public sealed class WhisperFactory : IDisposable
         // The pointer returned by WhisperPrintSystemInfo points to a static
         // buffer owned by the native library. Do not free it here.
         return systemInfoStr;
+    }
+
+    /// <summary>
+    /// Returns information about the loaded native runtime for the selected model family.
+    /// </summary>
+    public static string? GetRuntimeInfo(WhisperModelFamily modelFamily)
+    {
+        var systemInfoPtr = modelFamily switch
+        {
+            WhisperModelFamily.Whisper => WhisperLibrary.NativeWhisper.WhisperPrintSystemInfo(),
+            WhisperModelFamily.Parakeet => ParakeetLibrary.NativeParakeet.Parakeet_Print_System_Info(),
+            _ => throw new ArgumentOutOfRangeException(nameof(modelFamily), modelFamily, "Unknown model family.")
+        };
+
+        return MarshalUtils.GetString(systemInfoPtr);
     }
 
     /// <summary>
@@ -170,7 +197,11 @@ public sealed class WhisperFactory : IDisposable
     /// <returns>An instance to the same builder.</returns>
     public static WhisperFactory FromModelLoader(IWhisperModelLoader modelLoader, WhisperFactoryOptions options)
     {
-        return new WhisperFactory(new ManagedWhisperProcessorModelLoader(modelLoader, options), options.DelayInitialization);
+        options.Validate();
+        return new WhisperFactory(
+            new ManagedWhisperProcessorModelLoader(modelLoader, options),
+            options.DelayInitialization,
+            options.ModelFamily);
     }
 
     /// <summary>
@@ -196,7 +227,9 @@ public sealed class WhisperFactory : IDisposable
             throw new WhisperModelLoadException("Failed to load the whisper model.");
         }
 
-        return new WhisperProcessorBuilder(contextLazy.Value, WhisperLibrary.NativeWhisper);
+        return modelFamily == WhisperModelFamily.Parakeet
+            ? new WhisperProcessorBuilder(contextLazy.Value, nativeParakeet!)
+            : new WhisperProcessorBuilder(contextLazy.Value, nativeWhisper!);
     }
 
     public void Dispose()
@@ -209,9 +242,23 @@ public sealed class WhisperFactory : IDisposable
         // Even if the Lazy value was not created, we still need to free the context if it was eagerly initialized.
         if ((contextLazy.IsValueCreated || isEagerlyInitialized) && contextLazy.Value != IntPtr.Zero)
         {
-            WhisperLibrary.NativeWhisper.Whisper_Free(contextLazy.Value);
+            if (modelFamily == WhisperModelFamily.Parakeet)
+            {
+                nativeParakeet!.Parakeet_Free(contextLazy.Value);
+            }
+            else
+            {
+                nativeWhisper!.Whisper_Free(contextLazy.Value);
+            }
         }
         loader.Dispose();
         wasDisposed = true;
+    }
+
+    private IntPtr LoadNativeContext()
+    {
+        return modelFamily == WhisperModelFamily.Parakeet
+            ? loader.LoadNativeParakeetContext(nativeParakeet!)
+            : loader.LoadNativeContext(nativeWhisper!);
     }
 }

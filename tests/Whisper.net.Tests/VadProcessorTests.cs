@@ -116,6 +116,11 @@ public class VadProcessorTests
             return IntPtr.Zero;
         }
 
+        public IntPtr LoadNativeParakeetContext(INativeParakeet nativeParakeet)
+        {
+            return IntPtr.Zero;
+        }
+
         public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
         {
             VadContextParams = parameters;

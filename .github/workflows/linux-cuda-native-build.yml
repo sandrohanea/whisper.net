@@ -53,6 +53,7 @@ jobs:
       - name: Run linux-cuda
         run: |
           make ${{ matrix.cuda.target }} BUILD_TYPE=${{ inputs.BuildConfig }}
+          make ${{ matrix.cuda.target }} ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Remove CUDA installer
         run: rm -rf cuda_installer-*

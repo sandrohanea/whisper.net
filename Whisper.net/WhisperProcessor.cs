@@ -23,10 +23,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private readonly IntPtr currentWhisperContext;
     private readonly WhisperProcessorOptions options;
-    private readonly INativeWhisper nativeWhisper;
+    private readonly INativeWhisper? nativeWhisper;
+    private readonly INativeParakeet? nativeParakeet;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
     private WhisperFullParams whisperParams;
+    private ParakeetFullParams parakeetParams;
     private IntPtr? language;
     private IntPtr? initialPromptText;
     private IntPtr? suppressRegex;
@@ -43,12 +45,23 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         processingSemaphore = new(1);
     }
 
+    internal WhisperProcessor(WhisperProcessorOptions options, INativeParakeet nativeParakeet)
+    {
+        this.options = options;
+        this.nativeParakeet = nativeParakeet;
+
+        currentWhisperContext = options.ContextHandle;
+        parakeetParams = GetParakeetParams();
+        processingSemaphore = new(1);
+    }
+
     /// <summary>
     /// Change the language that is used to process the audio input.
     /// </summary>
     /// <param name="newLanguage"></param>
     public void ChangeLanguage(string? newLanguage)
     {
+        ThrowIfParakeetLanguageOperation();
         var oldLanguage = language;
 
         var newParams = whisperParams;
@@ -101,11 +114,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <returns></returns>
     public unsafe (string? language, float probability) DetectLanguageWithProbability(ReadOnlySpan<float> samples, params ReadOnlySpan<string> candidateLanguages)
     {
+        ThrowIfParakeetLanguageOperation();
+        var nativeWhisper = this.nativeWhisper!;
         var probs = new float[nativeWhisper.Whisper_Lang_Max_Id() + 1];
 
         fixed (float* pData = probs)
         {
-            var state = GetWhisperState();
+            var state = GetNativeState();
             try
             {
                 fixed (float* pSamples = samples)
@@ -135,6 +150,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private int? TrySelectCandidateLanguageId(ReadOnlySpan<string> candidateLanguages, float[] probabilities)
     {
+        var nativeWhisper = this.nativeWhisper!;
         if (candidateLanguages.IsEmpty)
         {
             return null;
@@ -216,7 +232,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         fixed (float* pData = samples)
         {
-            var state = GetWhisperState();
+            var state = GetNativeState();
             try
             {
                 processingSemaphore.Wait();
@@ -228,7 +244,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     out var processingContext);
                 try
                 {
-                    var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
+                    var result = options.ModelFamily == WhisperModelFamily.Parakeet
+                        ? ProcessParakeet(state, (IntPtr)pData, samples.Length, processingContextHandle, processingContext)
+                        : nativeWhisper!.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
                     processingContext.ThrowIfHandlerFailed();
                     if (result != 0)
                     {
@@ -242,7 +260,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             }
             finally
             {
-                nativeWhisper.Whisper_Free_State(state);
+                FreeNativeState(state);
                 processingSemaphore.Release();
             }
         }
@@ -409,19 +427,21 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             fixed (float* pData = samples)
             {
                 segmentIndex = 0;
-                state = GetWhisperState();
+                state = GetNativeState();
                 processingContextHandle = CreateProcessingContext(
                     cancellationToken,
                     out var processingParams,
                     out var processingContext,
                     handler);
 
-                var result = nativeWhisper.Whisper_Full_With_State(
-                    currentWhisperContext,
-                    state,
-                    processingParams,
-                    (IntPtr)pData,
-                    samples.Length);
+                var result = options.ModelFamily == WhisperModelFamily.Parakeet
+                    ? ProcessParakeet(state, (IntPtr)pData, samples.Length, processingContextHandle, processingContext)
+                    : nativeWhisper!.Whisper_Full_With_State(
+                        currentWhisperContext,
+                        state,
+                        processingParams,
+                        (IntPtr)pData,
+                        samples.Length);
                 processingContext.ThrowIfHandlerFailed();
                 if (result != 0)
                 {
@@ -441,7 +461,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
             if (state != IntPtr.Zero)
             {
-                nativeWhisper.Whisper_Free_State(state);
+                FreeNativeState(state);
             }
 
             processingSemaphore.Release();
@@ -514,14 +534,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 try
                 {
                     segmentIndex = 0;
-                    state = GetWhisperState();
+                    state = GetNativeState();
                     processingContextHandle = CreateProcessingContext(
                         cancellationToken,
                         out var processingParams,
                         out var processingContext,
                         utf8SegmentHandler);
 
-                    var result = nativeWhisper.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
+                    var result = options.ModelFamily == WhisperModelFamily.Parakeet
+                        ? ProcessParakeet(state, (IntPtr)pData, samples.Length, processingContextHandle, processingContext)
+                        : nativeWhisper!.Whisper_Full_With_State(currentWhisperContext, state, processingParams, (IntPtr)pData, samples.Length);
                     processingContext.ThrowIfHandlerFailed();
                     if (result != 0)
                     {
@@ -540,7 +562,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
                     if (state != IntPtr.Zero)
                     {
-                        nativeWhisper.Whisper_Free_State(state);
+                        FreeNativeState(state);
                     }
 
                     processingSemaphore.Release();
@@ -551,7 +573,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private IntPtr GetWhisperState()
     {
-        var state = nativeWhisper.Whisper_Init_State(currentWhisperContext);
+        var state = nativeWhisper!.Whisper_Init_State(currentWhisperContext);
         if (RuntimeOptions.LoadedLibrary == RuntimeLibrary.OpenVino)
         {
             var modelPath = MarshalUtils.GetStringHGlobalPtr(options.OpenVinoModelPath);
@@ -578,6 +600,49 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return state;
     }
 
+    private IntPtr GetNativeState()
+    {
+        return options.ModelFamily == WhisperModelFamily.Parakeet
+            ? nativeParakeet!.Parakeet_Init_State(currentWhisperContext)
+            : GetWhisperState();
+    }
+
+    private void FreeNativeState(IntPtr state)
+    {
+        if (options.ModelFamily == WhisperModelFamily.Parakeet)
+        {
+            nativeParakeet!.Parakeet_Free_State(state);
+        }
+        else
+        {
+            nativeWhisper!.Whisper_Free_State(state);
+        }
+    }
+
+    private int ProcessParakeet(
+        IntPtr state,
+        IntPtr samples,
+        int sampleCount,
+        GCHandle processingContextHandle,
+        ProcessingContext processingContext)
+    {
+        var processingParams = parakeetParams;
+        var processingContextPtr = GCHandle.ToIntPtr(processingContextHandle);
+        processingParams.OnNewSegmentUserData = processingContextPtr;
+        processingParams.OnEncoderBeginUserData = processingContextPtr;
+        processingParams.OnAbortUserData = processingContextPtr;
+        processingParams.OnProgressUserData = processingContextPtr;
+
+        var result = nativeParakeet!.Parakeet_Full_With_State(
+            currentWhisperContext,
+            state,
+            processingParams,
+            samples,
+            sampleCount);
+        processingContext.ThrowIfHandlerFailed();
+        return result;
+    }
+
     private static void ThrowTaskCanceledIfCancellationRequested(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -588,6 +653,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private WhisperFullParams GetWhisperParams()
     {
+        var nativeWhisper = this.nativeWhisper!;
         var strategy = options.SamplingStrategy.GetNativeStrategy();
         var whisperParamsRef = nativeWhisper.Whisper_Full_Default_Params_By_Ref(strategy);
         var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
@@ -813,6 +879,79 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         return whisperParams;
     }
 
+    private ParakeetFullParams GetParakeetParams()
+    {
+        var paramsRef = nativeParakeet!.Parakeet_Full_Default_Params_By_Ref(ParakeetSamplingStrategy.Greedy);
+        var parameters = Marshal.PtrToStructure<ParakeetFullParams>(paramsRef);
+        nativeParakeet.Parakeet_Free_Params(paramsRef);
+
+        if (options.Threads.HasValue)
+        {
+            parameters.Threads = options.Threads.Value;
+        }
+        if (options.Offset.HasValue)
+        {
+            parameters.OffsetMs = (int)options.Offset.Value.TotalMilliseconds;
+        }
+        if (options.Duration.HasValue)
+        {
+            parameters.DurationMs = (int)options.Duration.Value.TotalMilliseconds;
+        }
+        if (options.NoContext.HasValue)
+        {
+            parameters.NoContext = options.NoContext.Value ? trueByte : falseByte;
+        }
+        if (options.AudioContextSize.HasValue)
+        {
+            parameters.AudioContextSize = options.AudioContextSize.Value;
+        }
+
+#if NETSTANDARD
+        var onNewSegmentDelegate = new ParakeetNewSegmentCallback(OnNewSegmentStatic);
+        var gcHandle = GCHandle.Alloc(onNewSegmentDelegate);
+        gcHandles.Add(gcHandle);
+        parameters.OnNewSegment = Marshal.GetFunctionPointerForDelegate(onNewSegmentDelegate);
+
+        var onEncoderBeginDelegate = new ParakeetEncoderBeginCallback(OnEncoderBeginStatic);
+        gcHandle = GCHandle.Alloc(onEncoderBeginDelegate);
+        gcHandles.Add(gcHandle);
+        parameters.OnEncoderBegin = Marshal.GetFunctionPointerForDelegate(onEncoderBeginDelegate);
+
+        var onAbortDelegate = new ParakeetAbortCallback(OnWhisperAbortStatic);
+        gcHandle = GCHandle.Alloc(onAbortDelegate);
+        gcHandles.Add(gcHandle);
+        parameters.OnAbort = Marshal.GetFunctionPointerForDelegate(onAbortDelegate);
+
+        if (options.OnProgressHandlers.Count > 0)
+        {
+            var onProgressDelegate = new ParakeetProgressCallback(OnProgressStatic);
+            gcHandle = GCHandle.Alloc(onProgressDelegate);
+            gcHandles.Add(gcHandle);
+            parameters.OnProgress = Marshal.GetFunctionPointerForDelegate(onProgressDelegate);
+        }
+#else
+        unsafe
+        {
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onNewSegmentDelegate = &OnNewSegmentStatic;
+            parameters.OnNewSegment = (IntPtr)onNewSegmentDelegate;
+
+            delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, byte> onEncoderBeginDelegate = &OnEncoderBeginStatic;
+            parameters.OnEncoderBegin = (IntPtr)onEncoderBeginDelegate;
+
+            delegate* unmanaged[Cdecl]<IntPtr, byte> onAbortDelegate = &OnWhisperAbortStatic;
+            parameters.OnAbort = (IntPtr)onAbortDelegate;
+
+            if (options.OnProgressHandlers.Count > 0)
+            {
+                delegate* unmanaged[Cdecl]<IntPtr, IntPtr, int, IntPtr, void> onProgressDelegate = &OnProgressStatic;
+                parameters.OnProgress = (IntPtr)onProgressDelegate;
+            }
+        }
+#endif
+
+        return parameters;
+    }
+
     private GCHandle CreateProcessingContext(
         CancellationToken cancellationToken,
         out WhisperFullParams processingParams,
@@ -953,7 +1092,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             return;
         }
 
-        var segments = nativeWhisper.Whisper_Full_N_Segments_From_State(state);
+        if (options.ModelFamily == WhisperModelFamily.Parakeet)
+        {
+            OnNewParakeetSegment(state, cancellationToken);
+            return;
+        }
+
+        var segments = nativeWhisper!.Whisper_Full_N_Segments_From_State(state);
 
         while (segmentIndex < segments)
         {
@@ -1047,6 +1192,97 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    private void OnNewParakeetSegment(IntPtr state, CancellationToken cancellationToken)
+    {
+        var segments = nativeParakeet!.Parakeet_Full_N_Segments_From_State(state);
+        while (segmentIndex < segments)
+        {
+            var t0 = TimeSpan.FromMilliseconds(
+                nativeParakeet.Parakeet_Full_Get_Segment_T0_From_State(state, segmentIndex) * 10);
+            var t1 = TimeSpan.FromMilliseconds(
+                nativeParakeet.Parakeet_Full_Get_Segment_T1_From_State(state, segmentIndex) * 10);
+            var text = StringFromNativeUtf8(
+                nativeParakeet.Parakeet_Full_Get_Segment_Text_From_State(state, segmentIndex));
+            var numberOfTokens = nativeParakeet.Parakeet_Full_N_Tokens_From_State(state, segmentIndex);
+            var tokens = new WhisperToken[numberOfTokens];
+            var minimumProbability = 0f;
+            var maximumProbability = 0f;
+            var sumProbability = 0d;
+
+            for (var tokenIndex = 0; tokenIndex < numberOfTokens; tokenIndex++)
+            {
+                var tokenData = nativeParakeet.Parakeet_Full_Get_Token_Data_From_State(
+                    state,
+                    segmentIndex,
+                    tokenIndex);
+                tokens[tokenIndex] = new WhisperToken
+                {
+                    Id = tokenData.Id,
+                    Probability = tokenData.Probability,
+                    ProbabilityLog = tokenData.ProbabilityLog,
+                    Text = StringFromNativeUtf8(
+                        nativeParakeet.Parakeet_Full_Get_Token_Text_From_State(
+                            currentWhisperContext,
+                            state,
+                            segmentIndex,
+                            tokenIndex)),
+                    Start = tokenData.Start,
+                    End = tokenData.End
+                };
+
+                if (options.ComputeProbabilities)
+                {
+                    var probability = nativeParakeet.Parakeet_Full_Get_Token_P_From_State(
+                        state,
+                        segmentIndex,
+                        tokenIndex);
+                    sumProbability += probability;
+                    if (tokenIndex == 0)
+                    {
+                        minimumProbability = probability;
+                        maximumProbability = probability;
+                    }
+                    else
+                    {
+                        minimumProbability = Math.Min(minimumProbability, probability);
+                        maximumProbability = Math.Max(maximumProbability, probability);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                var segmentData = new SegmentData(
+                    text!,
+                    t0,
+                    t1,
+                    minimumProbability,
+                    maximumProbability,
+                    numberOfTokens == 0 ? 0f : (float)(sumProbability / numberOfTokens),
+                    float.NaN,
+                    string.Empty,
+                    tokens);
+
+                OnSegmentEventHandler[] handlers;
+                lock (options.OnSegmentEventHandlers)
+                {
+                    handlers = options.OnSegmentEventHandlers.ToArray();
+                }
+
+                foreach (var handler in handlers)
+                {
+                    handler?.Invoke(segmentData);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            segmentIndex++;
+        }
+    }
+
     private void OnNewUtf8Segment(
         IntPtr state,
         Utf8SegmentHandler handler,
@@ -1057,15 +1293,24 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             return;
         }
 
-        var segments = nativeWhisper.Whisper_Full_N_Segments_From_State(state);
+        var segments = options.ModelFamily == WhisperModelFamily.Parakeet
+            ? nativeParakeet!.Parakeet_Full_N_Segments_From_State(state)
+            : nativeWhisper!.Whisper_Full_N_Segments_From_State(state);
         while (segmentIndex < segments)
         {
-            var segment = new Utf8SegmentData(
-                currentWhisperContext,
-                state,
-                segmentIndex,
-                nativeWhisper,
-                options.ComputeProbabilities);
+            var segment = options.ModelFamily == WhisperModelFamily.Parakeet
+                ? new Utf8SegmentData(
+                    currentWhisperContext,
+                    state,
+                    segmentIndex,
+                    nativeParakeet!,
+                    options.ComputeProbabilities)
+                : new Utf8SegmentData(
+                    currentWhisperContext,
+                    state,
+                    segmentIndex,
+                    nativeWhisper!,
+                    options.ComputeProbabilities);
 
             if (!segment.TextUtf8.IsEmpty)
             {
@@ -1088,6 +1333,14 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
 
         return MarshalUtils.GetString(nativeUtf8);
+    }
+
+    private void ThrowIfParakeetLanguageOperation()
+    {
+        if (options.ModelFamily == WhisperModelFamily.Parakeet)
+        {
+            throw new NotSupportedException("Language selection and detection are not supported by the Parakeet engine.");
+        }
     }
 
     /// <summary>

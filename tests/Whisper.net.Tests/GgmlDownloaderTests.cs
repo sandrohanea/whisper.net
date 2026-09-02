@@ -80,6 +80,55 @@ public class GgmlDownloaderTests
         Assert.Null(handler.RequestUri);
     }
 
+    [Theory]
+    [InlineData(ParakeetQuantizationType.F32, "f32")]
+    [InlineData(ParakeetQuantizationType.F16, "f16")]
+    [InlineData(ParakeetQuantizationType.Q8_0, "q8_0")]
+    [InlineData(ParakeetQuantizationType.Q4_0, "q4_0")]
+    [InlineData(ParakeetQuantizationType.Q4_K, "q4_k")]
+    public async Task GetGgmlParakeetModelAsync_ShouldDownloadPublishedVariant(
+        ParakeetQuantizationType quantization,
+        string fileSuffix)
+    {
+        using var handler = new CapturingHandler();
+        using var httpClient = new HttpClient(handler);
+        var downloader = new WhisperGgmlDownloader(httpClient);
+
+        using var _ = await downloader.GetGgmlParakeetModelAsync(ParakeetModelType.Tdt0_6B_V3, quantization);
+
+        Assert.Equal(
+            new Uri($"https://huggingface.co/ggml-org/parakeet-GGUF/resolve/main/ggml-parakeet-tdt-0.6b-v3-{fileSuffix}.bin"),
+            handler.RequestUri);
+    }
+
+    [Fact]
+    public async Task GetGgmlParakeetModelAsync_WithInvalidModelType_ShouldThrow()
+    {
+        using var handler = new CapturingHandler();
+        using var httpClient = new HttpClient(handler);
+        var downloader = new WhisperGgmlDownloader(httpClient);
+
+        var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+            () => downloader.GetGgmlParakeetModelAsync((ParakeetModelType)999, ParakeetQuantizationType.F16));
+
+        Assert.Equal("type", exception.ParamName);
+        Assert.Null(handler.RequestUri);
+    }
+
+    [Fact]
+    public async Task GetGgmlParakeetModelAsync_WithInvalidQuantizationType_ShouldThrow()
+    {
+        using var handler = new CapturingHandler();
+        using var httpClient = new HttpClient(handler);
+        var downloader = new WhisperGgmlDownloader(httpClient);
+
+        var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+            () => downloader.GetGgmlParakeetModelAsync(ParakeetModelType.Tdt0_6B_V3, (ParakeetQuantizationType)999));
+
+        Assert.Equal("quantization", exception.ParamName);
+        Assert.Null(handler.RequestUri);
+    }
+
     private sealed class CapturingHandler : HttpMessageHandler
     {
         public Uri? RequestUri { get; private set; }

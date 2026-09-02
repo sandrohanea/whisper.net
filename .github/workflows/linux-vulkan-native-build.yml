@@ -67,6 +67,7 @@ jobs:
       - name: Run linux
         run: |
           make linux_vulkan BUILD_TYPE=${{ inputs.BuildConfig }}
+          make linux_vulkan ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Linux Vulkan Build Artifacts
         uses: actions/upload-artifact@v6

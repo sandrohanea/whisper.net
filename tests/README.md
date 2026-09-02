@@ -42,6 +42,10 @@ Environment variables
   - Examples:
     - Bash: export HF_TOKEN=hf_xxx
     - PowerShell: $env:HF_TOKEN = "hf_xxx"
+- PARAKEET_SYNTHETIC_TEST_MODEL_PATH (optional)
+  - Full path to `whisper.cpp/models/for-tests-ggml-parakeet-tdt.bin`. Enables the small native smoke test that runs Whisper and Parakeet in the same process.
+- PARAKEET_TEST_MODEL_PATH (optional)
+  - Full path to `ggml-parakeet-tdt-0.6b-v3-q4_0.bin`. Enables real Parakeet transcription coverage; the test verifies SHA-256 `aa7fe2f5fb47d863ca23e8b1d490632d63a2599f515268b6d6bd656158dad45e`.
 
 MAUI tests (advanced)
 - Android
