@@ -206,7 +206,7 @@ using var factory = WhisperFactory.FromPath(modelPath, new()
 using var processor = factory.CreateBuilder().Build();
 ```
 
-Whisper remains the default because Whisper and Parakeet model files cannot be reliably distinguished from their file header. Translation, language selection/detection, prompts, beam search, temperature fallback, token timestamps, Flash Attention, DTW, CoreML, and OpenVINO are not supported by the Parakeet engine; explicitly configuring them throws `NotSupportedException`. Voice activity detection (`WhisperVadFactory`) is a Whisper-only feature that always loads the Whisper native engine regardless of `WhisperFactoryOptions.ModelFamily`, so it cannot be paired with the Parakeet engine.
+Whisper remains the default because Whisper and Parakeet model files cannot be reliably distinguished from their file header. Translation, language selection/detection, prompts, beam search, temperature fallback, token timestamps, native print options, Flash Attention, DTW, CoreML, and OpenVINO are not supported by the Parakeet engine; explicitly configuring them throws `NotSupportedException`. Voice activity detection (`WhisperVadFactory`) is a Whisper-only feature that always loads the Whisper native engine regardless of `WhisperFactoryOptions.ModelFamily`, so it cannot be paired with the Parakeet engine.
 
 Parakeet results use the shared `SegmentData` and `WhisperToken` types. `SegmentData.Language` is empty and `NoSpeechProbability` is `float.NaN`; Whisper-only token fields are zero.
 
@@ -305,7 +305,9 @@ if (!File.Exists(vadModelName))
 using var vadFactory = WhisperVadFactory.FromPath(vadModelName);
 ```
 
-Parakeet TDT 0.6B v3 models are available from the MIT-licensed [`ggml-org/parakeet-GGUF`](https://huggingface.co/ggml-org/parakeet-GGUF) repository in F32, F16, Q8_0, Q4_0, and Q4_K variants. For example, the Q4_0 model is approximately 356 MB:
+Parakeet TDT 0.6B v3 models are mirrored in [`sandrohanea/whisper.net` at `v5`](https://huggingface.co/sandrohanea/whisper.net/tree/v5/parakeet) in F32, F16, Q8_0, Q4_0, and Q4_K variants. All Whisper, Parakeet, encoder, and VAD downloads use this shared fixed version rather than an upstream `main` branch. Existing Whisper, encoder, and VAD model bytes are unchanged from `v4`, which remains available for older Whisper.net releases.
+
+The mirrors preserve the converted files from [`ggml-org/parakeet-GGUF` at `35156454d1a39de06863303dd209fd2bed6ee079`](https://huggingface.co/ggml-org/parakeet-GGUF/tree/35156454d1a39de06863303dd209fd2bed6ee079). NVIDIA's original [Parakeet TDT 0.6B v3 weights](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3) are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/); the conversion repository declares MIT, which does not replace the original weights' attribution obligations. The mirror's [provenance and checksum manifest](https://huggingface.co/sandrohanea/whisper.net/blob/v5/parakeet/README.md) records both sources. For example, the Q4_0 model is approximately 356 MB:
 
 ```csharp
 using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlParakeetModelAsync(
@@ -334,7 +336,7 @@ pip install silero-vad
 python .\whisper.cpp\models\convert-silero-vad-to-ggml.py --output .\whisper.cpp\models\silero.bin
 ```
 
-The conversion script names the output with the Silero package version, for example `silero-v6.2.0-ggml.bin`; add it to the Whisper.net Hugging Face repository as `vad/ggml-silero-v6.2.0.bin`, then create the `v4` tag from that commit so the downloader can resolve it.
+The conversion script names the output with the Silero package version, for example `silero-v6.2.0-ggml.bin`. The current `v5` snapshot includes this model as `vad/ggml-silero-v6.2.0.bin`. Future model updates require a new Hugging Face version tag and an update to the downloader's shared model version; do not move existing tags.
 
 ### Environment variables for model downloads
 

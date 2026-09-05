@@ -3,7 +3,7 @@
 namespace Whisper.net.Ggml;
 
 /// <summary>
-/// Specifies a Parakeet model published by the official ggml-org Parakeet GGUF repository.
+/// Specifies a Parakeet model mirrored in the versioned Whisper.net Hugging Face repository.
 /// </summary>
 public enum ParakeetModelType
 {

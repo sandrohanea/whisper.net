@@ -34,7 +34,8 @@ Offline/local model cache (no network)
   - Bash: `WHISPER_TEST_MODEL_PATH="$PWD/.test-models" dotnet run --project ./tools/DownloadModelForTests/DownloadModelForTests.csproj`
 - Point tests to that directory:
   - `WHISPER_TEST_MODEL_PATH=/full/path/to/test-models`
-- The directory should contain model files such as `ggml-tiny-noquantization.bin`, `ggml-tiny-q5_0.bin`, and `ggml-silero-v6.2.0.bin`.
+- The directory should contain model files such as `ggml-tiny-noquantization.bin`, `ggml-tiny-q5_0.bin`, `ggml-silero-v6.2.0.bin`, and `ggml-parakeet-tdt-0.6b-v3-q4_0.bin`.
+- CI runs the same downloader and publishes these files in the `test-models` artifact. The Linux Parakeet integration test consumes that artifact from `runtimes`, alongside the Whisper models.
 
 Environment variables
 - HF_TOKEN (optional)
@@ -45,7 +46,7 @@ Environment variables
 - PARAKEET_SYNTHETIC_TEST_MODEL_PATH (optional)
   - Full path to `whisper.cpp/models/for-tests-ggml-parakeet-tdt.bin`. Enables the small native smoke test that runs Whisper and Parakeet in the same process.
 - PARAKEET_TEST_MODEL_PATH (optional)
-  - Full path to `ggml-parakeet-tdt-0.6b-v3-q4_0.bin`. Enables real Parakeet transcription coverage; the test verifies SHA-256 `aa7fe2f5fb47d863ca23e8b1d490632d63a2599f515268b6d6bd656158dad45e`.
+  - Full path to `ggml-parakeet-tdt-0.6b-v3-q4_0.bin` from the [`sandrohanea/whisper.net` v5 mirror](https://huggingface.co/sandrohanea/whisper.net/resolve/v5/parakeet/ggml-parakeet-tdt-0.6b-v3-q4_0.bin). Enables real Parakeet transcription coverage; the test verifies SHA-256 `aa7fe2f5fb47d863ca23e8b1d490632d63a2599f515268b6d6bd656158dad45e`.
 
 MAUI tests (advanced)
 - Android

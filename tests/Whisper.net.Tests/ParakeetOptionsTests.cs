@@ -59,6 +59,32 @@ public class ParakeetOptionsTests
         Assert.DoesNotContain(RuntimeLibrary.OpenVino, RuntimeOptions.ParakeetRuntimeLibraryOrder);
     }
 
+    [Fact]
+    public void ProcessorOptions_WithParakeetPrintProgress_ShouldThrow()
+    {
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Parakeet,
+            PrintProgress = true
+        };
+
+        var exception = Assert.Throws<NotSupportedException>(options.ValidateModelFamilyCompatibility);
+
+        Assert.Contains("Printing progress", exception.Message);
+    }
+
+    [Fact]
+    public void ProcessorOptions_WithParakeetPrintProgressDisabled_ShouldNotThrow()
+    {
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Parakeet,
+            PrintProgress = false
+        };
+
+        options.ValidateModelFamilyCompatibility();
+    }
+
     private sealed class EmptyModelLoader : IWhisperModelLoader
     {
         public bool IsEof => true;

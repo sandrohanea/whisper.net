@@ -1006,18 +1006,19 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             return;
         }
 
-        if (processingContext.Utf8SegmentHandler is null)
-        {
-            processingContext.Processor.OnNewSegment(state, processingContext.CancellationToken);
-            return;
-        }
-
         try
         {
-            processingContext.Processor.OnNewUtf8Segment(
-                state,
-                processingContext.Utf8SegmentHandler,
-                processingContext.CancellationToken);
+            if (processingContext.Utf8SegmentHandler is null)
+            {
+                processingContext.Processor.OnNewSegment(state, processingContext.CancellationToken);
+            }
+            else
+            {
+                processingContext.Processor.OnNewUtf8Segment(
+                    state,
+                    processingContext.Utf8SegmentHandler,
+                    processingContext.CancellationToken);
+            }
         }
         catch (Exception exception)
         {

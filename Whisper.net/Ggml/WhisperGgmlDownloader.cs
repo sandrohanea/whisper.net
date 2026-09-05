@@ -5,8 +5,7 @@ namespace Whisper.net.Ggml;
 public class WhisperGgmlDownloader(HttpClient httpClient)
 {
     private const string HuggingFaceRepository = "https://huggingface.co/sandrohanea/whisper.net/resolve";
-    private const string ParakeetHuggingFaceRepository = "https://huggingface.co/ggml-org/parakeet-GGUF/resolve/main";
-    private const string ModelVersion = "v4";
+    private const string ModelVersion = "v5";
 
     private static readonly Lazy<WhisperGgmlDownloader> defaultInstance = new
         (
@@ -112,7 +111,7 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
     }
 
     /// <summary>
-    /// Gets the download stream for a Parakeet model from the official ggml-org Parakeet GGUF repository.
+    /// Gets the download stream for a Parakeet model from the versioned Whisper.net Hugging Face repository.
     /// </summary>
     /// <param name="type">The Parakeet model to download.</param>
     /// <param name="quantization">The precision or quantization variant to download.</param>
@@ -128,7 +127,7 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
     {
         var modelName = GetParakeetModelName(type);
         var quantizationName = GetParakeetQuantizationName(quantization);
-        var url = $"{ParakeetHuggingFaceRepository}/{modelName}-{quantizationName}.bin";
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/parakeet/{modelName}-{quantizationName}.bin";
 
 #if NETSTANDARD
         return await httpClient.GetStreamAsync(url);

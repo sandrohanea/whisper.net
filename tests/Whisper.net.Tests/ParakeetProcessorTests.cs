@@ -77,6 +77,25 @@ public class ParakeetProcessorTests
         Assert.Throws<NotSupportedException>(() => processor.DetectLanguageWithProbability([0f]));
     }
 
+    [Fact]
+    public void Process_WhenSegmentHandlerThrows_RethrowsAfterNativeCall()
+    {
+        using var native = new FakeNativeParakeet();
+        var expectedException = new InvalidOperationException("Segment handler failed.");
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Parakeet,
+            ContextHandle = new IntPtr(1),
+            OnSegmentEventHandlers = [_ => throw expectedException]
+        };
+        using var processor = new WhisperProcessor(options, native);
+
+        var actualException = Assert.Throws<InvalidOperationException>(() => processor.Process(new float[160]));
+
+        Assert.Same(expectedException, actualException);
+        Assert.True(native.NativeCallCompleted);
+    }
+
     private sealed class FakeNativeParakeet : INativeParakeet
     {
         private readonly IntPtr text = AllocateUtf8("hello");
@@ -104,6 +123,7 @@ public class ParakeetProcessorTests
                 var callback = Marshal.GetDelegateForFunctionPointer<ParakeetNewSegmentCallback>(
                     parameters.OnNewSegment);
                 callback(new IntPtr(1), state, 1, parameters.OnNewSegmentUserData);
+                NativeCallCompleted = true;
                 return 0;
             };
             Parakeet_Full_N_Segments_From_State = _ => 1;
@@ -126,6 +146,8 @@ public class ParakeetProcessorTests
         }
 
         public ParakeetFullParams LastParameters { get; private set; }
+
+        public bool NativeCallCompleted { get; private set; }
 
         public INativeParakeet.parakeet_init_with_params_no_state Parakeet_Init_With_Params_No_State { get; }
         public INativeParakeet.parakeet_free Parakeet_Free { get; }

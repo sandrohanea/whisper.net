@@ -112,6 +112,7 @@ internal sealed class WhisperProcessorOptions
         if (Translate.HasValue) return "Translation";
         if (SingleSegment.HasValue) return "Single-segment output";
         if (PrintSpecialTokens.HasValue) return "Printing special tokens";
+        if (PrintProgress == true) return "Printing progress";
         if (PrintResults.HasValue) return "Printing results";
         if (PrintTimestamps.HasValue) return "Printing timestamps";
         if (UseTokenTimestamps.HasValue) return "Whisper token timestamps";

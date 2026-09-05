@@ -176,27 +176,11 @@ jobs:
       - name: Build
         run: dotnet build ./Whisper.net.slnx --no-restore -warnaserror
 
-      - name: Cache Parakeet integration model
-        uses: actions/cache@v5
-        with:
-          path: .test-models/ggml-parakeet-tdt-0.6b-v3-q4_0.bin
-          key: parakeet-tdt-0.6b-v3-q4_0-aa7fe2f5
-
-      - name: Prepare Parakeet integration model
-        run: |
-          mkdir -p .test-models
-          if [ ! -f .test-models/ggml-parakeet-tdt-0.6b-v3-q4_0.bin ]; then
-            curl --fail --location --retry 3 \
-              https://huggingface.co/ggml-org/parakeet-GGUF/resolve/main/ggml-parakeet-tdt-0.6b-v3-q4_0.bin \
-              --output .test-models/ggml-parakeet-tdt-0.6b-v3-q4_0.bin
-          fi
-          echo "aa7fe2f5fb47d863ca23e8b1d490632d63a2599f515268b6d6bd656158dad45e  .test-models/ggml-parakeet-tdt-0.6b-v3-q4_0.bin" | sha256sum --check
-
       - name: Test
         run: |
           export WHISPER_TEST_MODEL_PATH="$(cd ./runtimes && pwd)"
           export PARAKEET_SYNTHETIC_TEST_MODEL_PATH="$(cd ./whisper.cpp/models && pwd)/for-tests-ggml-parakeet-tdt.bin"
-          export PARAKEET_TEST_MODEL_PATH="$(cd ./.test-models && pwd)/ggml-parakeet-tdt-0.6b-v3-q4_0.bin"
+          export PARAKEET_TEST_MODEL_PATH="$(cd ./runtimes && pwd)/ggml-parakeet-tdt-0.6b-v3-q4_0.bin"
           dotnet test ./Whisper.net.slnx --no-build --logger "trx"
 
       - name: Test Reporter
