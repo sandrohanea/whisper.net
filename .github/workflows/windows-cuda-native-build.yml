@@ -49,6 +49,7 @@ jobs:
         run: |
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }} -CudaVersion "${{ matrix.cuda.major }}"
+          BuildWindows -Arch "x64" -Cuda $true -Configuration ${{ inputs.BuildConfig }} -CudaVersion "${{ matrix.cuda.major }}" -Engine "Parakeet"
         shell: pwsh
 
       - name: Remove CUDA installer

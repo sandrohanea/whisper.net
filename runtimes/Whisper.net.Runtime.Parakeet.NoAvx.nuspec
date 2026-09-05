@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Parakeet.NoAvx</id>
+    <title>Whisper.Net.Runtime.Parakeet.NoAvx</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>No-AVX native runtimes for Parakeet.</summary>
+    <description>Whisper.net.Runtime.Parakeet.NoAvx contains CPU runtime libraries for Parakeet without AVX optimizations.</description>
+    <tags>whisper;parakeet;noavx;linux;windows</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Parakeet.NoAvx\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

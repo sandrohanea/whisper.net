@@ -11,12 +11,27 @@ namespace Whisper.net;
 public class WhisperProcessorBuilder
 {
     private readonly WhisperProcessorOptions whisperProcessorOptions;
-    private readonly INativeWhisper nativeWhisper;
+    private readonly INativeWhisper? nativeWhisper;
+    private readonly INativeParakeet? nativeParakeet;
 
-    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper)
+    internal WhisperProcessorBuilder(IntPtr context, INativeWhisper nativeWhisper, WhisperModelFamily modelFamily = WhisperModelFamily.Whisper)
     {
-        whisperProcessorOptions = new WhisperProcessorOptions() { ContextHandle = context };
+        whisperProcessorOptions = new WhisperProcessorOptions
+        {
+            ContextHandle = context,
+            ModelFamily = modelFamily
+        };
         this.nativeWhisper = nativeWhisper;
+    }
+
+    internal WhisperProcessorBuilder(IntPtr context, INativeParakeet nativeParakeet)
+    {
+        whisperProcessorOptions = new WhisperProcessorOptions
+        {
+            ContextHandle = context,
+            ModelFamily = WhisperModelFamily.Parakeet
+        };
+        this.nativeParakeet = nativeParakeet;
     }
 
     /// <summary>
@@ -583,6 +598,9 @@ public class WhisperProcessorBuilder
     /// <returns>The <seealso cref="WhisperProcessor"/> build with these configs.</returns>
     public WhisperProcessor Build()
     {
-        return new WhisperProcessor(whisperProcessorOptions, nativeWhisper);
+        whisperProcessorOptions.ValidateModelFamilyCompatibility();
+        return whisperProcessorOptions.ModelFamily == WhisperModelFamily.Parakeet
+            ? new WhisperProcessor(whisperProcessorOptions, nativeParakeet!)
+            : new WhisperProcessor(whisperProcessorOptions, nativeWhisper!);
     }
 }

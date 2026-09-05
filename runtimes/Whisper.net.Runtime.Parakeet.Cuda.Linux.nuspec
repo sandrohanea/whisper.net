@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Parakeet.Cuda.Linux</id>
+    <title>Whisper.Net.Runtime.Parakeet.Cuda.Linux</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Linux CUDA native runtime for Parakeet.</summary>
+    <description>Whisper.net.Runtime.Parakeet.Cuda.Linux enables Parakeet GPU processing with the current CUDA runtime on Linux.</description>
+    <tags>whisper;parakeet;cuda;gpu;cublas;linux</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Parakeet.Cuda.Linux\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

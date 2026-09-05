@@ -24,6 +24,7 @@ jobs:
       - name: Run macos build for x64
         run: |
           make apple_x64 BUILD_TYPE=${{ inputs.BuildConfig }}
+          make apple_x64 ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Intel Build Artifacts
         uses: actions/upload-artifact@v6
@@ -45,6 +46,7 @@ jobs:
       - name: Run macos build for arm and Mac Catalyst
         run: |
           make macos_arm64 maccatalyst_arm64 BUILD_TYPE=${{ inputs.BuildConfig }}
+          make macos_arm64 maccatalyst_arm64 ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Mac Arm Build Artifacts
         uses: actions/upload-artifact@v6

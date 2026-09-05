@@ -5,7 +5,7 @@ namespace Whisper.net.Ggml;
 public class WhisperGgmlDownloader(HttpClient httpClient)
 {
     private const string HuggingFaceRepository = "https://huggingface.co/sandrohanea/whisper.net/resolve";
-    private const string ModelVersion = "v4";
+    private const string ModelVersion = "v5";
 
     private static readonly Lazy<WhisperGgmlDownloader> defaultInstance = new
         (
@@ -110,6 +110,32 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
 #endif
     }
 
+    /// <summary>
+    /// Gets the download stream for a Parakeet model from the versioned Whisper.net Hugging Face repository.
+    /// </summary>
+    /// <param name="type">The Parakeet model to download.</param>
+    /// <param name="quantization">The precision or quantization variant to download.</param>
+    /// <param name="cancellationToken">A cancellation token used to stop the request to Hugging Face.</param>
+    /// <returns>A stream containing the requested Parakeet model.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="type"/> or <paramref name="quantization"/> is not a defined value.
+    /// </exception>
+    public async Task<Stream> GetGgmlParakeetModelAsync(
+        ParakeetModelType type,
+        ParakeetQuantizationType quantization,
+        CancellationToken cancellationToken = default)
+    {
+        var modelName = GetParakeetModelName(type);
+        var quantizationName = GetParakeetQuantizationName(quantization);
+        var url = $"{HuggingFaceRepository}/{ModelVersion}/parakeet/{modelName}-{quantizationName}.bin";
+
+#if NETSTANDARD
+        return await httpClient.GetStreamAsync(url);
+#else
+        return await httpClient.GetStreamAsync(url, cancellationToken);
+#endif
+    }
+
     private static string GetModelName(GgmlType type)
     {
         return type switch
@@ -151,6 +177,28 @@ public class WhisperGgmlDownloader(HttpClient httpClient)
             SileroVadType.V5_1_2 => "ggml-silero-v5.1.2",
             SileroVadType.V6_2_0 => "ggml-silero-v6.2.0",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    private static string GetParakeetModelName(ParakeetModelType type)
+    {
+        return type switch
+        {
+            ParakeetModelType.Tdt0_6B_V3 => "ggml-parakeet-tdt-0.6b-v3",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    private static string GetParakeetQuantizationName(ParakeetQuantizationType quantization)
+    {
+        return quantization switch
+        {
+            ParakeetQuantizationType.F32 => "f32",
+            ParakeetQuantizationType.F16 => "f16",
+            ParakeetQuantizationType.Q8_0 => "q8_0",
+            ParakeetQuantizationType.Q4_0 => "q4_0",
+            ParakeetQuantizationType.Q4_K => "q4_k",
+            _ => throw new ArgumentOutOfRangeException(nameof(quantization), quantization, null)
         };
     }
 }

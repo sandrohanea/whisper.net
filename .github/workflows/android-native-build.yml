@@ -26,7 +26,9 @@ jobs:
           ndk-version: r25c
 
       - name: Run android build
-        run: make android BUILD_TYPE=${{ inputs.BuildConfig }}
+        run: |
+          make android BUILD_TYPE=${{ inputs.BuildConfig }}
+          make android ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Android Build Artifacts
         uses: actions/upload-artifact@v6

@@ -48,6 +48,36 @@ internal sealed class ManagedWhisperProcessorModelLoader : IWhisperProcessorMode
         }
     }
 
+    public IntPtr LoadNativeParakeetContext(INativeParakeet nativeParakeet)
+    {
+        using var nativeLoader = CreateNativeLoader();
+        var context = IntPtr.Zero;
+        try
+        {
+            var contextParams = new ParakeetContextParams
+            {
+                UseGpu = options.UseGpu ? trueByte : falseByte,
+                GpuDevice = options.GpuDevice
+            };
+            context = nativeParakeet.Parakeet_Init_With_Params_No_State(
+                ref nativeLoader.Loader,
+                contextParams);
+            nativeLoader.Close();
+            nativeLoader.ThrowIfError();
+            return context;
+        }
+        catch
+        {
+            nativeLoader.Close();
+            if (context != IntPtr.Zero)
+            {
+                nativeParakeet.Parakeet_Free(context);
+            }
+
+            throw;
+        }
+    }
+
     public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters)
     {
         using var nativeLoader = CreateNativeLoader();

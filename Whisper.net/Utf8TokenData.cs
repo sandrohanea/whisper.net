@@ -27,6 +27,16 @@ public readonly ref struct Utf8TokenData
         TextUtf8 = textUtf8;
     }
 
+    internal Utf8TokenData(ParakeetTokenData tokenData, ReadOnlySpan<byte> textUtf8)
+    {
+        Id = tokenData.Id;
+        Probability = tokenData.Probability;
+        ProbabilityLog = tokenData.ProbabilityLog;
+        Start = tokenData.Start;
+        End = tokenData.End;
+        TextUtf8 = textUtf8;
+    }
+
     public int Id { get; }
 
     public int TimestampId { get; }

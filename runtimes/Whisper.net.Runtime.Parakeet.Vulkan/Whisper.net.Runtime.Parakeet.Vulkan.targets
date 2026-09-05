@@ -1,0 +1,67 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup
+      Condition="$(TargetFramework.Contains('-windows')) == true or $(TargetFramework.Contains('-')) == false">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/win-x64/parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/win-x64/ggml-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-base-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-base-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/win-x64/ggml-base-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cpu-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-cpu-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/win-x64/ggml-cpu-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-vulkan-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-vulkan-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/win-x64/ggml-vulkan-parakeet.dll</TargetPath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libparakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libparakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/linux-x64/libparakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/linux-x64/libggml-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-base-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-base-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/linux-x64/libggml-base-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/linux-x64/libggml-cpu-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-vulkan-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-vulkan-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/vulkan/linux-x64/libggml-vulkan-parakeet.so</TargetPath>
+    </None>
+  </ItemGroup>
+</Project>
