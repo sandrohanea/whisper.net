@@ -9,5 +9,7 @@ internal interface IWhisperProcessorModelLoader : IDisposable
 {
     public IntPtr LoadNativeContext(INativeWhisper nativeWhisper);
 
+    public IntPtr LoadNativeParakeetContext(INativeParakeet nativeParakeet);
+
     public IntPtr LoadNativeVadContext(INativeWhisper nativeWhisper, WhisperVadContextParams parameters);
 }

@@ -35,10 +35,12 @@ try
     {
         var cacheState = options.NoCache ? "disabled" : IsCompleteCacheEntry(cacheEntry) ? "ready" : "missing";
         var installedFileCount = CountInstalledRuntimeFiles(runtimesDirectory);
+        var installedRuntimeFamiliesReady = IsValidArtifactsDirectory(runtimesDirectory);
         Console.WriteLine($"Cache state: {cacheState}");
         Console.WriteLine($"Installed runtime files: {installedFileCount}");
+        Console.WriteLine($"Whisper and Parakeet runtime families: {(installedRuntimeFamiliesReady ? "ready" : "incomplete")}");
         Console.WriteLine($"Release: {releaseUrl}");
-        return installedFileCount > 0 ? 0 : 1;
+        return installedRuntimeFamiliesReady ? 0 : 1;
     }
 
     string artifactsDirectory;
@@ -264,15 +266,34 @@ static void ValidateArtifactsDirectory(string artifactsDirectory)
     if (!IsValidArtifactsDirectory(artifactsDirectory))
     {
         throw new InvalidDataException(
-            $"The downloaded archive does not contain the expected runtime-artifacts/Whisper.net.Runtime layout.");
+            "The downloaded archive does not contain complete Whisper.net.Runtime and Whisper.net.Runtime.Parakeet families.");
     }
 }
 
 static bool IsValidArtifactsDirectory(string artifactsDirectory)
 {
     var cpuRuntimeDirectory = Path.Combine(artifactsDirectory, "Whisper.net.Runtime");
-    return Directory.Exists(cpuRuntimeDirectory)
-        && Directory.EnumerateFiles(cpuRuntimeDirectory, "*", SearchOption.AllDirectories).Any();
+    var parakeetCpuRuntimeDirectory = Path.Combine(artifactsDirectory, "Whisper.net.Runtime.Parakeet");
+    return ContainsMainLibrary(cpuRuntimeDirectory, "whisper")
+        && ContainsMainLibrary(parakeetCpuRuntimeDirectory, "parakeet");
+}
+
+static bool ContainsMainLibrary(string runtimeDirectory, string libraryName)
+{
+    if (!Directory.Exists(runtimeDirectory))
+    {
+        return false;
+    }
+
+    var expectedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        $"{libraryName}.dll",
+        $"lib{libraryName}.so",
+        $"lib{libraryName}.dylib",
+        $"lib{libraryName}.a",
+    };
+    return Directory.EnumerateFiles(runtimeDirectory, "*", SearchOption.AllDirectories)
+        .Any(file => expectedFileNames.Contains(Path.GetFileName(file)));
 }
 
 static int CopyRuntimeArtifacts(string sourceDirectory, string destinationDirectory)

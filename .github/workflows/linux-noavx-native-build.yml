@@ -30,6 +30,7 @@ jobs:
       - name: Run linux-noavx
         run: |
           make linux_noavx BUILD_TYPE=${{ inputs.BuildConfig }}
+          make linux_noavx ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Linux Build Artifacts
         uses: actions/upload-artifact@v6

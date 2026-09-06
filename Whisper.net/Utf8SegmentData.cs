@@ -17,7 +17,8 @@ public readonly ref struct Utf8SegmentData
     private readonly IntPtr context;
     private readonly IntPtr state;
     private readonly int segmentIndex;
-    private readonly INativeWhisper nativeWhisper;
+    private readonly INativeWhisper? nativeWhisper;
+    private readonly INativeParakeet? nativeParakeet;
 
     internal Utf8SegmentData(
         IntPtr context,
@@ -30,6 +31,7 @@ public readonly ref struct Utf8SegmentData
         this.state = state;
         this.segmentIndex = segmentIndex;
         this.nativeWhisper = nativeWhisper;
+        nativeParakeet = null;
 
         TextUtf8 = MarshalUtils.GetUtf8Span(
             nativeWhisper.Whisper_Full_Get_Segment_Text_From_State(state, segmentIndex));
@@ -52,6 +54,62 @@ public readonly ref struct Utf8SegmentData
             for (var tokenIndex = 0; tokenIndex < TokenCount; tokenIndex++)
             {
                 var tokenProbability = nativeWhisper.Whisper_Full_Get_Token_P_From_State(
+                    state,
+                    segmentIndex,
+                    tokenIndex);
+                sumProbability += tokenProbability;
+
+                if (tokenIndex == 0)
+                {
+                    minimumProbability = tokenProbability;
+                    maximumProbability = tokenProbability;
+                }
+                else
+                {
+                    minimumProbability = Math.Min(minimumProbability, tokenProbability);
+                    maximumProbability = Math.Max(maximumProbability, tokenProbability);
+                }
+            }
+        }
+
+        MinProbability = minimumProbability;
+        MaxProbability = maximumProbability;
+        Probability = TokenCount == 0 ? 0f : (float)(sumProbability / TokenCount);
+    }
+
+    internal Utf8SegmentData(
+        IntPtr context,
+        IntPtr state,
+        int segmentIndex,
+        INativeParakeet nativeParakeet,
+        bool computeProbabilities)
+    {
+        this.context = context;
+        this.state = state;
+        this.segmentIndex = segmentIndex;
+        nativeWhisper = null;
+        this.nativeParakeet = nativeParakeet;
+
+        TextUtf8 = MarshalUtils.GetUtf8Span(
+            nativeParakeet.Parakeet_Full_Get_Segment_Text_From_State(state, segmentIndex));
+        Start = TimeSpan.FromMilliseconds(
+            nativeParakeet.Parakeet_Full_Get_Segment_T0_From_State(state, segmentIndex) * 10);
+        End = TimeSpan.FromMilliseconds(
+            nativeParakeet.Parakeet_Full_Get_Segment_T1_From_State(state, segmentIndex) * 10);
+        NoSpeechProbability = float.NaN;
+        TokenCount = nativeParakeet.Parakeet_Full_N_Tokens_From_State(state, segmentIndex);
+        LanguageId = -1;
+        LanguageUtf8 = ReadOnlySpan<byte>.Empty;
+
+        var minimumProbability = 0f;
+        var maximumProbability = 0f;
+        var sumProbability = 0d;
+
+        if (computeProbabilities)
+        {
+            for (var tokenIndex = 0; tokenIndex < TokenCount; tokenIndex++)
+            {
+                var tokenProbability = nativeParakeet.Parakeet_Full_Get_Token_P_From_State(
                     state,
                     segmentIndex,
                     tokenIndex);
@@ -136,17 +194,32 @@ public readonly ref struct Utf8SegmentData
             throw new ArgumentOutOfRangeException(nameof(tokenIndex));
         }
 
-        var tokenData = nativeWhisper.Whisper_Full_Get_Token_Data_From_State(
+        if (nativeParakeet is not null)
+        {
+            var tokenData = nativeParakeet.Parakeet_Full_Get_Token_Data_From_State(
+                state,
+                segmentIndex,
+                tokenIndex);
+            var textUtf8 = MarshalUtils.GetUtf8Span(
+                nativeParakeet.Parakeet_Full_Get_Token_Text_From_State(
+                    context,
+                    state,
+                    segmentIndex,
+                    tokenIndex));
+            return new Utf8TokenData(tokenData, textUtf8);
+        }
+
+        var whisperTokenData = nativeWhisper!.Whisper_Full_Get_Token_Data_From_State(
             state,
             segmentIndex,
             tokenIndex);
-        var textUtf8 = MarshalUtils.GetUtf8Span(
+        var whisperTextUtf8 = MarshalUtils.GetUtf8Span(
             nativeWhisper.Whisper_Full_Get_Token_Text_From_State(
                 context,
                 state,
                 segmentIndex,
                 tokenIndex));
 
-        return new Utf8TokenData(tokenData, textUtf8);
+        return new Utf8TokenData(whisperTokenData, whisperTextUtf8);
     }
 }

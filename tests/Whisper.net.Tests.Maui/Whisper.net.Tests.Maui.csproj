@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.props"/>
   <Import Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets"/>
   <Import Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets"/>
+  <Import Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.targets"/>
+  <Import Project="../../runtimes/Whisper.net.Runtime.Parakeet.Metal/Whisper.net.Runtime.Parakeet.Metal.targets"/>
 
   <PropertyGroup>
     <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>

@@ -74,6 +74,7 @@ jobs:
         run: |
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }} -Vulkan $true
+          BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }} -Vulkan $true -Engine "Parakeet"
         shell: pwsh
 
       - name: Upload Windows Vulkan Build Artifacts

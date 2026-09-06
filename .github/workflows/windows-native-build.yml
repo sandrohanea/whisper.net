@@ -31,6 +31,7 @@ jobs:
         run: |
           Import-Module ./windows-scripts.ps1
           BuildWindowsIntel -Configuration ${{ inputs.BuildConfig }}
+          BuildWindowsParakeetIntel -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
       - name: Upload Windows Build Artifacts
@@ -57,6 +58,7 @@ jobs:
         run: |
           Import-Module ./windows-scripts.ps1
           BuildWindowsArm -Configuration ${{ inputs.BuildConfig }}
+          BuildWindowsParakeetArm -Configuration ${{ inputs.BuildConfig }}
         shell: pwsh
 
       - name: Upload Windows Build Artifacts

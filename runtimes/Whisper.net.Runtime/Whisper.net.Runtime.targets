@@ -6,19 +6,19 @@
       <ForceLoad>true</ForceLoad>
       <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-base-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-cpu-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-blas-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-simulator\libggml-blas-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Accelerate</Frameworks>
@@ -32,24 +32,24 @@
       <ForceLoad>true</ForceLoad>
       <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-base-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-cpu-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-blas-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-blas-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Accelerate</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-metal-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)ios-device\libggml-metal-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Metal</Frameworks>
@@ -63,19 +63,19 @@
       <ForceLoad>true</ForceLoad>
       <Frameworks>Accelerate</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-base-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-cpu-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-blas-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)maccatalyst\libggml-blas-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Accelerate</Frameworks>
@@ -89,24 +89,24 @@
       <ForceLoad>true</ForceLoad>
       <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-base-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-cpu-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-blas-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-blas-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Accelerate</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-metal-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-device\libggml-metal-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Metal</Frameworks>
@@ -120,19 +120,19 @@
       <ForceLoad>true</ForceLoad>
       <Frameworks>Accelerate Metal</Frameworks>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-base-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-cpu-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
     </NativeReference>
-    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-blas-whisper.a">
+    <NativeReference Include="$(MSBuildThisFileDirectory)tvos-simulator\libggml-blas-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Kind>Static</Kind>
       <SmartLink>true</SmartLink>
       <Frameworks>Accelerate</Frameworks>
@@ -456,31 +456,31 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-whisper.a">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>browser-wasm/libggml-whisper.a</TargetPath>
     </None>
-    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-whisper.a" />
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'" />
   </ItemGroup>
   <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>browser-wasm/libggml-cpu-whisper.a</TargetPath>
     </None>
-    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a" />
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-cpu-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'" />
   </ItemGroup>
   <ItemGroup Condition=" '$(UsingMicrosoftNETSdkBlazorWebAssembly)' == 'true' ">
-    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a">
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'">
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>browser-wasm/libggml-base-whisper.a</TargetPath>
     </None>
-    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a" />
+    <NativeFileReference Include="$(MSBuildThisFileDirectory)browser-wasm/libggml-base-whisper.a" Condition="'$(WhisperNetGgmlRuntimeProvider)' != 'Parakeet'" />
   </ItemGroup>
   <!-- End Wasm -->
 

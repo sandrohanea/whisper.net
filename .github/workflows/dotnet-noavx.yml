@@ -41,7 +41,9 @@ jobs:
         run: dotnet restore ./Whisper.net.slnx
 
       - name: Run Dependency Checker
-        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
+        run: |
+          dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj -- CpuNoAvx
+          dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj -- CpuNoAvx Parakeet
 
       - name: Build
         run: dotnet build ./Whisper.net.slnx --no-restore -warnaserror
@@ -92,7 +94,9 @@ jobs:
         run: dotnet restore ./Whisper.net.slnx
 
       - name: Run Dependency Checker
-        run: dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj CpuNoAvx
+        run: |
+          dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj -- CpuNoAvx
+          dotnet run --project ./tools/WhisperNetDependencyChecker/WhisperNetDependencyChecker.csproj -- CpuNoAvx Parakeet
 
       - name: Build
         run: dotnet build ./Whisper.net.slnx --no-restore -warnaserror

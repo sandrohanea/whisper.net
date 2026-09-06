@@ -31,6 +31,8 @@ jobs:
           Import-Module ./windows-scripts.ps1
           BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }}  -NoAvx $true
           BuildWindows -Arch "x86" -Configuration ${{ inputs.BuildConfig }}  -NoAvx $true
+          BuildWindows -Arch "x64" -Configuration ${{ inputs.BuildConfig }} -NoAvx $true -Engine "Parakeet"
+          BuildWindows -Arch "x86" -Configuration ${{ inputs.BuildConfig }} -NoAvx $true -Engine "Parakeet"
         shell: pwsh
 
       - name: Upload Windows NoAvx Build Artifacts

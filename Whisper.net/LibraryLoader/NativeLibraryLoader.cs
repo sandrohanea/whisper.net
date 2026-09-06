@@ -14,6 +14,29 @@ namespace Whisper.net.LibraryLoader;
 
 public static class NativeLibraryLoader
 {
+    internal static ParakeetLoadResult LoadParakeetLibrary()
+    {
+#if IOS || MACCATALYST || TVOS
+        WhisperLogger.Log(WhisperLogLevel.Debug, "Using the statically linked Parakeet library.");
+        return ParakeetLoadResult.Success(new LibraryImportInternalParakeet());
+#elif ANDROID
+        WhisperLogger.Log(WhisperLogLevel.Debug, "Using libparakeet for Android.");
+        return ParakeetLoadResult.Success(new LibraryImportLibParakeet());
+#else
+        if (RuntimeOptions.LoadedParakeetLibrary.HasValue
+            || RuntimeInformation.OSArchitecture.ToString().Equals("wasm", StringComparison.OrdinalIgnoreCase))
+        {
+#if NET8_0_OR_GREATER
+            return ParakeetLoadResult.Success(new LibraryImportLibParakeet());
+#else
+            return ParakeetLoadResult.Success(new DllImportsNativeParakeet());
+#endif
+        }
+
+        return LoadParakeetLibraryComponent();
+#endif
+    }
+
     internal static LoadResult LoadNativeLibrary()
     {
 #if IOS || MACCATALYST || TVOS
@@ -50,6 +73,17 @@ public static class NativeLibraryLoader
         "ggml-vulkan-whisper",
         "ggml-whisper",
         "whisper.coreml"
+    ];
+
+    private static readonly string[] parakeetDependencyOrder =
+    [
+        "ggml-base-parakeet",
+        "ggml-cpu-parakeet",
+        "ggml-blas-parakeet",
+        "ggml-metal-parakeet",
+        "ggml-cuda-parakeet",
+        "ggml-vulkan-parakeet",
+        "ggml-parakeet"
     ];
 
     private static LoadResult LoadLibraryComponent()
@@ -101,7 +135,7 @@ public static class NativeLibraryLoader
         foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
         {
             if (!runtimeSelection.BypassCompatibilityChecks
-                && !IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes))
+                && !IsRuntimeSupported(runtimeLibrary, platform, architecture, availableRuntimeTypes, runtimeSelection.RuntimeLibraryOrder))
             {
                 continue;
             }
@@ -182,6 +216,130 @@ public static class NativeLibraryLoader
         return LoadResult.Failure(lastError);
     }
 
+    private static ParakeetLoadResult LoadParakeetLibraryComponent()
+    {
+        var platform = Environment.OSVersion.Platform switch
+        {
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) => "win",
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) => "linux",
+            _ when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) => "macos",
+            _ => throw new PlatformNotSupportedException("Unsupported OS version")
+        };
+
+        var architecture = RuntimeInformation.ProcessArchitecture switch
+        {
+            Architecture.X64 => "x64",
+            Architecture.X86 => "x86",
+            Architecture.Arm => "arm",
+            Architecture.Arm64 => "arm64",
+            _ => throw new PlatformNotSupportedException(
+                $"Unsupported process architecture: {RuntimeInformation.ProcessArchitecture}")
+        };
+
+#if NETSTANDARD
+        ILibraryLoader libraryLoader = platform switch
+        {
+            "win" => new WindowsLibraryLoader(),
+            "macos" or "linux" => new LibdlLibraryLoader(),
+            _ => throw new PlatformNotSupportedException($"Currently {platform} platform is not supported")
+        };
+#else
+        var libraryLoader = new UniversalLibraryLoader();
+#endif
+
+        var runtimeSelection = RuntimeLibrarySelector.Select(
+            RuntimeOptions.ForcedParakeetRuntimeLibrary,
+            RuntimeOptions.ParakeetRuntimeLibraryOrder);
+        if (runtimeSelection.RuntimeLibraryOrder.Any(
+                runtime => runtime is RuntimeLibrary.CoreML or RuntimeLibrary.OpenVino))
+        {
+            throw new NotSupportedException("CoreML and OpenVINO are not supported by the Parakeet engine.");
+        }
+
+        string? lastError = null;
+        var availableRuntimes = GetParakeetRuntimePaths(
+            architecture,
+            platform,
+            runtimeSelection.RuntimeLibraryOrder).ToList();
+        var availableRuntimeTypes = availableRuntimes.Select(x => x.RuntimeLibrary).ToList();
+
+        foreach (var (runtimePath, runtimeLibrary) in availableRuntimes)
+        {
+            if (!runtimeSelection.BypassCompatibilityChecks
+                && !IsRuntimeSupported(
+                    runtimeLibrary,
+                    platform,
+                    architecture,
+                    availableRuntimeTypes,
+                    runtimeSelection.RuntimeLibraryOrder))
+            {
+                continue;
+            }
+
+            var parakeetPath = GetLibraryPath(platform, "parakeet", runtimePath);
+            if (!File.Exists(parakeetPath))
+            {
+                continue;
+            }
+
+            List<IntPtr> dependencyHandles = [];
+            lastError = null;
+            var dependencyFailed = false;
+            foreach (var dependency in parakeetDependencyOrder)
+            {
+                var dependencyPath = GetLibraryPath(platform, dependency, runtimePath);
+                if (!File.Exists(dependencyPath))
+                {
+                    continue;
+                }
+
+                if (!libraryLoader.TryOpenLibrary(dependencyPath, out var dependencyHandle))
+                {
+                    lastError = libraryLoader.GetLastError();
+                    dependencyFailed = true;
+                    foreach (var handle in dependencyHandles)
+                    {
+                        libraryLoader.CloseLibrary(handle);
+                    }
+                    break;
+                }
+
+                dependencyHandles.Add(dependencyHandle);
+            }
+
+            if (dependencyFailed)
+            {
+                continue;
+            }
+
+            if (!libraryLoader.TryOpenLibrary(parakeetPath, out var parakeetHandle))
+            {
+                lastError = libraryLoader.GetLastError();
+                foreach (var handle in dependencyHandles)
+                {
+                    libraryLoader.CloseLibrary(handle);
+                }
+                continue;
+            }
+
+            RuntimeOptions.LoadedParakeetLibrary = runtimeLibrary;
+#if NETSTANDARD
+            return ParakeetLoadResult.Success(new DllImportsNativeParakeet());
+#else
+            return ParakeetLoadResult.Success(new NativeLibraryParakeet(parakeetHandle));
+#endif
+        }
+
+        if (lastError is null)
+        {
+            throw new FileNotFoundException(
+                "Native Parakeet library not found in default paths. " +
+                "Install the matching Whisper.net.Runtime.Parakeet NuGet package.");
+        }
+
+        return ParakeetLoadResult.Failure(lastError);
+    }
+
     private static string GetLibraryPath(string platform, string libraryName, string runtimePath)
     {
         var libraryFileName = platform switch
@@ -195,7 +353,7 @@ public static class NativeLibraryLoader
     }
 
     private static bool IsRuntimeSupported(RuntimeLibrary runtime, string platform, string architecture,
-        List<RuntimeLibrary> runtimeLibraries)
+        List<RuntimeLibrary> runtimeLibraries, IReadOnlyList<RuntimeLibrary> configuredRuntimeOrder)
     {
         WhisperLogger.Log(WhisperLogLevel.Debug,
             $"Checking if runtime {runtime} is supported on the platform: {platform}");
@@ -221,7 +379,7 @@ public static class NativeLibraryLoader
         {
             var cudaIndex = runtimeLibraries.IndexOf(runtime);
 
-            if (cudaIndex == RuntimeOptions.RuntimeLibraryOrder.Count - 1)
+            if (cudaIndex == configuredRuntimeOrder.Count - 1)
             {
                 // We still can use Cuda as a fallback to the CPU if it's the last runtime in the list.
                 // This scenario can be used to not install 2 runtimes (CPU and Cuda) on the same host,
@@ -239,6 +397,42 @@ public static class NativeLibraryLoader
         }
 
         return true;
+    }
+
+    private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetParakeetRuntimePaths(
+        string architecture,
+        string platform,
+        IReadOnlyList<RuntimeLibrary> runtimeLibraryOrder)
+    {
+        var assemblyLocation = typeof(NativeLibraryLoader).Assembly.Location;
+        var assemblySearchPaths = new[]
+        {
+            GetSafeDirectoryName(RuntimeOptions.ParakeetLibraryPath),
+            AppDomain.CurrentDomain.RelativeSearchPath,
+            AppDomain.CurrentDomain.BaseDirectory,
+            GetSafeDirectoryName(assemblyLocation),
+            GetSafeDirectoryName(Environment.GetCommandLineArgs().FirstOrDefault()),
+        }.Where(it => !string.IsNullOrEmpty(it)).Distinct();
+
+        foreach (var library in runtimeLibraryOrder)
+        {
+            foreach (var assemblySearchPath in assemblySearchPaths)
+            {
+                var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
+                    ? "runtimes"
+                    : Path.Combine(assemblySearchPath, "runtimes");
+                var runtimePath = RuntimePathResolver.GetRuntimePath(
+                    runtimesPath,
+                    WhisperModelFamily.Parakeet,
+                    library,
+                    platform,
+                    architecture);
+                if (Directory.Exists(runtimePath))
+                {
+                    yield return (runtimePath, library);
+                }
+            }
+        }
     }
 
     private static IEnumerable<(string RuntimePath, RuntimeLibrary RuntimeLibrary)> GetRuntimePaths(string architecture,
@@ -260,17 +454,12 @@ public static class NativeLibraryLoader
                 var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
                     ? "runtimes"
                     : Path.Combine(assemblySearchPath, "runtimes");
-                var runtimePath = library switch
-                {
-                    RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
-                    RuntimeLibrary.Cuda12 => Path.Combine(runtimesPath, "cuda12", $"{platform}-{architecture}"),
-                    RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
-                    RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
-                    RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
-                    RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
-                    RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
-                    _ => throw new InvalidOperationException("Unknown runtime library")
-                };
+                var runtimePath = RuntimePathResolver.GetRuntimePath(
+                    runtimesPath,
+                    WhisperModelFamily.Whisper,
+                    library,
+                    platform,
+                    architecture);
                 WhisperLogger.Log(WhisperLogLevel.Debug, $"Searching for runtime directory {library} in {runtimePath}");
 
                 if (Directory.Exists(runtimePath))

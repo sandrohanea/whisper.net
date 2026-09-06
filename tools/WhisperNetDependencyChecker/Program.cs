@@ -1,10 +1,18 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net;
 using Whisper.net.LibraryLoader;
 using WhisperNetDependencyChecker.DependencyWalker;
 
 var library = args.Length > 0 ? Enum.Parse<RuntimeLibrary>(args[0]) : RuntimeLibrary.Cpu;
+var modelFamily = args.Length > 1 ? Enum.Parse<WhisperModelFamily>(args[1]) : WhisperModelFamily.Whisper;
+
+if (modelFamily == WhisperModelFamily.Parakeet
+    && library is RuntimeLibrary.CoreML or RuntimeLibrary.OpenVino)
+{
+    throw new NotSupportedException($"{library} is not supported by the Parakeet engine.");
+}
 
 var dependencyProvider = new NativeDependencyWalker();
 
@@ -40,22 +48,26 @@ foreach (var assemblySearchPath in assemblySearchPaths)
     var runtimesPath = string.IsNullOrEmpty(assemblySearchPath)
          ? "runtimes"
          : Path.Combine(assemblySearchPath, "runtimes");
+    var engineRuntimesPath = modelFamily == WhisperModelFamily.Parakeet
+        ? Path.Combine(runtimesPath, "parakeet")
+        : runtimesPath;
     var runtimePath = library switch
     {
-        RuntimeLibrary.Cuda => Path.Combine(runtimesPath, "cuda", $"{platform}-{architecture}"),
-        RuntimeLibrary.Cuda12 => Path.Combine(runtimesPath, "cuda12", $"{platform}-{architecture}"),
-        RuntimeLibrary.Vulkan => Path.Combine(runtimesPath, "vulkan", $"{platform}-{architecture}"),
-        RuntimeLibrary.Cpu => Path.Combine(runtimesPath, $"{platform}-{architecture}"),
-        RuntimeLibrary.CpuNoAvx => Path.Combine(runtimesPath, "noavx", $"{platform}-{architecture}"),
-        RuntimeLibrary.CoreML => Path.Combine(runtimesPath, "coreml", $"{platform}-{architecture}"),
-        RuntimeLibrary.OpenVino => Path.Combine(runtimesPath, "openvino", $"{platform}-{architecture}"),
+        RuntimeLibrary.Cuda => Path.Combine(engineRuntimesPath, "cuda", $"{platform}-{architecture}"),
+        RuntimeLibrary.Cuda12 => Path.Combine(engineRuntimesPath, "cuda12", $"{platform}-{architecture}"),
+        RuntimeLibrary.Vulkan => Path.Combine(engineRuntimesPath, "vulkan", $"{platform}-{architecture}"),
+        RuntimeLibrary.Cpu => Path.Combine(engineRuntimesPath, $"{platform}-{architecture}"),
+        RuntimeLibrary.CpuNoAvx => Path.Combine(engineRuntimesPath, "noavx", $"{platform}-{architecture}"),
+        RuntimeLibrary.CoreML => Path.Combine(engineRuntimesPath, "coreml", $"{platform}-{architecture}"),
+        RuntimeLibrary.OpenVino => Path.Combine(engineRuntimesPath, "openvino", $"{platform}-{architecture}"),
         _ => throw new InvalidOperationException("Unknown runtime library")
     };
 
     if (Directory.Exists(runtimePath))
     {
         Console.WriteLine("Trying from runtime path: " + runtimePath);
-        var libName = GetLibraryPath(platform, "whisper", runtimePath);
+        var libraryName = modelFamily == WhisperModelFamily.Parakeet ? "parakeet" : "whisper";
+        var libName = GetLibraryPath(platform, libraryName, runtimePath);
         var loadResults = dependencyProvider.TryLoad(libName);
         var success = true;
         foreach (var loadResult in loadResults)
@@ -88,6 +100,7 @@ foreach (var assemblySearchPath in assemblySearchPaths)
     }
 }
 
+Console.WriteLine($"No loadable {modelFamily} {library} runtime was found.");
 return 1;
 
 static string GetLibraryPath(string platform, string libraryName, string runtimePath)

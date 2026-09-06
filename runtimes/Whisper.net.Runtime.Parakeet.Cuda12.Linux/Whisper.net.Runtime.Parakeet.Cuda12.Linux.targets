@@ -1,0 +1,34 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libparakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libparakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda12/linux-x64/libparakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda12/linux-x64/libggml-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-base-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-base-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda12/linux-x64/libggml-base-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-cpu-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda12/linux-x64/libggml-cpu-parakeet.so</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)linux-x64\libggml-cuda-parakeet.so" Condition="Exists('$(MSBuildThisFileDirectory)linux-x64\libggml-cuda-parakeet.so')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda12/linux-x64/libggml-cuda-parakeet.so</TargetPath>
+    </None>
+  </ItemGroup>
+</Project>

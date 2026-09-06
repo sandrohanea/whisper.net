@@ -4,13 +4,28 @@
 
  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) != ''"
           Project="../../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) != ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet.NoAvx/Whisper.net.Runtime.Parakeet.NoAvx.targets" />
 
+  <!-- Imported before Whisper.net.Runtime.targets (rather than relying on Whisper.net.Runtime.Parakeet.targets'
+       own default further below) so WhisperNetGgmlRuntimeProvider is set before Whisper.net.Runtime.targets'
+       static ggml Apple/WASM NativeReference conditions are evaluated, mirroring the props-before-targets
+       ordering NuGet guarantees for a real PackageReference consumer. -->
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.props" />
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
       AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
   <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
       AND $(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.targets" />
+  <Import Condition="$(USE_WHISPER_MAUI_TESTS) == ''
+      AND $(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet.Metal/Whisper.net.Runtime.Parakeet.Metal.targets" />
 
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -55,13 +70,19 @@
     <ItemGroup Condition="'$(USE_WHISPER_NOAVX_TESTS)' != ''">
       <_WhisperNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.NoAvx\**\*"
                                  Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.NoAvx\*.targets" />
+      <_ParakeetNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.Parakeet.NoAvx\**\*"
+                                 Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.Parakeet.NoAvx\*.targets" />
     </ItemGroup>
     <ItemGroup Condition="'$(USE_WHISPER_NOAVX_TESTS)' == ''">
       <_WhisperNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime\**\*"
                                  Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime\*.targets" />
+      <_ParakeetNativeRuntimeFile Include="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.Parakeet\**\*"
+                                 Exclude="$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.Parakeet\*.targets;$(MSBuildThisFileDirectory)..\..\runtimes\Whisper.net.Runtime.Parakeet\*.props" />
     </ItemGroup>
     <Error Condition="'@(_WhisperNativeRuntimeFile)' == ''"
            Text="Native runtimes are missing. Run 'dotnet run --project tools/RestoreNativeLibraries' from the repository root, then retry. Preview runtimes are only suitable for managed-only changes." />
+    <Error Condition="'@(_ParakeetNativeRuntimeFile)' == ''"
+           Text="Parakeet native runtimes are missing. Build the Parakeet runtime from the changed native sources, then retry." />
   </Target>
 
   <!-- Files cannot be copied without PublishFolderType on MAUI, and test data is embedded as MauiAsset there -->

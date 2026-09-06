@@ -9,6 +9,7 @@ public struct WhisperFactoryOptions
     public WhisperFactoryOptions()
     {
         // Default values
+        ModelFamily = WhisperModelFamily.Whisper;
         UseGpu = true;
         UseFlashAttention = false;
         UseDtwTimeStamps = false;
@@ -18,6 +19,14 @@ public struct WhisperFactoryOptions
         DtwNTop = -1;
         DelayInitialization = false;
     }
+
+    /// <summary>
+    /// Gets or sets the native engine and model family used by the factory.
+    /// </summary>
+    /// <remarks>
+    /// The default is <see cref="WhisperModelFamily.Whisper"/>.
+    /// </remarks>
+    public WhisperModelFamily ModelFamily { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to use GPU for processing.
@@ -90,4 +99,29 @@ public struct WhisperFactoryOptions
     /// By default, it is false and the model is loaded right away.
     /// </remarks>
     public bool DelayInitialization { get; set; }
+
+    internal readonly void Validate()
+    {
+        if (!Enum.IsDefined(typeof(WhisperModelFamily), ModelFamily))
+        {
+            throw new ArgumentOutOfRangeException(nameof(ModelFamily), ModelFamily, "Unknown model family.");
+        }
+
+        if (ModelFamily != WhisperModelFamily.Parakeet)
+        {
+            return;
+        }
+
+        if (UseFlashAttention)
+        {
+            throw new NotSupportedException("Flash attention is not supported by the Parakeet engine.");
+        }
+
+        if (UseDtwTimeStamps
+            || HeadsPreset != WhisperAlignmentHeadsPreset.None
+            || CustomAlignmentHeads is not null)
+        {
+            throw new NotSupportedException("DTW timestamps and alignment heads are not supported by the Parakeet engine.");
+        }
+    }
 }

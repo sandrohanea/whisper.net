@@ -1,0 +1,34 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda/win-x64/parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda/win-x64/ggml-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-base-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-base-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda/win-x64/ggml-base-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cpu-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-cpu-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda/win-x64/ggml-cpu-parakeet.dll</TargetPath>
+    </None>
+    <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x64\ggml-cuda-parakeet.dll" Condition="Exists('$(MSBuildThisFileDirectory)win-x64\ggml-cuda-parakeet.dll')">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/parakeet/cuda/win-x64/ggml-cuda-parakeet.dll</TargetPath>
+    </None>
+  </ItemGroup>
+</Project>

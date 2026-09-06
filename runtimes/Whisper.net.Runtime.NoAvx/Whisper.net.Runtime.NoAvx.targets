@@ -55,7 +55,7 @@
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>runtimes/noavx/win-x86/whisper.ggml</TargetPath>
+      <TargetPath>runtimes/noavx/win-x86/whisper.dll</TargetPath>
     </None>
     <None Visible="false" Include="$(MSBuildThisFileDirectory)win-x86\ggml-whisper.dll">
       <Pack>true</Pack>

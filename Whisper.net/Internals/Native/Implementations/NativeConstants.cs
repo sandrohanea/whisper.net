@@ -8,5 +8,8 @@ internal static class NativeConstants
     public const string WhisperLibraryName = "whisper";
     public const string LibWhisperLibraryName = libPrefix + WhisperLibraryName;
 
+    public const string ParakeetLibraryName = "parakeet";
+    public const string LibParakeetLibraryName = libPrefix + ParakeetLibraryName;
+
     public const string InternalLibraryName = "__Internal";
 }

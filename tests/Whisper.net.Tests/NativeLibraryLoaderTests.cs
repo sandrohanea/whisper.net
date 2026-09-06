@@ -38,4 +38,38 @@ public class NativeLibraryLoaderTests
         Assert.Equal(preferredOrder, selection.RuntimeLibraryOrder);
         Assert.False(selection.BypassCompatibilityChecks);
     }
+
+    [Theory]
+    [InlineData(RuntimeLibrary.Cpu, "runtimes/parakeet/win-x64")]
+    [InlineData(RuntimeLibrary.CpuNoAvx, "runtimes/parakeet/noavx/win-x64")]
+    [InlineData(RuntimeLibrary.Cuda, "runtimes/parakeet/cuda/win-x64")]
+    [InlineData(RuntimeLibrary.Cuda12, "runtimes/parakeet/cuda12/win-x64")]
+    [InlineData(RuntimeLibrary.Vulkan, "runtimes/parakeet/vulkan/win-x64")]
+    public void GetRuntimePath_ForParakeet_ShouldUseIsolatedEnginePath(
+        RuntimeLibrary runtimeLibrary,
+        string expectedPath)
+    {
+        var path = RuntimePathResolver.GetRuntimePath(
+            "runtimes",
+            WhisperModelFamily.Parakeet,
+            runtimeLibrary,
+            "win",
+            "x64");
+
+        Assert.Equal(expectedPath.Replace('/', Path.DirectorySeparatorChar), path);
+    }
+
+    [Theory]
+    [InlineData(RuntimeLibrary.CoreML)]
+    [InlineData(RuntimeLibrary.OpenVino)]
+    public void GetRuntimePath_ForParakeetWhisperOnlyBackend_ShouldThrow(RuntimeLibrary runtimeLibrary)
+    {
+        Assert.Throws<NotSupportedException>(() =>
+            RuntimePathResolver.GetRuntimePath(
+                "runtimes",
+                WhisperModelFamily.Parakeet,
+                runtimeLibrary,
+                "win",
+                "x64"));
+    }
 }

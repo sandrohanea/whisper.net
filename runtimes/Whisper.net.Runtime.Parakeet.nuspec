@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Whisper.net.Runtime.Parakeet</id>
+    <title>Whisper.Net.Runtime.Parakeet</title>
+    <version>$version$</version>
+    <authors>Sandro Hanea</authors>
+    <owners>Sandro Hanea</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Cross-platform native runtimes for Parakeet.</summary>
+    <description>Whisper.net.Runtime.Parakeet contains the native runtime libraries needed to process Parakeet models with Whisper.net.</description>
+    <tags>whisper;parakeet;android;linux;windows;macos;cross-platform</tags>
+    <projectUrl>https://github.com/sandrohanea/whisper.net</projectUrl>
+    <license type="expression">MIT</license>
+    <readme>content/readme.md</readme>
+    <dependencies>
+      <dependency id="Whisper.net.Runtime.Parakeet.Metal" version="$version$" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="Whisper.net.Runtime.Parakeet\**" target="build"/>
+    <file src="../readme.md" target="content/readme.md" />
+  </files>
+</package>

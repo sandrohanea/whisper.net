@@ -383,4 +383,8 @@ MigrationBackup/
 /runtimes/Whisper.net.Runtime.Metal/*
 !/runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets
 
+/runtimes/Whisper.net.Runtime.Parakeet*/*
+!/runtimes/Whisper.net.Runtime.Parakeet*/Whisper.net.Runtime.Parakeet*.targets
+!/runtimes/Whisper.net.Runtime.Parakeet*/Whisper.net.Runtime.Parakeet*.props
+
 /test-results

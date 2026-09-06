@@ -2,11 +2,23 @@
 
   <Import Condition="$(USE_WHISPER_NOAVX_TESTS) != ''"
           Project="../../runtimes/Whisper.net.Runtime.NoAvx/Whisper.net.Runtime.NoAvx.targets" />
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) != ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet.NoAvx/Whisper.net.Runtime.Parakeet.NoAvx.targets" />
 
+  <!-- Imported before Whisper.net.Runtime.targets (rather than relying on Whisper.net.Runtime.Parakeet.targets'
+       own default further below) so WhisperNetGgmlRuntimeProvider is set before Whisper.net.Runtime.targets'
+       static ggml Apple/WASM NativeReference conditions are evaluated, mirroring the props-before-targets
+       ordering NuGet guarantees for a real PackageReference consumer. -->
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.props" />
   <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime/Whisper.net.Runtime.targets" />
   <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
           Project="../../runtimes/Whisper.net.Runtime.Metal/Whisper.net.Runtime.Metal.targets" />
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet/Whisper.net.Runtime.Parakeet.targets" />
+  <Import Condition="$(USE_WHISPER_NOAVX_TESTS) == ''"
+          Project="../../runtimes/Whisper.net.Runtime.Parakeet.Metal/Whisper.net.Runtime.Parakeet.Metal.targets" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>

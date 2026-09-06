@@ -30,6 +30,7 @@ jobs:
       - name: Run linux
         run: |
           make linux BUILD_TYPE=${{ inputs.BuildConfig }}
+          make linux ENGINE=parakeet BUILD_TYPE=${{ inputs.BuildConfig }}
 
       - name: Upload Linux Build Artifacts
         uses: actions/upload-artifact@v6

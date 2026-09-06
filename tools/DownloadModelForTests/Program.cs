@@ -41,6 +41,16 @@ foreach (var vadType in vadTypes)
     Console.WriteLine($"Written {predownloadModelPath} with {fileStream.Length} bytes");
 }
 
+await using (var model = await WhisperGgmlDownloader.Default.GetGgmlParakeetModelAsync(
+    ParakeetModelType.Tdt0_6B_V3,
+    ParakeetQuantizationType.Q4_0))
+{
+    var predownloadModelPath = Path.Combine(predownloadedPath, "ggml-parakeet-tdt-0.6b-v3-q4_0.bin");
+    await using var fileStream = File.Create(predownloadModelPath);
+    await model.CopyToAsync(fileStream);
+    Console.WriteLine($"Written {predownloadModelPath} with {fileStream.Length} bytes");
+}
+
 return 0;
 
 static string GetSileroVadFileName(SileroVadType type)

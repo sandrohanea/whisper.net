@@ -11,6 +11,7 @@ namespace Whisper.net.LibraryLoader;
 public static class RuntimeOptions
 {
     private static readonly List<RuntimeLibrary> defaultRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cuda12, RuntimeLibrary.Vulkan, RuntimeLibrary.CoreML, RuntimeLibrary.OpenVino, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
+    private static readonly List<RuntimeLibrary> defaultParakeetRuntimeOrder = [RuntimeLibrary.Cuda, RuntimeLibrary.Cuda12, RuntimeLibrary.Vulkan, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx];
 
     /// <summary>
     /// Gets or sets a custom path to the Whisper native library.
@@ -52,4 +53,32 @@ public static class RuntimeOptions
     /// Once a library is loaded, it will be used for all subsequent processing.
     /// </remarks>
     public static RuntimeLibrary? LoadedLibrary { get; set; }
+
+    /// <summary>
+    /// Gets or sets a custom path to the Parakeet native library.
+    /// </summary>
+    public static string? ParakeetLibraryPath { get; set; }
+
+    /// <summary>
+    /// Gets or sets the order of runtime libraries considered for Parakeet processing.
+    /// </summary>
+    /// <remarks>
+    /// The default order is [RuntimeLibrary.Cuda, RuntimeLibrary.Cuda12, RuntimeLibrary.Vulkan, RuntimeLibrary.Cpu, RuntimeLibrary.CpuNoAvx].
+    /// CoreML and OpenVINO are not supported by the Parakeet engine.
+    /// </remarks>
+    public static List<RuntimeLibrary> ParakeetRuntimeLibraryOrder { get; set; } = defaultParakeetRuntimeOrder;
+
+    /// <summary>
+    /// Gets or sets the Parakeet runtime library to load without compatibility checks.
+    /// </summary>
+    public static RuntimeLibrary? ForcedParakeetRuntimeLibrary { get; set; }
+
+    /// <summary>
+    /// Gets or sets the runtime library loaded for the Parakeet engine.
+    /// </summary>
+    /// <remarks>
+    /// This state is independent from <see cref="LoadedLibrary"/>, allowing Whisper and
+    /// Parakeet to use different backends in the same process.
+    /// </remarks>
+    public static RuntimeLibrary? LoadedParakeetLibrary { get; set; }
 }
