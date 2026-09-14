@@ -11,6 +11,41 @@ namespace Whisper.net.Tests;
 public class LanguageDetectionTests
 {
     [Fact]
+    public void ChangeLanguage_WhenClearedThenDisposed_DoesNotDoubleFree()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage("en");
+        processor.ChangeLanguage(null);
+        processor.Dispose();
+
+        Assert.Throws<ObjectDisposedException>(() => processor.ChangeLanguage("ro"));
+    }
+
+    [Fact]
+    public void ChangeLanguage_WhenChangedThroughEmptyValue_ReplacesLanguage()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        using var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage("en");
+        processor.ChangeLanguage(string.Empty);
+        processor.ChangeLanguage("ro");
+    }
+
+    [Fact]
+    public void ChangeLanguage_WhenClearedRepeatedly_IsSafe()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        using var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage(null);
+        processor.ChangeLanguage(string.Empty);
+        processor.ChangeLanguage(null);
+    }
+
+    [Fact]
     public void DetectLanguageWithProbability_WhenCandidatesProvided_SelectsBestCandidate()
     {
         using var native = CreateNative(votedLanguageId: 2, probabilities: [0.1f, 0.9f, 0.6f], languages: ["en", "fr", "ro"]);
