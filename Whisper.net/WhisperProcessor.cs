@@ -61,27 +61,33 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <param name="newLanguage"></param>
     public void ChangeLanguage(string? newLanguage)
     {
-        ThrowIfParakeetLanguageOperation();
-        var oldLanguage = language;
+        processingSemaphore.Wait();
+        try
+        {
+            ThrowIfDisposed();
+            ThrowIfParakeetLanguageOperation();
 
-        var newParams = whisperParams;
-        if (string.IsNullOrEmpty(newLanguage))
-        {
-            newParams.Language = IntPtr.Zero;
-        }
-        else
-        {
-            language = MarshalUtils.GetStringHGlobalPtr(newLanguage);
-            if (!language.HasValue || language.Value == IntPtr.Zero)
+            var oldLanguage = language;
+            var newLanguagePtr = string.IsNullOrEmpty(newLanguage)
+                ? (IntPtr?)null
+                : MarshalUtils.GetStringHGlobalPtr(newLanguage);
+
+            if (newLanguagePtr.HasValue && newLanguagePtr.Value == IntPtr.Zero)
             {
                 throw new ArgumentException("Invalid language, cannot convert to native string.", nameof(newLanguage));
             }
 
-            newParams.Language = language.Value;
-        }
+            var newParams = whisperParams;
+            newParams.Language = newLanguagePtr ?? IntPtr.Zero;
+            language = newLanguagePtr;
+            whisperParams = newParams;
 
-        MarshalUtils.TryReleaseStringHGlobal(oldLanguage);
-        whisperParams = newParams;
+            MarshalUtils.TryReleaseStringHGlobal(oldLanguage);
+        }
+        finally
+        {
+            processingSemaphore.Release();
+        }
     }
 
     /// <summary>
@@ -220,10 +226,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <exception cref="ObjectDisposedException"></exception>
     public unsafe void Process(ReadOnlySpan<float> samples)
     {
-        if (isDisposed)
-        {
-            throw new ObjectDisposedException("This processor has already been disposed.");
-        }
+        ThrowIfDisposed();
 
         if (samples.IsEmpty)
         {
@@ -232,11 +235,13 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         fixed (float* pData = samples)
         {
-            var state = GetNativeState();
+            processingSemaphore.Wait();
+            var state = IntPtr.Zero;
             try
             {
-                processingSemaphore.Wait();
+                ThrowIfDisposed();
                 segmentIndex = 0;
+                state = GetNativeState();
 
                 var processingContextHandle = CreateProcessingContext(
                     CancellationToken.None,
@@ -260,7 +265,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             }
             finally
             {
-                FreeNativeState(state);
+                if (state != IntPtr.Zero)
+                {
+                    FreeNativeState(state);
+                }
+
                 processingSemaphore.Release();
             }
         }
@@ -486,11 +495,23 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     public void Dispose()
     {
-        if (processingSemaphore.CurrentCount == 0)
+        if (!processingSemaphore.Wait(0))
         {
             throw new Exception("Cannot dispose while processing, please use DisposeAsync instead.");
         }
 
+        try
+        {
+            DisposeResources();
+        }
+        finally
+        {
+            processingSemaphore.Release();
+        }
+    }
+
+    private void DisposeResources()
+    {
         MarshalUtils.TryReleaseStringHGlobal(language);
         language = null;
         MarshalUtils.TryReleaseStringHGlobal(initialPromptText);
@@ -533,6 +554,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
                 try
                 {
+                    ThrowIfDisposed();
                     segmentIndex = 0;
                     state = GetNativeState();
                     processingContextHandle = CreateProcessingContext(
@@ -1344,16 +1366,29 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         }
     }
 
+    private void ThrowIfDisposed()
+    {
+        if (isDisposed)
+        {
+            throw new ObjectDisposedException("This processor has already been disposed.");
+        }
+    }
+
     /// <summary>
     /// Releases the resources used by this processor.
     /// </summary>
     /// <returns></returns>
     public async ValueTask DisposeAsync()
     {
-        // If a processing is still running, wait for it to finish
         await processingSemaphore.WaitAsync();
-        processingSemaphore.Release();
-        Dispose();
+        try
+        {
+            DisposeResources();
+        }
+        finally
+        {
+            processingSemaphore.Release();
+        }
     }
 
     private sealed class ProcessingContext(
