@@ -1,5 +1,6 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
 using Whisper.net.Internals.Native;
@@ -10,6 +11,108 @@ namespace Whisper.net.Tests;
 
 public class LanguageDetectionTests
 {
+#if !NETFRAMEWORK && !ANDROID && !IOS && !MACCATALYST
+    [Fact]
+    public async Task ChangeLanguage_DoubleFreeRegressions_InSubprocess()
+    {
+        const string subprocessVariable = "WHISPER_LANGUAGE_REGRESSION_SUBPROCESS";
+        if (Environment.GetEnvironmentVariable(subprocessVariable) == "1")
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                ChangeLanguage_WhenClearedThenDisposed_DoesNotDoubleFree();
+                ChangeLanguage_WhenChangedThroughEmptyValue_ReplacesLanguage();
+                ChangeLanguage_WhenClearedRepeatedly_IsSafe();
+            }
+
+            return;
+        }
+
+        var startInfo = new ProcessStartInfo(Environment.GetEnvironmentVariable("DOTNET_HOST_PATH") ?? "dotnet")
+        {
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        startInfo.ArgumentList.Add("vstest");
+        startInfo.ArgumentList.Add(typeof(LanguageDetectionTests).Assembly.Location);
+        startInfo.ArgumentList.Add(
+            $"--TestCaseFilter:FullyQualifiedName={typeof(LanguageDetectionTests).FullName}.{nameof(ChangeLanguage_DoubleFreeRegressions_InSubprocess)}");
+        var resultFile = Path.Combine(Path.GetTempPath(), $"whisper-language-regression-{Guid.NewGuid():N}.trx");
+        startInfo.ArgumentList.Add($"--logger:trx;LogFileName={resultFile}");
+        startInfo.Environment[subprocessVariable] = "1";
+
+        using var process = System.Diagnostics.Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Could not start the language regression subprocess.");
+        var output = process.StandardOutput.ReadToEndAsync();
+        var error = process.StandardError.ReadToEndAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        try
+        {
+            try
+            {
+                await process.WaitForExitAsync(timeout.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                process.Kill(entireProcessTree: true);
+                await process.WaitForExitAsync();
+                throw;
+            }
+
+            Assert.True(process.ExitCode == 0, $"Language regression subprocess failed.\n{await output}\n{await error}");
+            var report = System.Xml.Linq.XDocument.Load(resultFile);
+            var counters = report.Descendants(report.Root!.Name.Namespace + "Counters").Single();
+            Assert.Equal("1", counters.Attribute("executed")?.Value);
+            Assert.Equal("1", counters.Attribute("passed")?.Value);
+        }
+        finally
+        {
+            File.Delete(resultFile);
+        }
+    }
+#endif
+
+    [Fact]
+    public void ChangeLanguage_WhenClearedThenDisposed_DoesNotDoubleFree()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage("en");
+        processor.ChangeLanguage(null);
+        processor.Dispose();
+
+        Assert.Throws<ObjectDisposedException>(() => processor.ChangeLanguage("ro"));
+    }
+
+    [Fact]
+    public void ChangeLanguage_WhenChangedThroughEmptyValue_ReplacesLanguage()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        using var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage("en");
+        AssertLanguage(processor, native, "en");
+        processor.ChangeLanguage(string.Empty);
+        AssertLanguage(processor, native, null);
+        processor.ChangeLanguage("ro");
+        AssertLanguage(processor, native, "ro");
+    }
+
+    [Fact]
+    public void ChangeLanguage_WhenClearedRepeatedly_IsSafe()
+    {
+        using var native = CreateNative(votedLanguageId: 0, probabilities: [1f], languages: ["en"]);
+        using var processor = CreateProcessor(native);
+
+        processor.ChangeLanguage("en");
+        processor.ChangeLanguage(null);
+        processor.ChangeLanguage(string.Empty);
+        processor.ChangeLanguage(null);
+        AssertLanguage(processor, native, null);
+    }
+
     [Fact]
     public void DetectLanguageWithProbability_WhenCandidatesProvided_SelectsBestCandidate()
     {
@@ -63,6 +166,16 @@ public class LanguageDetectionTests
     {
         var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero };
         return new WhisperProcessor(options, nativeWhisper);
+    }
+
+    private static void AssertLanguage(WhisperProcessor processor, LanguageDetectionNativeWhisper native, string? expected)
+    {
+        native.Whisper_Full_With_State = (_, _, parameters, _, _) =>
+        {
+            Assert.Equal(expected, MarshalUtils.GetString(parameters.Language));
+            return 0;
+        };
+        processor.Process(new float[1]);
     }
 
     private static LanguageDetectionNativeWhisper CreateNative(int votedLanguageId, float[] probabilities, string[] languages) =>
@@ -156,7 +269,7 @@ public class LanguageDetectionTests
         public INativeWhisper.whisper_free Whisper_Free { get; }
         public INativeWhisper.whisper_free_params Whisper_Free_Params { get; }
         public INativeWhisper.whisper_full_default_params_by_ref Whisper_Full_Default_Params_By_Ref { get; }
-        public INativeWhisper.whisper_full_with_state Whisper_Full_With_State { get; }
+        public INativeWhisper.whisper_full_with_state Whisper_Full_With_State { get; set; }
         public INativeWhisper.whisper_full_n_segments_from_state Whisper_Full_N_Segments_From_State { get; }
         public INativeWhisper.whisper_full_get_segment_t0_from_state Whisper_Full_Get_Segment_T0_From_State { get; }
         public INativeWhisper.whisper_full_get_segment_t1_from_state Whisper_Full_Get_Segment_T1_From_State { get; }
