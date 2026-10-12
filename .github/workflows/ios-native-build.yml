@@ -32,5 +32,5 @@ jobs:
           name: ios-build
           path: |
             runtimes/Whisper.net.Run*/*/*
-            runtimes/Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Runtime*.Metal/**
           retention-days: 7

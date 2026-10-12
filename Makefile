@@ -60,7 +60,9 @@ linux_cuda12: linux_x64_cuda12
 linux_vulkan: linux_x64_vulkan
 
 copy_metal:
-	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal.metal runtimes/$(RUNTIME_PACKAGE).Metal/ggml-metal.metal
+	mkdir -p runtimes/$(RUNTIME_PACKAGE).Metal/kernels
+	cp whisper.cpp/ggml/src/ggml-metal/kernels/*.metal whisper.cpp/ggml/src/ggml-metal/kernels/*.h runtimes/$(RUNTIME_PACKAGE).Metal/kernels/
+	cp whisper.cpp/ggml/src/ggml-metal/ggml-metal-impl.h whisper.cpp/ggml/src/ggml-common.h runtimes/$(RUNTIME_PACKAGE).Metal/
 
  # WASM hack to run under bash as emcmake overrides env variables and cannot run cmake anymore.
 wasm:
