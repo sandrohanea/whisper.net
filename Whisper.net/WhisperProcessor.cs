@@ -27,7 +27,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private readonly INativeParakeet? nativeParakeet;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
+#if NET9_0_OR_GREATER
+    private readonly Lock languageLock = new();
+#else
     private readonly object languageLock = new();
+#endif
     private IntPtr? pendingLanguage;
     private bool hasPendingLanguage;
     private WhisperFullParams whisperParams;
