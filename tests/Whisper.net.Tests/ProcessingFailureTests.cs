@@ -116,6 +116,237 @@ public class ProcessingFailureTests
         Assert.Throws<WhisperProcessingException>(() => processor.Process(new float[1]));
     }
 
+    [Theory]
+    [InlineData("segment", false)]
+    [InlineData("segment", true)]
+    [InlineData("progress", false)]
+    [InlineData("progress", true)]
+    [InlineData("encoder", false)]
+    [InlineData("encoder", true)]
+    [InlineData("abort", false)]
+    [InlineData("abort", true)]
+    [InlineData("utf8", false)]
+    [InlineData("utf8", true)]
+    public async Task ChangeLanguage_FromNativeCallback_AppliesToNextRun(string callbackKind, bool asynchronous)
+    {
+        var text = Utf8TestUtils.AllocateNullTerminated(" segment");
+        var language = Utf8TestUtils.AllocateNullTerminated("en");
+        WhisperProcessor? processor = null;
+        var callbackCalled = false;
+        var observedLanguages = new List<string?>();
+
+        void ChangeLanguage()
+        {
+            processor!.ChangeLanguage("fr");
+            processor.ChangeLanguage(null);
+            processor.ChangeLanguage("ro");
+            callbackCalled = true;
+        }
+
+        try
+        {
+            using var native = new FakeNativeWhisper(0, (_, state, parameters, _, _) =>
+            {
+                observedLanguages.Add(Marshal.PtrToStringUTF8(parameters.Language));
+                if (observedLanguages.Count == 1)
+                {
+                    switch (callbackKind)
+                    {
+                        case "segment":
+                        case "utf8":
+                            Marshal.GetDelegateForFunctionPointer<WhisperNewSegmentCallback>(parameters.OnNewSegment)(
+                                IntPtr.Zero, state, 1, parameters.OnNewSegmentUserData);
+                            break;
+                        case "progress":
+                            Marshal.GetDelegateForFunctionPointer<WhisperProgressCallback>(parameters.OnProgressCallback)(
+                                IntPtr.Zero, state, 50, parameters.OnProgressCallbackUserData);
+                            break;
+                        case "encoder":
+                            Marshal.GetDelegateForFunctionPointer<WhisperEncoderBeginCallback>(parameters.OnEncoderBegin)(
+                                IntPtr.Zero, state, parameters.OnEncoderBeginUserData);
+                            break;
+                        case "abort":
+                            Marshal.GetDelegateForFunctionPointer<WhisperAbortCallback>(parameters.OnAbort)(
+                                parameters.OnAbortUserData);
+                            break;
+                    }
+
+                    Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+                }
+
+                return 0;
+            })
+            {
+                Whisper_Full_N_Segments_From_State = _ => 1,
+                Whisper_Full_Get_Segment_Text_From_State = (_, _) => text,
+                Whisper_Lang_Str = _ => language
+            };
+            var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero, Language = "en" };
+            options.OnSegmentEventHandlers.Add(_ => ChangeLanguage());
+            options.OnProgressHandlers.Add(_ => ChangeLanguage());
+            options.OnEncoderBeginEventHandlers.Add(_ =>
+            {
+                ChangeLanguage();
+                return true;
+            });
+            options.WhisperAbortEventHandler = () =>
+            {
+                ChangeLanguage();
+                return false;
+            };
+            using var ownedProcessor = new WhisperProcessor(options, native);
+            processor = ownedProcessor;
+
+            var processing = Task.Run(async () =>
+            {
+                if (callbackKind == "utf8")
+                {
+                    if (asynchronous)
+                    {
+                        await processor.ProcessWithUtf8HandlerAsync(new float[1], _ => ChangeLanguage());
+                    }
+                    else
+                    {
+                        processor.ProcessWithUtf8Handler(new float[1], _ => ChangeLanguage());
+                    }
+                }
+                else if (asynchronous)
+                {
+                    await foreach (var _ in processor.ProcessAsync(new float[1]))
+                    {
+                    }
+                }
+                else
+                {
+                    processor.Process(new float[1]);
+                }
+            });
+
+            await WaitForTaskAsync(processing);
+            Assert.True(callbackCalled);
+            processor.Process(new float[1]);
+            Assert.Equal(new[] { "en", "ro" }, observedLanguages);
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(text);
+            Marshal.FreeCoTaskMem(language);
+        }
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("ro")]
+    public async Task ChangeLanguage_DuringGatedNativeCall_KeepsActiveLanguageAlive(string? newLanguage)
+    {
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var observedLanguages = new List<string?>();
+        using var native = new FakeNativeWhisper(0, (_, _, parameters, _, _) =>
+        {
+            observedLanguages.Add(Marshal.PtrToStringUTF8(parameters.Language));
+            if (observedLanguages.Count == 1)
+            {
+                entered.SetResult(true);
+                Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
+                Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+            }
+
+            return 0;
+        });
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero, Language = "en" };
+        using var processor = new WhisperProcessor(options, native);
+        var processing = processor.ProcessWithUtf8HandlerAsync(new float[1], _ => { });
+        try
+        {
+            await WaitForTaskAsync(entered.Task);
+            await WaitForTaskAsync(Task.Run(() => processor.ChangeLanguage(newLanguage)));
+        }
+        finally
+        {
+            release.Set();
+            await WaitForTaskAsync(processing);
+        }
+
+        processor.Process(new float[1]);
+        Assert.Equal(new[] { "en", string.IsNullOrEmpty(newLanguage) ? null : newLanguage }, observedLanguages);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ChangeLanguage_WhenNativeFails_AppliesDeferredValue(bool asynchronous)
+    {
+        WhisperProcessor? processor = null;
+        var calls = 0;
+        using var native = new FakeNativeWhisper(0, (_, _, parameters, _, _) =>
+        {
+            if (++calls == 1)
+            {
+                processor!.ChangeLanguage(null);
+                Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+                return 5;
+            }
+
+            Assert.Equal(IntPtr.Zero, parameters.Language);
+            return 0;
+        });
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero, Language = "en" };
+        using var ownedProcessor = new WhisperProcessor(options, native);
+        processor = ownedProcessor;
+
+        if (asynchronous)
+        {
+            await Assert.ThrowsAsync<WhisperProcessingException>(() =>
+                processor.ProcessWithUtf8HandlerAsync(new float[1], _ => { }));
+        }
+        else
+        {
+            Assert.Throws<WhisperProcessingException>(() => processor.Process(new float[1]));
+        }
+
+        processor.Process(new float[1]);
+    }
+
+    [Fact]
+    public async Task DisposeAsync_WithDeferredLanguage_WaitsForNativeCallAndRejectsFurtherChanges()
+    {
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        using var native = new FakeNativeWhisper(0, (_, _, parameters, _, _) =>
+        {
+            entered.SetResult(true);
+            Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
+            Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+            return 0;
+        });
+        var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero, Language = "en" };
+        using var processor = new WhisperProcessor(options, native);
+        var processing = processor.ProcessWithUtf8HandlerAsync(new float[1], _ => { });
+        Task? disposal = null;
+        try
+        {
+            await WaitForTaskAsync(entered.Task);
+            processor.ChangeLanguage("ro");
+            processor.ChangeLanguage(null);
+            disposal = processor.DisposeAsync().AsTask();
+            Assert.False(disposal.IsCompleted);
+        }
+        finally
+        {
+            release.Set();
+            await WaitForTaskAsync(processing);
+            if (disposal is not null)
+            {
+                await WaitForTaskAsync(disposal);
+            }
+        }
+
+        Assert.Throws<ObjectDisposedException>(() => processor.ChangeLanguage("ro"));
+        Assert.Throws<ObjectDisposedException>(() => processor.ChangeLanguage(null));
+    }
+
     [Fact]
     public void Process_WhenSamplesAreEmpty_ShouldNotCallNative()
     {

@@ -27,6 +27,9 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private readonly INativeParakeet? nativeParakeet;
     private readonly List<GCHandle> gcHandles = [];
     private readonly SemaphoreSlim processingSemaphore;
+    private readonly object languageLock = new();
+    private IntPtr? pendingLanguage;
+    private bool hasPendingLanguage;
     private WhisperFullParams whisperParams;
     private ParakeetFullParams parakeetParams;
     private IntPtr? language;
@@ -58,16 +61,19 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     /// <summary>
     /// Change the language that is used to process the audio input.
     /// </summary>
+    /// <remarks>
+    /// Changes made during processing, including from callbacks, apply to the next processing run.
+    /// If multiple changes are requested, the last language is used.
+    /// </remarks>
     /// <param name="newLanguage"></param>
+    /// <exception cref="ObjectDisposedException">The processor has been disposed.</exception>
     public void ChangeLanguage(string? newLanguage)
     {
-        processingSemaphore.Wait();
-        try
+        lock (languageLock)
         {
             ThrowIfDisposed();
             ThrowIfParakeetLanguageOperation();
 
-            var oldLanguage = language;
             var newLanguagePtr = string.IsNullOrEmpty(newLanguage)
                 ? (IntPtr?)null
                 : MarshalUtils.GetStringHGlobalPtr(newLanguage);
@@ -77,15 +83,44 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 throw new ArgumentException("Invalid language, cannot convert to native string.", nameof(newLanguage));
             }
 
-            var newParams = whisperParams;
-            newParams.Language = newLanguagePtr ?? IntPtr.Zero;
-            language = newLanguagePtr;
-            whisperParams = newParams;
+            if (!processingSemaphore.Wait(0))
+            {
+                MarshalUtils.TryReleaseStringHGlobal(pendingLanguage);
+                pendingLanguage = newLanguagePtr;
+                hasPendingLanguage = true;
+                return;
+            }
 
-            MarshalUtils.TryReleaseStringHGlobal(oldLanguage);
+            try
+            {
+                SetLanguage(newLanguagePtr);
+            }
+            finally
+            {
+                processingSemaphore.Release();
+            }
         }
-        finally
+    }
+
+    private void SetLanguage(IntPtr? newLanguage)
+    {
+        var oldLanguage = language;
+        language = newLanguage;
+        whisperParams.Language = newLanguage ?? IntPtr.Zero;
+        MarshalUtils.TryReleaseStringHGlobal(oldLanguage);
+    }
+
+    private void ReleaseProcessingSemaphore()
+    {
+        lock (languageLock)
         {
+            if (hasPendingLanguage)
+            {
+                SetLanguage(pendingLanguage);
+                pendingLanguage = null;
+                hasPendingLanguage = false;
+            }
+
             processingSemaphore.Release();
         }
     }
@@ -270,7 +305,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                     FreeNativeState(state);
                 }
 
-                processingSemaphore.Release();
+                ReleaseProcessingSemaphore();
             }
         }
     }
@@ -433,6 +468,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         try
         {
+            ThrowIfDisposed();
             fixed (float* pData = samples)
             {
                 segmentIndex = 0;
@@ -473,7 +509,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                 FreeNativeState(state);
             }
 
-            processingSemaphore.Release();
+            ReleaseProcessingSemaphore();
         }
     }
 
@@ -502,7 +538,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
         try
         {
-            DisposeResources();
+            lock (languageLock)
+            {
+                DisposeResources();
+            }
         }
         finally
         {
@@ -512,8 +551,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
 
     private void DisposeResources()
     {
+        MarshalUtils.TryReleaseStringHGlobal(pendingLanguage);
+        pendingLanguage = null;
+        hasPendingLanguage = false;
         MarshalUtils.TryReleaseStringHGlobal(language);
         language = null;
+        whisperParams.Language = IntPtr.Zero;
         MarshalUtils.TryReleaseStringHGlobal(initialPromptText);
         initialPromptText = null;
 
@@ -587,7 +630,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
                         FreeNativeState(state);
                     }
 
-                    processingSemaphore.Release();
+                    ReleaseProcessingSemaphore();
                 }
             }
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
@@ -1383,7 +1426,10 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         await processingSemaphore.WaitAsync();
         try
         {
-            DisposeResources();
+            lock (languageLock)
+            {
+                DisposeResources();
+            }
         }
         finally
         {
