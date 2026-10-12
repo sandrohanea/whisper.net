@@ -31,7 +31,7 @@ jobs:
           name: mac-coreml-intel-build
           path: |
             runtimes/Whisper.net.Run*/*/*
-            runtimes/Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Runtime*.Metal/**
           retention-days: 7
 
   arm-native-build:
@@ -52,5 +52,5 @@ jobs:
           name: mac-coreml-arm-build
           path: |
             runtimes/Whisper.net.Run*/*/*
-            runtimes/Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Runtime*.Metal/**
           retention-days: 7

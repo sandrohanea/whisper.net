@@ -10,7 +10,7 @@ on:
 
 jobs:
   dotnet-maui-build:
-    runs-on: macos-26
+    runs-on: xcode-27
 
     env:
       USE_WHISPER_MAUI: "TRUE"
@@ -29,7 +29,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
         with:
-          xcode-version: "26.6"
+          xcode-version: "27.0"
 
       - name: Download Artifacts
         id: download-artifact
@@ -116,7 +116,7 @@ jobs:
             ./test-results/*
 
   dotnet-maui-test-ios:
-    runs-on: macos-26
+    runs-on: xcode-27
     needs: dotnet-maui-build
 
     env:
@@ -135,7 +135,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
         with:
-          xcode-version: "26.6"
+          xcode-version: "27.0"
 
       - name: Download Artifacts
         id: download-artifact

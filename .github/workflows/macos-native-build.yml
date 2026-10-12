@@ -32,7 +32,7 @@ jobs:
           name: mac-intel-build
           path: |
             runtimes/Whisper.net.Run*/*/*
-            runtimes/Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Runtime*.Metal/**
           retention-days: 7
 
   arm-native-build:
@@ -54,5 +54,5 @@ jobs:
           name: mac-arm-build
           path: |
             runtimes/Whisper.net.Run*/*/*
-            runtimes/Whisper.net.Run*/*.metal
+            runtimes/Whisper.net.Runtime*.Metal/**
           retention-days: 7
