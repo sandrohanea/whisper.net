@@ -2,15 +2,187 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/index.css" />
+    <link rel="stylesheet" href="./src/App.css" />
     <title>Whisper.net — .NET Bindings for OpenAI Whisper</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <section class="hero">
+      <div class="hero-body"><p class="hero-kicker">Open-source | .NET | whisper.cpp</p><h1>Whisper<span class="accent">.net</span></h1>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:1.8s;animation-delay:0s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.6s;animation-delay:0.22999999999999998s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3.4s;animation-delay:0.45999999999999996s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.2s;animation-delay:0.24s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3s;animation-delay:0.47s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:1.8s;animation-delay:0.7s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.6s;animation-delay:0.48s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3.4s;animation-delay:0.7100000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.2s;animation-delay:0.94s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3s;animation-delay:0.72s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:1.8s;animation-delay:0.9500000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.6s;animation-delay:1.18s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3.4s;animation-delay:0.96s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.2s;animation-delay:1.19s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3s;animation-delay:1.4200000000000002s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:1.8s;animation-delay:1.2s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.6s;animation-delay:1.43s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3.4s;animation-delay:1.6600000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.2s;animation-delay:1.44s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3s;animation-delay:1.67s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:1.8s;animation-delay:1.9000000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.6s;animation-delay:1.68s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3.4s;animation-delay:1.91s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.2s;animation-delay:2.14s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3s;animation-delay:1.92s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:1.8s;animation-delay:2.15s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.6s;animation-delay:2.38s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3.4s;animation-delay:2.16s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.2s;animation-delay:2.39s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3s;animation-delay:0.11999999999999966s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:1.8s;animation-delay:2.4s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.6s;animation-delay:0.1299999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3.4s;animation-delay:0.3599999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.2s;animation-delay:0.14000000000000012s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3s;animation-delay:0.3700000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:1.8s;animation-delay:0.6000000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.6s;animation-delay:0.3799999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3.4s;animation-delay:0.6099999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.2s;animation-delay:0.8399999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3s;animation-delay:0.6200000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:1.8s;animation-delay:0.8500000000000001s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.6s;animation-delay:1.08s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3.4s;animation-delay:0.8599999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.2s;animation-delay:1.0899999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3s;animation-delay:1.3199999999999998s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:1.8s;animation-delay:1.1s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.6s;animation-delay:1.33s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3.4s;animation-delay:1.5600000000000005s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.2s;animation-delay:1.3399999999999999s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3s;animation-delay:1.5700000000000003s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:1.8s;animation-delay:1.7999999999999998s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.6s;animation-delay:1.58s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3.4s;animation-delay:1.8100000000000005s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.2s;animation-delay:2.04s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3s;animation-delay:1.8200000000000003s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:1.8s;animation-delay:2.0500000000000007s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.6s;animation-delay:2.2800000000000002s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3.4s;animation-delay:2.0600000000000005s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.2s;animation-delay:2.29s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3s;animation-delay:0.019999999999999574s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:1.8s;animation-delay:2.3s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:2.6s;animation-delay:0.03000000000000025s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:3.4s;animation-delay:0.2599999999999998s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.2s;animation-delay:0.040000000000000036s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3s;animation-delay:0.27000000000000046s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:1.8s;animation-delay:0.5s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:2.6s;animation-delay:0.28000000000000025s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:3.4s;animation-delay:0.5100000000000007s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.2s;animation-delay:0.7400000000000002s"></div>
+          <div class="waveform-bar" style="animation-name:pulse1;animation-duration:3s;animation-delay:0.5200000000000005s"></div>
+          <div class="waveform-bar" style="animation-name:pulse2;animation-duration:1.8s;animation-delay:0.7500000000000009s"></div>
+          <div class="waveform-bar" style="animation-name:pulse3;animation-duration:2.6s;animation-delay:0.9799999999999995s"></div>
+        </div>
+        <p class="hero-lead">Accurate, fast speech-to-text for .NET applications.<br/>99+ languages. GPU-accelerated. Runs everywhere.</p>
+        <div class="hero-cta-group">
+          <div class="hero-row"><a href="https://github.com/sandrohanea/whisper.net" target="_blank" rel="noopener noreferrer" class="btn btn-gh"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.1.83-.26.83-.57v-2.23c-3.34.73-4.04-1.42-4.04-1.42a3.18 3.18 0 0 0-1.34-1.75c-1.08-.74.08-.73.08-.73a2.53 2.53 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.4 11.4 0 0 1 6.01 0c2.3-1.55 3.3-1.23 3.3-1.23a4.3 4.3 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 0 1 .82 2.23v3.29c0 .31.22.68.83.57A12 12 0 0 0 12 .3"></path></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>Star on GitHub</a><a href="https://www.nuget.org/packages/Whisper.net" target="_blank" rel="noopener noreferrer" class="btn btn-nu"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>NuGet</a>
+          </div>
+          <div class="install-bar"><span class="install-prompt">$</span><code>dotnet add package Whisper.net.AllRuntimes</code><button class="copy-btn" type="button" title="Copy to clipboard">copy</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="scroll-cue" aria-label="Scroll down">↓</button>
+    </section>
+    <div class="content" id="content">
+      <div class="features-grid">
+        <section class="card card-sm">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg><h2>Native speed</h2>
+          </div>
+          <p>C/C++ inference via whisper.cpp — no Python, no containers. Hardware-accelerated with CUDA, CoreML, Vulkan, and OpenVINO.</p>
+        </section>
+        <section class="card card-sm">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg><h2>Async-first API</h2>
+          </div>
+          <p>Stream transcription results with <code>IAsyncEnumerable</code>. Process audio in real time or batch — your call.</p>
+        </section>
+        <section class="card card-sm">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4"></path><path d="M14 12h4"></path><path d="M12 6v12"></path></svg><h2>Pluggable runtimes</h2>
+          </div>
+          <p>Install one NuGet package or many. The loader probes available runtimes and picks the fastest with automatic fallback.</p>
+        </section>
+        <section class="card card-sm">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg><h2>99+ languages</h2>
+          </div>
+          <p>Powered by OpenAI&#x27;s Whisper model — accurate speech recognition and translation across virtually every spoken language.</p>
+        </section>
+      </div>
+      <section class="card">
+        <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M2 15h2"></path><path d="M20 15h2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path><path d="M2 9h2"></path><path d="M20 9h2"></path></svg><h2>Pick your hardware</h2>
+        </div>
+        <div class="rt-grid">
+          <div class="rt-item"><strong>CPU</strong><span>All platforms — Win, Linux, macOS, Mobile, WASM</span>
+          </div>
+          <div class="rt-item"><strong>CUDA 12/13</strong><span>NVIDIA GPU — Win &amp; Linux x64</span>
+          </div>
+          <div class="rt-item"><strong>CoreML</strong><span>Apple Neural Engine — macOS, iOS</span>
+          </div>
+          <div class="rt-item"><strong>OpenVINO</strong><span>Intel acceleration — Win &amp; Linux x64</span>
+          </div>
+          <div class="rt-item"><strong>Vulkan</strong><span>GPU via Vulkan API — Win x64</span>
+          </div>
+          <div class="rt-item"><strong>NoAvx</strong><span>CPUs without AVX instructions</span>
+          </div>
+        </div>
+      </section>
+      <section class="card card-code">
+        <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><h2>A few lines of C#</h2>
+        </div>
+        <div class="code-block">
+          <div class="code-chrome"><span></span><span></span><span></span><span class="code-name">Program.cs</span><button class="copy-btn" type="button" title="Copy to clipboard">copy</button>
+          </div>
+          <pre><span class="kw">using</span> <span class="kw">var</span> factory = <span class="tp">WhisperFactory</span>.<span class="mt">FromPath</span>(<span class="st">&quot;ggml-base.bin&quot;</span>);
+
+<span class="kw">using</span> <span class="kw">var</span> processor = factory.<span class="mt">CreateBuilder</span>()
+    .<span class="mt">WithLanguage</span>(<span class="st">&quot;auto&quot;</span>)
+    .<span class="mt">Build</span>();
+
+<span class="kw">using</span> <span class="kw">var</span> stream = <span class="tp">File</span>.<span class="mt">OpenRead</span>(<span class="st">&quot;audio.wav&quot;</span>);
+
+<span class="cf">await</span> <span class="cf">foreach</span> (<span class="kw">var</span> r <span class="cf">in</span> processor.<span class="mt">ProcessAsync</span>(stream))
+{
+    <span class="tp">Console</span>.<span class="mt">WriteLine</span>(<span class="st">$&quot;</span>{r.Start}<span class="st">-&gt;</span>{r.End}<span class="st">: </span>{r.Text}<span class="st">&quot;</span>);
+}</pre>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg><h2>Runs everywhere</h2>
+        </div>
+        <div class="platforms"><span class="chip">Windows</span><span class="chip">Linux</span><span class="chip">macOS</span><span class="chip">Android</span><span class="chip">iOS</span><span class="chip">MacCatalyst</span><span class="chip">tvOS</span><span class="chip">WebAssembly</span>
+        </div>
+      </section>
+      <div class="bottom-row">
+        <section class="card card-cta">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg><h2>Ready to get started?</h2>
+          </div>
+          <p>Add Whisper.net to your project and start transcribing audio in minutes.</p>
+          <div class="hero-row"><a href="https://github.com/sandrohanea/whisper.net" target="_blank" rel="noopener noreferrer" class="btn btn-gh"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.1.83-.26.83-.57v-2.23c-3.34.73-4.04-1.42-4.04-1.42a3.18 3.18 0 0 0-1.34-1.75c-1.08-.74.08-.73.08-.73a2.53 2.53 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.4 11.4 0 0 1 6.01 0c2.3-1.55 3.3-1.23 3.3-1.23a4.3 4.3 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.24 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 0 1 .82 2.23v3.29c0 .31.22.68.83.57A12 12 0 0 0 12 .3"></path></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>Star on GitHub</a><a href="https://www.nuget.org/packages/Whisper.net" target="_blank" rel="noopener noreferrer" class="btn btn-nu"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Get on NuGet</a>
+          </div>
+        </section>
+        <section class="card card-cta">
+          <div class="card-head"><svg class="card-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><h2>Want to contribute?</h2>
+          </div>
+          <p>Whisper.net is open source and welcomes contributions — bug reports, feature requests, and pull requests are all appreciated.</p>
+          <div class="hero-row"><a href="https://github.com/sandrohanea/whisper.net/issues" target="_blank" rel="noopener noreferrer" class="btn btn-gh"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>Open Issue</a><a href="https://github.com/sandrohanea/whisper.net/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="btn btn-gh"><svg class="icon-default" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg><svg class="icon-hover" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>Contribute</a>
+          </div>
+        </section>
+      </div>
+    </div>
+    <footer class="site-footer"><p>Created by <a href="https://sandro.rocks/" target="_blank" rel="noopener noreferrer">Sandro Hanea</a> · Built by the <a href="https://github.com/sandrohanea/whisper.net" target="_blank" rel="noopener noreferrer">Whisper.net</a> community · Powered by <a href="https://github.com/ggerganov/whisper.cpp" target="_blank" rel="noopener noreferrer">whisper.cpp</a></p><p class="mit">Released under the <a href="https://github.com/sandrohanea/whisper.net/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></p>
+    </footer>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>
