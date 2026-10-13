@@ -67,7 +67,7 @@ public class GrammarTests
     {
         var parsed = GbnfParser.Parse("root ::= (\n\"a\" | \"b\"\n)+ tail?\ntail ::= \"c\" tail | \"\"", "root");
         Assert.Equal(5, parsed.Rules.Length);
-        Assert.All(parsed.Rules, rule => Assert.Equal(GrammarElementType.End, rule[^1].Type));
+        Assert.All(parsed.Rules, rule => Assert.Equal(GrammarElementType.End, rule[rule.Length - 1].Type));
     }
 
     [Theory]

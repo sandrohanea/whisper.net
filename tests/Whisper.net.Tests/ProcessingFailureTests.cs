@@ -1,6 +1,7 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
 using System.Runtime.InteropServices;
+using Whisper.net.Internals;
 using Whisper.net.Internals.Native;
 using Whisper.net.Native;
 using Xunit;
@@ -147,7 +148,7 @@ public class ProcessingFailureTests
         {
             using var native = new FakeNativeWhisper(0, (_, state, parameters, _, _) =>
             {
-                observedLanguages.Add(Marshal.PtrToStringUTF8(parameters.Language));
+                observedLanguages.Add(MarshalUtils.GetString(parameters.Language));
                 if (observedLanguages.Count == 1)
                 {
                     switch (callbackKind)
@@ -171,7 +172,7 @@ public class ProcessingFailureTests
                             break;
                     }
 
-                    Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+                    Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
                 }
 
                 return 0;
@@ -245,12 +246,12 @@ public class ProcessingFailureTests
         var observedLanguages = new List<string?>();
         using var native = new FakeNativeWhisper(0, (_, _, parameters, _, _) =>
         {
-            observedLanguages.Add(Marshal.PtrToStringUTF8(parameters.Language));
+            observedLanguages.Add(MarshalUtils.GetString(parameters.Language));
             if (observedLanguages.Count == 1)
             {
                 entered.SetResult(true);
                 Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
-                Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+                Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
             }
 
             return 0;
@@ -285,7 +286,7 @@ public class ProcessingFailureTests
             if (++calls == 1)
             {
                 processor!.ChangeLanguage(null);
-                Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+                Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
                 return 5;
             }
 
@@ -318,7 +319,7 @@ public class ProcessingFailureTests
         {
             entered.SetResult(true);
             Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
-            Assert.Equal("en", Marshal.PtrToStringUTF8(parameters.Language));
+            Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
             return 0;
         });
         var options = new WhisperProcessorOptions { ContextHandle = IntPtr.Zero, Language = "en" };
