@@ -54,7 +54,10 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install "ios-simulator_${IOS_SIMULATOR_VERSION}"
+        run: |
+          # Apple now uses opaque runtime IDs that XHarness cannot infer from the version.
+          xcodebuild -downloadPlatform iOS -buildVersion "$IOS_SIMULATOR_VERSION"
+          xcrun simctl list runtimes
 
       - name: Build ios-simulator
         run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
@@ -152,7 +155,10 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install "ios-simulator_${IOS_SIMULATOR_VERSION}"
+        run: |
+          # Apple now uses opaque runtime IDs that XHarness cannot infer from the version.
+          xcodebuild -downloadPlatform iOS -buildVersion "$IOS_SIMULATOR_VERSION"
+          xcrun simctl list runtimes
 
       - name: run ios tests
         timeout-minutes: 40
