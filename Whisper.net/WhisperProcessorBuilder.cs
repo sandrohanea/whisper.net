@@ -593,6 +593,33 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
+    /// Configures GBNF grammar constraints for Whisper decoding.
+    /// </summary>
+    /// <param name="gbnf">Grammar text supporting literals, character classes, rule references, groups, and *, +, ? repetition.</param>
+    /// <param name="startRule">The name of the initial rule. Defaults to "root".</param>
+    /// <param name="penalty">The nonnegative, finite penalty subtracted from logits of incompatible tokens. Defaults to 100.</param>
+    /// <returns>The same builder.</returns>
+    /// <remarks>
+    /// Grammar penalties guide decoding; they do not guarantee a complete, valid result or a particular language.
+    /// Grammar constraints are not supported by Parakeet.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">Grammar text or start rule is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The penalty is negative or nonfinite.</exception>
+    /// <exception cref="FormatException">The grammar is invalid or contains unsupported left recursion.</exception>
+    public WhisperProcessorBuilder WithGrammar(string gbnf, string startRule = "root", float penalty = 100f)
+    {
+        if (float.IsNaN(penalty) || float.IsInfinity(penalty) || penalty < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(penalty), "Grammar penalty must be finite and nonnegative.");
+        }
+
+        var grammar = Internals.Grammar.GbnfParser.Parse(gbnf, startRule);
+        whisperProcessorOptions.Grammar = grammar;
+        whisperProcessorOptions.GrammarPenalty = penalty;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the processor.
     /// </summary>
     /// <returns>The <seealso cref="WhisperProcessor"/> build with these configs.</returns>

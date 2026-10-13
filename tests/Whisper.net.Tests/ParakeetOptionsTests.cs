@@ -85,6 +85,65 @@ public class ParakeetOptionsTests
         options.ValidateModelFamilyCompatibility();
     }
 
+    [Fact]
+    public void ProcessorOptions_EnumeratesAllUnsupportedParakeetOptions()
+    {
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Parakeet,
+            Translate = true,
+            PrintProgress = true,
+            Language = "ro",
+            OpenVinoModelPath = "model.xml",
+            OpenVinoDevice = "CPU"
+        };
+
+        Assert.Equal(
+            ["Translation", "Printing progress", "Language selection or detection", "OpenVINO encoding"],
+            options.GetUnsupportedParakeetOptions());
+    }
+
+    [Fact]
+    public void ProcessorOptions_WithMultipleUnsupportedParakeetOptions_ReportsAll()
+    {
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Parakeet,
+            Translate = true,
+            Grammar = Internals.Grammar.GbnfParser.Parse("root ::= \"a\"", "root"),
+            Language = "ro"
+        };
+
+        var exception = Assert.Throws<NotSupportedException>(options.ValidateModelFamilyCompatibility);
+
+        Assert.Equal(
+            "The following options are not supported by the Parakeet engine: Translation, Grammar constraints, Language selection or detection.",
+            exception.Message);
+    }
+
+    [Fact]
+    public void ProcessorOptions_DefaultsHaveNoUnsupportedParakeetOptions()
+    {
+        var options = new WhisperProcessorOptions { ModelFamily = WhisperModelFamily.Parakeet };
+
+        Assert.Empty(options.GetUnsupportedParakeetOptions());
+        options.ValidateModelFamilyCompatibility();
+    }
+
+    [Fact]
+    public void ProcessorOptions_WithWhisper_AllowsWhisperSpecificOptions()
+    {
+        var options = new WhisperProcessorOptions
+        {
+            ModelFamily = WhisperModelFamily.Whisper,
+            Translate = true,
+            PrintProgress = true,
+            Language = "ro"
+        };
+
+        options.ValidateModelFamilyCompatibility();
+    }
+
     private sealed class EmptyModelLoader : IWhisperModelLoader
     {
         public bool IsEof => true;

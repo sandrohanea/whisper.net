@@ -1,6 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+#if !NETFRAMEWORK && !ANDROID && !IOS && !MACCATALYST && !WHISPER_MAUI_TESTS
 using System.Diagnostics;
+#endif
 using System.Runtime.InteropServices;
 using Whisper.net.Internals;
 using Whisper.net.Internals.Native;
@@ -11,7 +13,7 @@ namespace Whisper.net.Tests;
 
 public class LanguageDetectionTests
 {
-#if !NETFRAMEWORK && !ANDROID && !IOS && !MACCATALYST
+#if !NETFRAMEWORK && !ANDROID && !IOS && !MACCATALYST && !WHISPER_MAUI_TESTS
     [Fact]
     public async Task ChangeLanguage_DoubleFreeRegressions_InSubprocess()
     {

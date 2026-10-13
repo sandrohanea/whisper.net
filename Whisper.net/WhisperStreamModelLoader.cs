@@ -1,6 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+#if NETSTANDARD
 using System.Buffers;
+#endif
 
 namespace Whisper.net;
 

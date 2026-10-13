@@ -8,6 +8,10 @@ permissions:
 on:
   workflow_call:
 
+env:
+  IOS_SIMULATOR_VERSION: "27.0"
+  IOS_SIMULATOR_DEVICE: "iPhone 18 Pro"
+
 jobs:
   dotnet-maui-build:
     runs-on: xcode-27
@@ -50,7 +54,7 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install ios-simulator_26.5
+        run: dotnet run --file .github/scripts/IosSimulator.cs -- ensure-runtime "$IOS_SIMULATOR_VERSION"
 
       - name: Build ios-simulator
         run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
@@ -148,10 +152,29 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install ios-simulator_26.5
+        run: dotnet run --file .github/scripts/IosSimulator.cs -- ensure-runtime "$IOS_SIMULATOR_VERSION"
+
+      - name: Select or create iOS simulator
+        id: ios-simulator
+        run: dotnet run --file .github/scripts/IosSimulator.cs -- prepare-device "$IOS_SIMULATOR_VERSION" "$IOS_SIMULATOR_DEVICE"
+
+      - name: Configure headless iOS launcher
+        id: ios-mlaunch
+        run: dotnet run --file .github/scripts/IosSimulator.cs -- configure-mlaunch "$RUNNER_TEMP/mlaunch-headless.sh"
 
       - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 17" --timeout "00:30:00"
+        timeout-minutes: 40
+        shell: bash
+        run: |
+          # Boot normally before mlaunch installs the app; a cold mlaunch boot can hang.
+          simulator_id="${{ steps.ios-simulator.outputs.udid }}"
+          simulator_state="${{ steps.ios-simulator.outputs.state }}"
+          if [ "$simulator_state" = "Shutdown" ]; then
+            xcrun simctl boot "$simulator_id"
+          fi
+          mkdir -p ./test-results/ios
+          xcrun simctl bootstatus "$simulator_id" -b | tee ./test-results/ios/simulator-boot.log
+          xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="$simulator_id" --mlaunch="${{ steps.ios-mlaunch.outputs.path }}" --timeout "00:30:00"
       - name: Upload Maui iOS xharness test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v6

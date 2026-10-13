@@ -2,7 +2,6 @@
 
 #if !NETSTANDARD
 using System.Runtime.InteropServices;
-using Whisper.net.Native;
 using static Whisper.net.Internals.Native.INativeWhisper;
 
 namespace Whisper.net.Internals.Native.Implementations;

@@ -1,7 +1,5 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Whisper.net.Internals.Native;
 using Whisper.net.Internals.Native.Implementations.Cuda;
@@ -130,7 +128,6 @@ internal static class CudaHelper
 
     private static bool HasCudaDevices(INativeCuda nativeCuda, RuntimeLibrary runtime, out int cudaDevices)
     {
-        cudaDevices = 0;
         var cudaResult = nativeCuda.CudaGetDeviceCount(out cudaDevices);
         if (cudaResult != 0)
         {
