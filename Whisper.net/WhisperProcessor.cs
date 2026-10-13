@@ -39,6 +39,7 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
     private IntPtr? language;
     private IntPtr? initialPromptText;
     private IntPtr? suppressRegex;
+    private Internals.Grammar.NativeGrammar? grammar;
     private bool isDisposed;
     private int segmentIndex;
 
@@ -48,7 +49,15 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         this.nativeWhisper = nativeWhisper;
 
         currentWhisperContext = options.ContextHandle;
-        whisperParams = GetWhisperParams();
+        try
+        {
+            whisperParams = GetWhisperParams();
+        }
+        catch
+        {
+            DisposeResources();
+            throw;
+        }
         processingSemaphore = new(1);
     }
 
@@ -567,6 +576,11 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         MarshalUtils.TryReleaseStringHGlobal(suppressRegex);
         suppressRegex = null;
 
+        grammar?.Dispose();
+        grammar = null;
+        whisperParams.WhisperGrammarElement = IntPtr.Zero;
+        whisperParams.NGrammarRules = UIntPtr.Zero;
+
         foreach (var gcHandle in gcHandles)
         {
             gcHandle.Free();
@@ -728,6 +742,12 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
         var whisperParams = Marshal.PtrToStructure<WhisperFullParams>(whisperParamsRef);
         nativeWhisper.Whisper_Free_Params(whisperParamsRef);
         whisperParams.Strategy = strategy;
+
+        if (options.Grammar is { } parsedGrammar)
+        {
+            grammar = new Internals.Grammar.NativeGrammar(parsedGrammar);
+            grammar.Apply(ref whisperParams, parsedGrammar, options.GrammarPenalty);
+        }
 
         if (options.Threads.HasValue)
         {

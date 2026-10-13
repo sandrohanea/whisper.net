@@ -9,7 +9,7 @@ namespace Whisper.net.Tests;
 
 public class ProcessingFailureTests
 {
-    private sealed class FakeNativeWhisper : INativeWhisper
+    internal sealed class FakeNativeWhisper : INativeWhisper
     {
         private readonly int _errorCode;
 

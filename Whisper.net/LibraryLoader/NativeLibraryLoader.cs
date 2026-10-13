@@ -496,5 +496,7 @@ public static class NativeLibraryLoader
     }
 
     private static bool IsCudaRuntime(RuntimeLibrary runtime)
-        => runtime == RuntimeLibrary.Cuda || runtime == RuntimeLibrary.Cuda12;
+    {
+        return runtime == RuntimeLibrary.Cuda || runtime == RuntimeLibrary.Cuda12;
+    }
 }

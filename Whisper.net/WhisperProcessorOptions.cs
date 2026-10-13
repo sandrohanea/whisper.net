@@ -56,6 +56,10 @@ internal sealed class WhisperProcessorOptions
 
     public int? AudioContextSize { get; set; }
 
+    public Internals.Grammar.ParsedGrammar? Grammar { get; set; }
+
+    public float GrammarPenalty { get; set; } = 100f;
+
     public string? SuppressRegex { get; set; }
 
     public string? Prompt { get; set; }
@@ -99,44 +103,158 @@ internal sealed class WhisperProcessorOptions
             return;
         }
 
-        var unsupportedOption = GetFirstUnsupportedParakeetOption();
-        if (unsupportedOption is not null)
+        var unsupportedOptions = GetUnsupportedParakeetOptions().ToArray();
+        if (unsupportedOptions.Length > 0)
         {
-            throw new NotSupportedException($"{unsupportedOption} is not supported by the Parakeet engine.");
+            throw new NotSupportedException($"The following options are not supported by the Parakeet engine: {string.Join(", ", unsupportedOptions)}.");
         }
     }
 
-    private string? GetFirstUnsupportedParakeetOption()
+    public IEnumerable<string> GetUnsupportedParakeetOptions()
     {
-        if (MaxLastTextTokens.HasValue) return "Previous-text prompt tokens";
-        if (Translate.HasValue) return "Translation";
-        if (SingleSegment.HasValue) return "Single-segment output";
-        if (PrintSpecialTokens.HasValue) return "Printing special tokens";
-        if (PrintProgress == true) return "Printing progress";
-        if (PrintResults.HasValue) return "Printing results";
-        if (PrintTimestamps.HasValue) return "Printing timestamps";
-        if (UseTokenTimestamps.HasValue) return "Whisper token timestamps";
-        if (TokenTimestampsThreshold.HasValue) return "Token timestamp threshold";
-        if (TokenTimestampsSumThreshold.HasValue) return "Token timestamp sum threshold";
-        if (MaxSegmentLength.HasValue) return "Maximum segment length";
-        if (SplitOnWord.HasValue) return "Split-on-word";
-        if (MaxTokensPerSegment.HasValue) return "Maximum tokens per segment";
-        if (SuppressRegex is not null) return "Token suppression regex";
-        if (Prompt is not null) return "Initial prompts";
-        if (CarryInitialPrompt.HasValue) return "Initial prompt carry-over";
-        if (Language is not null) return "Language selection or detection";
-        if (SuppressBlank.HasValue) return "Blank suppression";
-        if (Temperature.HasValue) return "Temperature";
-        if (MaxInitialTs.HasValue) return "Maximum initial timestamp";
-        if (LengthPenalty.HasValue) return "Length penalty";
-        if (TemperatureInc.HasValue) return "Temperature fallback";
-        if (EntropyThreshold.HasValue) return "Entropy fallback threshold";
-        if (LogProbThreshold.HasValue) return "Log-probability fallback threshold";
-        if (NoSpeechThreshold.HasValue) return "No-speech threshold";
-        if (SamplingStrategy is BeamSearchSamplingStrategy) return "Beam-search sampling";
-        if (SamplingStrategy is GreedySamplingStrategy { BestOf: not null }) return "Greedy best-of sampling";
-        if (OpenVinoModelPath is not null || OpenVinoDevice is not null || OpenVinoCacheDir is not null) return "OpenVINO encoding";
+        if (MaxLastTextTokens.HasValue)
+        {
+            yield return "Previous-text prompt tokens";
+        }
 
-        return null;
+        if (Translate.HasValue)
+        {
+            yield return "Translation";
+        }
+
+        if (SingleSegment.HasValue)
+        {
+            yield return "Single-segment output";
+        }
+
+        if (PrintSpecialTokens.HasValue)
+        {
+            yield return "Printing special tokens";
+        }
+
+        if (PrintProgress == true)
+        {
+            yield return "Printing progress";
+        }
+
+        if (PrintResults.HasValue)
+        {
+            yield return "Printing results";
+        }
+
+        if (PrintTimestamps.HasValue)
+        {
+            yield return "Printing timestamps";
+        }
+
+        if (UseTokenTimestamps.HasValue)
+        {
+            yield return "Whisper token timestamps";
+        }
+
+        if (TokenTimestampsThreshold.HasValue)
+        {
+            yield return "Token timestamp threshold";
+        }
+
+        if (TokenTimestampsSumThreshold.HasValue)
+        {
+            yield return "Token timestamp sum threshold";
+        }
+
+        if (MaxSegmentLength.HasValue)
+        {
+            yield return "Maximum segment length";
+        }
+
+        if (SplitOnWord.HasValue)
+        {
+            yield return "Split-on-word";
+        }
+
+        if (MaxTokensPerSegment.HasValue)
+        {
+            yield return "Maximum tokens per segment";
+        }
+
+        if (Grammar is not null)
+        {
+            yield return "Grammar constraints";
+        }
+
+        if (SuppressRegex is not null)
+        {
+            yield return "Token suppression regex";
+        }
+
+        if (Prompt is not null)
+        {
+            yield return "Initial prompts";
+        }
+
+        if (CarryInitialPrompt.HasValue)
+        {
+            yield return "Initial prompt carry-over";
+        }
+
+        if (Language is not null)
+        {
+            yield return "Language selection or detection";
+        }
+
+        if (SuppressBlank.HasValue)
+        {
+            yield return "Blank suppression";
+        }
+
+        if (Temperature.HasValue)
+        {
+            yield return "Temperature";
+        }
+
+        if (MaxInitialTs.HasValue)
+        {
+            yield return "Maximum initial timestamp";
+        }
+
+        if (LengthPenalty.HasValue)
+        {
+            yield return "Length penalty";
+        }
+
+        if (TemperatureInc.HasValue)
+        {
+            yield return "Temperature fallback";
+        }
+
+        if (EntropyThreshold.HasValue)
+        {
+            yield return "Entropy fallback threshold";
+        }
+
+        if (LogProbThreshold.HasValue)
+        {
+            yield return "Log-probability fallback threshold";
+        }
+
+        if (NoSpeechThreshold.HasValue)
+        {
+            yield return "No-speech threshold";
+        }
+
+        if (SamplingStrategy is BeamSearchSamplingStrategy)
+        {
+            yield return "Beam-search sampling";
+        }
+
+        if (SamplingStrategy is GreedySamplingStrategy { BestOf: not null })
+        {
+            yield return "Greedy best-of sampling";
+        }
+
+        if (OpenVinoModelPath is not null || OpenVinoDevice is not null || OpenVinoCacheDir is not null)
+        {
+            yield return "OpenVINO encoding";
+        }
     }
 }

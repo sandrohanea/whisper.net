@@ -363,6 +363,23 @@ await foreach (var result in processor.ProcessAsync(fileStream))
 }
 ```
 
+### Grammar constraints
+
+Use `WithGrammar` to guide Whisper decoding with GBNF rules, for example when recognizing a fixed set of voice commands:
+
+```csharp
+using var processor = whisperFactory.CreateBuilder()
+    .WithLanguage("ro")
+    .WithGrammar("""
+        root ::= " "* ("pornește" | "oprește" | "continuă") [ .!?]*
+        """)
+    .Build();
+```
+
+`WithGrammar(gbnf, startRule: "root", penalty: 100f)` accepts literals, Unicode character classes and ranges (including negated classes), rule references, groups, alternatives, and `*`, `+`, `?` repetition. Rules are separated by newlines; `#` starts a comment. Invalid syntax, undefined rules, and left recursion are rejected before processing. The processor owns and releases native grammar memory.
+
+Whisper subtracts the penalty from logits of incompatible tokens; this does not guarantee that every result is complete or valid. Restricting characters also does not guarantee a language when languages share an alphabet. Use a multilingual model and `WithLanguage` for foreign-language transcription; `WithTranslate()` requests English translation. Grammar constraints are unavailable for Parakeet.
+
 ## Documentation
 
 You can find the documentation and code samples [here](https://github.com/sandrohanea/whisper.net).

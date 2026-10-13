@@ -1,6 +1,8 @@
 // Licensed under the MIT license: https://opensource.org/licenses/MIT
 
+#if !NETSTANDARD
 using System.Runtime.CompilerServices;
+#endif
 using System.Runtime.InteropServices;
 using Whisper.net.Internals.Native;
 using Whisper.net.Native;
