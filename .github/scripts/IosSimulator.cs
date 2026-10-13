@@ -7,7 +7,7 @@ using System.Text.Json;
 
 if (args.Length == 1 && args[0] == "--help")
 {
-    Console.WriteLine("IosSimulator.cs ensure-runtime <version> | prepare-device <version> <device name>");
+    Console.WriteLine("IosSimulator.cs ensure-runtime <version> | prepare-device <version> <device name> | configure-mlaunch <wrapper path>");
     return 0;
 }
 
@@ -21,9 +21,13 @@ try
     {
         await PrepareDeviceAsync(args[1], args[2]);
     }
+    else if (args.Length == 2 && args[0] == "configure-mlaunch")
+    {
+        await ConfigureMlaunchAsync(args[1]);
+    }
     else
     {
-        throw new ArgumentException("Expected ensure-runtime <version> or prepare-device <version> <device name>.");
+        throw new ArgumentException("Expected ensure-runtime <version>, prepare-device <version> <device name>, or configure-mlaunch <wrapper path>.");
     }
     return 0;
 }
@@ -53,6 +57,52 @@ static async Task EnsureRuntimeAsync(string version)
 
     // Xcode can return 70 for an already-downloaded runtime. Require an available runtime.
     Console.WriteLine($"iOS {version} runtime is available (xcodebuild exit code: {result.ExitCode}).");
+}
+
+static async Task ConfigureMlaunchAsync(string wrapperPath)
+{
+    var result = await RunAsync("dotnet", ["tool", "list", "--global", "--format", "json"], captureOutput: true);
+    if (result.ExitCode != 0)
+    {
+        throw new InvalidOperationException($"Could not list installed .NET tools (exit code: {result.ExitCode}).");
+    }
+    using var tools = JsonDocument.Parse(result.Output);
+    const string packageId = "microsoft.dotnet.xharness.cli";
+    var tool = tools.RootElement.GetProperty("data").EnumerateArray()
+        .FirstOrDefault(item => string.Equals(item.GetProperty("packageId").GetString(), packageId, StringComparison.OrdinalIgnoreCase));
+    if (tool.ValueKind == JsonValueKind.Undefined)
+    {
+        throw new InvalidOperationException("XHarness is not installed as a global .NET tool.");
+    }
+    var version = tool.GetProperty("version").GetString()!;
+    var mlaunchPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        ".dotnet", "tools", ".store", packageId, version, packageId, version,
+        "runtimes", "any", "native", "mlaunch", "bin", "mlaunch");
+    if (!File.Exists(mlaunchPath))
+    {
+        throw new FileNotFoundException("Could not find the mlaunch bundled with the installed XHarness.", mlaunchPath);
+    }
+    var help = await RunAsync(mlaunchPath, ["--help"], captureOutput: true);
+    if (help.ExitCode != 0 || !help.Output.Contains("--quiet-simulator", StringComparison.Ordinal))
+    {
+        throw new InvalidOperationException("The installed mlaunch does not support --quiet-simulator.");
+    }
+    if (OperatingSystem.IsWindows())
+    {
+        throw new PlatformNotSupportedException("The iOS launcher wrapper requires macOS.");
+    }
+    wrapperPath = Path.GetFullPath(wrapperPath);
+    Directory.CreateDirectory(Path.GetDirectoryName(wrapperPath)!);
+    // Single-quote the executable path and forward each original argument intact.
+    var quotedPath = "'" + mlaunchPath.Replace("'", "'\"'\"'") + "'";
+    await File.WriteAllTextAsync(wrapperPath, $"#!/bin/bash\nset -euo pipefail\nexec {quotedPath} --quiet-simulator \"$@\"\n");
+    File.SetUnixFileMode(wrapperPath, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+    var outputFile = Environment.GetEnvironmentVariable("GITHUB_OUTPUT");
+    if (!string.IsNullOrEmpty(outputFile))
+    {
+        await File.AppendAllTextAsync(outputFile, $"path={wrapperPath}{Environment.NewLine}");
+    }
+    Console.WriteLine($"Using mlaunch from XHarness {version} with --quiet-simulator: {wrapperPath}");
 }
 
 static async Task PrepareDeviceAsync(string version, string deviceName)
