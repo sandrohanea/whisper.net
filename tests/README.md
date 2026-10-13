@@ -56,7 +56,8 @@ MAUI tests (advanced)
 - iOS (macOS only)
   - Requires Xcode, iOS simulators, and xharness to mirror CI execution.
   - Example CI command:
-    - xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 16" --timeout "00:30:00"
+    - xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 18 Pro" --timeout "00:30:00"
+  - CI uses Xcode 27.0 with the iOS 27.0 simulator runtime. It creates the configured device if needed, waits for it to finish booting, and passes its UDID to XHarness. The runtime version and device name are configured once in `.github/workflows/dotnet-maui.yml`.
 - Tip: For most local development, it is sufficient to run tests/Whisper.net.Tests. MAUI tests are primarily validated in CI.
 - Docs: Dotnet XHarness documentation: https://github.com/dotnet/xharness
 

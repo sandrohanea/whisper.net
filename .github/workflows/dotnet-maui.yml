@@ -8,6 +8,10 @@ permissions:
 on:
   workflow_call:
 
+env:
+  IOS_SIMULATOR_VERSION: "27.0"
+  IOS_SIMULATOR_DEVICE: "iPhone 18 Pro"
+
 jobs:
   dotnet-maui-build:
     runs-on: xcode-27
@@ -50,7 +54,7 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install ios-simulator_26.5
+        run: xharness apple simulators install "ios-simulator_${IOS_SIMULATOR_VERSION}"
 
       - name: Build ios-simulator
         run: dotnet build ./tests/Whisper.net.Tests.Maui/Whisper.net.Tests.Maui.csproj -c Debug -f net10.0-ios -r iossimulator-arm64 -p:EmbedAssembliesIntoAppBundle=true -p:CodesignKey="" -p:CodesignProvision=""
@@ -148,24 +152,36 @@ jobs:
         run: dotnet tool install Microsoft.DotNet.XHarness.CLI --global --version "10.0.0-*"
 
       - name: Ensure simulator
-        run: xharness apple simulators install ios-simulator_26.5
+        run: xharness apple simulators install "ios-simulator_${IOS_SIMULATOR_VERSION}"
 
       - name: run ios tests
         timeout-minutes: 40
         shell: bash
         run: |
           # Boot normally before mlaunch installs the app; a cold mlaunch boot can hang.
-          simulator_info=$(xcrun simctl list devices available --json | python3 -c '
-          import json, sys
-          devices = json.load(sys.stdin)["devices"]
-          simulator = next((device for runtime, items in devices.items()
-                            if runtime.endswith(".iOS-26-5") for device in items
-                            if device["name"] == "iPhone 17"), None)
-          if simulator is None:
-              sys.exit("No available iPhone 17 simulator for iOS 26.5")
-          print(simulator["udid"], simulator["state"])
+          simulator_info=$(xcrun simctl list --json | python3 -c '
+          import json, os, sys
+          data = json.load(sys.stdin)
+          version = os.environ["IOS_SIMULATOR_VERSION"]
+          device_name = os.environ["IOS_SIMULATOR_DEVICE"]
+          runtime_suffix = ".iOS-" + version.replace(".", "-")
+          runtime = next((item for item in data["runtimes"]
+                          if item.get("isAvailable") and item["identifier"].endswith(runtime_suffix)), None)
+          if runtime is None:
+              sys.exit("No available iOS " + version + " simulator runtime")
+          device_type = next((item for item in data["devicetypes"] if item["name"] == device_name), None)
+          if device_type is None:
+              sys.exit("Xcode does not support simulator device " + device_name)
+          simulator = next((device for device in data["devices"].get(runtime["identifier"], [])
+                            if device.get("isAvailable") and device["name"] == device_name), None)
+          print(simulator["udid"] if simulator else "create",
+                simulator["state"] if simulator else "Shutdown",
+                runtime["identifier"], device_type["identifier"])
           ')
-          read -r simulator_id simulator_state <<< "$simulator_info"
+          read -r simulator_id simulator_state runtime_id device_type_id <<< "$simulator_info"
+          if [ "$simulator_id" = "create" ]; then
+            simulator_id=$(xcrun simctl create "$IOS_SIMULATOR_DEVICE" "$device_type_id" "$runtime_id")
+          fi
           if [ "$simulator_state" = "Shutdown" ]; then
             xcrun simctl boot "$simulator_id"
           fi
