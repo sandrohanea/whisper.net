@@ -151,7 +151,27 @@ jobs:
         run: xharness apple simulators install ios-simulator_26.5
 
       - name: run ios tests
-        run: xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="iPhone 17" --timeout "00:30:00"
+        timeout-minutes: 40
+        shell: bash
+        run: |
+          # Boot normally before mlaunch installs the app; a cold mlaunch boot can hang.
+          simulator_info=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          simulator = next((device for runtime, items in devices.items()
+                            if runtime.endswith(".iOS-26-5") for device in items
+                            if device["name"] == "iPhone 17"), None)
+          if simulator is None:
+              sys.exit("No available iPhone 17 simulator for iOS 26.5")
+          print(simulator["udid"], simulator["state"])
+          ')
+          read -r simulator_id simulator_state <<< "$simulator_info"
+          if [ "$simulator_state" = "Shutdown" ]; then
+            xcrun simctl boot "$simulator_id"
+          fi
+          mkdir -p ./test-results/ios
+          xcrun simctl bootstatus "$simulator_id" -b | tee ./test-results/ios/simulator-boot.log
+          xharness apple test --app=./maui-build-artifacts/net10.0-ios/iossimulator-arm64/Whisper.net.Tests.Maui.app --output-directory=./test-results/ios --target=ios-simulator-64 --device="$simulator_id" --timeout "00:30:00"
       - name: Upload Maui iOS xharness test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v6

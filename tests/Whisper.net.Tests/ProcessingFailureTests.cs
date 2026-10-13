@@ -10,6 +10,9 @@ namespace Whisper.net.Tests;
 
 public class ProcessingFailureTests
 {
+    // Native inference tests share the CI host and can delay managed test scheduling.
+    private static readonly TimeSpan testTimeout = TimeSpan.FromSeconds(30);
+
     internal sealed class FakeNativeWhisper : INativeWhisper
     {
         private readonly int _errorCode;
@@ -198,7 +201,8 @@ public class ProcessingFailureTests
             using var ownedProcessor = new WhisperProcessor(options, native);
             processor = ownedProcessor;
 
-            var processing = Task.Run(async () =>
+            // Synchronous processing blocks its caller; keep it off the shared thread pool.
+            var processing = Task.Factory.StartNew(async () =>
             {
                 if (callbackKind == "utf8")
                 {
@@ -221,7 +225,7 @@ public class ProcessingFailureTests
                 {
                     processor.Process(new float[1]);
                 }
-            });
+            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
 
             await WaitForTaskAsync(processing);
             Assert.True(callbackCalled);
@@ -250,7 +254,7 @@ public class ProcessingFailureTests
             if (observedLanguages.Count == 1)
             {
                 entered.SetResult(true);
-                Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
+                Assert.True(release.Wait(testTimeout));
                 Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
             }
 
@@ -318,7 +322,7 @@ public class ProcessingFailureTests
         using var native = new FakeNativeWhisper(0, (_, _, parameters, _, _) =>
         {
             entered.SetResult(true);
-            Assert.True(release.Wait(TimeSpan.FromSeconds(5)));
+            Assert.True(release.Wait(testTimeout));
             Assert.Equal("en", MarshalUtils.GetString(parameters.Language));
             return 0;
         });
@@ -636,7 +640,7 @@ public class ProcessingFailureTests
 
     private static async Task WaitForTaskAsync(Task task)
     {
-        await WaitForTaskAsync(task, TimeSpan.FromSeconds(5));
+        await WaitForTaskAsync(task, testTimeout);
     }
 
     private static async Task WaitForTaskAsync(Task task, TimeSpan timeout)
