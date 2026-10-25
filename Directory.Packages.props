@@ -2,7 +2,7 @@
   <!-- Directory.Packages.props gets included automatically during the build. Read more here:
   https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management-->
   <PropertyGroup>
-    <MauiVersion>10.0.110</MauiVersion>
+    <MauiVersion>10.0.120</MauiVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.13" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.NET.Sdk.WebAssembly.Pack" Version="10.0.2" />
     <!-- Tests -->
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="Xunit.Extensions.AssemblyFixture" Version="2.6.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1">
@@ -28,7 +28,7 @@
     </PackageVersion>
     <PackageVersion Include="Microsoft.DotNet.XHarness.TestRunners.Xunit" Version="10.0.0-prerelease.26506.2" />
     <PackageVersion Include="xunit.assert" Version="2.9.3" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)"/>
