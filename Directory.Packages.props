@@ -5,7 +5,7 @@
     <MauiVersion>10.0.110</MauiVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.13" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.14" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.11.0" />
     <PackageVersion Include="System.Memory" Version="4.6.3" />
     <!-- Tools -->
