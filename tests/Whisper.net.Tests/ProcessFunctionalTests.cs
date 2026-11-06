@@ -138,6 +138,30 @@ public class ProcessFunctionalTests(TinyModelFixture model) : IAssemblyFixture<T
         Assert.True(segments2.SequenceEqual(segments3, new SegmentDataComparer()));
     }
 
+    [Fact]
+    public async Task Process_WithPromptTokens_MatchesTextPromptWhenTokenizationsAgree()
+    {
+        // "I am Kennedy" is the same three tokens (40, 669, 16517) under the model's BPE and whisper.cpp's own tokenizer,
+        // so passing the IDs must decode exactly like passing the text.
+        async Task<List<SegmentData>> TranscribeAsync(Func<WhisperProcessorBuilder, WhisperProcessorBuilder> configure)
+        {
+            var segments = new List<SegmentData>();
+            using var factory = WhisperFactory.FromPath(model.ModelFile);
+            await using var processor = configure(factory.CreateBuilder().WithLanguage("en"))
+                            .WithSegmentEventHandler(segments.Add)
+                            .Build();
+            using var fileReader = await TestDataProvider.OpenFileStreamAsync("kennedy.wav");
+            processor.Process(fileReader);
+            return segments;
+        }
+
+        var withText = await TranscribeAsync(b => b.WithPrompt("I am Kennedy"));
+        var withTokens = await TranscribeAsync(b => b.WithPromptTokens([40, 669, 16517]));
+
+        Assert.Contains(withTokens, s => s.Text.Contains("nation should commit"));
+        Assert.True(withText.SequenceEqual(withTokens, new SegmentDataComparer()));
+    }
+
     [Theory]
     [InlineData("cuda")]
     [InlineData("openvino")]

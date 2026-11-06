@@ -64,6 +64,8 @@ internal sealed class WhisperProcessorOptions
 
     public string? Prompt { get; set; }
 
+    public int[]? PromptTokens { get; set; }
+
     public bool? CarryInitialPrompt { get; set; }
 
     public string? Language { get; set; }
@@ -190,6 +192,11 @@ internal sealed class WhisperProcessorOptions
         if (Prompt is not null)
         {
             yield return "Initial prompts";
+        }
+
+        if (PromptTokens is not null)
+        {
+            yield return "Initial prompt tokens";
         }
 
         if (CarryInitialPrompt.HasValue)
