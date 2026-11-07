@@ -849,6 +849,16 @@ public sealed class WhisperProcessor : IAsyncDisposable, IDisposable
             whisperParams.InitialPrompt = initialPromptText.Value;
         }
 
+        if (options.PromptTokens is { Length: > 0 } promptTokens)
+        {
+            // whisper.cpp uses prompt_tokens in place of initial_prompt when both are set; clear the text so only one is in play.
+            var promptTokensHandle = GCHandle.Alloc(promptTokens, GCHandleType.Pinned);
+            gcHandles.Add(promptTokensHandle);
+            whisperParams.PromptTokens = promptTokensHandle.AddrOfPinnedObject();
+            whisperParams.PromptNTokens = promptTokens.Length;
+            whisperParams.InitialPrompt = IntPtr.Zero;
+        }
+
         if (options.CarryInitialPrompt.HasValue)
         {
             whisperParams.CarryInitialPrompt = options.CarryInitialPrompt.Value ? trueByte : falseByte;

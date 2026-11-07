@@ -306,6 +306,29 @@ public class WhisperProcessorBuilder
     }
 
     /// <summary>
+    /// [EXPERIMENTAL] Configures the processor to use an initial prompt given as token IDs, which will be prepended to any existing text context.
+    /// </summary>
+    /// <remarks>
+    /// whisper.cpp tokenizes a text prompt (<see cref="WithPrompt(string)"/>) by greedy longest match over the vocabulary,
+    /// which differs from the byte-pair encoding the model was trained with for many words (product names, compounds).
+    /// Use this to pass IDs produced by the model's own BPE tokenizer instead, as OpenAI's whisper and faster-whisper do.
+    /// When set, it takes precedence over <see cref="WithPrompt(string)"/>. The array is copied; an empty array clears the setting.
+    /// </remarks>
+    /// <param name="promptTokens">The prompt as token IDs.</param>
+    /// <returns>An instance to the same builder.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="promptTokens"/> is null.</exception>
+    public WhisperProcessorBuilder WithPromptTokens(int[] promptTokens)
+    {
+        if (promptTokens is null)
+        {
+            throw new ArgumentNullException(nameof(promptTokens));
+        }
+
+        whisperProcessorOptions.PromptTokens = promptTokens.Length == 0 ? null : (int[])promptTokens.Clone();
+        return this;
+    }
+
+    /// <summary>
     /// [EXPERIMENTAL] Configures the processor to always prepend InitialPrompt to every decode window (may reduce conditioning on previous text)
     /// </summary>
     /// <remarks>
